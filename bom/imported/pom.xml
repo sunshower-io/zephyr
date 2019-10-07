@@ -1,0 +1,71 @@
+<project>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>io.sunshower.kernel</groupId>
+    <artifactId>bom-imported</artifactId>
+    <packaging>pom</packaging>
+    <parent>
+        <groupId>io.sunshower.kernel</groupId>
+        <artifactId>kernel-bom</artifactId>
+        <relativePath>../pom.xml</relativePath>
+        <version>2.0.0.0</version>
+    </parent>
+
+    <properties>
+        <jaxrs-api.version>2.1.1</jaxrs-api.version>
+        <javax.inject-version>1</javax.inject-version>
+        <osgi.version>6.0.0</osgi.version>
+        <karaf.version>4.2.7</karaf.version>
+        <spring.version>5.1.9.RELEASE</spring.version>
+        <servlet-api.version>4.0.1</servlet-api.version>
+        <javax-annotation.version>1.3.2</javax-annotation.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>javax.annotation</groupId>
+                <artifactId>javax.annotation-api</artifactId>
+                <version>${javax-annotation.version}</version>
+            </dependency>
+
+
+            <dependency>
+                <groupId>javax.ws.rs</groupId>
+                <artifactId>javax.ws.rs-api</artifactId>
+                <version>${jaxrs-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.inject</groupId>
+                <artifactId>javax.inject</artifactId>
+                <version>${javax.inject-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>javax.servlet-api</artifactId>
+                <version>${servlet-api.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-framework-bom</artifactId>
+                <version>${spring.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.osgi</groupId>
+                <artifactId>org.osgi.core</artifactId>
+                <version>${osgi.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>apache-karaf</groupId>
+                <artifactId>apache-karaf</artifactId>
+                <version>${karaf.version}</version>
+                <type>zip</type>
+            </dependency>
+
+
+        </dependencies>
+    </dependencyManagement>
+</project>

@@ -1,0 +1,56 @@
+
+buildscript {
+    apply from: 'tasks/configurations.gradle'
+    apply from: 'tasks/tasks.gradle'
+}
+
+plugins {
+    id 'war'
+    id 'java'
+
+    id "io.spring.dependency-management" version "1.0.6.RELEASE"
+
+}
+
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+
+
+    ivy {
+        patternLayout {
+            url 'http://apache.cs.utah.edu/karaf/'
+            artifact '[revision]/[module]-[revision].[ext]'
+        }
+    }
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "io.sunshower.kernel:bom-imported:$project.version"
+    }
+}
+
+dependencies {
+    /**
+     * Kernel dependencies
+     */
+    kernel 'apache-karaf:apache-karaf@zip'
+
+    /**
+     * Compile-only dependencies
+     */
+    [
+            'javax.annotation:javax.annotation-api',
+            'javax.inject:javax.inject',
+            'javax.servlet:javax.servlet-api',
+            'org.osgi:org.osgi.core',
+            'org.springframework:spring-context',
+            'org.springframework:spring-web',
+            'javax.ws.rs:javax.ws.rs-api'
+    ].each { dependency ->
+        compileOnly dependency
+    }
+}
+

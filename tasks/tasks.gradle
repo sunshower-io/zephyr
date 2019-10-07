@@ -1,0 +1,108 @@
+apply plugin: 'war'
+
+/**
+ * Download and extract Karaf to ${project.buildDir}/karaf
+ */
+
+task extractKernel(type: Copy) {
+    dependsOn configurations.kernel
+    eachFile {
+        path -= ~/^.+?\//
+    }
+    from {
+        configurations.kernel.collect{zipTree(it)}
+    }
+    into "${project.buildDir}/karaf/"
+    includeEmptyDirs = false
+}
+
+/**
+ * Copy Karaf configurations.  By default, just change which Karaf features
+ * are available
+ */
+
+task copyResources(type: Copy) {
+    from "${project.rootDir}/resources/kernel"
+    into "${project.buildDir}/karaf/etc"
+}
+
+
+/**
+ * Start karaf--not sure if this really works
+ */
+task startKaraf(type: Exec) {
+    workingDir "${project.buildDir}/karaf/bin"
+    commandLine 'start'
+}
+
+/**
+ * Aggregate tasks
+ */
+task initialize(dependsOn: [
+        extractKernel, 
+        copyResources, 
+        startKaraf
+])
+
+copyResources.mustRunAfter extractKernel
+
+
+/**
+ * Continually build and sync kernel-war
+ */
+task develop(type: Sync) {
+    into "${project.buildDir}/karaf/deploy/${project.name}.war"
+    with war
+}
+
+
+def importedPackages = [
+        /**
+         * Spring imported packages
+         */
+        "org.springframework.web",
+        "org.springframework.context",
+        "org.springframework.web.servlet",
+        "org.springframework.web.context",
+        "org.springframework.cglib.core",
+        "org.springframework.cglib.reflect",
+        "org.springframework.cglib.proxy",
+        "org.springframework.beans.factory",
+        "org.springframework.beans",
+        "org.springframework.context.annotation",
+        "org.springframework.web.context.support",
+
+        /**
+         * OSGi
+         */
+        "org.osgi.framework",
+
+        /**
+         * Java stuff
+         */
+        "javax.annotation",
+        "javax.servlet",
+        "javax.servlet.http",
+
+        /**
+         * Jersey dependencies
+         */
+].join(',')
+
+
+war {
+    manifest {
+        attributes([
+                "Bundle-SymbolicName": "sunshower-kernel",
+                "Bundle-Name": "sunshower-kernel",
+                "Bundle-Version": "${project.version}",
+                "Bundle-ManifestVersion": 2,
+                "Web-ContextPath": "sunshower-kernel",
+                "Import-Package": importedPackages,
+                "Export-Package": "io.sunshower.kernel.core;version=${project.version}",
+                "Bundle-Activator": "io.sunshower.kernel.core.KernelActivator",
+                "Bundle-Classpath": "WEB-INF/classes"
+
+        ]);
+    }
+}
