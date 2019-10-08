@@ -27,6 +27,8 @@ repositories {
 
 dependencies {
 
+
+
     [
             "jupiter-api",
             "jupiter-engine"
@@ -59,13 +61,16 @@ dependencies {
      * Compile-only dependencies
      */
     [
-            'javax.annotation:javax.annotation-api',
-            'javax.inject:javax.inject',
-            'javax.servlet:javax.servlet-api',
             'org.osgi:org.osgi.core',
-            'org.springframework:spring-context',
+            'javax.inject:javax.inject',
+            'javax.ws.rs:javax.ws.rs-api',
             'org.springframework:spring-web',
-            'javax.ws.rs:javax.ws.rs-api'
+            'javax.servlet:javax.servlet-api',
+            'org.springframework:spring-context',
+            'javax.annotation:javax.annotation-api',
+            'org.apache.felix:org.apache.felix.ipojo',
+            'org.apache.felix:org.apache.felix.ipojo.annotations',
+            'org.osgi:org.osgi.service.component.annotations'
     ].each { dependency ->
         compileOnly dependency
     }

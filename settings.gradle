@@ -3,5 +3,6 @@ include(
         'kernel-api',
         'kernel-features',
         'kernel-ui',
+        'kernel-tests',
         'kernel-features:feature-jaxrs'
 )
