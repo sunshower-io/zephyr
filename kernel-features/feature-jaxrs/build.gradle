@@ -1,0 +1,50 @@
+plugins {
+    id 'maven'
+    id 'java'
+}
+
+
+configurations {
+    jaxrs {
+        exclude group: 'org.glassfish.jaxb'
+        exclude group: 'org.osgi'
+    }
+}
+
+dependencies {
+    [
+            'jaxb-provider',
+            'core-spi',
+            'client',
+            'spring',
+            'spring-web',
+            'validator-provider',
+            'crypto',
+            'multipart-provider'
+    ].each {
+        jaxrs "org.jboss.resteasy:resteasy-${it}"
+    }
+    jaxrs 'org.osgi:org.osgi.annotation.versioning:1.0.0'
+
+}
+
+karaf {
+    features {
+        name="sunshower-jaxrs"
+        feature {
+            name = 'sunshower-jaxrs'
+            xsdVersion = '1.3.0'
+            description = "Sunshower.io JAX-RS Kernel Feature"
+            outputFile = file("${project.buildDir}/karaf/features/${project.name}.xml")
+            configuration 'jaxrs'
+        }
+    }
+
+
+    kar {
+
+    }
+
+}
+
+build.dependsOn generateFeatures, generateKar

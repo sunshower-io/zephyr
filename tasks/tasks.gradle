@@ -1,5 +1,6 @@
-apply plugin: 'war'
+import org.apache.tools.ant.filters.*
 
+apply plugin: 'war'
 /**
  * Download and extract Karaf to ${project.buildDir}/karaf
  */
@@ -10,7 +11,7 @@ task extractKernel(type: Copy) {
         path -= ~/^.+?\//
     }
     from {
-        configurations.kernel.collect{zipTree(it)}
+        configurations.kernel.collect { zipTree(it) }
     }
     into "${project.buildDir}/karaf/"
     includeEmptyDirs = false
@@ -21,8 +22,18 @@ task extractKernel(type: Copy) {
  * are available
  */
 
-task copyResources(type: Copy) {
-    from "${project.rootDir}/resources/kernel"
+task copyResources(type: Copy,
+        dependsOn: ['extractKernel']
+) {
+    from("${project.rootDir}/resources/kernel")
+    filter(
+            ReplaceTokens,
+            tokens: [
+                    'projectVersion': project.version
+            ],
+            endToken: '@',
+            beginToken: '@'
+    )
     into "${project.buildDir}/karaf/etc"
 }
 
@@ -35,16 +46,23 @@ task startKaraf(type: Exec) {
     commandLine 'start'
 }
 
+task deployFeatures(type: Copy,
+        dependsOn: ['extractKernel']
+) {
+    dependsOn configurations.feature
+    from configurations.feature
+    into "${project.buildDir}/karaf/features/"
+}
+
 /**
  * Aggregate tasks
  */
 task initialize(dependsOn: [
-        extractKernel, 
-        copyResources, 
+        deployFeatures,
+        extractKernel,
+        copyResources,
         startKaraf
 ])
-
-copyResources.mustRunAfter extractKernel
 
 
 /**
@@ -71,6 +89,21 @@ def importedPackages = [
         "org.springframework.beans",
         "org.springframework.context.annotation",
         "org.springframework.web.context.support",
+        "org.eclipse.microprofile.config",
+        "io.smallrye.config",
+
+        /**
+         * resteasy
+         */
+        "org.jboss.resteasy.plugins.providers",
+        "org.jboss.resteasy.core.providerfactory",
+        "org.jboss.resteasy.plugins.spring",
+        "org.jboss.resteasy.plugins.server.servlet",
+        "org.jboss.resteasy.plugins.providers.sse",
+        "org.jboss.resteasy.plugins.interceptors",
+        "org.jboss.resteasy.client.jaxrs.internal",
+
+
 
         /**
          * OSGi
@@ -80,6 +113,8 @@ def importedPackages = [
         /**
          * Java stuff
          */
+
+        "javax.ws.rs",
         "javax.annotation",
         "javax.servlet",
         "javax.servlet.http",
@@ -93,16 +128,15 @@ def importedPackages = [
 war {
     manifest {
         attributes([
-                "Bundle-SymbolicName": "sunshower-kernel",
-                "Bundle-Name": "sunshower-kernel",
-                "Bundle-Version": "${project.version}",
+                "Bundle-SymbolicName"   : "sunshower-kernel",
+                "Bundle-Name"           : "sunshower-kernel",
+                "Bundle-Version"        : "${project.version}",
                 "Bundle-ManifestVersion": 2,
-                "Web-ContextPath": "sunshower-kernel",
-                "Import-Package": importedPackages,
-                "Export-Package": "io.sunshower.kernel.core;version=${project.version}",
-                "Bundle-Activator": "io.sunshower.kernel.core.KernelActivator",
-                "Bundle-Classpath": "WEB-INF/classes"
-
-        ]);
+                "Web-ContextPath"       : "sunshower-kernel",
+                "Import-Package"        : importedPackages,
+                "Export-Package"        : "io.sunshower.kernel.core;version=${project.version}",
+                "Bundle-Activator"      : "io.sunshower.kernel.core.KernelActivator",
+                "Bundle-Classpath"      : "WEB-INF/classes"
+        ])
     }
 }

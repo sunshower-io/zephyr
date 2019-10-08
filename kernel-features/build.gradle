@@ -1,0 +1,25 @@
+plugins {
+    id 'com.github.lburgazzoli.karaf' version '0.5.1' apply false
+}
+
+
+subprojects {
+    apply plugin: 'maven-publish'
+    apply plugin: 'com.github.lburgazzoli.karaf'
+
+
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                artifact generateKar
+            }
+
+            mavenJava(MavenPublication) {
+                artifact ([
+                        extension: "xml",
+                        source: "${project.buildDir}/karaf/features/${project.name}.xml",
+                ])
+            }
+        }
+    }
+}

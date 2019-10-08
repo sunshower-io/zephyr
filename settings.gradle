@@ -1,0 +1,7 @@
+include(
+        'kernel-services',
+        'kernel-api',
+        'kernel-features',
+        'kernel-ui',
+        'kernel-features:feature-jaxrs'
+)

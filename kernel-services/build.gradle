@@ -1,0 +1,56 @@
+buildscript {
+    [
+            "configurations",
+            "tasks"
+    ].each {
+        apply from: "${project.rootDir}/tasks/${it}.gradle"
+    }
+
+}
+
+
+plugins {
+    id 'war'
+    id 'java'
+}
+
+
+repositories {
+    ivy {
+        patternLayout {
+            url 'http://apache.cs.utah.edu/karaf/'
+            artifact '[revision]/[module]-[revision].[ext]'
+        }
+    }
+}
+
+
+dependencies {
+    /**
+     * Kernel dependencies
+     */
+    kernel 'apache-karaf:apache-karaf@zip'
+
+    [
+            'feature-jaxrs'
+    ].each {
+        feature "${project.group}:${it}:${project.version}@xml"
+    }
+    
+
+    /**
+     * Compile-only dependencies
+     */
+    [
+            'javax.annotation:javax.annotation-api',
+            'javax.inject:javax.inject',
+            'javax.servlet:javax.servlet-api',
+            'org.osgi:org.osgi.core',
+            'org.springframework:spring-context',
+            'org.springframework:spring-web',
+            'javax.ws.rs:javax.ws.rs-api'
+    ].each { dependency ->
+        compileOnly dependency
+    }
+}
+

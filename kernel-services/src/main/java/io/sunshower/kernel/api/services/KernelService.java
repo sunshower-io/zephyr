@@ -4,13 +4,13 @@ import javax.annotation.PostConstruct;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
-@Path("kernel")
+@Path("/kernel")
 public class KernelService {
 
 
 
     @GET
-    @Path("/")
+    @Path("/hello")
     public String sayHello() {
         return "Hello";
     }
