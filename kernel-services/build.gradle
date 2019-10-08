@@ -26,6 +26,36 @@ repositories {
 
 
 dependencies {
+
+    [
+            "platform-commons",
+            "platform-engine",
+            "platform-runner"
+    ].each {
+        testImplementation "org.junit.platform:junit-$it"
+
+    }
+
+    [
+
+            "jupiter",
+            "jupiter-api",
+            "jupiter-engine"
+
+
+    ].each {
+        testImplementation "org.junit.jupiter:junit-$it"
+    }
+
+    [
+            'exam',
+            'exam-inject',
+            'exam-container-karaf',
+    ].each {
+        testImplementation "org.ops4j.pax.exam:pax-$it"
+    }
+
+
     /**
      * Kernel dependencies
      */
@@ -34,7 +64,7 @@ dependencies {
     [
             'feature-jaxrs'
     ].each {
-        feature "${project.group}:${it}:${project.version}@xml"
+        feature "${project.group}:${it}:${project.version}@kar"
     }
     
 

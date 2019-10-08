@@ -51,7 +51,7 @@ task deployFeatures(type: Copy,
 ) {
     dependsOn configurations.feature
     from configurations.feature
-    into "${project.buildDir}/karaf/features/"
+    into "${project.buildDir}/karaf/deploy/"
 }
 
 /**

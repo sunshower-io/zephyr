@@ -25,12 +25,12 @@ dependencies {
         jaxrs "org.jboss.resteasy:resteasy-${it}"
     }
     jaxrs 'org.osgi:org.osgi.annotation.versioning:1.0.0'
-
+    
 }
 
 karaf {
     features {
-        name="sunshower-jaxrs"
+        name = "sunshower-jaxrs"
         feature {
             name = 'sunshower-jaxrs'
             xsdVersion = '1.3.0'
