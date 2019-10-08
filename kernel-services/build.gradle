@@ -28,21 +28,8 @@ repositories {
 dependencies {
 
     [
-            "platform-commons",
-            "platform-engine",
-            "platform-runner"
-    ].each {
-        testImplementation "org.junit.platform:junit-$it"
-
-    }
-
-    [
-
-            "jupiter",
             "jupiter-api",
             "jupiter-engine"
-
-
     ].each {
         testImplementation "org.junit.jupiter:junit-$it"
     }
@@ -83,4 +70,3 @@ dependencies {
         compileOnly dependency
     }
 }
-

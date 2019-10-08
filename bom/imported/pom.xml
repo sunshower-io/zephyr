@@ -25,7 +25,7 @@
         -->
         <pax-exam.version>4.13.1</pax-exam.version>
 
-        <junit-version>5.5.2</junit-version>
+        <junit.version>5.5.2</junit.version>
 
 
     </properties>

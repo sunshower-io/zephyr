@@ -13,8 +13,19 @@ allprojects {
         }
     }
 
+
     repositories {
         mavenLocal()
         mavenCentral()
     }
+
+}
+
+subprojects {
+    plugins.withType(JavaPlugin) {
+        test {
+            useJUnitPlatform()
+        }
+    }
+
 }
