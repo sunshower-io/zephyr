@@ -4,7 +4,24 @@ include(
         'kernel-core',
         'kernel-tests',
         'kernel-tests:kernel-test',
+
+
+        'kernel-modules:sunshower-felix',
+        'kernel-modules:sunshower-yaml-reader',
+
+
+        /**
+         * test plugins
+         */
         'kernel-tests:test-plugins:test-plugin-1',
         'kernel-tests:test-plugins:test-plugin-2',
-        'kernel-tests:test-plugins:test-plugin-3'
+        'kernel-tests:test-plugins:test-plugin-3',
+
+
+        /**
+         * test modules
+         */
+        'kernel-tests:test-modules:test-module-1',
+        'kernel-tests:test-modules:test-module-2',
+        'kernel-tests:test-modules:test-module-3'
 )

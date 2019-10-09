@@ -1,11 +1,22 @@
 package io.sunshower.kernel.osgi;
 
 import io.sunshower.kernel.*;
+import io.sunshower.kernel.common.i18n.Localization;
 
 import java.net.URL;
 import java.util.List;
 
 public class DynamicReloadableKernelModuleManager implements KernelModuleManager {
+
+    @Override
+    public List<KernelModuleLoadTask> getInflight() {
+        return null;
+    }
+
+    @Override
+    public Localization getLocalization() {
+        return null;
+    }
 
     @Override
     public List<KernelModuleDescriptor> getLoaded() {
@@ -17,9 +28,8 @@ public class DynamicReloadableKernelModuleManager implements KernelModuleManager
         return false;
     }
 
-
     @Override
-    public KernelExtensionLoadTask load(URL url) throws KernelModuleConflictException {
+    public KernelModuleLoadTask load(URL url) throws KernelModuleConflictException {
         return null;
     }
 }

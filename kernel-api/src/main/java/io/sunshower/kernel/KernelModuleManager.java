@@ -3,7 +3,7 @@ package io.sunshower.kernel;
 import java.net.URL;
 import java.util.List;
 
-public interface KernelModuleManager extends KernelExtensionManager<KernelModuleDescriptor> {
+public interface KernelModuleManager extends KernelExtensionManager<KernelModuleDescriptor, KernelModuleLoadTask> {
 
     @Override
     List<KernelModuleDescriptor> getLoaded();
@@ -12,5 +12,5 @@ public interface KernelModuleManager extends KernelExtensionManager<KernelModule
     boolean unload(KernelModuleDescriptor descriptor);
 
     @Override
-    KernelExtensionLoadTask load(URL url) throws KernelModuleConflictException;
+    KernelModuleLoadTask load(URL url) throws KernelModuleConflictException;
 }

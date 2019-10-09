@@ -1,14 +1,20 @@
 package io.sunshower.kernel;
 
+import io.sunshower.kernel.common.i18n.Localization;
+
 import java.net.URL;
 import java.util.List;
 
-public interface KernelExtensionManager<T extends KernelExtensionDescriptor> {
+public interface KernelExtensionManager<T extends KernelExtensionDescriptor, U extends KernelExtensionLoadTask<T, U>> {
+
+    List<U> getInflight();
+
+    Localization getLocalization();
 
     List<T> getLoaded();
 
     boolean unload(T descriptor);
 
-    KernelExtensionLoadTask load(URL url) throws KernelExtensionConflictException, KernelModuleConflictException;
+    U load(URL url) throws KernelExtensionConflictException;
 
 }

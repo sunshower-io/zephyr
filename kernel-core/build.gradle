@@ -50,4 +50,12 @@ dependencies {
         testImplementation project(":kernel-tests:test-plugins:$it")
     }
 
+
+    [
+            'sunshower-felix',
+            'sunshower-yaml-reader'
+    ].each {
+        testImplementation project(":kernel-modules:$it")
+    }
+
 }

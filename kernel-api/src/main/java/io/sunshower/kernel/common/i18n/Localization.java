@@ -1,4 +1,4 @@
-package io.sunshower.common.i18n;
+package io.sunshower.kernel.common.i18n;
 
 import lombok.AllArgsConstructor;
 

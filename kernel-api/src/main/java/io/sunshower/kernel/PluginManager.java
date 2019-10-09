@@ -3,7 +3,7 @@ package io.sunshower.kernel;
 import java.net.URL;
 import java.util.List;
 
-public interface PluginManager extends KernelExtensionManager<PluginDescriptor> {
+public interface PluginManager extends KernelExtensionManager<PluginDescriptor, PluginLoadTask> {
 
     /**
      *
