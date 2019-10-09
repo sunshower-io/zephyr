@@ -1,8 +1,5 @@
+
 include(
-        'kernel-services',
         'kernel-api',
-        'kernel-features',
-        'kernel-ui',
-        'kernel-tests',
-        'kernel-features:feature-jaxrs'
+        'kernel-core'
 )

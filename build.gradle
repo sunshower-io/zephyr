@@ -1,7 +1,8 @@
 
 
 plugins {
-    id "io.spring.dependency-management" version "1.0.6.RELEASE" apply false
+    id "org.springframework.boot" version "$springBootPluginVersion" apply false
+    id "io.spring.dependency-management" version "$dependencyManagementPluginVersion" apply false
 }
 
 allprojects {
@@ -19,12 +20,20 @@ allprojects {
         mavenCentral()
     }
 
+
 }
 
 subprojects {
     plugins.withType(JavaPlugin) {
         test {
             useJUnitPlatform()
+        }
+
+        project.dependencies {
+            compileOnly 'org.projectlombok:lombok'
+            testCompileOnly 'org.projectlombok:lombok'
+            annotationProcessor 'org.projectlombok:lombok'
+            testAnnotationProcessor 'org.projectlombok:lombok'
         }
     }
 
