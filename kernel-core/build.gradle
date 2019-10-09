@@ -34,10 +34,19 @@ dependencies {
 
     [
             "org.junit.jupiter:junit-jupiter-api",
-            "org.junit.jupiter:junit-jupiter-engine"
+            "org.junit.jupiter:junit-jupiter-engine",
     ].each {
         testImplementation it
     }
 
     implementation project(':kernel-api')
+
+    [
+            'test-plugin-1',
+            'test-plugin-2',
+            'test-plugin-3'
+    ].each {
+        testImplementation project(":kernel-tests:test-plugins:$it")
+    }
+
 }

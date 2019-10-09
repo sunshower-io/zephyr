@@ -1,5 +1,10 @@
 
 include(
         'kernel-api',
-        'kernel-core'
+        'kernel-core',
+        'kernel-tests',
+        'kernel-tests:kernel-test',
+        'kernel-tests:test-plugins:test-plugin-1',
+        'kernel-tests:test-plugins:test-plugin-2',
+        'kernel-tests:test-plugins:test-plugin-3'
 )

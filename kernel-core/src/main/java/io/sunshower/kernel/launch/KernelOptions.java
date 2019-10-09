@@ -1,7 +1,9 @@
 package io.sunshower.kernel.launch;
 
+import io.sunshower.common.i18n.Localization;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import picocli.CommandLine;
@@ -12,13 +14,19 @@ import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.ResourceBundle;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 @Getter
+@Setter
 @Slf4j
 @CommandLine.Command(resourceBundle = "i18n.io.sunshower.kernel.launch.KernelOptions")
 public class KernelOptions {
 
+
+    private ExecutorService executorService =
+            Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
     public interface SystemProperties {
         String UserHome      = "user.home";
@@ -40,12 +48,23 @@ public class KernelOptions {
     boolean help;
 
 
+    private Localization localization;
+
+
     public KernelOptions satisfy(String... args) {
-        val cmd            = new CommandLine(this);
-        val resourceBundle = cmd.getResourceBundle();
+        val cmd    = new CommandLine(this);
+        val bundle = cmd.getResourceBundle();
+        localization = new Localization(bundle);
         cmd.parseArgs(args);
-        satisfyStorage(resourceBundle);
+        satisfyStorage(bundle);
         return this;
+    }
+
+    public Localization getLocalization() {
+        if (localization == null) {
+            localization = new Localization(new CommandLine(this).getResourceBundle());
+        }
+        return localization;
     }
 
     private void satisfyStorage(ResourceBundle resourceBundle) {
@@ -79,9 +98,9 @@ public class KernelOptions {
             log.info(format(resourceBundle, "sunshower.home.found", loc, location, result));
             storage = result.trim();
             val path = Paths.get(storage);
-            if(ensureExists(resourceBundle, path)) {
+            if (ensureExists(resourceBundle, path)) {
                 val dir = path.resolve(".sunshower");
-                if(ensureExists(resourceBundle, dir)) {
+                if (ensureExists(resourceBundle, dir)) {
                     return ensureExists(resourceBundle, dir.resolve("plugins"));
                 }
             }
