@@ -71,6 +71,17 @@ public abstract class AbstractKernelExtensionManager<
         }
     }
 
+
+    @Override
+    public List<U> getInflight() {
+        return loadingTasks;
+    }
+
+    @Override
+    public Localization getLocalization() {
+        return localization;
+    }
+
     protected abstract U create(URL url, File destination);
 
 

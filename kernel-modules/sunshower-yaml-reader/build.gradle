@@ -1,0 +1,4 @@
+
+dependencies {
+    implementation 'com.esotericsoftware.yamlbeans:yamlbeans'
+}

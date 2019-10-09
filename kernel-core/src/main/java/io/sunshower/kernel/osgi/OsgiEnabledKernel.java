@@ -1,7 +1,7 @@
 package io.sunshower.kernel.osgi;
 
-import io.sunshower.common.i18n.Localization;
 import io.sunshower.kernel.*;
+import io.sunshower.kernel.common.i18n.Localization;
 import io.sunshower.kernel.launch.KernelOptions;
 import lombok.extern.slf4j.Slf4j;
 
@@ -40,7 +40,7 @@ public class OsgiEnabledKernel implements Kernel {
     }
 
     private KernelModuleManager createModuleManager() {
-        return new DynamicReloadableKernelModuleManager();
+        return new DynamicReloadableKernelModuleManager(options, this, localization);
     }
 
     @Override

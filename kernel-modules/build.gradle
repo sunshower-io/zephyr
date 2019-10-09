@@ -1,7 +1,17 @@
+
 subprojects {
     apply plugin: 'java'
 
+
+
+
     dependencies {
         implementation project(":kernel-api")
+        [
+                "org.junit.jupiter:junit-jupiter-api",
+                "org.junit.jupiter:junit-jupiter-engine",
+        ].each {
+            testImplementation it
+        }
     }
 }

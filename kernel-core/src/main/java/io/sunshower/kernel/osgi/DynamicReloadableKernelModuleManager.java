@@ -2,34 +2,23 @@ package io.sunshower.kernel.osgi;
 
 import io.sunshower.kernel.*;
 import io.sunshower.kernel.common.i18n.Localization;
+import io.sunshower.kernel.launch.KernelOptions;
 
+import java.io.File;
 import java.net.URL;
-import java.util.List;
 
-public class DynamicReloadableKernelModuleManager implements KernelModuleManager {
+public class DynamicReloadableKernelModuleManager extends AbstractKernelExtensionManager<
+        KernelModuleDescriptor,
+        KernelModuleLoadTask
+        > implements KernelModuleManager {
+
+    public DynamicReloadableKernelModuleManager(KernelOptions options, OsgiEnabledKernel kernel, Localization localization) {
+        super(options, kernel, localization);
+    }
 
     @Override
-    public List<KernelModuleLoadTask> getInflight() {
+    protected KernelModuleLoadTask create(URL url, File destination) {
         return null;
     }
 
-    @Override
-    public Localization getLocalization() {
-        return null;
-    }
-
-    @Override
-    public List<KernelModuleDescriptor> getLoaded() {
-        return null;
-    }
-
-    @Override
-    public boolean unload(KernelModuleDescriptor descriptor) {
-        return false;
-    }
-
-    @Override
-    public KernelModuleLoadTask load(URL url) throws KernelModuleConflictException {
-        return null;
-    }
 }

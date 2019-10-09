@@ -1,6 +1,6 @@
 package io.sunshower.kernel.launch;
 
-import io.sunshower.common.i18n.Localization;
+import io.sunshower.kernel.common.i18n.Localization;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import picocli.CommandLine;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
