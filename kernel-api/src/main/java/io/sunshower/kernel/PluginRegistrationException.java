@@ -2,7 +2,7 @@ package io.sunshower.kernel;
 
 import lombok.AllArgsConstructor;
 
-public class PluginRegistrationException extends KernelException {
+public class PluginRegistrationException extends PluginException {
 
 
     private final Object source;

@@ -26,6 +26,7 @@ dependencies {
 
     [
             'info.picocli:picocli',
+            'org.jboss.modules:jboss-modules',
             'com.github.resource4j:resource4j-spring',
             'org.apache.felix:org.apache.felix.framework'
     ].each { dep ->

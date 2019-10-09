@@ -25,8 +25,7 @@ import java.util.concurrent.Executors;
 public class KernelOptions {
 
 
-    private ExecutorService executorService =
-            Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+    private ExecutorService executorService = Executors.newScheduledThreadPool(4);
 
     public interface SystemProperties {
         String UserHome      = "user.home";
@@ -48,7 +47,28 @@ public class KernelOptions {
     boolean help;
 
 
+    /**
+     * Current localization
+     */
     private Localization localization;
+
+
+    /**
+     * Storage for plugin files
+     */
+
+    private Path pluginDirectory;
+
+    /**
+     * Storage for plugin temp workspace, plugin directories
+     */
+    private Path workspaceDirectory;
+
+
+    /**
+     * Plugin temp directory--plugin files are copied here before processing
+     */
+    private Path pluginTempDirectory;
 
 
     public KernelOptions satisfy(String... args) {
@@ -101,7 +121,12 @@ public class KernelOptions {
             if (ensureExists(resourceBundle, path)) {
                 val dir = path.resolve(".sunshower");
                 if (ensureExists(resourceBundle, dir)) {
-                    return ensureExists(resourceBundle, dir.resolve("plugins"));
+
+                    pluginDirectory = dir.resolve("plugins");
+                    workspaceDirectory = dir.resolve("workspace");
+                    pluginTempDirectory = workspaceDirectory.resolve("tmpplugin");
+                    return ensureExists(resourceBundle, pluginDirectory) &&
+                            ensureExists(resourceBundle, workspaceDirectory);
                 }
             }
         }

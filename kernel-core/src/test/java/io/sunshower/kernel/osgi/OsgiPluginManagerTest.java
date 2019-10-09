@@ -1,19 +1,18 @@
-package io.sunshower.kernel.core;
-
+package io.sunshower.kernel.osgi;
 
 import io.sunshower.kernel.Kernel;
 import io.sunshower.kernel.launch.KernelOptions;
 import io.sunshower.kernel.launch.Tests;
-import io.sunshower.kernel.osgi.OsgiEnabledKernel;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.concurrent.ExecutionException;
 
-public class KernelTest {
+
+class OsgiPluginManagerTest {
+
 
     private Kernel kernel;
 
@@ -27,7 +26,7 @@ public class KernelTest {
     @Test
     void ensureCopyingWorks() throws MalformedURLException, ExecutionException, InterruptedException {
         val projectfile = Tests.projectOutput("kernel-tests:test-plugins:test-plugin-1", "war");
-//        kernel.install(projectfile.toURI().toURL()).get();
+        val a = kernel.getPluginManager().load(projectfile.toURI().toURL()).getFuture().get();
     }
 
 }
