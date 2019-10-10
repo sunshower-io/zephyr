@@ -1,13 +1,9 @@
 package io.sunshower.kernel.launch;
 
-import io.sunshower.kernel.common.i18n.Localization;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
-import lombok.val;
-import picocli.CommandLine;
+import static java.lang.System.getProperty;
+import static java.lang.System.getenv;
 
+import io.sunshower.kernel.common.i18n.Localization;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
@@ -16,9 +12,11 @@ import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Function;
-
-import static java.lang.System.getProperty;
-import static java.lang.System.getenv;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+import lombok.val;
+import picocli.CommandLine;
 
 @Getter
 @Setter
@@ -38,13 +36,15 @@ public class KernelOptions {
   }
 
   @CommandLine.Option(
-      names = {"-s", "--storage"},
-      descriptionKey = "storage.description")
+    names = {"-s", "--storage"},
+    descriptionKey = "storage.description"
+  )
   String storage;
 
   @CommandLine.Option(
-      names = {"-h", "--help"},
-      descriptionKey = "storage.help")
+    names = {"-h", "--help"},
+    descriptionKey = "storage.help"
+  )
   boolean help;
 
   /** Current localization */

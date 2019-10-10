@@ -8,6 +8,7 @@ plugins {
 
 allprojects {
     apply plugin: "io.spring.dependency-management"
+    apply plugin: "com.diffplug.gradle.spotless"
 
     dependencyManagement {
         imports {
@@ -26,7 +27,6 @@ allprojects {
 }
 
 subprojects {
-    apply plugin: "com.diffplug.gradle.spotless"
     plugins.withType(JavaPlugin) {
 
 

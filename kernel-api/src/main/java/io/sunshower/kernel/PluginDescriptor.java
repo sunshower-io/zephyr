@@ -1,7 +1,3 @@
 package io.sunshower.kernel;
 
-public interface PluginDescriptor extends KernelExtensionDescriptor {
-
-
-
-}
+public interface PluginDescriptor extends KernelExtensionDescriptor {}

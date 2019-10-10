@@ -3,33 +3,32 @@ package io.sunshower.kernel;
 import java.util.concurrent.CompletableFuture;
 
 public interface KernelExtensionLoadTask<
-        T extends KernelExtensionDescriptor,
-        U extends KernelExtensionLoadTask<T, U>> {
+    T extends KernelExtensionDescriptor, U extends KernelExtensionLoadTask<T, U>> {
 
-    enum State {
-        Unstarted,
-        Paused,
-        Completed,
-        Error,
-        Cancelled,
-        Running
-    }
+  enum State {
+    Unstarted,
+    Paused,
+    Completed,
+    Error,
+    Cancelled,
+    Running
+  }
 
-    void start();
+  void start();
 
-    boolean isComplete();
+  boolean isComplete();
 
-    void pause();
+  void pause();
 
-    void resume();
+  void resume();
 
-    U restart() throws KernelExtensionConflictException;
+  U restart() throws KernelExtensionConflictException;
 
-    void cancel();
+  void cancel();
 
-    State getState();
+  State getState();
 
-    Throwable getError();
+  Throwable getError();
 
-    CompletableFuture<T> getFuture();
+  CompletableFuture<T> getFuture();
 }

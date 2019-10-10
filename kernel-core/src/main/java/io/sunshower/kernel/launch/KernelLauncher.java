@@ -9,8 +9,7 @@ import org.springframework.context.annotation.Import;
 @SpringBootApplication(scanBasePackages = "io.sunshower.kernel")
 public class KernelLauncher {
 
-    public static void main(String[] args) {
-        SpringApplication.run(KernelLauncher.class, args);
-    }
-
+  public static void main(String[] args) {
+    SpringApplication.run(KernelLauncher.class, args);
+  }
 }

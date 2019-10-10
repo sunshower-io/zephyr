@@ -4,14 +4,13 @@ import io.sunshower.common.io.MonitorableFileTransfer;
 import io.sunshower.kernel.*;
 import io.sunshower.kernel.common.i18n.Localization;
 import io.sunshower.kernel.io.ObservableChannelTransferListener;
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
-
 import java.io.File;
 import java.net.URL;
 import java.nio.channels.ReadableByteChannel;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public abstract class AbstractKernelExtensionLoadTask<
@@ -29,9 +28,6 @@ public abstract class AbstractKernelExtensionLoadTask<
   private final MonitorableFileTransfer callable;
 
   protected final KernelExtensionManager<T, U> manager;
-
-
-
 
   @Getter private Throwable error;
 

@@ -1,15 +1,11 @@
 package io.sunshower.kernel.osgi;
 
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.Test;
 
 class DynamicReloadableKernelModuleManagerTest {
 
-    @Test
-    void ensureKernelModuleLoaderLoadsModule() {
-
-    }
-
+  @Test
+  void ensureKernelModuleLoaderLoadsModule() {}
 }
-

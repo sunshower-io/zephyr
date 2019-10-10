@@ -1,23 +1,20 @@
 package io.sunshower.kernel.osgi;
 
-import io.sunshower.kernel.Kernel;
-import io.sunshower.kernel.KernelExtensionLoadTask;
-import io.sunshower.kernel.PluginManager;
-import io.sunshower.kernel.launch.KernelOptions;
-import io.sunshower.test.common.Tests;
-import lombok.SneakyThrows;
-import lombok.val;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import java.io.File;
-import java.net.URL;
-import java.util.concurrent.ExecutionException;
-
 import static io.sunshower.test.common.Tests.createTemp;
 import static io.sunshower.test.common.Tests.projectOutput;
 import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.*;
+
+import io.sunshower.kernel.Kernel;
+import io.sunshower.kernel.KernelExtensionLoadTask;
+import io.sunshower.kernel.PluginManager;
+import io.sunshower.kernel.launch.KernelOptions;
+import java.io.File;
+import java.net.URL;
+import lombok.SneakyThrows;
+import lombok.val;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 class OsgiEnabledKernelTest {
 
@@ -55,7 +52,6 @@ class OsgiEnabledKernelTest {
     assertEquals(pluginManager.getInflight().size(), 1);
     task.start();
     val descriptor = task.getFuture().get();
-
 
     assertNotNull(descriptor);
     assertNull(task.getError());

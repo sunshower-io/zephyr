@@ -4,7 +4,7 @@ import io.sunshower.kernel.Coordinate;
 
 public interface Dependency {
 
-    boolean isRequired();
+  boolean isRequired();
 
-    Coordinate getCoordinate();
+  Coordinate getCoordinate();
 }

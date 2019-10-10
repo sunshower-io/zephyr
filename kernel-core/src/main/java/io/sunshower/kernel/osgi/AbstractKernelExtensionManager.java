@@ -6,14 +6,13 @@ import io.sunshower.kernel.*;
 import io.sunshower.kernel.common.i18n.Localization;
 import io.sunshower.kernel.io.ChannelTransferListener;
 import io.sunshower.kernel.launch.KernelOptions;
-import lombok.extern.slf4j.Slf4j;
-import lombok.val;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
+import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 
 @Slf4j
 public abstract class AbstractKernelExtensionManager<
@@ -72,13 +71,13 @@ public abstract class AbstractKernelExtensionManager<
     return localization;
   }
 
-
   @Override
   public boolean register(T descriptor) throws KernelExtensionConflictException {
     Objects.requireNonNull(descriptor);
     val coordinate = descriptor.getCoordinate();
-    if(loaded.containsKey(coordinate)) {
-      throw new KernelExtensionConflictException(localization.format("kernel.extension.exists", coordinate), descriptor);
+    if (loaded.containsKey(coordinate)) {
+      throw new KernelExtensionConflictException(
+          localization.format("kernel.extension.exists", coordinate), descriptor);
     }
     return loaded.put(coordinate, descriptor) == null;
   }

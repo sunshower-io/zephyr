@@ -1,6 +1,3 @@
 package io.sunshower.kernel;
 
-public class KernelModuleConflictException extends KernelExtensionConflictException {
-
-
-}
+public class KernelModuleConflictException extends KernelExtensionConflictException {}

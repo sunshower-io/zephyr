@@ -4,12 +4,11 @@ import io.sunshower.common.io.MonitorableFileTransfer;
 import io.sunshower.kernel.*;
 import io.sunshower.kernel.graph.Dependency;
 import io.sunshower.kernel.io.ChannelTransferListener;
-import lombok.val;
-
 import java.io.File;
 import java.net.URL;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
+import lombok.val;
 
 public class PluginDescriptorLoadTask
     extends AbstractKernelExtensionLoadTask<PluginDescriptor, PluginLoadTask>
@@ -27,17 +26,18 @@ public class PluginDescriptorLoadTask
 
   @Override
   protected PluginDescriptor extract(PluginLoadTask task) {
-    val descriptor = new PluginDescriptor() {
-      @Override
-      public Coordinate getCoordinate() {
-        return null;
-      }
+    val descriptor =
+        new PluginDescriptor() {
+          @Override
+          public Coordinate getCoordinate() {
+            return null;
+          }
 
-      @Override
-      public List<Dependency> getDependencies() {
-        return null;
-      }
-    };
+          @Override
+          public List<Dependency> getDependencies() {
+            return null;
+          }
+        };
     manager.register(descriptor);
     return descriptor;
   }
