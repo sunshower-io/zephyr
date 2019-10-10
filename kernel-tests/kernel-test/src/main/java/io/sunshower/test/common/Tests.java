@@ -1,6 +1,9 @@
 package io.sunshower.test.common;
 
+import static java.lang.String.format;
+
 import java.io.File;
+import java.nio.file.Path;
 import java.util.NoSuchElementException;
 import lombok.val;
 
@@ -33,10 +36,6 @@ public class Tests {
     throw new NoSuchElementException("Failed to resolve root directory");
   }
 
-  private static File current() {
-    return new File(".").getAbsoluteFile();
-  }
-
   public static File projectOutput(String project, String type) {
     val projectBuild = project(project).toPath().resolve("build").toFile();
     if (!projectBuild.exists()) {
@@ -56,6 +55,25 @@ public class Tests {
       return results[0];
     }
     throw new NoSuchElementException("Error--can't find project output");
+  }
+
+  public static File relativeToCurrentProjectBuild(String ext, String... segments) {
+    return locate(currentRoot().toPath(), ext, segments);
+  }
+
+  public static File relativeToProjectBuild(String project, String ext, String... segments) {
+    val p = project(project).toPath();
+    return locate(p, ext, segments);
+  }
+
+  public static File currentRoot() {
+    for (var file = current(); file != null; file = file.getParentFile()) {
+      val b = new File(file, "build.gradle");
+      if (b.exists()) {
+        return file;
+      }
+    }
+    throw new NoSuchElementException("No root dir?? Whack");
   }
 
   public static File createTemp(String directory) {
@@ -78,5 +96,22 @@ public class Tests {
       }
     }
     return result;
+  }
+
+  private static File locate(Path u, String ext, String... segments) {
+    val p = u.resolve("build").resolve(String.join(File.separator, segments)).normalize().toFile();
+    if (!p.exists()) {
+      throw new NoSuchElementException(format("File with path %s does not exist", p));
+    }
+
+    val f = p.listFiles(t -> t.getName().endsWith(ext));
+    if (f == null || f.length == 0) {
+      throw new NoSuchElementException(format("File with path %s/*.%s does not exist", p, ext));
+    }
+    return f[0];
+  }
+
+  private static File current() {
+    return new File(".").getAbsoluteFile();
   }
 }

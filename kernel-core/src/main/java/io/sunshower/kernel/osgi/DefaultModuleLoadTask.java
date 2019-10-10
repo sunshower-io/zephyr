@@ -2,20 +2,21 @@ package io.sunshower.kernel.osgi;
 
 import io.sunshower.common.io.MonitorableFileTransfer;
 import io.sunshower.kernel.*;
-import io.sunshower.kernel.core.DefaultPluginDescriptor;
+import io.sunshower.kernel.core.DefaultKernelModuleDescriptor;
 import io.sunshower.kernel.io.ChannelTransferListener;
 import java.io.File;
 import java.net.URL;
 import java.util.concurrent.ExecutorService;
+import lombok.NonNull;
 import lombok.val;
 
-public class PluginDescriptorLoadTask
-    extends AbstractKernelExtensionLoadTask<PluginDescriptor, PluginLoadTask>
-    implements ChannelTransferListener, PluginLoadTask {
+public class DefaultModuleLoadTask
+    extends AbstractKernelExtensionLoadTask<KernelModuleDescriptor, KernelModuleLoadTask>
+    implements ChannelTransferListener, KernelModuleLoadTask {
 
   @SuppressWarnings("unchecked")
-  public PluginDescriptorLoadTask(
-      PluginManager manager,
+  public DefaultModuleLoadTask(
+      KernelModuleManager manager,
       URL source,
       File target,
       MonitorableFileTransfer callable,
@@ -24,9 +25,9 @@ public class PluginDescriptorLoadTask
   }
 
   @Override
-  protected PluginDescriptor extract(PluginLoadTask task) {
+  protected KernelModuleDescriptor extract(@NonNull KernelModuleLoadTask task) {
     val file = task.getLoadedFile();
     val directory = task.getExtensionDirectory();
-    return new DefaultPluginDescriptor(task.getSource(), file.toPath(), directory.toPath());
+    return new DefaultKernelModuleDescriptor(task.getSource(), file.toPath(), directory.toPath());
   }
 }

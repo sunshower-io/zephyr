@@ -25,6 +25,7 @@ class OsgiPluginManagerTest {
   @Test
   void ensureCopyingWorks() throws MalformedURLException, ExecutionException, InterruptedException {
     val projectfile = Tests.projectOutput("kernel-tests:test-plugins:test-plugin-1", "war");
-    val a = kernel.getPluginManager().load(projectfile.toURI().toURL()).getFuture().get();
+    val a =
+        kernel.getPluginManager().loadExtensionFile(projectfile.toURI().toURL()).getFuture().get();
   }
 }

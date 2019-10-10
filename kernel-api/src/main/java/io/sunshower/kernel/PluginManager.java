@@ -1,9 +1,12 @@
 package io.sunshower.kernel;
 
+import io.sunshower.kernel.events.PluginEvent;
 import java.net.URL;
 import java.util.List;
 
-public interface PluginManager extends KernelExtensionManager<PluginDescriptor, PluginLoadTask> {
+public interface PluginManager
+    extends KernelExtensionManager<
+        PluginEventListener, PluginEvent, PluginDescriptor, PluginLoadTask> {
 
   /** @return the plugins that are currently loaded. */
   List<PluginDescriptor> getLoaded();
@@ -20,5 +23,5 @@ public interface PluginManager extends KernelExtensionManager<PluginDescriptor, 
    * @return the plugin descriptor
    * @throws PluginConflictException if anything happens while the plugin is being loaded
    */
-  PluginLoadTask load(URL url) throws PluginConflictException;
+  PluginLoadTask loadExtensionFile(URL url) throws KernelExtensionException;
 }

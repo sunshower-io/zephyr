@@ -1,10 +1,12 @@
 package io.sunshower.kernel;
 
+import io.sunshower.kernel.events.KernelModuleEvent;
 import java.net.URL;
 import java.util.List;
 
 public interface KernelModuleManager
-    extends KernelExtensionManager<KernelModuleDescriptor, KernelModuleLoadTask> {
+    extends KernelExtensionManager<
+        KernelEventListener, KernelModuleEvent, KernelModuleDescriptor, KernelModuleLoadTask> {
 
   @Override
   List<KernelModuleDescriptor> getLoaded();
@@ -13,5 +15,5 @@ public interface KernelModuleManager
   boolean unload(KernelModuleDescriptor descriptor);
 
   @Override
-  KernelModuleLoadTask load(URL url) throws KernelModuleConflictException;
+  KernelModuleLoadTask loadExtensionFile(URL url) throws KernelModuleConflictException;
 }

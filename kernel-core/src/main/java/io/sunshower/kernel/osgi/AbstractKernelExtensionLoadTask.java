@@ -10,11 +10,13 @@ import java.nio.channels.ReadableByteChannel;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 
 @Slf4j
 public abstract class AbstractKernelExtensionLoadTask<
-        T extends PluginDescriptor, U extends KernelExtensionLoadTask<T, U>>
+        T extends KernelExtensionDescriptor, U extends KernelExtensionLoadTask<T, U>>
     extends ObservableChannelTransferListener implements KernelExtensionLoadTask<T, U> {
   private State state;
 
@@ -27,16 +29,16 @@ public abstract class AbstractKernelExtensionLoadTask<
   private final ExecutorService executorService;
   private final MonitorableFileTransfer callable;
 
-  protected final KernelExtensionManager<T, U> manager;
+  protected final KernelExtensionManager<?, ?, T, U> manager;
 
   @Getter private Throwable error;
 
   public AbstractKernelExtensionLoadTask(
-      KernelExtensionManager<T, U> manager,
-      URL source,
-      File target,
-      MonitorableFileTransfer callable,
-      ExecutorService service) {
+      @NonNull KernelExtensionManager<?, ?, T, U> manager,
+      @NonNull URL source,
+      @NonNull File target,
+      @NonNull MonitorableFileTransfer callable,
+      @NonNull ExecutorService service) {
     this.callable = callable;
     this.manager = manager;
     this.source = source;
@@ -48,6 +50,21 @@ public abstract class AbstractKernelExtensionLoadTask<
   }
 
   int count = 0;
+
+  @Override
+  public URL getSource() {
+    return source;
+  }
+
+  @Override
+  public File getLoadedFile() {
+    return destination;
+  }
+
+  @Override
+  public File getExtensionDirectory() {
+    return destination.getAbsoluteFile().getParentFile();
+  }
 
   @Override
   public void start() {
@@ -108,7 +125,7 @@ public abstract class AbstractKernelExtensionLoadTask<
   public U restart() throws KernelExtensionConflictException {
     cancel();
     removeListener(this);
-    return manager.load(source);
+    return manager.loadExtensionFile(source);
   }
 
   @Override
@@ -132,7 +149,13 @@ public abstract class AbstractKernelExtensionLoadTask<
     if (state == State.Unstarted) {
       throw new IllegalStateException(localization.format("plugin.load.unstarted", source));
     }
-    return future.thenApplyAsync(this::extract);
+    return future.thenApplyAsync(this::doLoad);
+  }
+
+  protected T doLoad(U task) {
+    val result = extract(task);
+    manager.registerDescriptor(result);
+    return result;
   }
 
   protected abstract T extract(U task);

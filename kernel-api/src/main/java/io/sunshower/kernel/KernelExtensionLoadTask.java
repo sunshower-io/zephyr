@@ -1,5 +1,7 @@
 package io.sunshower.kernel;
 
+import java.io.File;
+import java.net.URL;
 import java.util.concurrent.CompletableFuture;
 
 public interface KernelExtensionLoadTask<
@@ -13,6 +15,12 @@ public interface KernelExtensionLoadTask<
     Cancelled,
     Running
   }
+
+  URL getSource();
+
+  File getLoadedFile();
+
+  File getExtensionDirectory();
 
   void start();
 
