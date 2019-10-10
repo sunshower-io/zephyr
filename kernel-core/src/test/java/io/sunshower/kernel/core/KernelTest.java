@@ -3,16 +3,17 @@ package io.sunshower.kernel.core;
 
 import io.sunshower.kernel.Kernel;
 import io.sunshower.kernel.launch.KernelOptions;
-import io.sunshower.kernel.launch.Tests;
 import io.sunshower.kernel.osgi.OsgiEnabledKernel;
+import io.sunshower.test.common.Tests;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.concurrent.ExecutionException;
 
+@Disabled
 public class KernelTest {
 
     private Kernel kernel;

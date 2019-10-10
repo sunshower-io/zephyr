@@ -1,4 +1,16 @@
-
+apply plugin: 'java'
 dependencies {
     implementation 'com.esotericsoftware.yamlbeans:yamlbeans'
+
+    testImplementation project(':kernel-tests:kernel-test')
+
+
+    implementation project(":kernel-api")
+
+    [
+            "org.junit.jupiter:junit-jupiter-api",
+            "org.junit.jupiter:junit-jupiter-engine",
+    ].each {
+        testImplementation it
+    }
 }

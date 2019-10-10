@@ -2,15 +2,17 @@ package io.sunshower.kernel.osgi;
 
 import io.sunshower.kernel.Kernel;
 import io.sunshower.kernel.launch.KernelOptions;
-import io.sunshower.kernel.launch.Tests;
+import io.sunshower.test.common.Tests;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.net.MalformedURLException;
 import java.util.concurrent.ExecutionException;
 
 
+@Disabled
 class OsgiPluginManagerTest {
 
 

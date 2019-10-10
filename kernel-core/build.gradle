@@ -58,4 +58,6 @@ dependencies {
         testImplementation project(":kernel-modules:$it")
     }
 
+    testImplementation project(':kernel-tests:kernel-test')
+
 }

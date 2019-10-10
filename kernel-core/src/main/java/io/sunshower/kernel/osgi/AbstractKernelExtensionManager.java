@@ -17,8 +17,10 @@ import java.util.List;
 @Slf4j
 public abstract class AbstractKernelExtensionManager<
         T extends KernelExtensionDescriptor,
-        U extends KernelExtensionLoadTask<T, U>
-                & ChannelTransferListener> implements KernelExtensionManager<T, U> {
+        U extends
+                KernelExtensionLoadTask<T, U> &
+                ChannelTransferListener
+        > implements KernelExtensionManager<T, U> {
 
 
 

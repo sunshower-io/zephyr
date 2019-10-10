@@ -1,9 +1,8 @@
-package io.sunshower.kernel.launch;
+package io.sunshower.test.common;
 
 import lombok.val;
 
 import java.io.File;
-import java.nio.file.Paths;
 import java.util.NoSuchElementException;
 
 public class Tests {

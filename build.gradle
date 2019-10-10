@@ -3,6 +3,7 @@
 plugins {
     id "org.springframework.boot" version "$springBootPluginVersion" apply false
     id "io.spring.dependency-management" version "$dependencyManagementPluginVersion" apply false
+    id "com.diffplug.gradle.spotless" version "3.25.0"
 }
 
 allprojects {
@@ -25,9 +26,17 @@ allprojects {
 }
 
 subprojects {
+    apply plugin: "com.diffplug.gradle.spotless"
     plugins.withType(JavaPlugin) {
+
+
         test {
             useJUnitPlatform()
+        }
+        spotless {
+            java {
+                googleJavaFormat('1.1')
+            }
         }
 
         project.dependencies {

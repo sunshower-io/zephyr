@@ -1,6 +1,7 @@
 package io.sunshower.kernel.launch;
 
 
+import io.sunshower.test.common.Tests;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
