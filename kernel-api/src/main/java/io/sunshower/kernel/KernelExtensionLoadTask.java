@@ -7,10 +7,15 @@ public interface KernelExtensionLoadTask<
         U extends KernelExtensionLoadTask<T, U>> {
 
     enum State {
+        Unstarted,
         Paused,
         Completed,
-        Error, Cancelled, Running
+        Error,
+        Cancelled,
+        Running
     }
+
+    void start();
 
     boolean isComplete();
 

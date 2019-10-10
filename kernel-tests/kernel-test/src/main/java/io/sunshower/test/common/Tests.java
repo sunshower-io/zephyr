@@ -61,7 +61,7 @@ public class Tests {
         val result = new File(tmp, directory);
         result.mkdirs();
         result.deleteOnExit();
-        return result;
+        return result.getAbsoluteFile();
     }
 
     public static File project(String project) {

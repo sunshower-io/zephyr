@@ -7,6 +7,8 @@ import java.util.List;
 
 public interface KernelExtensionManager<T extends KernelExtensionDescriptor, U extends KernelExtensionLoadTask<T, U>> {
 
+    boolean register(T descriptor) throws KernelExtensionConflictException;
+
     List<U> getInflight();
 
     Localization getLocalization();
