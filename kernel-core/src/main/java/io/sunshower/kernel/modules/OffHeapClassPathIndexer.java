@@ -265,6 +265,10 @@ public class OffHeapClassPathIndexer implements ClassPathIndexer {
       return entryCount.incrementAndGet();
     }
 
+
+
+
+
     ChronicleMap<String, String> createBackingIndex() throws IOException {
       val fcount = fileCount.get();
       val ecount = entryCount.get();
