@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListSet;
-import java.util.concurrent.ExecutorService;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
@@ -48,17 +47,18 @@ public abstract class AbstractKernelExtensionManager<
 
   @Override
   public U loadExtensionFile(URL url) {
-    val target = new File(getLoadLocation(options), getFilename(url));
+    val fileName = getFilename(url);
+    val target = new File(getLoadLocation(options), fileName);
     try {
       val callable = MonitorableChannels.transfer(url, target);
-      val result = create(url, target, callable, options.getExecutorService());
+      val result = create(url, target, callable, options);
       callable.addListener(result);
       loadingTasks.add(result);
       return result;
     } catch (IOException ex) {
       val cause =
           new AbstractKernelExtensionDescriptor(
-              url, target.toPath(), new File(getLoadLocation(options)).toPath());
+              url, target.toPath(), new File(getLoadLocation(options)).toPath(), null);
       throw new KernelExtensionException(
           localization.format("plugin.registration.error", url, ex), ex, cause);
     }
@@ -96,7 +96,7 @@ public abstract class AbstractKernelExtensionManager<
   protected abstract String getLoadLocation(KernelOptions options);
 
   protected abstract U create(
-      URL url, File destination, MonitorableFileTransfer callable, ExecutorService service);
+      URL url, File destination, MonitorableFileTransfer callable, KernelOptions options);
 
   private static String getFilename(URL url) {
     val p = url.getPath();

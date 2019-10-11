@@ -1,9 +1,12 @@
 package io.sunshower.kernel.osgi;
 
+import static io.sunshower.common.io.FileNames.nameOf;
+
 import io.sunshower.common.io.MonitorableFileTransfer;
 import io.sunshower.kernel.*;
 import io.sunshower.kernel.core.DefaultPluginDescriptor;
 import io.sunshower.kernel.io.ChannelTransferListener;
+import io.sunshower.kernel.launch.KernelOptions;
 import java.io.File;
 import java.net.URL;
 import java.util.concurrent.ExecutorService;
@@ -19,14 +22,18 @@ public class PluginDescriptorLoadTask
       URL source,
       File target,
       MonitorableFileTransfer callable,
-      ExecutorService service) {
-    super(manager, source, target, callable, service);
+      ExecutorService service,
+      KernelOptions options) {
+    super(manager, source, target, callable, service, options);
   }
 
   @Override
   protected PluginDescriptor extract(PluginLoadTask task) {
     val file = task.getLoadedFile();
     val directory = task.getExtensionDirectory();
-    return new DefaultPluginDescriptor(task.getSource(), file.toPath(), directory.toPath());
+    val pluginDataDir = options.getPluginDataDirectory();
+    val dataDirectory = new File(pluginDataDir.toFile().getAbsoluteFile(), nameOf(file.getName()));
+    return new DefaultPluginDescriptor(
+        task.getSource(), file.toPath(), directory.toPath(), dataDirectory.toPath());
   }
 }

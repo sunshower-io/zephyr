@@ -21,4 +21,7 @@ public interface KernelExtensionDescriptor {
 
   /** @return the location the extension is loaded to */
   Path getLoadDirectory();
+
+  /** @return the data directory for this extension */
+  Path getDataDirectory();
 }

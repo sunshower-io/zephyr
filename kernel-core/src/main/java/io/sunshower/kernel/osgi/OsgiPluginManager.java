@@ -7,7 +7,6 @@ import io.sunshower.kernel.events.PluginEvent;
 import io.sunshower.kernel.launch.KernelOptions;
 import java.io.File;
 import java.net.URL;
-import java.util.concurrent.ExecutorService;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -23,13 +22,14 @@ public class OsgiPluginManager
 
   @Override
   protected String getLoadLocation(KernelOptions options) {
-    return options.getPluginTempDirectory().toString();
+    return options.getPluginDataDirectory().toString();
   }
 
   @Override
   protected PluginDescriptorLoadTask create(
-      URL url, File destination, MonitorableFileTransfer callable, ExecutorService service) {
-    return new PluginDescriptorLoadTask(this, url, destination, callable, service);
+      URL url, File destination, MonitorableFileTransfer callable, KernelOptions options) {
+    return new PluginDescriptorLoadTask(
+        this, url, destination, callable, options.getExecutorService(), options);
   }
 
   @Override

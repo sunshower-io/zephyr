@@ -7,7 +7,7 @@ import io.sunshower.kernel.events.KernelModuleEvent;
 import io.sunshower.kernel.launch.KernelOptions;
 import java.io.File;
 import java.net.URL;
-import java.util.concurrent.ExecutorService;
+import lombok.val;
 
 public class DynamicReloadableKernelModuleManager
     extends AbstractKernelExtensionManager<
@@ -21,8 +21,10 @@ public class DynamicReloadableKernelModuleManager
 
   @Override
   protected KernelModuleLoadTask create(
-      URL url, File destination, MonitorableFileTransfer callable, ExecutorService service) {
-    return new DefaultModuleLoadTask(this, url, destination, callable, service);
+      URL url, File destination, MonitorableFileTransfer callable, KernelOptions options) {
+    val executorService = options.getExecutorService();
+    return new DefaultModuleLoadTask(
+        this, url, destination, callable, options.getExecutorService(), options);
   }
 
   @Override

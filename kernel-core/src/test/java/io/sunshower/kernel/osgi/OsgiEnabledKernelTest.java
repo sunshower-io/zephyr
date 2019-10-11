@@ -39,7 +39,7 @@ class OsgiEnabledKernelTest {
   void ensureDirectoriesAreCreated() {
     assertTrue(options.getWorkspaceDirectory().toFile().exists());
     assertTrue(options.getPluginDirectory().toFile().exists());
-    assertTrue(options.getPluginTempDirectory().toFile().exists());
+    assertTrue(options.getPluginDataDirectory().toFile().exists());
     assertTrue(options.getKernelModuleDirectory().toFile().exists());
   }
 
@@ -81,5 +81,6 @@ class OsgiEnabledKernelTest {
     val task = kernelManager.loadExtensionFile(km);
     task.start();
     task.getFuture().get();
+    System.out.println(task.getExtensionDirectory());
   }
 }

@@ -14,4 +14,6 @@ public class AbstractKernelExtensionDescriptor implements KernelExtensionDescrip
   @Getter @NonNull private final Path loadedFile;
 
   @Getter @NonNull private final Path loadDirectory;
+
+  @Getter @NonNull private final Path dataDirectory;
 }

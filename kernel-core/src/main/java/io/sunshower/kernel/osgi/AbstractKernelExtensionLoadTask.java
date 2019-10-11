@@ -4,6 +4,7 @@ import io.sunshower.common.io.MonitorableFileTransfer;
 import io.sunshower.kernel.*;
 import io.sunshower.kernel.common.i18n.Localization;
 import io.sunshower.kernel.io.ObservableChannelTransferListener;
+import io.sunshower.kernel.launch.KernelOptions;
 import java.io.File;
 import java.net.URL;
 import java.nio.channels.ReadableByteChannel;
@@ -22,23 +23,29 @@ public abstract class AbstractKernelExtensionLoadTask<
 
   private volatile boolean paused;
 
+  /** private fields */
   private final URL source;
+
   private final File destination;
+  @Getter private Throwable error;
   private final CompletableFuture<U> future;
   private final Localization localization;
   private final ExecutorService executorService;
   private final MonitorableFileTransfer callable;
 
-  protected final KernelExtensionManager<?, ?, T, U> manager;
+  /** protected fields */
+  protected final KernelOptions options;
 
-  @Getter private Throwable error;
+  protected final KernelExtensionManager<?, ?, T, U> manager;
 
   public AbstractKernelExtensionLoadTask(
       @NonNull KernelExtensionManager<?, ?, T, U> manager,
       @NonNull URL source,
       @NonNull File target,
       @NonNull MonitorableFileTransfer callable,
-      @NonNull ExecutorService service) {
+      @NonNull ExecutorService service,
+      @NonNull KernelOptions options) {
+    this.options = options;
     this.callable = callable;
     this.manager = manager;
     this.source = source;
@@ -154,8 +161,22 @@ public abstract class AbstractKernelExtensionLoadTask<
 
   protected T doLoad(U task) {
     val result = extract(task);
+    ensureDataDirectory(result);
     manager.registerDescriptor(result);
     return result;
+  }
+
+  protected void ensureDataDirectory(T task) {
+    val dataDirectory = task.getDataDirectory();
+    val dataFile = dataDirectory.toFile();
+    if (!dataFile.exists()) {
+      log.info(localization.format("extension.data.directory.doesnotexist", dataDirectory));
+      if (!dataFile.mkdir()) {
+        log.warn(localization.format("extension.data.directory.cantcreate"));
+      } else {
+        log.info(localization.format("extension.data.directory.created", dataDirectory));
+      }
+    }
   }
 
   protected abstract T extract(U task);

@@ -20,6 +20,11 @@ public class YamlPluginDescriptor implements PluginDescriptor {
     return null;
   }
 
+  @Override
+  public Path getDataDirectory() {
+    return null;
+  }
+
   //  public String name;
   //
   //  public String group;

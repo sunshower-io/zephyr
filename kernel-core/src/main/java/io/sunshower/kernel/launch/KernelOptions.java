@@ -57,10 +57,12 @@ public class KernelOptions {
   private Path workspaceDirectory;
 
   /** Plugin temp directory--plugin files are copied here before processing */
-  private Path pluginTempDirectory;
+  private Path pluginDataDirectory;
 
   /** */
   private Path kernelModuleDirectory;
+
+  private Path kernelModuleDataDirectory;
 
   public KernelOptions satisfy(String... args) {
     val cmd = new CommandLine(this);
@@ -85,11 +87,13 @@ public class KernelOptions {
         pluginDirectory = dir.resolve("plugins");
         workspaceDirectory = dir.resolve("workspace");
         kernelModuleDirectory = dir.resolve("kernel-modules");
-        pluginTempDirectory = workspaceDirectory.resolve("plugins");
+        pluginDataDirectory = workspaceDirectory.resolve("plugins");
+        kernelModuleDataDirectory = workspaceDirectory.resolve("modules");
         return ensureExists(resourceBundle, pluginDirectory)
             && ensureExists(resourceBundle, workspaceDirectory)
-            && ensureExists(resourceBundle, pluginTempDirectory)
-            && ensureExists(resourceBundle, kernelModuleDirectory);
+            && ensureExists(resourceBundle, pluginDataDirectory)
+            && ensureExists(resourceBundle, kernelModuleDirectory)
+            && ensureExists(resourceBundle, kernelModuleDataDirectory);
       }
     }
     return false;

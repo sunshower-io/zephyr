@@ -9,7 +9,10 @@ import lombok.NonNull;
 public class DefaultPluginDescriptor extends AbstractKernelExtensionDescriptor
     implements PluginDescriptor {
   public DefaultPluginDescriptor(
-      @NonNull URL source, @NonNull Path loadedFile, @NonNull Path loadDirectory) {
-    super(source, loadedFile, loadDirectory);
+      @NonNull URL source,
+      @NonNull Path loadedFile,
+      @NonNull Path loadDirectory,
+      @NonNull Path dataDirectory) {
+    super(source, loadedFile, loadDirectory, dataDirectory);
   }
 }
