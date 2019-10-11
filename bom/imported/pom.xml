@@ -11,6 +11,7 @@
     </parent>
 
     <properties>
+        <chronicle-map.version>3.17.6</chronicle-map.version>
         <resteasy-version>4.3.1.Final</resteasy-version>
         <jaxrs-api.version>2.1.1</jaxrs-api.version>
         <javax.inject-version>1</javax.inject-version>
@@ -50,6 +51,13 @@
 
     <dependencyManagement>
         <dependencies>
+
+            <dependency>
+                <groupId>net.openhft</groupId>
+                <artifactId>chronicle-map</artifactId>
+                <version>${chronicle-map.version}</version>
+            </dependency>
+
 
             <dependency>
                 <groupId>com.esotericsoftware.yamlbeans</groupId>

@@ -1,7 +1,8 @@
 package io.sunshower.kernel.osgi;
 
+import static io.sunshower.kernel.KernelTests.loadTestModule;
+import static io.sunshower.kernel.KernelTests.loadTestPlugin;
 import static io.sunshower.test.common.Tests.*;
-import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.*;
 
 import io.sunshower.kernel.Kernel;
@@ -10,7 +11,6 @@ import io.sunshower.kernel.KernelModuleManager;
 import io.sunshower.kernel.PluginManager;
 import io.sunshower.kernel.launch.KernelOptions;
 import java.io.File;
-import java.net.URL;
 import java.util.concurrent.ExecutionException;
 import lombok.SneakyThrows;
 import lombok.val;
@@ -81,15 +81,5 @@ class OsgiEnabledKernelTest {
     val task = kernelManager.loadExtensionFile(km);
     task.start();
     task.getFuture().get();
-  }
-
-  @SneakyThrows
-  private URL loadTestModule(String module, String ext) {
-    return projectOutput(format("kernel-modules:%s", module), ext).toURI().toURL();
-  }
-
-  @SneakyThrows
-  private URL loadTestPlugin(String name, String ext) {
-    return projectOutput(format("kernel-tests:test-plugins:%s", name), ext).toURI().toURL();
   }
 }

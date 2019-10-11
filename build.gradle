@@ -29,7 +29,6 @@ allprojects {
 subprojects {
     plugins.withType(JavaPlugin) {
 
-
         test {
             useJUnitPlatform()
         }

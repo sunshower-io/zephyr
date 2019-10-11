@@ -1,9 +1,10 @@
-apply plugin: 'java'
+apply plugin: 'war'
+
+
 dependencies {
     implementation 'com.esotericsoftware.yamlbeans:yamlbeans'
 
     testImplementation project(':kernel-tests:kernel-test')
-
 
     implementation project(":kernel-api")
 
@@ -13,4 +14,19 @@ dependencies {
     ].each {
         testImplementation it
     }
+}
+
+war {
+    manifest {
+        attributes(
+                "type": "kernel-module",
+                "composite": true,
+                "group": project.group,
+                "name": project.name,
+                "version": project.version,
+                "protected": false
+        )
+
+    }
+
 }

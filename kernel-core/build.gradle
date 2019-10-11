@@ -26,6 +26,7 @@ dependencies {
 
     [
             'info.picocli:picocli',
+            'net.openhft:chronicle-map',
             'org.jboss.modules:jboss-modules',
             'com.github.resource4j:resource4j-spring',
             'org.apache.felix:org.apache.felix.framework'
@@ -57,7 +58,11 @@ dependencies {
     ].each {
         testImplementation project(":kernel-modules:$it")
     }
+    implementation project(path: ":kernel-modules:sunshower-yaml-reader")
 
     testImplementation project(':kernel-tests:kernel-test')
 
 }
+
+test.dependsOn assemble
+//test.mustRunAfter assemble
