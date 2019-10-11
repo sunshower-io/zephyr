@@ -64,5 +64,3 @@ dependencies {
 
 }
 
-test.dependsOn assemble
-//test.mustRunAfter assemble

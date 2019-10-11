@@ -35,12 +35,12 @@ public class ModuleClasspathFinder implements ModuleFinder {
 
   private void addSubresourceSpecs(ModuleSpec.Builder spec, JarFile jarFile) {
 
-    //    val iter = jarFile.entries();
-    //    while (iter.hasMoreElements()) {
-    //      if (iter.hasMoreElements()) {
-    //        System.out.println(iter.nextElement());
-    //      }
-    //    }
+    val iter = jarFile.entries();
+    while (iter.hasMoreElements()) {
+      if (iter.hasMoreElements()) {
+        System.out.println(iter.nextElement());
+      }
+    }
   }
 
   private void addRootSpec(ModuleSpec.Builder spec, JarFile file) {
