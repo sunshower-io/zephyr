@@ -4,7 +4,6 @@ import static org.jboss.modules.ResourceLoaderSpec.createResourceLoaderSpec;
 
 import java.io.File;
 import java.util.jar.JarFile;
-import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.val;
 import org.jboss.modules.*;
@@ -13,7 +12,6 @@ public class ModuleClasspathFinder implements ModuleFinder {
 
   final File file;
   final ClassIndex index;
-
 
   public ModuleClasspathFinder(@NonNull File file) {
     this(file, null);
@@ -41,7 +39,6 @@ public class ModuleClasspathFinder implements ModuleFinder {
     }
     return null;
   }
-
 
   private void addRootSpec(ModuleSpec.Builder spec, JarFile file) {
     val rootLoader = new ExtensionFileResourceLoader("test", file, index);

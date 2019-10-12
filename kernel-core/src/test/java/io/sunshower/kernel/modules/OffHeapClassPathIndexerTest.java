@@ -56,7 +56,7 @@ class OffHeapClassPathIndexerTest {
     try (val classIndex = indexer.index(true)) {
       val entry =
           classIndex.getEntry(
-              "com.esotericsoftware.yamlbeans.YamlReader$YamlReaderException.class");
+              "com/esotericsoftware/yamlbeans/YamlReader$YamlReaderException.class");
       assertNotNull(entry);
     }
   }

@@ -1,5 +1,6 @@
 package io.sunshower.kernel.modules.readers;
 
+import com.esotericsoftware.yamlbeans.YamlConfig;
 import com.esotericsoftware.yamlbeans.YamlReader;
 import io.sunshower.kernel.PluginDescriptor;
 import io.sunshower.kernel.PluginLoadException;
@@ -23,6 +24,7 @@ public class YamlPluginDescriptorReader implements PluginDescriptorReader {
     try {
       val inputStream = file.getInputStream(entry);
       val yaml = new YamlReader(new InputStreamReader(inputStream));
+      YamlConfig cfg = new YamlConfig();
       return Optional.of(yaml.read(PluginHolder.class).plugin);
     } catch (IOException ex) {
       ex.printStackTrace();

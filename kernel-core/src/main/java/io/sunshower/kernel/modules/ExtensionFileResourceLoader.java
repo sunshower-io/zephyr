@@ -14,7 +14,6 @@ import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-
 import lombok.val;
 import org.jboss.modules.*;
 
@@ -152,7 +151,6 @@ public class ExtensionFileResourceLoader extends AbstractResourceLoader implemen
     return codeSource;
   }
 
-
   private EntryWithStream getJarEntry(final String fileName) throws IOException {
     val result =
         relativePath == null
@@ -161,7 +159,7 @@ public class ExtensionFileResourceLoader extends AbstractResourceLoader implemen
     if (result != null) {
       return new EntryWithStream(result, jarFile.getInputStream(result));
     } else if (classIndex != null) {
-        return classIndex.getEntryWithStream(fileName);
+      return classIndex.getEntryWithStream(fileName);
     }
     return null;
   }

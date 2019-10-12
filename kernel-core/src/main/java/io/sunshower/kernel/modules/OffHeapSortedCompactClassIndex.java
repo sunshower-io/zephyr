@@ -1,5 +1,6 @@
 package io.sunshower.kernel.modules;
 
+import io.sunshower.common.io.IO;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,9 +13,6 @@ import java.util.jar.JarFile;
 import java.util.jar.JarInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
-import io.sunshower.common.io.FileNames;
-import io.sunshower.common.io.IO;
 import lombok.val;
 import net.openhft.chronicle.map.ChronicleMap;
 
@@ -128,9 +126,15 @@ public class OffHeapSortedCompactClassIndex implements ClassIndex {
   public EntryWithStream getEntryWithStream(String fileName) throws IOException {
     return getEntryWithStream(fileName, true);
   }
+
   @Override
   public JarEntry getEntry(String className) throws IOException {
-    return getEntryWithStream(className, false).entry;
+    val a = getEntryWithStream(className, false);
+    if (a != null) {
+      return a.entry;
+    }
+    return null;
+    //    return getEntryWithStream(className, false).entry;
   }
 
   private String normalizeBinaryName(String className) {
@@ -142,10 +146,11 @@ public class OffHeapSortedCompactClassIndex implements ClassIndex {
       return className;
     }
   }
+
   public static void check(InputStream compressedInput, String name) throws IOException {
     ZipInputStream input = new ZipInputStream(compressedInput);
-    ZipEntry       entry = null;
-    while ( (entry = input.getNextEntry()) != null ) {
+    ZipEntry entry = null;
+    while ((entry = input.getNextEntry()) != null) {
       System.out.println("Found " + entry.getName() + " in " + name);
       if (entry.getName().endsWith(".zip")) { // TODO Better checking
         check(input, name + "/" + entry.getName());
@@ -214,7 +219,6 @@ public class OffHeapSortedCompactClassIndex implements ClassIndex {
     }
     return result.substring(0, result.lastIndexOf('/'));
   }
-
 
   private void checkClosed() {
     if (closed) {

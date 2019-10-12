@@ -1,9 +1,8 @@
 package io.sunshower.kernel.modules;
 
-import lombok.AllArgsConstructor;
-
 import java.io.InputStream;
 import java.util.jar.JarEntry;
+import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public final class EntryWithStream {

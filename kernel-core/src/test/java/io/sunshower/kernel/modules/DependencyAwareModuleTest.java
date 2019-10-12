@@ -1,18 +1,16 @@
 package io.sunshower.kernel.modules;
 
 import static io.sunshower.kernel.KernelTests.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.sunshower.test.common.Tests;
+import java.io.File;
+import java.util.UUID;
+import java.util.concurrent.Executors;
 import lombok.SneakyThrows;
 import lombok.val;
 import org.jboss.modules.*;
 import org.junit.jupiter.api.Test;
-
-import java.io.File;
-import java.util.Random;
-import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 class DependencyAwareModuleTest {
 
@@ -43,7 +41,10 @@ class DependencyAwareModuleTest {
     val module = loader.loadModule("test");
     Class.forName(
         "io.sunshower.kernel.modules.descriptors.PluginHolder", true, module.getClassLoader());
-    Class.forName("com.esotericsoftware.yamlbeans.parser.Parser$27", true, module.getClassLoader());
+    Class c =
+        Class.forName("com.esotericsoftware.yamlbeans.YamlConfig", true, module.getClassLoader());
+    val instance = c.getConstructor().newInstance();
+    assertEquals(instance.getClass().getClassLoader(), loader.loadModule("test").getClassLoader());
   }
 
   private ClassIndex index(File file) {

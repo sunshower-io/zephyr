@@ -40,7 +40,7 @@ public class OffHeapClassPathIndexer implements ClassPathIndexer {
       new HashSet<>(
           Arrays.asList(
               "WEB-INF/lib")); // META-INF/WEB-INF/classes are taken care of by module class loader
-                               // default load paths
+  // default load paths
   private Statistics statistics;
   private ChronicleMap<String, String> index;
 
