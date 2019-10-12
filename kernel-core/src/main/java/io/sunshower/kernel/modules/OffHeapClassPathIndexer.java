@@ -39,7 +39,8 @@ public class OffHeapClassPathIndexer implements ClassPathIndexer {
   static final Set<String> DEFAULT_PREFIXES =
       new HashSet<>(
           Arrays.asList(
-              "WEB-INF/lib")); // META-INF/WEB-INF/classes are taken care of by module class loader default load paths
+              "WEB-INF/lib")); // META-INF/WEB-INF/classes are taken care of by module class loader
+                               // default load paths
   private Statistics statistics;
   private ChronicleMap<String, String> index;
 
@@ -213,7 +214,7 @@ public class OffHeapClassPathIndexer implements ClassPathIndexer {
         statistics.computeValue(name);
         while ((entry = is.getNextJarEntry()) != null) {
           if (!entry.isDirectory()) {
-            val key = entry.getName().replaceAll("/", ".");
+            val key = entry.getName(); //.replaceAll("/", ".");
             statistics.addEntry();
             statistics.computeKey(key);
 
@@ -264,10 +265,6 @@ public class OffHeapClassPathIndexer implements ClassPathIndexer {
     int addEntry() {
       return entryCount.incrementAndGet();
     }
-
-
-
-
 
     ChronicleMap<String, String> createBackingIndex() throws IOException {
       val fcount = fileCount.get();

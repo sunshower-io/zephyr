@@ -2,6 +2,7 @@ package io.sunshower.kernel.modules;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.Map;
@@ -9,6 +10,11 @@ import java.util.NoSuchElementException;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarInputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+
+import io.sunshower.common.io.FileNames;
+import io.sunshower.common.io.IO;
 import lombok.val;
 import net.openhft.chronicle.map.ChronicleMap;
 
@@ -100,8 +106,8 @@ public class OffHeapSortedCompactClassIndex implements ClassIndex {
     return indexedFile.toPath();
   }
 
-  @Override
-  public JarEntry getEntry(String className) throws IOException {
+  private EntryWithStream getEntryWithStream(String className, boolean openStream)
+      throws IOException {
     val indexEntry = index.get(className);
     if (indexEntry == null) {
       return null;
@@ -115,8 +121,16 @@ public class OffHeapSortedCompactClassIndex implements ClassIndex {
     val file = segments[0];
     val location = segments[1];
     val pathName = normalizeBinaryName(className);
+    return doRead(jarfile, pathName, file, location, openStream);
+  }
 
-    return doRead(jarfile, pathName, file, location);
+  @Override
+  public EntryWithStream getEntryWithStream(String fileName) throws IOException {
+    return getEntryWithStream(fileName, true);
+  }
+  @Override
+  public JarEntry getEntry(String className) throws IOException {
+    return getEntryWithStream(className, false).entry;
   }
 
   private String normalizeBinaryName(String className) {
@@ -128,9 +142,21 @@ public class OffHeapSortedCompactClassIndex implements ClassIndex {
       return className;
     }
   }
+  public static void check(InputStream compressedInput, String name) throws IOException {
+    ZipInputStream input = new ZipInputStream(compressedInput);
+    ZipEntry       entry = null;
+    while ( (entry = input.getNextEntry()) != null ) {
+      System.out.println("Found " + entry.getName() + " in " + name);
+      if (entry.getName().endsWith(".zip")) { // TODO Better checking
+        check(input, name + "/" + entry.getName());
+      }
+    }
+  }
 
-  private JarEntry doRead(JarFile jarfile, String pathName, String file, String location) {
+  private EntryWithStream doRead(
+      JarFile jarfile, String pathName, String file, String location, boolean openStream) {
     val path = location + "/" + file;
+
     var subfile = jarfile.getJarEntry(path);
     if (subfile == null) {
       throw new IllegalArgumentException("Bad index entry: " + path);
@@ -139,7 +165,11 @@ public class OffHeapSortedCompactClassIndex implements ClassIndex {
       JarEntry entry;
       while ((entry = inputStream.getNextJarEntry()) != null) {
         if (entry.getName().equals(pathName)) {
-          return entry;
+          if (!openStream) {
+            return new EntryWithStream(entry, null);
+          } else {
+            return new EntryWithStream(entry, IO.copyStream(inputStream, entry));
+          }
         }
       }
     } catch (IOException e) {
@@ -168,6 +198,23 @@ public class OffHeapSortedCompactClassIndex implements ClassIndex {
     checkClosed();
     return index.entrySet().iterator();
   }
+
+  @Override
+  public String normalize(String key) {
+    return normalizeBinaryName(key);
+  }
+
+  @Override
+  public String getPath(String key) {
+    String result;
+    if (key.endsWith(".class")) {
+      result = key.substring(0, key.length() - ".class".length());
+    } else {
+      result = key;
+    }
+    return result.substring(0, result.lastIndexOf('/'));
+  }
+
 
   private void checkClosed() {
     if (closed) {

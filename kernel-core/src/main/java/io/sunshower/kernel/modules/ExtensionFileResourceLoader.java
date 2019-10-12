@@ -14,6 +14,7 @@ import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+
 import lombok.val;
 import org.jboss.modules.*;
 
@@ -28,15 +29,18 @@ public class ExtensionFileResourceLoader extends AbstractResourceLoader implemen
   private final File fileOfJar;
   private volatile List<String> directory;
 
+  private final ClassIndex classIndex;
+
   // protected by {@code this}
   private final Map<CodeSigners, CodeSource> codeSources = new HashMap<>();
 
-  ExtensionFileResourceLoader(final String rootName, final JarFile jarFile) {
-    this(rootName, jarFile, null);
+  ExtensionFileResourceLoader(final String rootName, final JarFile jarFile, ClassIndex index) {
+    this(rootName, jarFile, null, index);
   }
 
   ExtensionFileResourceLoader(
-      final String rootName, final JarFile jarFile, final String relativePath) {
+      final String rootName, final JarFile jarFile, final String relativePath, ClassIndex index) {
+    this.classIndex = index;
     if (jarFile == null) {
       throw new IllegalArgumentException("jarFile is null");
     }
@@ -88,13 +92,14 @@ public class ExtensionFileResourceLoader extends AbstractResourceLoader implemen
 
   public synchronized ClassSpec getClassSpec(final String fileName) throws IOException {
     val spec = new ClassSpec();
-    val entry = getJarEntry(fileName);
-    if (entry == null) {
+    val eis = getJarEntry(fileName);
+    if (eis == null) {
       // no such entry
       return null;
     }
+    val entry = eis.entry;
     val size = entry.getSize();
-    try (final InputStream is = jarFile.getInputStream(entry)) {
+    try (val is = eis.inputStream) {
       if (size == -1) {
         // size unknown
         val baos = new ByteArrayOutputStream();
@@ -147,10 +152,18 @@ public class ExtensionFileResourceLoader extends AbstractResourceLoader implemen
     return codeSource;
   }
 
-  private JarEntry getJarEntry(final String fileName) {
-    return relativePath == null
-        ? jarFile.getJarEntry(fileName)
-        : jarFile.getJarEntry(relativePath + "/" + fileName);
+
+  private EntryWithStream getJarEntry(final String fileName) throws IOException {
+    val result =
+        relativePath == null
+            ? jarFile.getJarEntry(fileName)
+            : jarFile.getJarEntry(relativePath + "/" + fileName);
+    if (result != null) {
+      return new EntryWithStream(result, jarFile.getInputStream(result));
+    } else if (classIndex != null) {
+        return classIndex.getEntryWithStream(fileName);
+    }
+    return null;
   }
 
   public PackageSpec getPackageSpec(final String name) throws IOException {
@@ -162,7 +175,7 @@ public class ExtensionFileResourceLoader extends AbstractResourceLoader implemen
       if (jarEntry == null) {
         manifest = null;
       } else {
-        try (final InputStream inputStream = jarFile.getInputStream(jarEntry)) {
+        try (final InputStream inputStream = jarFile.getInputStream(jarEntry.entry)) {
           manifest = new Manifest(inputStream);
         }
       }
@@ -179,10 +192,11 @@ public class ExtensionFileResourceLoader extends AbstractResourceLoader implemen
     try {
       val jarFile = this.jarFile;
       name = PathUtils.canonicalize(PathUtils.relativize(name));
-      val entry = getJarEntry(name);
-      if (entry == null) {
+      val eis = getJarEntry(name);
+      if (eis == null) {
         return null;
       }
+      val entry = eis.entry;
       final URI uri;
       try {
         val absoluteFile = new File(jarFile.getName()).getAbsoluteFile();
@@ -215,7 +229,7 @@ public class ExtensionFileResourceLoader extends AbstractResourceLoader implemen
     } catch (MalformedURLException e) {
       // must be invalid...?  (todo: check this out)
       return null;
-    } catch (URISyntaxException e) {
+    } catch (URISyntaxException | IOException e) {
       // must be invalid...?  (todo: check this out)
       return null;
     }
@@ -301,6 +315,11 @@ public class ExtensionFileResourceLoader extends AbstractResourceLoader implemen
         index.clear();
       }
     }
+    if (classIndex != null) {
+      for (val k : classIndex) {
+        index.add(classIndex.getPath(k.getKey()));
+      }
+    }
     // Next just read the JAR
     extractJarPaths(jarFile, relativePath, index);
     return index;
@@ -331,7 +350,10 @@ public class ExtensionFileResourceLoader extends AbstractResourceLoader implemen
     final String ourRelativePath = this.relativePath;
     final String fixedPath = PathUtils.relativize(PathUtils.canonicalize(relativePath));
     return new ExtensionFileResourceLoader(
-        rootName, jarFile, ourRelativePath == null ? fixedPath : ourRelativePath + "/" + fixedPath);
+        rootName,
+        jarFile,
+        ourRelativePath == null ? fixedPath : ourRelativePath + "/" + fixedPath,
+        classIndex);
   }
 
   static void extractJarPaths(

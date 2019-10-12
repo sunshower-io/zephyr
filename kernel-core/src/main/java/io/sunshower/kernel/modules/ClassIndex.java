@@ -59,4 +59,10 @@ public interface ClassIndex extends Iterable<Map.Entry<String, String>>, AutoClo
 
   /** @return a (usually lazy) iterator over this class index */
   Iterator<Map.Entry<String, String>> iterator();
+
+  String normalize(String key);
+
+  String getPath(String key);
+
+  EntryWithStream getEntryWithStream(String fileName) throws IOException;
 }

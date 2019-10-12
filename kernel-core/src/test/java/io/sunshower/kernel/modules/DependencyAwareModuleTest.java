@@ -1,13 +1,18 @@
 package io.sunshower.kernel.modules;
 
 import static io.sunshower.kernel.KernelTests.*;
-import static org.junit.jupiter.api.Assertions.*;
 
+import io.sunshower.test.common.Tests;
 import lombok.SneakyThrows;
 import lombok.val;
 import org.jboss.modules.*;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+
+import java.io.File;
+import java.util.Random;
+import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 class DependencyAwareModuleTest {
 
@@ -30,12 +35,20 @@ class DependencyAwareModuleTest {
   }
 
   @Test
-  @Disabled
   @SneakyThrows
   void ensureModuleLoadingWorksForSubModule() {
     val km = loadTestModuleFile("sunshower-yaml-reader", "war");
-    val loader = new ModuleLoader(new ModuleClasspathFinder(km));
+    val classIndex = index(km);
+    val loader = new ModuleLoader(new ModuleClasspathFinder(km, classIndex));
     val module = loader.loadModule("test");
-    Class.forName("com.esotericsoftware.yamlbeans.Beans", true, module.getClassLoader());
+    Class.forName(
+        "io.sunshower.kernel.modules.descriptors.PluginHolder", true, module.getClassLoader());
+    Class.forName("com.esotericsoftware.yamlbeans.parser.Parser$27", true, module.getClassLoader());
+  }
+
+  private ClassIndex index(File file) {
+    val dir = Tests.createTemp(UUID.randomUUID().toString());
+    val indexer = new OffHeapClassPathIndexer(file, dir, Executors.newScheduledThreadPool(5));
+    return indexer.index(true);
   }
 }
