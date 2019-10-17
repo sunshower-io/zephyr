@@ -5,6 +5,7 @@ import static java.lang.String.format;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.NoSuchElementException;
+import java.util.UUID;
 import lombok.val;
 
 public class Tests {
@@ -74,6 +75,10 @@ public class Tests {
       }
     }
     throw new NoSuchElementException("No root dir?? Whack");
+  }
+
+  public static File createTemp() {
+    return createTemp(UUID.randomUUID().toString());
   }
 
   public static File createTemp(String directory) {

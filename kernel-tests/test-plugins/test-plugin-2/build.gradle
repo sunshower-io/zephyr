@@ -1,1 +1,5 @@
 apply plugin: 'war'
+
+dependencies {
+    implementation project(':kernel-modules:sunshower-yaml-reader')
+}
