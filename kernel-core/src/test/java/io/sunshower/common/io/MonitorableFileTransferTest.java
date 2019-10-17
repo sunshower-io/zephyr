@@ -1,5 +1,6 @@
 package io.sunshower.common.io;
 
+import static io.sunshower.common.io.MonitorableChannels.from;
 import static org.junit.jupiter.api.Assertions.*;
 
 import io.sunshower.kernel.io.ChannelTransferListener;
@@ -15,7 +16,7 @@ class MonitorableFileTransferTest {
   @Test
   void ensureTransferringWorks() throws IOException {
     val called = new AtomicBoolean();
-    MonitorableChannels.from(
+    from(
             ClassLoader.getSystemResource("io/files/test.txt"),
             new ChannelTransferListener() {
               @Override

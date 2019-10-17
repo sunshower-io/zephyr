@@ -13,10 +13,7 @@ public class SunshowerKernelTest {
   @BeforeEach
   void setUp() {
 
-    cfg =
-        DaggerSunshowerKernelConfiguration.builder()
-            .sunshowerKernelInjectionModule(new SunshowerKernelInjectionModule())
-            .build();
+    cfg = DaggerSunshowerKernelConfiguration.builder().build();
   }
 
   @Test
