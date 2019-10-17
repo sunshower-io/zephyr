@@ -1,3 +1,5 @@
 package io.sunshower.kernel.core;
 
-public interface Kernel {}
+public interface Kernel {
+  PluginManager getPluginManager();
+}
