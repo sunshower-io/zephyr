@@ -30,12 +30,12 @@ public class AbstractValidatable<T extends Validatable<T>> implements Validatabl
   }
 
   @Override
-  public void notify(ValidationError error) {}
-
-  @Override
   public void validate() throws ValidationException {
     for (val step : steps) {
       step.validate(this, target);
     }
   }
+
+  @Override
+  public void notify(ValidationErrors error, ValidationStep<T> sourceStep) {}
 }

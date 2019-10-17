@@ -8,12 +8,12 @@ import picocli.CommandLine;
 
 public class KernelOptions extends AbstractValidatable<KernelOptions> {
 
-  public interface SystemProperties {
-    String SUNSHOWER_HOME = "sunshower.home";
+  public static class SystemProperties {
+    public static final String SUNSHOWER_HOME = "sunshower.home";
   }
 
-  public interface EnvironmentVariables {
-    String SUNSHOWER_HOME = "SUNSHOWER_HOME";
+  public static class EnvironmentVariables {
+    public static final String SUNSHOWER_HOME = "SUNSHOWER_HOME";
   }
 
   @Getter
@@ -21,7 +21,7 @@ public class KernelOptions extends AbstractValidatable<KernelOptions> {
   @CommandLine.Option(names = {"-h", "--home-directory"})
   private File homeDirectory;
 
-  {
+  public KernelOptions() {
     registerStep(KernelOptionsValidations.homeDirectory());
   }
 }

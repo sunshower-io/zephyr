@@ -1,4 +1,5 @@
 plugins {
+    id 'pmd'
     id 'org.springframework.boot'
     id "com.github.spotbugs" version "2.0.0"
 }
@@ -10,6 +11,17 @@ tasks.withType(com.github.spotbugs.SpotBugsTask) {
         xml.enabled = false
         html.enabled = true
     }
+}
+
+pmd {
+
+    ruleSets = [
+            "category/java/errorprone.xml",
+            "category/java/multithreading.xml",
+            "category/java/bestpractices.xml",
+            "category/java/performance.xml"
+    ]
+
 }
 dependencies {
 

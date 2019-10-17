@@ -1,7 +1,6 @@
 package io.sunshower.kernel.launch;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 import io.sunshower.test.common.Tests;
 import java.io.File;
@@ -12,8 +11,8 @@ import org.junit.jupiter.api.Test;
 
 class KernelOptionsTest {
 
-  Logger logger = Logger.getLogger("SunshowerKernel");
-  private File home;
+  static final Logger logger = Logger.getLogger("SunshowerKernel");
+  private transient File home;
 
   @BeforeEach
   void setUp() {
@@ -30,6 +29,6 @@ class KernelOptionsTest {
     System.setProperty(KernelOptions.SystemProperties.SUNSHOWER_HOME, home.getAbsolutePath());
     val options = new KernelOptions();
     options.validate();
-    assertEquals(options.getHomeDirectory(), home);
+    assertEquals(options.getHomeDirectory(), home, "Home directory must not change");
   }
 }

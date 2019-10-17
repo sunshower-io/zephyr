@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import lombok.NonNull;
 import lombok.val;
 
 public class FilePermissionChecker {
@@ -14,18 +15,19 @@ public class FilePermissionChecker {
   static final Logger log =
       Logger.getLogger("FilePermissions", "i18n.io.sunshower.kernel.launch.FilePermissions");
 
-  private final List<Checker<File>> checkers;
+  private final transient List<Checker<File>> checkers;
 
   public FilePermissionChecker(final Checker<File>... checkers) {
     this.checkers = Arrays.asList(checkers);
   }
 
-  public void check(File file) throws ObjectCheckException {
-    for (val checker : checkers) {
-      if (!checker.check(file)) {
+  public void check(@NonNull File file) throws ObjectCheckException {
+    val iter = checkers.iterator();
+    while (iter.hasNext()) {
+      val check = iter.next();
+      if (!check.check(file)) {
         val rb = log.getResourceBundle();
-        throw new ObjectCheckException(
-            file, Logging.message(rb, "file.check.failed", file, checker));
+        throw new ObjectCheckException(file, Logging.message(rb, "file.check.failed", file, check));
       }
     }
   }
@@ -62,6 +64,7 @@ public class FilePermissionChecker {
 
     abstract boolean doCheck(File value);
 
+    @Override
     public boolean check(File value) {
       if (value.exists()) {
         log.log(Level.FINE, "file.exists", value);
