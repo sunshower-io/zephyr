@@ -1,9 +1,13 @@
 package io.sunshower.kernel.fs;
 
+import io.sunshower.common.io.FilePermissionChecker;
+import io.sunshower.common.io.Files;
+import io.sunshower.kernel.core.SunshowerKernel;
 import io.sunshower.kernel.log.Logging;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.channels.SeekableByteChannel;
@@ -16,6 +20,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
+
+import static io.sunshower.kernel.core.SunshowerKernel.getKernelOptions;
 
 public class ModuleFileSystemProvider extends FileSystemProvider {
 
@@ -31,7 +37,15 @@ public class ModuleFileSystemProvider extends FileSystemProvider {
     fileSystems = new ConcurrentHashMap<>();
   }
 
-  public ModuleFileSystemProvider() {
+  private final File fileSystemRoot;
+
+  public ModuleFileSystemProvider() throws AccessDeniedException {
+    val options = getKernelOptions();
+    this.fileSystemRoot =
+        Files.check(
+            options.getHomeDirectory(),
+            FilePermissionChecker.Type.READ,
+            FilePermissionChecker.Type.WRITE);
   }
 
   @Override
@@ -46,16 +60,10 @@ public class ModuleFileSystemProvider extends FileSystemProvider {
 
   @Override
   public FileSystem getFileSystem(URI uri) {
-    val path = uri.getPath();
-    if ("/".equals(path)) {
-      return getRootFileSystem();
-    }
     val host = uri.getHost();
-
     if (KERNEL_PATH.equals(host)) {
       return getRootFileSystem();
     }
-
     return new ModuleFileSystem(this, null);
   }
 

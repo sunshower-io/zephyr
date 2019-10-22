@@ -10,7 +10,15 @@ import java.nio.file.attribute.UserPrincipalLookupService;
 import java.nio.file.spi.FileSystemProvider;
 import java.util.Set;
 
+/**
+ * A module file system specifies a versioned filesystem for Sunshower kernel modules.  This entails:
+ *
+ *
+ */
 public class ModuleFileSystem extends FileSystem {
+
+  public static final String SUNSHOWER_HOME = "sunshower::filesystem::home";
+
 
   final transient File rootDirectory;
   final transient FileSystemProvider fileSystemProvider;
