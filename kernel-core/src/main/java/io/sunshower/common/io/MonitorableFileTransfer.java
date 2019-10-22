@@ -15,9 +15,9 @@ import lombok.val;
 public class MonitorableFileTransfer extends ObservableChannelTransferListener
     implements Callable<File>, ChannelTransferListener {
 
-  private final transient long expectedSize;
-  private final transient File destination;
-  private final transient ReadableByteChannel channel;
+  private final long expectedSize;
+  private final File destination;
+  private final ReadableByteChannel channel;
 
   public MonitorableFileTransfer(File destination, long expectedSize, ReadableByteChannel channel) {
     this.channel = channel;

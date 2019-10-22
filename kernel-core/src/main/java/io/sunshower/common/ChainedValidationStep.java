@@ -6,9 +6,9 @@ import io.sunshower.kernel.core.ValidationStep;
 import lombok.val;
 
 public class ChainedValidationStep<T> implements ValidationStep<T> {
-  private transient ChainedValidationStep<T> last;
-  private transient ChainedValidationStep<T> next;
-  private final transient ValidationStep<T> action;
+  private ChainedValidationStep<T> last;
+  private ChainedValidationStep<T> next;
+  private final ValidationStep<T> action;
 
   public ChainedValidationStep(ValidationStep<T> action) {
     this.action = action;

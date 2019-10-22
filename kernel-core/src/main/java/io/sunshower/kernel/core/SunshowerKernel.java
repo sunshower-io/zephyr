@@ -1,8 +1,7 @@
 package io.sunshower.kernel.core;
 
-import javax.inject.Inject;
-
 import io.sunshower.kernel.launch.KernelOptions;
+import javax.inject.Inject;
 import lombok.Getter;
 import lombok.Setter;
 

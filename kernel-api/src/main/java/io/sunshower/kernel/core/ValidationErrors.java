@@ -8,7 +8,7 @@ import lombok.NonNull;
 import lombok.val;
 
 public class ValidationErrors {
-  private final transient List<ValidationError> errors;
+  private final List<ValidationError> errors;
 
   ValidationErrors(List<ValidationError> errors) {
     this.errors = errors;

@@ -1,12 +1,11 @@
 package io.sunshower.kernel.fs;
 
+import static io.sunshower.kernel.core.SunshowerKernel.getKernelOptions;
+
 import io.sunshower.common.io.FilePermissionChecker;
 import io.sunshower.common.io.Files;
-import io.sunshower.kernel.core.SunshowerKernel;
 import io.sunshower.kernel.log.Logging;
-import lombok.val;
-import org.jetbrains.annotations.NotNull;
-
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -19,17 +18,16 @@ import java.nio.file.spi.FileSystemProvider;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+import lombok.val;
+import org.jetbrains.annotations.NotNull;
 
-import static io.sunshower.kernel.core.SunshowerKernel.getKernelOptions;
-
-public class ModuleFileSystemProvider extends FileSystemProvider {
+public class ModuleFileSystemProvider extends FileSystemProvider implements Closeable {
 
   static final Logger log = Logging.get(ModuleFileSystemProvider.class, "FileSystem");
   /** external state */
-  public static final String SCHEME = "droplet";
-
-  private static final String KERNEL_PATH = "kernel";
+  static final String SCHEME = "droplet";
 
   private static final Map<String, FileSystem> fileSystems;
 
@@ -55,22 +53,27 @@ public class ModuleFileSystemProvider extends FileSystemProvider {
 
   @Override
   public FileSystem newFileSystem(URI uri, Map<String, ?> env) throws IOException {
-    return new ModuleFileSystem(this, null);
+    val host = uri.getHost();
+    if (host == null || host.isBlank()) {
+      throw new FileSystemException("Cannot create filesystem from null or blank host");
+    }
+    return fileSystems.compute(host, this::create);
   }
 
   @Override
   public FileSystem getFileSystem(URI uri) {
     val host = uri.getHost();
-    if (KERNEL_PATH.equals(host)) {
-      return getRootFileSystem();
+    if (!fileSystems.containsKey(host)) {
+      throw new FileSystemNotFoundException(host);
     }
-    return new ModuleFileSystem(this, null);
+    return fileSystems.get(host);
   }
 
   @NotNull
   @Override
   public Path getPath(@NotNull URI uri) {
-    return null;
+    val fs = getFileSystem(uri);
+    return fs.getPath(uri.getPath());
   }
 
   @Override
@@ -133,16 +136,31 @@ public class ModuleFileSystemProvider extends FileSystemProvider {
     return null;
   }
 
+  protected void closeFileSystem(ModuleFileSystem system) throws IOException {
+    fileSystems.remove(system.key);
+  }
+
   @Override
   public void setAttribute(Path path, String attribute, Object value, LinkOption... options)
       throws IOException {}
 
-  private FileSystem getRootFileSystem() {
-    FileSystem fs = fileSystems.get(KERNEL_PATH);
-    if (fs == null) {
-      fs = new ModuleFileSystem(this, null);
-      fileSystems.put(KERNEL_PATH, fs);
+  private FileSystem create(String host, FileSystem fileSystem) {
+    if (fileSystem == null) {
+      log.log(Level.FINE, "filesystem.new", host);
+      val fs = new ModuleFileSystem(host, this, new File(fileSystemRoot, host));
+      log.log(Level.FINE, "filesystem.new.success", host);
+      return fs;
+    } else {
+      log.log(Level.WARNING, "filesystem.new.exists", host);
+
+      throw new FileSystemAlreadyExistsException(host);
     }
-    return fs;
+  }
+
+  @Override
+  public void close() throws IOException {
+    for (val fs : fileSystems.entrySet()) {
+      closeFileSystem((ModuleFileSystem) fs.getValue());
+    }
   }
 }

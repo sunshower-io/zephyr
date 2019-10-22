@@ -15,7 +15,7 @@ tasks.withType(com.github.spotbugs.SpotBugsTask) {
 
 pmd {
     ruleSets = [
-            "category/java/errorprone.xml",
+            "${project.projectDir}/check/pmd/rules/errorprone.xml",
             "category/java/multithreading.xml",
             "category/java/bestpractices.xml",
             "category/java/performance.xml"

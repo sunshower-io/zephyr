@@ -1,31 +1,36 @@
 package io.sunshower.kernel.fs;
 
-import lombok.NonNull;
-import org.jetbrains.annotations.NotNull;
-
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.UserPrincipalLookupService;
 import java.nio.file.spi.FileSystemProvider;
 import java.util.Set;
+import lombok.Getter;
+import lombok.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 /**
- * A module file system specifies a versioned filesystem for Sunshower kernel modules.  This entails:
- *
- *
+ * A module file system specifies a versioned filesystem for Sunshower kernel modules. This entails:
  */
-public class ModuleFileSystem extends FileSystem {
+public class ModuleFileSystem extends FileSystem implements Closeable {
 
   public static final String SUNSHOWER_HOME = "sunshower::filesystem::home";
 
+  @Getter final String key;
+  final File rootDirectory;
+  final Path rootDirectoryPath;
+  final ModuleFileSystemProvider fileSystemProvider;
 
-  final transient File rootDirectory;
-  final transient FileSystemProvider fileSystemProvider;
-
-  public ModuleFileSystem(@NonNull ModuleFileSystemProvider provider, File rootDirectory) {
+  public ModuleFileSystem(
+      @NonNull String key,
+      @NonNull ModuleFileSystemProvider provider,
+      @NonNull File rootDirectory) {
+    this.key = key;
     this.rootDirectory = rootDirectory;
     this.fileSystemProvider = provider;
+    this.rootDirectoryPath = rootDirectory.toPath();
   }
 
   @Override
@@ -34,7 +39,9 @@ public class ModuleFileSystem extends FileSystem {
   }
 
   @Override
-  public void close() throws IOException {}
+  public void close() throws IOException {
+    fileSystemProvider.closeFileSystem(this);
+  }
 
   @Override
   public boolean isOpen() {
@@ -68,8 +75,13 @@ public class ModuleFileSystem extends FileSystem {
 
   @NotNull
   @Override
+  @SuppressWarnings("PMD.DataflowAnomalyAnalysis")
   public Path getPath(@NotNull String first, @NotNull String... more) {
-    return null;
+    var path = rootDirectoryPath.resolve(first);
+    for (String p : more) {
+      path = path.resolve(p);
+    }
+    return path;
   }
 
   @Override

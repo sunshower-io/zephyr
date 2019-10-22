@@ -7,8 +7,8 @@ import org.junit.jupiter.api.Test;
 
 public class SunshowerKernelTest {
 
-  private transient Kernel kernel;
-  private transient SunshowerKernelConfiguration cfg;
+  private Kernel kernel;
+  private SunshowerKernelConfiguration cfg;
 
   @BeforeEach
   void setUp() {

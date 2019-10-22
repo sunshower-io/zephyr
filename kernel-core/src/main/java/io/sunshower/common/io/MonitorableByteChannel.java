@@ -7,11 +7,11 @@ import java.nio.channels.ReadableByteChannel;
 
 public class MonitorableByteChannel implements ReadableByteChannel {
 
-  private final transient long expectedSize;
-  private final transient ChannelTransferListener listener;
-  private final transient ReadableByteChannel delegate;
+  private final long expectedSize;
+  private final ChannelTransferListener listener;
+  private final ReadableByteChannel delegate;
 
-  private transient long bytesRead;
+  private long bytesRead;
 
   public MonitorableByteChannel(
       final ReadableByteChannel delegate,

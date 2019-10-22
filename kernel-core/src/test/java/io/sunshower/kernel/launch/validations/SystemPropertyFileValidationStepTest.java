@@ -14,8 +14,8 @@ import org.junit.jupiter.api.Test;
 
 class SystemPropertyFileValidationStepTest {
 
-  private transient File file;
-  private transient KernelOptions options;
+  private File file;
+  private KernelOptions options;
 
   @BeforeEach
   void setUp() {

@@ -18,8 +18,8 @@ public abstract class AbstractFileValidationStep implements ValidationStep<Kerne
   protected static final Logger log =
       Logger.getLogger("SunshowerKernel", "i18n.io.sunshower.kernel.launch.KernelOptions");
 
-  protected final transient String source;
-  protected final transient String keyName;
+  protected final String source;
+  protected final String keyName;
 
   protected AbstractFileValidationStep(
       @NonNull final String keyName, @NonNull final String source) {

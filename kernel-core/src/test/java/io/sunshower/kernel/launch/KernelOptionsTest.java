@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 class KernelOptionsTest {
 
   static final Logger logger = Logger.getLogger("SunshowerKernel");
-  private transient File home;
+  private File home;
 
   @BeforeEach
   void setUp() {

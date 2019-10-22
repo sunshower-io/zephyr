@@ -15,7 +15,7 @@ public class FilePermissionChecker {
   static final Logger log =
       Logger.getLogger("FilePermissions", "i18n.io.sunshower.kernel.launch.FilePermissions");
 
-  private final transient List<Checker<File>> checkers;
+  private final List<Checker<File>> checkers;
 
   public FilePermissionChecker(final Checker<File>... checkers) {
     this.checkers = Arrays.asList(checkers);

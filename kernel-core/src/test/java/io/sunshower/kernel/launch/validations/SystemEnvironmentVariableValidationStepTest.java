@@ -16,9 +16,9 @@ import org.junit.jupiter.api.Test;
 
 @SuppressWarnings("unchecked")
 class SystemEnvironmentVariableValidationStepTest {
-  private transient File file;
-  private transient KernelOptions options;
-  private transient Map<String, String> environment;
+  private File file;
+  private KernelOptions options;
+  private Map<String, String> environment;
 
   @BeforeEach
   void setUp() {

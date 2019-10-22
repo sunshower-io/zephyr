@@ -16,7 +16,7 @@ public class SystemEnvironmentVariableValidationStep extends AbstractFileValidat
 
   static final String SOURCE = "ENVIRONMENT";
 
-  final transient Map<String, String> environment;
+  final Map<String, String> environment;
 
   public SystemEnvironmentVariableValidationStep(String environmentVariable) {
     this(environmentVariable, System.getenv());
