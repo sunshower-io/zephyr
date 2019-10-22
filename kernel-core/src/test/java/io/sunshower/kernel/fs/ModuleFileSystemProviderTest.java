@@ -11,12 +11,15 @@ import java.net.URI;
 import java.nio.file.*;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import lombok.val;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 @SuppressWarnings({"PMD.AvoidDuplicateLiterals", "PMD.JUnitTestContainsTooManyAsserts"})
 class ModuleFileSystemProviderTest {
+  static final Logger log = Logger.getLogger(ModuleFileSystemProviderTest.class.getName());
 
   private static KernelOptions kernelOptions;
 
@@ -93,5 +96,40 @@ class ModuleFileSystemProviderTest {
     fos.write(10);
     fos.close();
     fs.close();
+  }
+
+  @Test
+  void ensureWritingToFullURIWorks() throws IOException {
+    val uri = URI.create("droplet://kernel");
+    val fs = FileSystems.newFileSystem(uri, Collections.emptyMap());
+    try {
+      val path = fs.provider().getPath(URI.create("droplet://kernel/hello/frapper.txt"));
+      val file = path.toFile();
+      assertFalse(file.exists(), "file must not initially exist");
+      if (!file.getParentFile().mkdirs()) {
+        log.log(Level.WARNING, "File {0} already exists", file.getParentFile().toPath());
+      }
+      assertTrue(file.createNewFile(), "must be able to create a new file");
+    } finally {
+      fs.close();
+    }
+  }
+
+  @Test
+  void ensureWritingToURIInRootWorks() throws IOException {
+    val uri = URI.create("droplet://kernel");
+    val fs = FileSystems.newFileSystem(uri, Collections.emptyMap());
+    try {
+      val path = fs.provider().getPath(URI.create("droplet://kernel/frap.txt"));
+      val file = path.toFile();
+      if (!file.getParentFile().mkdirs()) {
+        log.log(Level.WARNING, "File {0} already exists", file.getParentFile().toPath());
+      }
+      assertFalse(file.exists(), "file must not exist");
+      assertTrue(file.createNewFile(), "must be able to create file");
+
+    } finally {
+      fs.close();
+    }
   }
 }

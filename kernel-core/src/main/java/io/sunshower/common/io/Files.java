@@ -6,6 +6,8 @@ import lombok.val;
 
 public class Files {
 
+  public static final String separator = File.separatorChar == '\\' ? "\\\\" : File.separator;
+
   public static File check(File file, FilePermissionChecker.Type... checks)
       throws AccessDeniedException {
     for (val check : checks) {

@@ -15,6 +15,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.FileAttributeView;
 import java.nio.file.spi.FileSystemProvider;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -71,9 +72,20 @@ public class ModuleFileSystemProvider extends FileSystemProvider implements Clos
 
   @NotNull
   @Override
+  @SuppressWarnings({"PMD.DataflowAnomalyAnalysis", "PMD.AvoidLiteralsInIfCondition"})
   public Path getPath(@NotNull URI uri) {
     val fs = getFileSystem(uri);
-    return fs.getPath(uri.getPath());
+    val path = uri.getPath();
+    val segments = path.split(Files.separator);
+
+    if (path.startsWith(File.separator)) {
+      if (segments.length > 1) {
+        val pathSegs = Arrays.copyOfRange(segments, 2, segments.length);
+        return fs.getPath(segments[1], pathSegs);
+      }
+    }
+    throw new IllegalArgumentException(
+        String.format("Path '%s' was not understood by this filesystem", uri));
   }
 
   @Override
