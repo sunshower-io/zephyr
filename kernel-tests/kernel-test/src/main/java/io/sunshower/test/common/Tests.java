@@ -97,7 +97,13 @@ public class Tests {
       result = new File(result, segment);
       if (!(result.exists() && result.isDirectory())) {
         throw new NoSuchElementException(
-            "Can't find project with path: " + project + " in " + root.getAbsolutePath());
+            "Can't find project with path: "
+                + project
+                + " in "
+                + root.getAbsolutePath()
+                + " checked ("
+                + result.getAbsolutePath()
+                + ")");
       }
     }
     return result;
