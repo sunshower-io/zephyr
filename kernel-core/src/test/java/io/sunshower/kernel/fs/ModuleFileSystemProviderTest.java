@@ -132,4 +132,18 @@ class ModuleFileSystemProviderTest {
       fs.close();
     }
   }
+
+  @Test
+  void ensureRetrievingFileSystemForVersionedPathProducesVersionedModuleFileSystem()
+      throws IOException {
+    val uri = URI.create("droplet://sunshower.test-plugin/1.0.0-SNAPSHOT");
+    val fs = FileSystems.newFileSystem(uri, Collections.emptyMap());
+    try {
+      assertTrue(
+          fs instanceof VersionedModuleFileSystem,
+          "Filesystem must be a versioned module filesystem");
+    } finally {
+      fs.close();
+    }
+  }
 }

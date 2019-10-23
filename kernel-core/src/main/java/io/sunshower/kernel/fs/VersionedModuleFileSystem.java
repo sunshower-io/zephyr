@@ -1,44 +1,32 @@
 package io.sunshower.kernel.fs;
 
-import java.io.Closeable;
+import lombok.NonNull;
+import org.jetbrains.annotations.NotNull;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.UserPrincipalLookupService;
 import java.nio.file.spi.FileSystemProvider;
 import java.util.Set;
-import lombok.Getter;
-import lombok.NonNull;
-import org.jetbrains.annotations.NotNull;
 
+public class VersionedModuleFileSystem extends FileSystem {
 
-public class ModuleFileSystem extends FileSystem implements Closeable {
-
-  public static final String SUNSHOWER_HOME = "sunshower::filesystem::home";
-
-  @Getter final String key;
-  final File rootDirectory;
-  final Path rootDirectoryPath;
-  final ModuleFileSystemProvider fileSystemProvider;
-
-  public ModuleFileSystem(
-      @NonNull String key,
+  public VersionedModuleFileSystem(
+      @NonNull String group,
+      @NonNull String version,
       @NonNull ModuleFileSystemProvider provider,
       @NonNull File rootDirectory) {
-    this.key = key;
-    this.rootDirectory = rootDirectory;
-    this.fileSystemProvider = provider;
-    this.rootDirectoryPath = rootDirectory.toPath();
   }
 
   @Override
   public FileSystemProvider provider() {
-    return fileSystemProvider;
+    return null;
   }
 
   @Override
   public void close() throws IOException {
-    fileSystemProvider.closeFileSystem(this);
+
   }
 
   @Override
@@ -73,13 +61,8 @@ public class ModuleFileSystem extends FileSystem implements Closeable {
 
   @NotNull
   @Override
-  @SuppressWarnings("PMD.DataflowAnomalyAnalysis")
   public Path getPath(@NotNull String first, @NotNull String... more) {
-    var path = rootDirectoryPath.resolve(first);
-    for (String p : more) {
-      path = path.resolve(p);
-    }
-    return path;
+    return null;
   }
 
   @Override

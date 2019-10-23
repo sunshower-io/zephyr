@@ -58,6 +58,7 @@ public class ModuleFileSystemProvider extends FileSystemProvider implements Clos
     if (host == null || host.isBlank()) {
       throw new FileSystemException("Cannot create filesystem from null or blank host");
     }
+
     return fileSystems.compute(host, this::create);
   }
 
