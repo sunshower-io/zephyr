@@ -25,7 +25,6 @@ import org.jetbrains.annotations.NotNull;
 public class ModuleFileSystemProvider extends FileSystemProvider implements Closeable {
 
   static final Pattern queryPattern = Pattern.compile("=");
-  static final Pattern versionPattern = Pattern.compile("[.\\-_]");
   static final Pattern keyPattern = Pattern.compile("\\.");
   static final Logger log = Logging.get(ModuleFileSystemProvider.class, "FileSystem");
   /** external state */
@@ -203,7 +202,7 @@ public class ModuleFileSystemProvider extends FileSystemProvider implements Clos
               "Failed to create filesystem.  Version '%s' isn't valid.  Expected 'version=<version>'",
               query));
     }
-    return Arrays.asList(versionPattern.split(parts[1]));
+    return Collections.singletonList(parts[1]);
   }
 
   private File doCreateDirectory(Path toPath) throws FileSystemException {

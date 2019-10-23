@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import io.sunshower.kernel.core.SunshowerKernel;
 import io.sunshower.kernel.launch.KernelOptions;
+import io.sunshower.kernel.misc.SuppressFBWarnings;
 import io.sunshower.test.common.Tests;
 import java.io.IOException;
 import java.io.Writer;
@@ -17,6 +18,7 @@ import lombok.val;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+@SuppressFBWarnings
 @SuppressWarnings({"PMD.AvoidDuplicateLiterals", "PMD.JUnitTestContainsTooManyAsserts"})
 class ModuleFileSystemProviderTest {
   static final Logger log = Logger.getLogger(ModuleFileSystemProviderTest.class.getName());
@@ -121,7 +123,44 @@ class ModuleFileSystemProviderTest {
   void ensureFileSystemIsCreatedWithVersionedPath() throws IOException {
     val uri = URI.create("droplet://com.sunshower-test/test.txt?version=1.0.0");
     val fs = (ModuleFileSystem) FileSystems.newFileSystem(uri, Collections.emptyMap());
-    assertEquals(fs.key.length, 5, "Key must be correct");
+    try {
+      assertEquals(fs.key.length, 3, "Key must be correct");
+    } finally {
+      fs.close();
+    }
+  }
+
+  @Test
+  void ensureFileSystemWithVersionedPathWorks() throws IOException {
+    val uri = URI.create("droplet://com.sunshower-test/test.txt?version=1.0.0");
+    val fs = (ModuleFileSystem) FileSystems.newFileSystem(uri, Collections.emptyMap());
+    try {
+      val f = fs.getPath("test.txt");
+      assertTrue(f.toFile().createNewFile(), "file must be creatable");
+      try (val w = Files.newBufferedWriter(f)) {
+        w.write(10);
+        w.flush();
+      }
+    } finally {
+      fs.close();
+    }
+  }
+
+  @Test
+  void ensureFileSystemWithVersionedSubPathWorks() throws IOException {
+    val uri = URI.create("droplet://com.sunshower-test/test.txt?version=1.0.0");
+    val fs = (ModuleFileSystem) FileSystems.newFileSystem(uri, Collections.emptyMap());
+    try {
+      Path f = fs.getPath("test", "test.txt");
+      assertTrue(f.getParent().toFile().mkdirs(), "parents must be creatable");
+      assertTrue(f.toFile().createNewFile(), "file must be creatable");
+      try (val w = Files.newBufferedWriter(f)) {
+        w.write(10);
+        w.flush();
+      }
+    } finally {
+      fs.close();
+    }
   }
 
   @Test

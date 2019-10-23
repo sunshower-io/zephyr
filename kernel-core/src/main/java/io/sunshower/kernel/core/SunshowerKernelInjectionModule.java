@@ -12,7 +12,7 @@ public class SunshowerKernelInjectionModule {
   }
 
   @Provides
-  public PluginManager pluginManager() {
-    return new PluginManager() {};
+  public ModuleManager pluginManager() {
+    return new ModuleManager() {};
   }
 }

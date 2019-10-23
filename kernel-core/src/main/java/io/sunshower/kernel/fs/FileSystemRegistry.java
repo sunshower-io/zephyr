@@ -96,6 +96,26 @@ public class FileSystemRegistry implements Iterable<FileSystem> {
     return null;
   }
 
+  public List<FileSystem> in(String key) {
+    return in(keyPattern.split(key));
+  }
+
+  public List<FileSystem> in(String[] key) {
+    val result = lookup(key, false);
+    if (result != null) {
+      val children = result.children;
+      val r = new ArrayList<FileSystem>();
+      for (val child : children) {
+        val v = child.value;
+        if (v != null) {
+          r.add(v);
+        }
+      }
+      return r;
+    }
+    return Collections.emptyList();
+  }
+
   public List<FileSystem> list() {
     return StreamSupport.stream(spliterator(), false).collect(Collectors.toList());
   }

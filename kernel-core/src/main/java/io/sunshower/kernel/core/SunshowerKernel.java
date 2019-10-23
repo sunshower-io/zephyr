@@ -11,11 +11,11 @@ public class SunshowerKernel implements Kernel {
   @Setter private static KernelOptions kernelOptions;
 
   /** Instance fields */
-  @Getter private final PluginManager pluginManager;
+  @Getter private final ModuleManager moduleManager;
 
   @Inject
-  public SunshowerKernel(PluginManager pluginManager) {
-    this.pluginManager = pluginManager;
+  public SunshowerKernel(ModuleManager moduleManager) {
+    this.moduleManager = moduleManager;
   }
 
   public static KernelOptions getKernelOptions() {

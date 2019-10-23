@@ -70,6 +70,20 @@ class FileSystemRegistryTest {
   }
 
   @Test
+  void ensureCollectingAllValuesAtALevelWorks() {
+    val fs = mock(FileSystem.class);
+    val fs1 = mock(FileSystem.class);
+    val fs2 = mock(FileSystem.class);
+    registry.add("com.a", fs1);
+    registry.add("com.b", fs2);
+    registry.add("com.c", fs);
+    registry.add("com.whatever.c", fs);
+    val level = registry.in("com");
+    assertEquals(level.size(), 3, "must contain children");
+    assertEquals(registry.in("com.whatever").size(), 1, "must contain child");
+  }
+
+  @Test
   void ensureListingEntriesWorksForNestedHierarchy() {
     val fs = mock(FileSystem.class);
     val fs1 = mock(FileSystem.class);

@@ -43,6 +43,19 @@ of the assembly installed.   The Sunshower kernel creates several additional fil
 1.  `plugin.info`: `droplet:///sunshower/artifact/1.0.0/plugin.info` -- this file contains information about this plugin and its state
 1   `paths.idx` : `etc.` --this file contains kernel-specific information about the plugin
 
+#### Phases
+Some components in the Sunshower.io Kernel manage operations in phases, which allows for extensibility, 
+traceability, and simplicity.
+
+For instance, consider the `DefaultModuleManager`.  A user or process provides an
+installation request, at which the following phases are executed:
+
+1. The ModuleDownloadPhase downloads the module to the Kernel temporary storage folder and dispatches the following events
+   1. DownloadStarted
+   1. DownloadProgressed
+   1. DownloadComplete
+2. The ModuleUnpackPhase   
+
 
 
 

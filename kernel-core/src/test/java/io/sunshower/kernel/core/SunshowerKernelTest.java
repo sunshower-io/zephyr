@@ -25,6 +25,6 @@ public class SunshowerKernelTest {
   @Test
   void ensureInjectionOfPluginManagerWorks() {
     kernel = cfg.kernel();
-    assertNotNull(kernel.getPluginManager(), "plugin manager must be injected");
+    assertNotNull(kernel.getModuleManager(), "plugin manager must be injected");
   }
 }
