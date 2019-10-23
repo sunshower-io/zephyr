@@ -1,36 +1,41 @@
 package io.sunshower.kernel.fs;
 
-import lombok.NonNull;
-import lombok.val;
-import org.jetbrains.annotations.NotNull;
-
 import java.nio.file.FileSystem;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+import lombok.NonNull;
+import lombok.val;
+import org.jetbrains.annotations.NotNull;
 
+@SuppressWarnings({"PMD.DataflowAnomalyAnalysis", "PMD.UseVarargs"})
 public class FileSystemRegistry implements Iterable<FileSystem> {
 
   private static final Pattern keyPattern = Pattern.compile("\\.");
+
+  private int registrySize;
   final Entry root = new Entry(null);
 
-  private int size;
-
-  public FileSystem add(@NonNull String key, @NonNull FileSystem fileSystem) {
-    val current = lookup(key, true);
+  public FileSystem add(String[] segments, FileSystem fileSystem) {
+    val current = lookup(segments, true);
     val existing = current.value;
     current.value = fileSystem;
-    size++;
+    registrySize++;
     return existing;
   }
 
-  public int size() {
-    return size;
+  public FileSystem add(@NonNull String key, @NonNull FileSystem fileSystem) {
+    val segments = keyPattern.split(key);
+    return add(segments, fileSystem);
   }
 
-  public FileSystem remove(@NonNull String key) {
-    val segments = keyPattern.split(key);
+  public int size() {
+    return registrySize;
+  }
+
+  @SuppressWarnings("PMD.NullAssignment")
+  public FileSystem remove(String[] segments) {
     Entry current = root;
     Entry previous = null;
     for (val segment : segments) {
@@ -61,12 +66,30 @@ public class FileSystemRegistry implements Iterable<FileSystem> {
         ((ArrayList) previous.children).trimToSize();
       }
     }
-    size--;
+    registrySize--;
     return result;
   }
 
+  public FileSystem remove(@NonNull String key) {
+    val segments = keyPattern.split(key);
+    return remove(segments);
+  }
+
+  public boolean contains(String[] key) {
+    return get(key) != null;
+  }
+
+  public boolean contains(String key) {
+    return get(key) != null;
+  }
+
   public FileSystem get(@NonNull String key) {
-    val result = lookup(key, false);
+    val segments = keyPattern.split(key);
+    return get(segments);
+  }
+
+  public FileSystem get(String[] segments) {
+    val result = lookup(segments, false);
     if (result != null) {
       return result.value;
     }
@@ -77,8 +100,8 @@ public class FileSystemRegistry implements Iterable<FileSystem> {
     return StreamSupport.stream(spliterator(), false).collect(Collectors.toList());
   }
 
-  private Entry lookup(String key, boolean create) {
-    val segments = keyPattern.split(key);
+  @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
+  private Entry lookup(String[] segments, boolean create) {
     Entry current = root;
     for (val segment : segments) {
       val entries = current.children;
@@ -126,19 +149,9 @@ public class FileSystemRegistry implements Iterable<FileSystem> {
       while (!stack.empty()) {
         var nextElement = stack.pop();
         val children = nextElement.children;
+        stack.addAll(children);
         if (nextElement.value != null) {
-          stack.addAll(children);
           return nextElement.value;
-        } else {
-          for (int i = 0; i < children.size(); i++) {
-            val ch = children.get(i);
-            if (ch.value != null) {
-              stack.addAll(children.subList(i + 1, children.size()));
-              return ch.value;
-            } else {
-              stack.push(ch);
-            }
-          }
         }
       }
       throw new NoSuchElementException("Not here");

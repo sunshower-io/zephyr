@@ -1,5 +1,6 @@
 package io.sunshower.kernel.fs;
 
+import io.sunshower.kernel.misc.SuppressFBWarnings;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
@@ -7,22 +8,22 @@ import java.nio.file.*;
 import java.nio.file.attribute.UserPrincipalLookupService;
 import java.nio.file.spi.FileSystemProvider;
 import java.util.Set;
-import lombok.Getter;
 import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
-
 
 public class ModuleFileSystem extends FileSystem implements Closeable {
 
   public static final String SUNSHOWER_HOME = "sunshower::filesystem::home";
 
-  @Getter final String key;
+  final String[] key;
   final File rootDirectory;
   final Path rootDirectoryPath;
   final ModuleFileSystemProvider fileSystemProvider;
 
+  @SuppressFBWarnings
+  @SuppressWarnings("PMD.ArrayIsStoredDirectly")
   public ModuleFileSystem(
-      @NonNull String key,
+      @NonNull String[] key,
       @NonNull ModuleFileSystemProvider provider,
       @NonNull File rootDirectory) {
     this.key = key;

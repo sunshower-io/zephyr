@@ -89,13 +89,15 @@ class ModuleFileSystemProviderTest {
   void ensureWritingFileWorks() throws IOException {
     val uri = URI.create("droplet://kernel");
     val fs = FileSystems.newFileSystem(uri, Collections.emptyMap());
-    val file = fs.getPath("test.txt").toFile();
-    assertTrue(file.getParentFile().mkdirs(), "must be able to create parent");
-    assertTrue(file.createNewFile(), "must be able to create file");
-    Writer fos = Files.newBufferedWriter(file.toPath(), StandardOpenOption.WRITE);
-    fos.write(10);
-    fos.close();
-    fs.close();
+    try {
+      val file = fs.getPath("test.txt").toFile();
+      assertTrue(file.createNewFile(), "must be able to create file");
+      Writer fos = Files.newBufferedWriter(file.toPath(), StandardOpenOption.WRITE);
+      fos.write(10);
+      fos.close();
+    } finally {
+      fs.close();
+    }
   }
 
   @Test
@@ -116,6 +118,13 @@ class ModuleFileSystemProviderTest {
   }
 
   @Test
+  void ensureFileSystemIsCreatedWithVersionedPath() throws IOException {
+    val uri = URI.create("droplet://com.sunshower-test/test.txt?version=1.0.0");
+    val fs = (ModuleFileSystem) FileSystems.newFileSystem(uri, Collections.emptyMap());
+    assertEquals(fs.key.length, 5, "Key must be correct");
+  }
+
+  @Test
   void ensureWritingToURIInRootWorks() throws IOException {
     val uri = URI.create("droplet://kernel");
     val fs = FileSystems.newFileSystem(uri, Collections.emptyMap());
@@ -128,20 +137,6 @@ class ModuleFileSystemProviderTest {
       assertFalse(file.exists(), "file must not exist");
       assertTrue(file.createNewFile(), "must be able to create file");
 
-    } finally {
-      fs.close();
-    }
-  }
-
-  @Test
-  void ensureRetrievingFileSystemForVersionedPathProducesVersionedModuleFileSystem()
-      throws IOException {
-    val uri = URI.create("droplet://sunshower.test-plugin/1.0.0-SNAPSHOT");
-    val fs = FileSystems.newFileSystem(uri, Collections.emptyMap());
-    try {
-      assertTrue(
-          fs instanceof VersionedModuleFileSystem,
-          "Filesystem must be a versioned module filesystem");
     } finally {
       fs.close();
     }

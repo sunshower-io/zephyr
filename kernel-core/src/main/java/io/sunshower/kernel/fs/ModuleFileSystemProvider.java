@@ -1,6 +1,7 @@
 package io.sunshower.kernel.fs;
 
 import static io.sunshower.kernel.core.SunshowerKernel.getKernelOptions;
+import static java.lang.String.format;
 
 import io.sunshower.common.io.FilePermissionChecker;
 import io.sunshower.common.io.Files;
@@ -15,25 +16,28 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.FileAttributeView;
 import java.nio.file.spi.FileSystemProvider;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
+import java.util.*;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
 
 public class ModuleFileSystemProvider extends FileSystemProvider implements Closeable {
 
+  static final Pattern queryPattern = Pattern.compile("=");
+  static final Pattern versionPattern = Pattern.compile("[.\\-_]");
+  static final Pattern keyPattern = Pattern.compile("\\.");
   static final Logger log = Logging.get(ModuleFileSystemProvider.class, "FileSystem");
   /** external state */
   static final String SCHEME = "droplet";
 
-  private static final Map<String, FileSystem> fileSystems;
+  public static final String VERSION = "version";
+  public static final int QUERY_STRING_LENGTH = 2;
+
+  private static FileSystemRegistry registry;
 
   static {
-    fileSystems = new ConcurrentHashMap<>();
+    registry = new FileSystemRegistry();
   }
 
   private final File fileSystemRoot;
@@ -58,17 +62,37 @@ public class ModuleFileSystemProvider extends FileSystemProvider implements Clos
     if (host == null || host.isBlank()) {
       throw new FileSystemException("Cannot create filesystem from null or blank host");
     }
+    val segments = computeSegments(uri);
 
-    return fileSystems.compute(host, this::create);
+    if (registry.contains(segments)) {
+      throw new FileSystemAlreadyExistsException(host);
+    }
+    val result = new ModuleFileSystem(segments, this, doCreateDirectory(Files.toPath(segments)));
+    registry.add(segments, result);
+    return result;
+  }
+
+  private String[] computeSegments(URI uri) throws FileSystemException {
+    if (uri.getQuery() == null) {
+      return keyPattern.split(uri.getHost());
+    } else {
+      val hostParts = new ArrayList<>(Arrays.asList(keyPattern.split(uri.getHost())));
+      hostParts.addAll(parseVersion(uri));
+      return hostParts.toArray(new String[0]);
+    }
   }
 
   @Override
   public FileSystem getFileSystem(URI uri) {
     val host = uri.getHost();
-    if (!fileSystems.containsKey(host)) {
+    if (host == null) {
+      throw new FileSystemNotFoundException();
+    }
+    val result = registry.get(host);
+    if (result == null) {
       throw new FileSystemNotFoundException(host);
     }
-    return fileSystems.get(host);
+    return result;
   }
 
   @NotNull
@@ -86,7 +110,7 @@ public class ModuleFileSystemProvider extends FileSystemProvider implements Clos
       }
     }
     throw new IllegalArgumentException(
-        String.format("Path '%s' was not understood by this filesystem", uri));
+        format("Path '%s' was not understood by this filesystem", uri));
   }
 
   @Override
@@ -150,30 +174,43 @@ public class ModuleFileSystemProvider extends FileSystemProvider implements Clos
   }
 
   protected void closeFileSystem(ModuleFileSystem system) throws IOException {
-    fileSystems.remove(system.key);
+    registry.remove(system.key);
   }
 
   @Override
   public void setAttribute(Path path, String attribute, Object value, LinkOption... options)
       throws IOException {}
 
-  private FileSystem create(String host, FileSystem fileSystem) {
-    if (fileSystem == null) {
-      log.log(Level.FINE, "filesystem.new", host);
-      val fs = new ModuleFileSystem(host, this, new File(fileSystemRoot, host));
-      log.log(Level.FINE, "filesystem.new.success", host);
-      return fs;
-    } else {
-      log.log(Level.WARNING, "filesystem.new.exists", host);
-
-      throw new FileSystemAlreadyExistsException(host);
+  @Override
+  public void close() throws IOException {
+    for (val fs : registry) {
+      closeFileSystem((ModuleFileSystem) fs);
     }
   }
 
-  @Override
-  public void close() throws IOException {
-    for (val fs : fileSystems.entrySet()) {
-      closeFileSystem((ModuleFileSystem) fs.getValue());
+  private Collection<? extends String> parseVersion(URI uri) throws FileSystemException {
+    val query = uri.getQuery();
+    val parts = queryPattern.split(query);
+    if (parts.length != QUERY_STRING_LENGTH) {
+      throw new FileSystemException(
+          format(
+              "Failed to create filesystem.  Version '%s' isn't valid.  Expected 'version=<version>'",
+              query));
     }
+    if (!VERSION.equals(parts[0])) {
+      throw new FileSystemException(
+          format(
+              "Failed to create filesystem.  Version '%s' isn't valid.  Expected 'version=<version>'",
+              query));
+    }
+    return Arrays.asList(versionPattern.split(parts[1]));
+  }
+
+  private File doCreateDirectory(Path toPath) throws FileSystemException {
+    val result = fileSystemRoot.toPath().resolve(toPath).toAbsolutePath().toFile();
+    if (!(result.exists() || result.mkdirs())) {
+      throw new FileSystemException("Failed to create module directory: " + result);
+    }
+    return result;
   }
 }
