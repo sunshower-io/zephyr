@@ -9,6 +9,7 @@ import java.nio.file.attribute.UserPrincipalLookupService;
 import java.nio.file.spi.FileSystemProvider;
 import java.util.Set;
 import lombok.NonNull;
+import lombok.val;
 import org.jetbrains.annotations.NotNull;
 
 public class ModuleFileSystem extends FileSystem implements Closeable {
@@ -76,7 +77,7 @@ public class ModuleFileSystem extends FileSystem implements Closeable {
   @Override
   @SuppressWarnings("PMD.DataflowAnomalyAnalysis")
   public Path getPath(@NotNull String first, @NotNull String... more) {
-    var path = rootDirectoryPath.resolve(first);
+    var path = new File(rootDirectory, first).toPath().toAbsolutePath();
     for (String p : more) {
       path = path.resolve(p);
     }

@@ -43,7 +43,13 @@ public abstract class AbstractPhase<E, T> extends AbstractEventSource<E, T> impl
 
   @Override
   public void execute(Process<E, T> process, T context) {
-    doExecute(process, context);
+    try {
+      doExecute(process, context);
+    } catch (PhaseException ex) {
+      if (!State.canContinue(ex.getState())) {
+        throw ex;
+      }
+    }
     for (val subphase : subphases) {
       subphase.execute(process, context);
     }

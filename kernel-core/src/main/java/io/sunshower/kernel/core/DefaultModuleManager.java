@@ -1,3 +1,8 @@
 package io.sunshower.kernel.core;
 
-public class DefaultModuleManager implements ModuleManager {}
+import io.sunshower.kernel.status.Status;
+
+public class DefaultModuleManager implements ModuleManager {
+  @Override
+  public void addStatus(Status status) {}
+}

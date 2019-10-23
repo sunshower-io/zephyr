@@ -1,3 +1,5 @@
 package io.sunshower.kernel.core;
 
-public interface ModuleManager {}
+import io.sunshower.kernel.status.StatusAware;
+
+public interface ModuleManager extends StatusAware {}

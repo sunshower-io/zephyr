@@ -2,6 +2,7 @@ package io.sunshower.kernel.core;
 
 import dagger.Module;
 import dagger.Provides;
+import io.sunshower.kernel.status.Status;
 
 @Module
 public class SunshowerKernelInjectionModule {
@@ -13,6 +14,9 @@ public class SunshowerKernelInjectionModule {
 
   @Provides
   public ModuleManager pluginManager() {
-    return new ModuleManager() {};
+    return new ModuleManager() {
+      @Override
+      public void addStatus(Status status) {}
+    };
   }
 }

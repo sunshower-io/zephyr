@@ -84,7 +84,12 @@ public class Tests {
   public static File createTemp(String directory) {
     val tmp = new File(buildDirectory(), "temp");
     val result = new File(tmp, directory);
-    result.mkdirs();
+    if (!result.mkdirs()) {
+      if (!result.exists()) {
+        throw new IllegalStateException(
+            "Failed to create temp directory " + result.getAbsolutePath());
+      }
+    }
     result.deleteOnExit();
     return result.getAbsoluteFile();
   }

@@ -1,6 +1,7 @@
 package io.sunshower.common.io;
 
 import java.io.File;
+import java.net.URL;
 import java.nio.file.AccessDeniedException;
 import java.nio.file.Path;
 import lombok.NonNull;
@@ -17,6 +18,11 @@ public class Files {
       path = path.resolve(segments[i]);
     }
     return path;
+  }
+
+  public static String getFileName(@NonNull URL url) {
+    val file = url.getFile();
+    return file.substring(file.lastIndexOf("/"));
   }
 
   public static File check(File file, FilePermissionChecker.Type... checks)
