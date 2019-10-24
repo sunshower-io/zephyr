@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.UserPrincipalLookupService;
 import java.nio.file.spi.FileSystemProvider;
+import java.util.Collections;
 import java.util.Set;
 import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
@@ -59,7 +60,7 @@ public class ModuleFileSystem extends FileSystem implements Closeable {
 
   @Override
   public Iterable<Path> getRootDirectories() {
-    return null;
+    return Collections.singletonList(rootDirectoryPath);
   }
 
   @Override
