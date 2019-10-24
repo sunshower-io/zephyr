@@ -5,12 +5,18 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 import io.sunshower.kernel.process.KernelProcess;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.FileSystem;
 import lombok.val;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
-import java.nio.file.FileSystem;
-
+@SuppressWarnings({
+  "PMD.AvoidDuplicateLiterals",
+  "PMD.JUnitTestContainsTooManyAsserts",
+  "PMD.JUnitAssertionsShouldIncludeMessage"
+})
 class ModuleTransferPhaseTest extends AbstractModulePhaseTestCase {
 
   @Test
@@ -29,5 +35,13 @@ class ModuleTransferPhaseTest extends AbstractModulePhaseTestCase {
     val path = fs.getPath("module.droplet");
     assertEquals(
         path.toAbsolutePath(), assembly.toPath().toAbsolutePath(), "paths must be the same");
+  }
+
+  @Override
+  @AfterEach
+  void tearDown() throws IOException {
+    super.tearDown();
+    FileSystem fs = context.getContextValue(ModuleTransferPhase.MODULE_FILE_SYSTEM);
+    fs.close();
   }
 }

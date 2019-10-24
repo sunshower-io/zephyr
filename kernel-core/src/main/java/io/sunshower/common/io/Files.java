@@ -1,5 +1,6 @@
 package io.sunshower.common.io;
 
+import io.sunshower.kernel.misc.SuppressFBWarnings;
 import java.io.*;
 import java.net.URL;
 import java.nio.file.AccessDeniedException;
@@ -13,6 +14,7 @@ public class Files {
 
   static final int BUFFER_SIZE = 8192;
 
+  @SuppressFBWarnings
   @SuppressWarnings({"PMD.AvoidFileStream", "PMD.DataflowAnomalyAnalysis"})
   public static void transferTo(File destination, InputStream inputStream) throws IOException {
     try (val is = inputStream;
