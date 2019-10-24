@@ -79,10 +79,8 @@ public class ModuleDownloadPhase extends AbstractPhase<KernelProcessEvent, Kerne
   @Override
   protected void doExecute(
       Process<KernelProcessEvent, KernelProcessContext> process, KernelProcessContext context) {
-
     URL downloadUrl = context.getContextValue(DOWNLOAD_URL);
     Path moduleDirectory = context.getContextValue(TARGET_DIRECTORY);
-
     downloadModule(downloadUrl, moduleDirectory, context);
   }
 

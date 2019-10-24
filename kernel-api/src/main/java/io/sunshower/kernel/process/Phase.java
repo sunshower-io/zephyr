@@ -19,7 +19,7 @@ public interface Phase<E, T> extends PhaseAware<E, T>, EventSource<E, T> {
     Error;
 
     public static boolean canContinue(State state) {
-      return state == Normal || state == Recoverable;
+      return state == Normal || state == Recoverable || state == Warning;
     }
   }
 

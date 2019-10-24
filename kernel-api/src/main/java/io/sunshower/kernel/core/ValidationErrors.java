@@ -36,6 +36,8 @@ public class ValidationErrors {
 
   public ValidationErrors merge(@NonNull ValidationErrors other) {
     val result = new ArrayList<ValidationError>(errors.size() + other.errors.size());
+    result.addAll(errors);
+    result.addAll(other.errors);
     return new ValidationErrors(result);
   }
 
