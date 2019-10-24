@@ -48,23 +48,24 @@ public class ModuleTransferPhase extends AbstractPhase<KernelProcessEvent, Kerne
     val fs = createFilesystem(context);
     context.setContextValue(MODULE_FILE_SYSTEM, fs);
 
-    val transferFile = fs.getPath("module.droplet").toFile();
+    val assembly = fs.getPath("module.droplet").toFile();
     File file = context.getContextValue(ModuleDownloadPhase.DOWNLOADED_FILE);
-    if (!transferFile.exists()) {
-      val parent = transferFile.getParentFile();
+    if (!assembly.exists()) {
+      val parent = assembly.getParentFile();
       if (!(parent.exists() || parent.mkdirs())) {
         log.log(Level.WARNING, "transfer.file.makedirectory", parent);
       }
     }
 
-    log.log(Level.INFO, "transfer.file.beginning", new Object[] {file, transferFile});
+    log.log(Level.INFO, "transfer.file.beginning", new Object[] {file, assembly});
     try {
-      Files.transferTo(file, transferFile);
-      log.log(Level.INFO, "transfer.file.complete", new Object[] {file, transferFile});
+      Files.transferTo(file, assembly);
+      context.setContextValue(MODULE_ASSEMBLY, assembly);
+      log.log(Level.INFO, "transfer.file.complete", new Object[] {file, assembly});
     } catch (IOException ex) {
       val message =
           MessageFormat.format(
-              bundle.getString("transfer.file.failed"), transferFile, file, ex.getMessage());
+              bundle.getString("transfer.file.failed"), assembly, file, ex.getMessage());
       log.log(Level.WARNING, message);
       val pex = new PhaseException(State.Unrecoverable, this, message);
       pex.addSuppressed(ex);

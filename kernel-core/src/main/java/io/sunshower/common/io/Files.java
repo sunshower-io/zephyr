@@ -1,9 +1,6 @@
 package io.sunshower.common.io;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
 import java.nio.file.AccessDeniedException;
 import java.nio.file.Path;
@@ -14,6 +11,22 @@ public class Files {
 
   public static final String separator = File.separatorChar == '\\' ? "\\\\" : File.separator;
 
+  static final int BUFFER_SIZE = 8192;
+
+  @SuppressWarnings({"PMD.AvoidFileStream", "PMD.DataflowAnomalyAnalysis"})
+  public static void transferTo(File destination, InputStream inputStream) throws IOException {
+    try (val is = inputStream;
+        val os = new FileOutputStream(destination)) {
+      val buffer = new byte[BUFFER_SIZE];
+      for (; ; ) {
+        int read = is.read(buffer);
+        if (read == -1) {
+          return;
+        }
+        os.write(buffer);
+      }
+    }
+  }
   // adapted from
   // https://stackoverflow.com/questions/7379469/filechannel-transferto-for-large-file-in-windows
   @SuppressWarnings({"PMD.AvoidFileStream", "PMD.DataflowAnomalyAnalysis"})
@@ -51,5 +64,13 @@ public class Files {
       }
     }
     return file;
+  }
+
+  public static String getFileName(String name) {
+    val sepidx = name.lastIndexOf(separator);
+    if (sepidx > 0) {
+      return name.substring(sepidx + 1);
+    }
+    return name;
   }
 }

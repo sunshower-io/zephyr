@@ -1,10 +1,15 @@
 package io.sunshower.module.phases;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 import io.sunshower.kernel.process.KernelProcess;
 import lombok.val;
 import org.junit.jupiter.api.Test;
+
+import java.io.File;
+import java.nio.file.FileSystem;
 
 class ModuleTransferPhaseTest extends AbstractModulePhaseTestCase {
 
@@ -18,6 +23,11 @@ class ModuleTransferPhaseTest extends AbstractModulePhaseTestCase {
     process.call();
     verify(transfer, times(1)).doExecute(any(), any());
 
-    //    context.getContextValue(ModuleTransferPhase.)
+    File assembly = context.getContextValue(ModuleTransferPhase.MODULE_ASSEMBLY);
+    FileSystem fs = context.getContextValue(ModuleTransferPhase.MODULE_FILE_SYSTEM);
+    assertTrue(assembly.exists(), "assembly must exist");
+    val path = fs.getPath("module.droplet");
+    assertEquals(
+        path.toAbsolutePath(), assembly.toPath().toAbsolutePath(), "paths must be the same");
   }
 }
