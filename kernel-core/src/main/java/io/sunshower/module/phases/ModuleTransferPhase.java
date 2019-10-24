@@ -5,8 +5,6 @@ import io.sunshower.kernel.core.ModuleDescriptor;
 import io.sunshower.kernel.log.Logging;
 import io.sunshower.kernel.process.*;
 import io.sunshower.kernel.process.Process;
-import lombok.val;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -17,6 +15,7 @@ import java.util.Collections;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import lombok.val;
 
 /**
  * This phase transfers a module file from the kernel temp directory to its final destination .
@@ -43,6 +42,7 @@ public class ModuleTransferPhase extends AbstractPhase<KernelProcessEvent, Kerne
   }
 
   @Override
+  @SuppressWarnings("PMD.PreserveStackTrace")
   protected void doExecute(
       Process<KernelProcessEvent, KernelProcessContext> process, KernelProcessContext context) {
     val fs = createFilesystem(context);
@@ -66,7 +66,9 @@ public class ModuleTransferPhase extends AbstractPhase<KernelProcessEvent, Kerne
           MessageFormat.format(
               bundle.getString("transfer.file.failed"), transferFile, file, ex.getMessage());
       log.log(Level.WARNING, message);
-      throw new PhaseException(State.Unrecoverable, this, message);
+      val pex = new PhaseException(State.Unrecoverable, this, message);
+      pex.addSuppressed(ex);
+      throw pex;
     }
   }
 

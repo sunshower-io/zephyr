@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.channels.FileChannel;
 import java.nio.file.AccessDeniedException;
 import java.nio.file.Path;
 import lombok.NonNull;
@@ -17,6 +16,7 @@ public class Files {
 
   // adapted from
   // https://stackoverflow.com/questions/7379469/filechannel-transferto-for-large-file-in-windows
+  @SuppressWarnings({"PMD.AvoidFileStream", "PMD.DataflowAnomalyAnalysis"})
   public static void transferTo(File from, File to) throws IOException {
     try (val inChannel = new FileInputStream(from).getChannel();
         val outChannel = new FileOutputStream(to).getChannel(); ) {
