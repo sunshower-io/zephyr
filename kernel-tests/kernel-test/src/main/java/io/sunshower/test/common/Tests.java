@@ -5,6 +5,7 @@ import static java.lang.String.format;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.NoSuchElementException;
+import java.util.UUID;
 import lombok.val;
 
 public class Tests {
@@ -76,10 +77,19 @@ public class Tests {
     throw new NoSuchElementException("No root dir?? Whack");
   }
 
+  public static File createTemp() {
+    return createTemp(UUID.randomUUID().toString());
+  }
+
   public static File createTemp(String directory) {
     val tmp = new File(buildDirectory(), "temp");
     val result = new File(tmp, directory);
-    result.mkdirs();
+    if (!result.mkdirs()) {
+      if (!result.exists()) {
+        throw new IllegalStateException(
+            "Failed to create temp directory " + result.getAbsolutePath());
+      }
+    }
     result.deleteOnExit();
     return result.getAbsoluteFile();
   }
@@ -92,7 +102,13 @@ public class Tests {
       result = new File(result, segment);
       if (!(result.exists() && result.isDirectory())) {
         throw new NoSuchElementException(
-            "Can't find project with path: " + project + " in " + root.getAbsolutePath());
+            "Can't find project with path: "
+                + project
+                + " in "
+                + root.getAbsolutePath()
+                + " checked ("
+                + result.getAbsolutePath()
+                + ")");
       }
     }
     return result;

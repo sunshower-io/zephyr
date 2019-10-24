@@ -11,7 +11,7 @@ public class MonitorableByteChannel implements ReadableByteChannel {
   private final ChannelTransferListener listener;
   private final ReadableByteChannel delegate;
 
-  private long read;
+  private long bytesRead;
 
   public MonitorableByteChannel(
       final ReadableByteChannel delegate,
@@ -24,11 +24,11 @@ public class MonitorableByteChannel implements ReadableByteChannel {
 
   @Override
   public int read(ByteBuffer destination) throws IOException {
-    int n;
-    double progress;
-    if ((n = delegate.read(destination)) > 0) {
-      read += n;
-      progress = expectedSize > 0 ? ((double) read / (double) expectedSize) * 100.0 : -1.0;
+    int n = delegate.read(destination);
+    if (n > 0) {
+      bytesRead += n;
+      double progress =
+          expectedSize > 0 ? ((double) bytesRead / (double) expectedSize) * 100.0 : -1.0;
       listener.onTransfer(this, progress);
     }
     return n;

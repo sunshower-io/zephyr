@@ -1,31 +1,34 @@
 package io.sunshower.kernel.launch;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import io.sunshower.test.common.Tests;
+import java.io.File;
+import java.util.logging.*;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class KernelOptionsTest {
+class KernelOptionsTest {
 
-  private KernelOptions options;
+  static final Logger logger = Logger.getLogger("SunshowerKernel");
+  private File home;
 
   @BeforeEach
   void setUp() {
-    options = new KernelOptions();
+    val handler = new ConsoleHandler();
+    handler.setLevel(Level.ALL);
+    logger.addHandler(handler);
+    logger.setLevel(Level.ALL);
+
+    home = Tests.createTemp();
   }
 
   @Test
-  void ensureHelpMapsCorrectly() {
-    assertTrue(options.satisfy("-h").isHelp());
-  }
-
-  @Test
-  void ensurePropertyFileIsResolvedCorrectly() {
-    System.setProperty("sunshower.home", Tests.buildDirectory().getAbsolutePath());
-    val a = options.satisfy("-h");
-    assertNotNull(a.storage);
+  void ensureValidationWorksForSystemProperty() {
+    System.setProperty(KernelOptions.SystemProperties.SUNSHOWER_HOME, home.getAbsolutePath());
+    val options = new KernelOptions();
+    options.validate();
+    assertEquals(options.getHomeDirectory(), home, "Home directory must not change");
   }
 }

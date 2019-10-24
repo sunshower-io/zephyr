@@ -1,10 +1,10 @@
 package io.sunshower.kernel;
 
-import lombok.Data;
+public interface Coordinate extends Comparable<Coordinate> {
 
-@Data
-public class Coordinate {
-  final String group;
-  final String artifact;
-  final String version;
+  String getName();
+
+  String getGroup();
+
+  Version getVersion();
 }
