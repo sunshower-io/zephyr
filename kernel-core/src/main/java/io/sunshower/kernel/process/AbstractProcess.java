@@ -2,12 +2,11 @@ package io.sunshower.kernel.process;
 
 import io.sunshower.kernel.events.AbstractEventSource;
 import io.sunshower.kernel.events.EventListener;
+import io.sunshower.kernel.status.Status;
+import io.sunshower.kernel.status.StatusType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
-
-import io.sunshower.kernel.status.Status;
-import io.sunshower.kernel.status.StatusType;
 import lombok.val;
 
 public class AbstractProcess<E, T> extends AbstractEventSource<E, T> implements Process<E, T> {
@@ -53,6 +52,7 @@ public class AbstractProcess<E, T> extends AbstractEventSource<E, T> implements 
   }
 
   @Override
+  @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
   public T call() throws Exception {
     for (val phase : phases) {
       try {

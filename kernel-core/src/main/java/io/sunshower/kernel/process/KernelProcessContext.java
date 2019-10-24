@@ -1,10 +1,9 @@
 package io.sunshower.kernel.process;
 
 import io.sunshower.kernel.core.ContextValueNotFoundException;
+import io.sunshower.kernel.core.Kernel;
 import java.util.HashMap;
 import java.util.Map;
-
-import io.sunshower.kernel.core.Kernel;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.val;

@@ -1,6 +1,7 @@
 package io.sunshower.kernel;
 
 import java.nio.file.FileSystem;
+import java.util.ServiceLoader;
 import java.util.Set;
 
 public interface Module {
@@ -27,4 +28,6 @@ public interface Module {
   }
 
   boolean dependsOn(Coordinate m, Transitivity transitivity);
+
+  <S> ServiceLoader<S> resolveServiceLoader(Class<S> type);
 }

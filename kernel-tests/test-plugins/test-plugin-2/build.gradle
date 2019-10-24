@@ -3,3 +3,21 @@ apply plugin: 'war'
 dependencies {
     implementation project(':kernel-modules:sunshower-yaml-reader')
 }
+
+def deps = [
+        "io.sunshower:test-plugin-2:1.0.0-SNAPSHOT",
+        "io.sunshower:test-plugin-1:1.0.0-SNAPSHOT",
+        "io.sunshower:test-plugin-2:1.0.0-SNAPSHOT",
+        "io.sunshower:test-plugin-1:1.0.0-SNAPSHOT"
+].join(',')
+war {
+    manifest {
+        attributes(
+                'group': 'sunshower.io',
+                'name': 'test-plugin-2',
+                'version': '1.0.0-SNAPSHOT',
+                'description' : 'just a test plugin!',
+                'dependencies': deps
+        )
+    }
+}

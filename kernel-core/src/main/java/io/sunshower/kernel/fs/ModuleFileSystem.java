@@ -9,7 +9,6 @@ import java.nio.file.attribute.UserPrincipalLookupService;
 import java.nio.file.spi.FileSystemProvider;
 import java.util.Set;
 import lombok.NonNull;
-import lombok.val;
 import org.jetbrains.annotations.NotNull;
 
 public class ModuleFileSystem extends FileSystem implements Closeable {

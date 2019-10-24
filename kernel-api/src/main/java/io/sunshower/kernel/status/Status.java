@@ -1,9 +1,8 @@
 package io.sunshower.kernel.status;
 
-import lombok.NonNull;
-
 import java.util.ArrayList;
 import java.util.List;
+import lombok.NonNull;
 
 public class Status {
   final String message;

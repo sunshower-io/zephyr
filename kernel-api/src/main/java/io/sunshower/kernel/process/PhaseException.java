@@ -1,7 +1,6 @@
 package io.sunshower.kernel.process;
 
 import io.sunshower.kernel.core.KernelException;
-import io.sunshower.kernel.status.StatusException;
 import lombok.Getter;
 
 @Getter
