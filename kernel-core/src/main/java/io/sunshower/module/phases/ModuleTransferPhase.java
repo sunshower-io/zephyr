@@ -25,6 +25,7 @@ import lombok.val;
 public class ModuleTransferPhase extends AbstractPhase<KernelProcessEvent, KernelProcessContext> {
 
   public static final String MODULE_ASSEMBLY = "MODULE_ASSEMBLY";
+  public static final String MODULE_DIRECTORY = "MODULE_DIRECTORY";
   public static final String MODULE_FILE_SYSTEM = "MODULE_FILE_SYSTEM";
 
   static final Logger log = Logging.get(ModuleTransferPhase.class);
@@ -50,12 +51,13 @@ public class ModuleTransferPhase extends AbstractPhase<KernelProcessEvent, Kerne
 
     val assembly = fs.getPath("module.droplet").toFile();
     File file = context.getContextValue(ModuleDownloadPhase.DOWNLOADED_FILE);
+    val parent = assembly.getParentFile();
     if (!assembly.exists()) {
-      val parent = assembly.getParentFile();
       if (!(parent.exists() || parent.mkdirs())) {
         log.log(Level.WARNING, "transfer.file.makedirectory", parent);
       }
     }
+    context.setContextValue(MODULE_DIRECTORY, parent);
 
     log.log(Level.INFO, "transfer.file.beginning", new Object[] {file, assembly});
     try {

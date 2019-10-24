@@ -1,6 +1,7 @@
 package io.sunshower.kernel.module;
 
 import io.sunshower.kernel.Coordinate;
+import io.sunshower.kernel.Module;
 import io.sunshower.kernel.core.ModuleCoordinate;
 import io.sunshower.kernel.core.ModuleDescriptor;
 import io.sunshower.kernel.core.ModuleScanner;
@@ -47,10 +48,11 @@ public class ManifestModuleScanner implements ModuleScanner {
     val version = req(attrs, ModuleDescriptor.Attributes.VERSION);
     val order = opt(attrs, ModuleDescriptor.Attributes.ORDER, 0);
 
+    val type = Module.Type.parse(req(attrs, ModuleDescriptor.Attributes.TYPE));
     val description = attrs.getValue(ModuleDescriptor.Attributes.DESCRIPTION);
     val coordinate = new ModuleCoordinate(name, group, new SemanticVersion(version));
     val dependencies = parseDependencies(attrs);
-    return new ModuleDescriptor(source, order, file, coordinate, dependencies, description);
+    return new ModuleDescriptor(type, source, order, file, coordinate, dependencies, description);
   }
 
   private Integer opt(Attributes attrs, String name, Integer i) {

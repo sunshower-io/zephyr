@@ -2,6 +2,7 @@ package io.sunshower.module.phases;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import io.sunshower.kernel.Module.Type;
 import io.sunshower.kernel.core.ModuleDescriptor;
 import io.sunshower.kernel.core.SemanticVersion;
 import io.sunshower.kernel.process.KernelProcessContext;
@@ -33,6 +34,7 @@ class ModuleScanPhaseTest extends AbstractModulePhaseTestCase {
     phase.execute(null, context);
     ModuleDescriptor descriptor = context.getContextValue(ModuleScanPhase.MODULE_DESCRIPTOR);
     val coord = descriptor.getCoordinate();
+    assertEquals(descriptor.getType(), Type.KernelModule);
     assertEquals(coord.getGroup(), "sunshower.io", "must have correct group");
     assertEquals(coord.getName(), "test-plugin-2", "must have correct name");
     assertEquals(coord.getVersion(), new SemanticVersion("1.0.0-SNAPSHOT"));

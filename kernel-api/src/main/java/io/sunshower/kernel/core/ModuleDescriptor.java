@@ -1,6 +1,7 @@
 package io.sunshower.kernel.core;
 
 import io.sunshower.kernel.Coordinate;
+import io.sunshower.kernel.Module;
 import java.io.File;
 import java.net.URL;
 import java.util.List;
@@ -16,11 +17,13 @@ public class ModuleDescriptor {
     public static final String NAME = "name";
     public static final String GROUP = "group";
     public static final String ORDER = "order";
+    public static final String TYPE = "type";
     public static final String VERSION = "version";
     public static final String DEPENDENCIES = "dependencies";
     public static final String DESCRIPTION = "description";
   }
 
+  @NonNull private final Module.Type type;
   @NonNull private final URL source;
   @NonNull private final Integer order;
   @NonNull private final File moduleFile;

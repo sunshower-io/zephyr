@@ -13,6 +13,10 @@ public class ModuleCoordinate implements Coordinate {
   @NonNull private final String group;
   @NonNull private final Version version;
 
+  public static Coordinate create(String group, String name, String version) {
+    return new ModuleCoordinate(name, group, new SemanticVersion(version));
+  }
+
   @Override
   public int compareTo(@NotNull Coordinate o) {
     val groupcmp = group.compareTo(o.getGroup());

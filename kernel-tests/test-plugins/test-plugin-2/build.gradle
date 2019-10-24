@@ -17,7 +17,8 @@ war {
                 'name': 'test-plugin-2',
                 'version': '1.0.0-SNAPSHOT',
                 'description' : 'just a test plugin!',
-                'dependencies': deps
+                'dependencies': deps,
+                'type': 'kernel-module'
         )
     }
 }

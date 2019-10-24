@@ -11,7 +11,6 @@ import java.net.URI;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.util.Collections;
-import lombok.val;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
@@ -24,6 +23,7 @@ public abstract class AbstractModulePhaseTestCase {
   protected FileSystem fileSystem;
   protected KernelProcessContext context;
   protected ModuleDownloadPhase downloadPhase;
+  SunshowerKernel kernel;
 
   @BeforeEach
   void setUp() throws IOException {
@@ -34,7 +34,7 @@ public abstract class AbstractModulePhaseTestCase {
     options.setHomeDirectory(sunshowerHome);
     SunshowerKernel.setKernelOptions(options);
 
-    val kernel = new SunshowerKernel(new DefaultModuleManager());
+    kernel = new SunshowerKernel(new DefaultModuleManager());
     fileSystem = FileSystems.newFileSystem(URI.create("droplet://deploy"), Collections.emptyMap());
     context = new KernelProcessContext(kernel);
     context.setContextValue(ModuleDownloadPhase.TARGET_DIRECTORY, fileSystem.getPath("modules"));

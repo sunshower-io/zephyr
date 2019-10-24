@@ -8,7 +8,7 @@ import lombok.val;
 
 public abstract class AbstractPhase<E, T> extends AbstractEventSource<E, T> implements Phase<E, T> {
 
-  private List<Phase<E, T>> subphases;
+  private final List<Phase<E, T>> subphases;
 
   protected AbstractPhase(Class<? extends E> type) {
     super(type);
@@ -16,17 +16,17 @@ public abstract class AbstractPhase<E, T> extends AbstractEventSource<E, T> impl
   }
 
   @Override
-  public void addPhase(Phase<E, T> t) {
+  public final void addPhase(Phase<E, T> t) {
     subphases.add(t);
   }
 
   @Override
-  public void removePhase(Phase<E, T> t) {
+  public final void removePhase(Phase<E, T> t) {
     subphases.remove(t);
   }
 
   @Override
-  public void removeListener(E type, EventListener<E, T> listener) {
+  public final void removeListener(E type, EventListener<E, T> listener) {
     super.removeListener(type, listener);
     for (val subphase : subphases) {
       subphase.removeListener(type, listener);
@@ -34,7 +34,7 @@ public abstract class AbstractPhase<E, T> extends AbstractEventSource<E, T> impl
   }
 
   @Override
-  public void registerListener(E type, EventListener<E, T> listener) {
+  public final void registerListener(E type, EventListener<E, T> listener) {
     super.registerListener(type, listener);
     for (val subphase : subphases) {
       subphase.registerListener(type, listener);
@@ -42,7 +42,7 @@ public abstract class AbstractPhase<E, T> extends AbstractEventSource<E, T> impl
   }
 
   @Override
-  public void execute(Process<E, T> process, T context) {
+  public final void execute(Process<E, T> process, T context) {
     try {
       doExecute(process, context);
     } catch (PhaseException ex) {

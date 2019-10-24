@@ -1,6 +1,14 @@
 package io.sunshower.kernel;
 
-public interface LifeCycle {
+public interface Lifecycle {
+
+  /**
+   * This does not trigger a ModuleLifecycleChangedEvent (use the other methods for that)
+   *
+   * @param resolved
+   */
+  void setState(State resolved);
+
   enum State {
     Installed,
     Resolved,
