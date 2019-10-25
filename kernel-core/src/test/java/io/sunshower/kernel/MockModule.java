@@ -12,9 +12,9 @@ import lombok.AllArgsConstructor;
 class MockModule implements Module {
 
   final Coordinate coordinate;
-  final List<Coordinate> dependencies;
+  final List<Dependency> dependencies;
 
-  public void addDependency(Coordinate dependency) {
+  public void addDependency(Dependency dependency) {
     dependencies.add(dependency);
   }
 
@@ -54,7 +54,7 @@ class MockModule implements Module {
   }
 
   @Override
-  public Set<Coordinate> getDependencies() {
+  public Set<Dependency> getDependencies() {
     return new HashSet<>(dependencies);
   }
 

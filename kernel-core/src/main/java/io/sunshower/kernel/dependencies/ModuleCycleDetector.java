@@ -3,13 +3,14 @@ package io.sunshower.kernel.dependencies;
 import io.sunshower.kernel.Coordinate;
 import io.sunshower.kernel.Module;
 import java.util.*;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.val;
 
 @AllArgsConstructor
-public class ModuleCycleDetector {
+public final class ModuleCycleDetector {
 
   private final DependencyGraph modules;
 
@@ -18,7 +19,7 @@ public class ModuleCycleDetector {
   }
 
   @SuppressWarnings("PMD.DataflowAnomalyAnalysis")
-  public List<Component> compute() {
+  public Components compute() {
     val stack = new Stack<Link>();
     val results = new ArrayList<Component>();
     val links = new HashMap<Coordinate, Link>();
@@ -30,7 +31,7 @@ public class ModuleCycleDetector {
       }
     }
 
-    return results;
+    return new Components(results);
   }
 
   @SuppressWarnings({"PMD.AvoidReassigningParameters", "PMD.UnusedPrivateMethod"})
@@ -49,7 +50,8 @@ public class ModuleCycleDetector {
 
     val dependencies = module.getDependencies();
 
-    for (val dependency : dependencies) {
+    for (val dep : dependencies) {
+      val dependency = dep.getCoordinate();
       if (!links.containsKey(dependency)) {
         val modDep = modules.get(dependency);
         index = compute(modDep, links, stack, results, index);
@@ -70,14 +72,44 @@ public class ModuleCycleDetector {
         component.members.add(current);
       } while (!(stack.isEmpty() || module.equals(current)));
 
-      if (component.isCyclic()) {
-        results.add(component);
-      }
+      results.add(component);
     }
     return index;
   }
 
-  public static class Component {
+  @SuppressWarnings("PMD.AvoidFieldNameMatchingTypeName")
+  public static final class Components {
+    final List<Component> components;
+
+    Components(List<Component> components) {
+      this.components = components;
+    }
+
+    public List<Module> getTopologicalOrdering() {
+      if (hasCycle()) {
+        throw new IllegalArgumentException(
+            "Error: this dependency graph has at least one cycle--can't compute its topological order");
+      }
+
+      val items = components.stream().map(Component::getRoot).collect(Collectors.toList());
+      Collections.reverse(items);
+      return items;
+    }
+
+    void addComponent(Component component) {
+      components.add(component);
+    }
+
+    public boolean hasCycle() {
+      return components.stream().anyMatch(Component::isCyclic);
+    }
+
+    public List<Component> getCycles() {
+      return components.stream().filter(Component::isCyclic).collect(Collectors.toList());
+    }
+  }
+
+  public static final class Component {
     @Getter private final Module root;
     @Getter private final List<Module> members = new ArrayList<>();
 

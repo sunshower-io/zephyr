@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface ModuleManager extends StatusAware {
 
-  void resolve(Module module);
+  void install(Module module);
 
   List<Module> getModules(Module.Type type);
 }

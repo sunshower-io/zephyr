@@ -28,7 +28,7 @@ public class DefaultModule
   private final FileSystem fileSystem;
 
   // must be unmodifiable upon construction
-  private final Set<Coordinate> dependencies;
+  private final Set<Dependency> dependencies;
 
   public DefaultModule(
       Type type,
@@ -36,7 +36,7 @@ public class DefaultModule
       Path moduleDirectory,
       Coordinate coordinate,
       FileSystem fileSystem,
-      Set<Coordinate> dependencies) {
+      Set<Dependency> dependencies) {
     this.type = type;
     this.source = source;
     this.moduleDirectory = moduleDirectory;
@@ -81,7 +81,7 @@ public class DefaultModule
   }
 
   @Override
-  public Set<Coordinate> getDependencies() {
+  public Set<Dependency> getDependencies() {
     return dependencies;
   }
 

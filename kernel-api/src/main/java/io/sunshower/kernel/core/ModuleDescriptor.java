@@ -1,6 +1,7 @@
 package io.sunshower.kernel.core;
 
 import io.sunshower.kernel.Coordinate;
+import io.sunshower.kernel.Dependency;
 import io.sunshower.kernel.Module;
 import java.io.File;
 import java.net.URL;
@@ -28,6 +29,6 @@ public class ModuleDescriptor {
   @NonNull private final Integer order;
   @NonNull private final File moduleFile;
   @NonNull private final Coordinate coordinate;
-  @NonNull private final List<Coordinate> dependencies;
+  @NonNull private final List<Dependency> dependencies;
   private final String description;
 }

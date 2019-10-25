@@ -43,7 +43,7 @@ public interface Module extends Comparable<Module> {
 
   ClassLoader getClassLoader();
 
-  Set<Coordinate> getDependencies();
+  Set<Dependency> getDependencies();
 
   default boolean dependsOn(Module m, Transitivity transitivity) {
     return dependsOn(m.getCoordinate(), transitivity);

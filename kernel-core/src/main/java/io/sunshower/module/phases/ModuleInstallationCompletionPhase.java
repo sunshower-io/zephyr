@@ -45,7 +45,7 @@ public class ModuleInstallationCompletionPhase
 
     val lifecycle = createLifecycle(module);
     module.setLifecycle(lifecycle);
-    context.getKernel().getModuleManager().resolve(module);
+    context.getKernel().getModuleManager().install(module);
   }
 
   private Lifecycle createLifecycle(Module module) {

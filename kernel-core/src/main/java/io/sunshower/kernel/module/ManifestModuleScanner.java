@@ -1,6 +1,6 @@
 package io.sunshower.kernel.module;
 
-import io.sunshower.kernel.Coordinate;
+import io.sunshower.kernel.Dependency;
 import io.sunshower.kernel.Module;
 import io.sunshower.kernel.core.ModuleCoordinate;
 import io.sunshower.kernel.core.ModuleDescriptor;
@@ -19,11 +19,14 @@ import java.util.jar.Manifest;
 import java.util.regex.Pattern;
 import lombok.val;
 
-@SuppressWarnings("PMD.UnusedPrivateMethod")
-public class ManifestModuleScanner implements ModuleScanner {
+@SuppressWarnings({"PMD.UnusedPrivateMethod", "PMD.DataflowAnomalyAnalysis"})
+public final class ManifestModuleScanner implements ModuleScanner {
+
+  static final Pattern typeDelineator = Pattern.compile("@");
   static final Pattern commaSeparated = Pattern.compile(",");
   static final Pattern coordinateSeparator = Pattern.compile(":");
   private static final int SEGMENT_SIZE = 3;
+  private static final int TYPE_SPLIT_SIZE = 2;
 
   @Override
   public Optional<ModuleDescriptor> scan(File file, URL source) {
@@ -63,17 +66,21 @@ public class ManifestModuleScanner implements ModuleScanner {
     return Integer.parseInt(name);
   }
 
-  private List<Coordinate> parseDependencies(Attributes attrs) {
+  private List<Dependency> parseDependencies(Attributes attrs) {
+
     val deps = attrs.getValue(ModuleDescriptor.Attributes.DEPENDENCIES);
+
     if (!(deps == null || deps.isBlank())) {
       return parseDependencies(deps);
     }
     return Collections.emptyList();
   }
 
-  private List<Coordinate> parseDependencies(String deps) {
+  List<Dependency> parseDependencies(String deps) {
+    // type@dependency
+
     val dependencyList = commaSeparated.split(deps);
-    val results = new ArrayList<Coordinate>(dependencyList.length);
+    val results = new ArrayList<Dependency>(dependencyList.length);
     for (val dependencyString : dependencyList) {
       if (!dependencyString.isBlank()) {
         parseCoordinate(results, dependencyString);
@@ -82,15 +89,29 @@ public class ManifestModuleScanner implements ModuleScanner {
     return results;
   }
 
-  private void parseCoordinate(List<Coordinate> results, String dependencyString) {
-    val segments = coordinateSeparator.split(dependencyString);
+  void parseCoordinate(List<Dependency> results, String dependencyString) {
+
+    val coordinateSegments = typeDelineator.split(dependencyString);
+
+    if (coordinateSegments.length != TYPE_SPLIT_SIZE) {
+      throw new IllegalArgumentException(
+          "Error: invalid dependency string '"
+              + dependencyString
+              + "'.  Must be of format <type>@<group>:<artifact>:<versionspec>");
+    }
+
+    val type = Dependency.Type.parse(coordinateSegments[0]);
+
+    val segments = coordinateSeparator.split(coordinateSegments[1]);
     if (segments.length != SEGMENT_SIZE) {
       throw new IllegalArgumentException(
           "Error: invalid dependency string: '"
               + dependencyString
               + "'.  Must be of format <group>:<artifact>:<versionspec>");
     }
-    val result = new ModuleCoordinate(segments[1], segments[0], new SemanticVersion(segments[2]));
+    val result =
+        new Dependency(
+            type, new ModuleCoordinate(segments[1], segments[0], new SemanticVersion(segments[2])));
     results.add(result);
   }
 
