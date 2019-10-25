@@ -22,6 +22,9 @@ public class DefaultModuleManager implements ModuleManager {
   }
 
   @Override
+  public void resolve(Module module) {}
+
+  @Override
   public void install(Module module) {
     module.getLifecycle().setState(Lifecycle.State.Installed);
     modules.computeIfAbsent(module.getType(), Collections::newList).add(module);

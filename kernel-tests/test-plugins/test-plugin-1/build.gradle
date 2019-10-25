@@ -1,7 +1,17 @@
-plugins {
-    id 'war'
-}
+apply plugin: 'war'
 
 dependencies {
+    implementation project(':kernel-modules:sunshower-yaml-reader')
+}
 
+war {
+    manifest {
+        attributes(
+                'group': 'sunshower.io',
+                'name': 'test-plugin-1',
+                'version': '1.0.0-SNAPSHOT',
+                'description': 'just a test plugin!',
+                'type': 'kernel-module'
+        )
+    }
 }

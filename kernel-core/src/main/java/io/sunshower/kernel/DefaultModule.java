@@ -4,6 +4,7 @@ import java.nio.file.FileSystem;
 import java.nio.file.Path;
 import java.util.ServiceLoader;
 import java.util.Set;
+import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
 import org.jboss.modules.Module;
@@ -18,17 +19,18 @@ public class DefaultModule
    */
   @Setter private Module module;
 
-  @Setter private Lifecycle lifecycle;
+  @Getter @Setter private Lifecycle lifecycle;
 
-  private final Type type;
+  @Getter private final Type type;
 
-  private final Source source;
-  private final Path moduleDirectory;
-  private final Coordinate coordinate;
-  private final FileSystem fileSystem;
+  @Getter private final Source source;
+  @Getter private final Path moduleDirectory;
+  @Getter private final Coordinate coordinate;
+  @Getter private final FileSystem fileSystem;
 
   // must be unmodifiable upon construction
-  private final Set<Dependency> dependencies;
+  @Getter private final Set<Dependency> dependencies;
+  @Getter private final Set<Library> libraries;
 
   public DefaultModule(
       Type type,
@@ -36,53 +38,24 @@ public class DefaultModule
       Path moduleDirectory,
       Coordinate coordinate,
       FileSystem fileSystem,
+      Set<Library> libraries,
       Set<Dependency> dependencies) {
     this.type = type;
     this.source = source;
-    this.moduleDirectory = moduleDirectory;
+    this.libraries = libraries;
     this.coordinate = coordinate;
     this.fileSystem = fileSystem;
     this.dependencies = dependencies;
-  }
-
-  @Override
-  public Type getType() {
-    return type;
-  }
-
-  @Override
-  public Path getModuleDirectory() {
-    return moduleDirectory;
-  }
-
-  @Override
-  public Source getSource() {
-    return source;
-  }
-
-  @Override
-  public Lifecycle getLifecycle() {
-    return lifecycle;
-  }
-
-  @Override
-  public Coordinate getCoordinate() {
-    return coordinate;
-  }
-
-  @Override
-  public FileSystem getFileSystem() {
-    return fileSystem;
+    this.moduleDirectory = moduleDirectory;
   }
 
   @Override
   public ClassLoader getClassLoader() {
+    if (module == null) {
+      throw new IllegalModuleStateException(
+          "Module must be in at least the 'RESOLVED' state to perform this operation");
+    }
     return module.getClassLoader();
-  }
-
-  @Override
-  public Set<Dependency> getDependencies() {
-    return dependencies;
   }
 
   @Override

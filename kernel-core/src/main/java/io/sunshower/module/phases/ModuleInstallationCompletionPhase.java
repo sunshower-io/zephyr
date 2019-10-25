@@ -12,11 +12,14 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.FileSystem;
+import java.util.HashSet;
 import java.util.Set;
 import lombok.val;
 
 public class ModuleInstallationCompletionPhase
     extends AbstractPhase<KernelProcessEvent, KernelProcessContext> {
+
+  public static final String INSTALLED_MODULE = "MODULE_INSTALLED_MODULE";
 
   enum EventType implements KernelProcessEvent {}
 
@@ -32,7 +35,6 @@ public class ModuleInstallationCompletionPhase
     ModuleDescriptor descriptor = context.getContextValue(ModuleScanPhase.MODULE_DESCRIPTOR);
     FileSystem fileSystem = context.getContextValue(ModuleTransferPhase.MODULE_FILE_SYSTEM);
     File moduleDirectory = context.getContextValue(ModuleTransferPhase.MODULE_DIRECTORY);
-    //    File moduleFile = context.getContextValue(ModuleTransferPhase.MODULE_ASSEMBLY);
 
     DefaultModule module =
         new DefaultModule(
@@ -41,11 +43,14 @@ public class ModuleInstallationCompletionPhase
             moduleDirectory.getAbsoluteFile().toPath(),
             descriptor.getCoordinate(),
             fileSystem,
+            new HashSet<>(),
             Set.copyOf(descriptor.getDependencies()));
 
     val lifecycle = createLifecycle(module);
     module.setLifecycle(lifecycle);
     context.getKernel().getModuleManager().install(module);
+
+    context.setContextValue(INSTALLED_MODULE, module);
   }
 
   private Lifecycle createLifecycle(Module module) {

@@ -9,4 +9,6 @@ public interface ModuleManager extends StatusAware {
   void install(Module module);
 
   List<Module> getModules(Module.Type type);
+
+  void resolve(Module module);
 }

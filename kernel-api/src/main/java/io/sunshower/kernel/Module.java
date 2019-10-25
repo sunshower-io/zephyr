@@ -29,6 +29,9 @@ public interface Module extends Comparable<Module> {
     }
   }
 
+  /** @return the relative paths of any created library directories */
+  Set<Library> getLibraries();
+
   Type getType();
 
   Path getModuleDirectory();

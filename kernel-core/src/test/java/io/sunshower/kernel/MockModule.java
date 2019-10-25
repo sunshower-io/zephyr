@@ -19,6 +19,11 @@ class MockModule implements Module {
   }
 
   @Override
+  public Set<Library> getLibraries() {
+    return null;
+  }
+
+  @Override
   public Type getType() {
     return null;
   }

@@ -1,6 +1,7 @@
 package io.sunshower.module.phases;
 
 import io.sunshower.common.io.Files;
+import io.sunshower.kernel.Library;
 import io.sunshower.kernel.log.Logging;
 import io.sunshower.kernel.process.*;
 import io.sunshower.kernel.process.Process;
@@ -41,7 +42,7 @@ public class ModuleUnpackPhase extends AbstractPhase<KernelProcessEvent, KernelP
       Process<KernelProcessEvent, KernelProcessContext> process, KernelProcessContext context) {
     Set<String> libDirectories = context.getContextValue(LIBRARY_DIRECTORIES);
     File assemblyFile = context.getContextValue(ModuleTransferPhase.MODULE_ASSEMBLY);
-    val libraryFiles = new HashSet<File>();
+    val libraryFiles = new HashSet<Library>();
     FileSystem moduleFileSystem = context.getContextValue(ModuleTransferPhase.MODULE_FILE_SYSTEM);
 
     try {
@@ -60,7 +61,7 @@ public class ModuleUnpackPhase extends AbstractPhase<KernelProcessEvent, KernelP
       Set<String> libDirectories,
       File assemblyFile,
       FileSystem moduleFileSystem,
-      Set<File> libraryFiles)
+      Set<Library> libraryFiles)
       throws IOException {
 
     val compressedAssembly = new JarFile(assemblyFile, true);
@@ -85,7 +86,7 @@ public class ModuleUnpackPhase extends AbstractPhase<KernelProcessEvent, KernelP
       JarEntry next,
       String libdir,
       String name,
-      Set<File> libraryFiles)
+      Set<Library> libraryFiles)
       throws IOException {
     val dirname = dirname(libdir);
     val path = moduleFileSystem.getPath(dirname).toFile();
@@ -98,7 +99,7 @@ public class ModuleUnpackPhase extends AbstractPhase<KernelProcessEvent, KernelP
   }
 
   private void doTransfer(
-      JarFile compressedAssembly, JarEntry next, String name, File path, Set<File> libraryFiles)
+      JarFile compressedAssembly, JarEntry next, String name, File path, Set<Library> libraryFiles)
       throws IOException {
     val target = new File(path, Files.getFileName(name));
     val inputStream = compressedAssembly.getInputStream(next);
@@ -106,7 +107,7 @@ public class ModuleUnpackPhase extends AbstractPhase<KernelProcessEvent, KernelP
       log.log(Level.FINE, "module.unpack.file", new Object[] {name, target});
     }
     Files.transferTo(target, inputStream);
-    libraryFiles.add(target);
+    libraryFiles.add(new Library(target));
     if (log.isLoggable(Level.FINE)) {
       log.log(Level.FINE, "module.unpack.file.complete", new Object[] {name, target});
     }
