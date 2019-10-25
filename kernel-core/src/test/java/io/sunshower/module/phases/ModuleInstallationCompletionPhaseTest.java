@@ -25,8 +25,6 @@ class ModuleInstallationCompletionPhaseTest extends AbstractModulePhaseTestCase 
   @BeforeEach
   void setUp() throws IOException {
     super.setUp();
-    context.setContextValue(
-        ModuleUnpackPhase.LIBRARY_DIRECTORIES, Collections.singleton("WEB-INF/lib/"));
     process = new KernelProcess(context);
     process.addPhase(new ModuleDownloadPhase());
     process.addPhase(new ModuleScanPhase());
@@ -37,6 +35,9 @@ class ModuleInstallationCompletionPhaseTest extends AbstractModulePhaseTestCase 
 
   @Test
   void ensureModuleTransferWorksUpToTransferPhase() throws Exception {
+    install("test-plugin-2");
+    context.setContextValue(
+        ModuleUnpackPhase.LIBRARY_DIRECTORIES, Collections.singleton("WEB-INF/lib/"));
     process.call();
     val modules = kernel.getModuleManager().getModules(Module.Type.KernelModule);
     assertFalse(modules.isEmpty(), "module must be installed");

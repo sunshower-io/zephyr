@@ -21,6 +21,7 @@ class ModuleUnpackPhaseTest extends AbstractModulePhaseTestCase {
 
   @Test
   void ensureModuleTransferWorksUpToTransferPhase() throws Exception {
+    install("test-plugin-2");
     context.setContextValue(
         ModuleUnpackPhase.LIBRARY_DIRECTORIES, Collections.singleton("WEB-INF/lib/"));
     val process = new KernelProcess(context);

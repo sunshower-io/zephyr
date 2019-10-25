@@ -26,6 +26,7 @@ class ModuleScanPhaseTest extends AbstractModulePhaseTestCase {
   void setUp() throws IOException {
     super.setUp();
     phase = new ModuleScanPhase();
+    val pluginFile = install("test-plugin-2").getPluginFile();
     context.setContextValue(ModuleDownloadPhase.DOWNLOADED_FILE, pluginFile);
   }
 

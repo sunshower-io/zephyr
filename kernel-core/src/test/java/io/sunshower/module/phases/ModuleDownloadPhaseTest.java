@@ -4,12 +4,17 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import org.junit.jupiter.api.Test;
 
 class ModuleDownloadPhaseTest extends AbstractModulePhaseTestCase {
 
+  ModuleDownloadPhase downloadPhase;
+
   @Test
-  void ensureSuccessfulDownloadResultsInFileBeingTransferredToCorrectLocation() {
+  void ensureSuccessfulDownloadResultsInFileBeingTransferredToCorrectLocation()
+      throws MalformedURLException {
+    install("test-plugin-2");
     downloadPhase = spy(new ModuleDownloadPhase());
     downloadPhase.doExecute(null, context);
     File file = context.getContextValue(ModuleDownloadPhase.DOWNLOADED_FILE);
@@ -17,7 +22,8 @@ class ModuleDownloadPhaseTest extends AbstractModulePhaseTestCase {
   }
 
   @Test
-  void ensureSuccessfulDownloadResultsInEventsBeingCalled() {
+  void ensureSuccessfulDownloadResultsInEventsBeingCalled() throws MalformedURLException {
+    install("test-plugin-2");
     downloadPhase = spy(new ModuleDownloadPhase());
     downloadPhase.doExecute(null, context);
     verify(downloadPhase, atLeastOnce()).onTransfer(any(), anyDouble());

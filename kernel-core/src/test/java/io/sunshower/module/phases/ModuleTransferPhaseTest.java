@@ -21,6 +21,7 @@ class ModuleTransferPhaseTest extends AbstractModulePhaseTestCase {
 
   @Test
   void ensureModuleTransferWorksUpToTransferPhase() throws Exception {
+    install("test-plugin-2");
     val transfer = spy(new ModuleTransferPhase());
     val process = new KernelProcess(context);
     process.addPhase(new ModuleDownloadPhase());
