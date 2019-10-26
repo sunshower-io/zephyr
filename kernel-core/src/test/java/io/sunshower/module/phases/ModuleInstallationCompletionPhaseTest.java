@@ -23,7 +23,7 @@ class ModuleInstallationCompletionPhaseTest extends AbstractModulePhaseTestCase 
 
   @Override
   @BeforeEach
-  void setUp() throws IOException {
+  void setUp() throws Exception {
     super.setUp();
     process = new KernelProcess(context);
     process.addPhase(new ModuleDownloadPhase());

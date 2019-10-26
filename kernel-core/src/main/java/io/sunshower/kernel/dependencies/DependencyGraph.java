@@ -15,6 +15,10 @@ public class DependencyGraph implements Iterable<Module> {
     this.adjacencies = adjacencies;
   }
 
+  public int size() {
+    return adjacencies.size();
+  }
+
   @NotNull
   @Override
   public Iterator<Module> iterator() {

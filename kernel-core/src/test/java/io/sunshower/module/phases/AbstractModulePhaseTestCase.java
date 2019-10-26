@@ -46,7 +46,7 @@ public abstract class AbstractModulePhaseTestCase {
   }
 
   @BeforeEach
-  void setUp() throws IOException {
+  void setUp() throws Exception {
     sunshowerHome = Tests.createTemp(".sunshower-home");
     options = new KernelOptions();
     options.setHomeDirectory(sunshowerHome);
@@ -94,6 +94,10 @@ public abstract class AbstractModulePhaseTestCase {
   protected InstallationContext install(String plugin) throws MalformedURLException {
     val file = relativeToProjectBuild(module(plugin), "war", "libs");
     return install(file);
+  }
+
+  protected File resolveFile(String plugin, String ext) {
+    return relativeToProjectBuild(module(plugin), ext, "libs");
   }
 
   @AfterEach

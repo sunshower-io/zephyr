@@ -12,7 +12,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.FileSystem;
-import java.util.HashSet;
 import java.util.Set;
 import lombok.val;
 
@@ -35,15 +34,18 @@ public class ModuleInstallationCompletionPhase
     ModuleDescriptor descriptor = context.getContextValue(ModuleScanPhase.MODULE_DESCRIPTOR);
     FileSystem fileSystem = context.getContextValue(ModuleTransferPhase.MODULE_FILE_SYSTEM);
     File moduleDirectory = context.getContextValue(ModuleTransferPhase.MODULE_DIRECTORY);
+    Assembly assembly = context.getContextValue(ModuleUnpackPhase.MODULE_ASSEMBLY);
+    Set<Library> libraries = context.getContextValue(ModuleUnpackPhase.INSTALLED_LIBRARIES);
 
     DefaultModule module =
         new DefaultModule(
             descriptor.getType(),
             source,
+            assembly,
             moduleDirectory.getAbsoluteFile().toPath(),
             descriptor.getCoordinate(),
             fileSystem,
-            new HashSet<>(),
+            libraries,
             Set.copyOf(descriptor.getDependencies()));
 
     val lifecycle = createLifecycle(module);

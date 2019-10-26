@@ -24,17 +24,19 @@ public class DefaultModule
   @Getter private final Type type;
 
   @Getter private final Source source;
+  @Getter private final Assembly assembly;
   @Getter private final Path moduleDirectory;
   @Getter private final Coordinate coordinate;
   @Getter private final FileSystem fileSystem;
 
   // must be unmodifiable upon construction
-  @Getter private final Set<Dependency> dependencies;
   @Getter private final Set<Library> libraries;
+  @Getter private final Set<Dependency> dependencies;
 
   public DefaultModule(
       Type type,
       Source source,
+      Assembly assembly,
       Path moduleDirectory,
       Coordinate coordinate,
       FileSystem fileSystem,
@@ -42,6 +44,7 @@ public class DefaultModule
       Set<Dependency> dependencies) {
     this.type = type;
     this.source = source;
+    this.assembly = assembly;
     this.libraries = libraries;
     this.coordinate = coordinate;
     this.fileSystem = fileSystem;

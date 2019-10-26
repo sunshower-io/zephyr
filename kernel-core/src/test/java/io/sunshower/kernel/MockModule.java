@@ -34,6 +34,11 @@ class MockModule implements Module {
   }
 
   @Override
+  public Assembly getAssembly() {
+    return null;
+  }
+
+  @Override
   public Source getSource() {
     return null;
   }

@@ -1,11 +1,9 @@
 package io.sunshower.kernel;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.val;
+import lombok.*;
 
 @Getter
+@EqualsAndHashCode
 @AllArgsConstructor
 public final class Dependency {
 

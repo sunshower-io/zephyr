@@ -5,9 +5,6 @@ dependencies {
 }
 
 def deps = [
-        "library@io.sunshower:test-plugin-2:1.0.0-SNAPSHOT",
-        "service@io.sunshower:test-plugin-1:1.0.0-SNAPSHOT",
-        "service@io.sunshower:test-plugin-2:1.0.0-SNAPSHOT",
         "library@io.sunshower:test-plugin-1:1.0.0-SNAPSHOT"
 ].join(',')
 war {
@@ -18,7 +15,7 @@ war {
                 'version': '1.0.0-SNAPSHOT',
                 'description' : 'just a test plugin!',
                 'dependencies': deps,
-                'type': 'kernel-module'
+                'type': 'plugin'
         )
     }
 }

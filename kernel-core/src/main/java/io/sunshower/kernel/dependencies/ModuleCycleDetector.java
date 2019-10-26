@@ -27,15 +27,14 @@ public final class ModuleCycleDetector {
     var index = 0;
     for (val module : modules) {
       if (!links.containsKey(module.getCoordinate())) {
-        index = compute(module, links, stack, results, index);
+        index = computeComponents(module, links, stack, results, index);
       }
     }
-
     return new Components(results);
   }
 
   @SuppressWarnings({"PMD.AvoidReassigningParameters", "PMD.UnusedPrivateMethod"})
-  private int compute(
+  private int computeComponents(
       Module module,
       Map<Coordinate, Link> links,
       Stack<Link> stack,
@@ -43,7 +42,7 @@ public final class ModuleCycleDetector {
       int index) {
 
     val id = module.getCoordinate();
-    val link = new Link(id, index, index, module, true);
+    val link = new Link(id, index, index, module);
     index = index + 1;
     stack.push(link);
     links.put(id, link);
@@ -54,13 +53,11 @@ public final class ModuleCycleDetector {
       val dependency = dep.getCoordinate();
       if (!links.containsKey(dependency)) {
         val modDep = modules.get(dependency);
-        index = compute(modDep, links, stack, results, index);
+        index = computeComponents(modDep, links, stack, results, index);
         link.link = Math.min(links.get(link.id).link, links.get(dependency).link);
       } else {
         val nlink = links.get(dependency);
-        if (nlink.considering) {
-          link.link = Math.min(link.link, nlink.index);
-        }
+        link.link = Math.min(link.link, nlink.index);
       }
     }
 
@@ -134,6 +131,5 @@ public final class ModuleCycleDetector {
     int index;
     int link;
     Module module;
-    boolean considering;
   }
 }

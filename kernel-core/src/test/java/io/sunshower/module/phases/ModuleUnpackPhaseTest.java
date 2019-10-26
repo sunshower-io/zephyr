@@ -2,6 +2,7 @@ package io.sunshower.module.phases;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import io.sunshower.kernel.Assembly;
 import io.sunshower.kernel.Library;
 import io.sunshower.kernel.process.KernelProcess;
 import java.io.IOException;
@@ -21,11 +22,7 @@ class ModuleUnpackPhaseTest extends AbstractModulePhaseTestCase {
 
   @Test
   void ensureModuleTransferWorksUpToTransferPhase() throws Exception {
-    install("test-plugin-2");
-    context.setContextValue(
-        ModuleUnpackPhase.LIBRARY_DIRECTORIES, Collections.singleton("WEB-INF/lib/"));
-    val process = createProcess();
-    process.call();
+    doConfigure();
 
     Set<Library> values = context.getContextValue(ModuleUnpackPhase.INSTALLED_LIBRARIES);
     assertFalse(values.isEmpty(), "installed libraries must have contents");
@@ -34,11 +31,7 @@ class ModuleUnpackPhaseTest extends AbstractModulePhaseTestCase {
   @Test
   void ensureModuleTransferResolvesLibrariesCorrectly() throws Exception {
 
-    install("test-plugin-2");
-    context.setContextValue(
-        ModuleUnpackPhase.LIBRARY_DIRECTORIES, Collections.singleton("WEB-INF/lib/"));
-    val process = createProcess();
-    process.call();
+    doConfigure();
 
     Set<Library> values = context.getContextValue(ModuleUnpackPhase.INSTALLED_LIBRARIES);
     assertEquals(values.size(), 3, "must have correct libraries");
@@ -47,16 +40,30 @@ class ModuleUnpackPhaseTest extends AbstractModulePhaseTestCase {
   @Test
   void ensureAllInstalledLibrariesExist() throws Exception {
 
-    install("test-plugin-2");
-    context.setContextValue(
-        ModuleUnpackPhase.LIBRARY_DIRECTORIES, Collections.singleton("WEB-INF/lib/"));
-    val process = createProcess();
-    process.call();
+    doConfigure();
 
     Set<Library> values = context.getContextValue(ModuleUnpackPhase.INSTALLED_LIBRARIES);
     for (val lib : values) {
       assertTrue(lib.getFile().exists());
     }
+  }
+
+  @Test
+  void ensureInstalledPathsAreCorrect() throws Exception {
+    doConfigure();
+    Assembly assembly = context.getContextValue(ModuleUnpackPhase.MODULE_ASSEMBLY);
+    assertEquals(assembly.getSubpaths().size(), 1, "assembly must have two subpaths");
+    assertTrue(
+        assembly.getSubpaths().contains("WEB-INF/classes/"),
+        "assembly must have the correct subpath");
+  }
+
+  private void doConfigure() throws Exception {
+    install("test-plugin-2");
+    context.setContextValue(
+        ModuleUnpackPhase.LIBRARY_DIRECTORIES, Collections.singleton("WEB-INF/lib/"));
+    val process = createProcess();
+    process.call();
   }
 
   private KernelProcess createProcess() throws Exception {

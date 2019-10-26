@@ -12,7 +12,7 @@ public class Files {
 
   public static final String separator = File.separatorChar == '\\' ? "\\\\" : File.separator;
 
-  static final int BUFFER_SIZE = 8192;
+  static final int BUFFER_SIZE = 8128;
 
   @SuppressFBWarnings
   @SuppressWarnings({"PMD.AvoidFileStream", "PMD.DataflowAnomalyAnalysis"})

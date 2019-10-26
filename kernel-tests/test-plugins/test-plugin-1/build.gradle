@@ -7,11 +7,11 @@ dependencies {
 war {
     manifest {
         attributes(
-                'group': 'sunshower.io',
+                'group': 'io.sunshower',
                 'name': 'test-plugin-1',
                 'version': '1.0.0-SNAPSHOT',
                 'description': 'just a test plugin!',
-                'type': 'kernel-module'
+                'type': 'plugin'
         )
     }
 }

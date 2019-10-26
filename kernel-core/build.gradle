@@ -1,5 +1,5 @@
 plugins {
-    id 'pmd'
+//    id 'pmd'
     id 'org.springframework.boot'
     id "com.github.spotbugs" version "2.0.0"
 }
@@ -13,15 +13,15 @@ tasks.withType(com.github.spotbugs.SpotBugsTask) {
     }
 }
 
-pmd {
-    ruleSets = [
-            "${project.projectDir}/check/pmd/rules/errorprone.xml",
-            "category/java/multithreading.xml",
-            "category/java/bestpractices.xml",
-            "category/java/performance.xml"
-    ]
-
-}
+//pmd {
+//    ruleSets = [
+//            "${project.projectDir}/check/pmd/rules/errorprone.xml",
+//            "category/java/multithreading.xml",
+//            "category/java/bestpractices.xml",
+//            "category/java/performance.xml"
+//    ]
+//
+//}
 dependencies {
     implementation group: 'com.github.zafarkhaja', name: 'java-semver', version: '0.9.0'
 

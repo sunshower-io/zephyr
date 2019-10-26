@@ -8,7 +8,6 @@ import io.sunshower.kernel.core.SemanticVersion;
 import io.sunshower.kernel.process.KernelProcessContext;
 import io.sunshower.kernel.process.KernelProcessEvent;
 import io.sunshower.kernel.process.Phase;
-import java.io.IOException;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,7 +22,7 @@ class ModuleScanPhaseTest extends AbstractModulePhaseTestCase {
 
   @Override
   @BeforeEach
-  void setUp() throws IOException {
+  void setUp() throws Exception {
     super.setUp();
     phase = new ModuleScanPhase();
     val pluginFile = install("test-plugin-2").getPluginFile();

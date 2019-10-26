@@ -36,6 +36,8 @@ public interface Module extends Comparable<Module> {
 
   Path getModuleDirectory();
 
+  Assembly getAssembly();
+
   Source getSource();
 
   Lifecycle getLifecycle();

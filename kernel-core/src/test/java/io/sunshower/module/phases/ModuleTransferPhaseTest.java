@@ -30,7 +30,7 @@ class ModuleTransferPhaseTest extends AbstractModulePhaseTestCase {
     process.call();
     verify(transfer, times(1)).doExecute(any(), any());
 
-    File assembly = context.getContextValue(ModuleTransferPhase.MODULE_ASSEMBLY);
+    File assembly = context.getContextValue(ModuleTransferPhase.MODULE_ASSEMBLY_FILE);
     FileSystem fs = context.getContextValue(ModuleTransferPhase.MODULE_FILE_SYSTEM);
     assertTrue(assembly.exists(), "assembly must exist");
     val path = fs.getPath("module.droplet");

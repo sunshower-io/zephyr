@@ -7,4 +7,8 @@ public interface Coordinate extends Comparable<Coordinate> {
   String getGroup();
 
   Version getVersion();
+
+  default String toCanonicalForm() {
+    return String.format("%s:%s:%s", getGroup(), getName(), getVersion());
+  }
 }

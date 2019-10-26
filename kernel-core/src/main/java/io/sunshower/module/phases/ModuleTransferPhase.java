@@ -1,6 +1,5 @@
 package io.sunshower.module.phases;
 
-import io.sunshower.common.io.Files;
 import io.sunshower.kernel.core.ModuleDescriptor;
 import io.sunshower.kernel.log.Logging;
 import io.sunshower.kernel.process.*;
@@ -10,6 +9,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.ResourceBundle;
@@ -24,7 +25,7 @@ import lombok.val;
  */
 public class ModuleTransferPhase extends AbstractPhase<KernelProcessEvent, KernelProcessContext> {
 
-  public static final String MODULE_ASSEMBLY = "MODULE_ASSEMBLY";
+  public static final String MODULE_ASSEMBLY_FILE = "MODULE_ASSEMBLY";
   public static final String MODULE_DIRECTORY = "MODULE_DIRECTORY";
   public static final String MODULE_FILE_SYSTEM = "MODULE_FILE_SYSTEM";
 
@@ -61,10 +62,11 @@ public class ModuleTransferPhase extends AbstractPhase<KernelProcessEvent, Kerne
 
     log.log(Level.INFO, "transfer.file.beginning", new Object[] {file, assembly});
     try {
-      Files.transferTo(file, assembly);
-      context.setContextValue(MODULE_ASSEMBLY, assembly);
+      Files.copy(file.toPath(), assembly.toPath(), StandardCopyOption.REPLACE_EXISTING);
+      context.setContextValue(MODULE_ASSEMBLY_FILE, assembly);
       log.log(Level.INFO, "transfer.file.complete", new Object[] {file, assembly});
     } catch (IOException ex) {
+      ex.printStackTrace();
       val message =
           MessageFormat.format(
               bundle.getString("transfer.file.failed"), assembly, file, ex.getMessage());
