@@ -20,9 +20,12 @@ public final class KernelModuleFinder implements ModuleFinder {
   private final Module module;
   private final ModuleLoader moduleLoader;
 
+  private final LocalLoader localLoader;
+
   KernelModuleFinder(@NonNull Module module, @NonNull final ModuleLoader loader) {
     this.module = module;
     this.moduleLoader = loader;
+    this.localLoader = new KernelClasspathLocalLoader();
   }
 
   @Override
@@ -75,6 +78,8 @@ public final class KernelModuleFinder implements ModuleFinder {
               .build();
       moduleSpec.addDependency(dep);
     }
+
+    moduleSpec.setFallbackLoader(localLoader);
 
     return moduleSpec.create();
   }

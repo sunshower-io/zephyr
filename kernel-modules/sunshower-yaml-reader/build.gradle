@@ -6,7 +6,7 @@ dependencies {
 
     testImplementation project(':kernel-tests:kernel-test')
 
-    implementation project(":kernel-api")
+    compileOnly project(":kernel-api")
 
     [
             "org.junit.jupiter:junit-jupiter-api",

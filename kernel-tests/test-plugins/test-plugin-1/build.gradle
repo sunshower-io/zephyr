@@ -1,6 +1,7 @@
 apply plugin: 'war'
 
 dependencies {
+    compileOnly project(':kernel-api')
     implementation project(':kernel-modules:sunshower-yaml-reader')
 }
 
