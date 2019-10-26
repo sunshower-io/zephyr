@@ -1,6 +1,7 @@
 package plugin1;
 
 import io.sunshower.kernel.core.ModuleActivator;
+import io.sunshower.kernel.core.ModuleContext;
 import lombok.val;
 
 public class Test implements ModuleActivator {
@@ -12,7 +13,7 @@ public class Test implements ModuleActivator {
   }
 
   @Override
-  public void onLifecycleChanged(ModuleActivator activator) {
-    System.out.println("GOT" + activator);
+  public void onLifecycleChanged(ModuleContext context) {
+    System.out.println("LIFECYCLE CHANGED HOMESLICE!");
   }
 }

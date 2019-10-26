@@ -34,7 +34,7 @@ class ModuleUnpackPhaseTest extends AbstractModulePhaseTestCase {
     doConfigure();
 
     Set<Library> values = context.getContextValue(ModuleUnpackPhase.INSTALLED_LIBRARIES);
-    assertEquals(values.size(), 3, "must have correct libraries");
+    assertEquals(values.size(), 2, "must have correct libraries");
   }
 
   @Test

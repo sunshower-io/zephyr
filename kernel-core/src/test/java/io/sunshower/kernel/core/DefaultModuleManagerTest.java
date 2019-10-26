@@ -151,7 +151,15 @@ class DefaultModuleManagerTest extends AbstractModulePhaseTestCase {
     assertTrue("service must be present", fst.isPresent());
 
     try {
-      first.resolveServiceLoader(ModuleActivator.class);
+      fst.get()
+          .onLifecycleChanged(
+              new ModuleContext() {
+                @Override
+                public void addModuleLifecycleListener(ModuleLifecycleListener l) {}
+
+                @Override
+                public void removeModuleLifecycleListener(ModuleLifecycleListener listener) {}
+              });
     } finally {
       first.getFileSystem().close();
     }

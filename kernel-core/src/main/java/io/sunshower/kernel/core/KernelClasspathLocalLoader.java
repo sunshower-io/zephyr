@@ -1,11 +1,9 @@
 package io.sunshower.kernel.core;
 
-import org.jboss.modules.IterableModuleFinder;
-import org.jboss.modules.LocalLoader;
-import org.jboss.modules.Resource;
-
 import java.util.Collections;
 import java.util.List;
+import org.jboss.modules.LocalLoader;
+import org.jboss.modules.Resource;
 
 public class KernelClasspathLocalLoader implements LocalLoader {
 
