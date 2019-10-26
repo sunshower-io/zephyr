@@ -4,6 +4,7 @@ import io.sunshower.kernel.Coordinate;
 import io.sunshower.kernel.Module;
 import java.util.List;
 import lombok.AllArgsConstructor;
+import lombok.val;
 
 @AllArgsConstructor
 public final class DependencyNode {
@@ -13,5 +14,14 @@ public final class DependencyNode {
 
   void addDependency(DependencyNode node) {
     dependencies.add(node);
+  }
+
+  public boolean dependsOn(Coordinate coordinate) {
+    for (val depNode : dependencies) {
+      if (depNode.coordinate.equals(coordinate)) {
+        return true;
+      }
+    }
+    return false;
   }
 }

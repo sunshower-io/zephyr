@@ -1,24 +1,31 @@
 package io.sunshower.module.phases;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import io.sunshower.kernel.Module;
+import io.sunshower.kernel.WeakReferenceClassLoader;
 import io.sunshower.kernel.dependencies.DependencyGraph;
-import io.sunshower.kernel.lifecycle.ModuleContextLoader;
+import io.sunshower.kernel.lifecycle.KernelModuleLoader;
+import io.sunshower.kernel.misc.SuppressFBWarnings;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collections;
 import lombok.val;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-@SuppressWarnings({"PMD.JUnitAssertionsShouldIncludeMessage", "PMD.JUnitTestsShouldIncludeAssert"})
+@SuppressWarnings({
+  "PMD.JUnitAssertionsShouldIncludeMessage",
+  "PMD.JUnitTestsShouldIncludeAssert",
+  "PMD.UseProperClassLoader"
+})
+@SuppressFBWarnings
 public class ModuleClassloaderModuleTest extends AbstractModulePhaseTestCase {
 
   private Module module;
   private String moduleId;
-  private ModuleContextLoader contextLoader;
+  private KernelModuleLoader contextLoader;
   private DependencyGraph dependencyGraph;
   private InstallationContext installationContext;
   private org.jboss.modules.Module moduleClasspath;
@@ -32,8 +39,9 @@ public class ModuleClassloaderModuleTest extends AbstractModulePhaseTestCase {
     module = installationContext.getInstalledModule();
     moduleId = module.getCoordinate().toCanonicalForm();
     dependencyGraph = DependencyGraph.create(Collections.singleton(module));
-    contextLoader = new ModuleContextLoader(dependencyGraph);
-    moduleClasspath = contextLoader.createModuleContext().loadModule(moduleId);
+    contextLoader = new KernelModuleLoader(dependencyGraph);
+    contextLoader.install(installationContext.getInstalledModule());
+    moduleClasspath = contextLoader.loadModule(moduleId);
   }
 
   @Test
@@ -64,13 +72,34 @@ public class ModuleClassloaderModuleTest extends AbstractModulePhaseTestCase {
   void ensureLoadingFromModuleDependencyWorks() throws Exception {
     val ic = resolve("test-plugin-2");
     val imod = ic.getInstalledModule();
-    val depgraph = DependencyGraph.create(Arrays.asList(imod, module));
-    val cl = new ModuleContextLoader(depgraph);
-    val moduleContext = cl.createModuleContext();
-    val moduleLoader = moduleContext.loadModule(imod.getCoordinate().toCanonicalForm());
+    contextLoader.install(imod);
 
     try {
-      Class.forName("plugin1.Test", true, moduleLoader.getClassLoader());
+      val cl = contextLoader.loadModule(imod.getCoordinate().toCanonicalForm()).getClassLoader();
+      Class.forName("plugin1.Test", true, cl);
+    } finally {
+      ic.getInstalledModule().getFileSystem().close();
+    }
+  }
+
+  @Test
+  void ensureUnloadingModuleWorks() throws Exception {
+    val ic = resolve("test-plugin-2");
+    val imod = ic.getInstalledModule();
+    contextLoader.install(imod);
+
+    try {
+      var cl =
+          new WeakReferenceClassLoader(
+              contextLoader.loadModule(imod.getCoordinate().toCanonicalForm()).getClassLoader());
+      try {
+        Class.forName("plugin1.Test", true, cl);
+
+      } catch (Exception ex) {
+        fail("Should not have reached here");
+      }
+
+      contextLoader.uninstall(installationContext.getInstalledModule());
     } finally {
       ic.getInstalledModule().getFileSystem().close();
     }

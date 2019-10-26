@@ -1,5 +1,6 @@
 package io.sunshower.kernel;
 
+import io.sunshower.kernel.misc.SuppressFBWarnings;
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
 import java.util.ServiceLoader;
@@ -17,7 +18,7 @@ public class DefaultModule
    * mutable state . These can't be final because either the module isn't resolved or there is a
    * mutual dependency
    */
-  @Setter private Module module;
+  @Getter @Setter private Module module;
 
   @Getter @Setter private Lifecycle lifecycle;
 
@@ -53,12 +54,14 @@ public class DefaultModule
   }
 
   @Override
+  @SuppressFBWarnings
   public ClassLoader getClassLoader() {
     if (module == null) {
       throw new IllegalModuleStateException(
           "Module must be in at least the 'RESOLVED' state to perform this operation");
     }
-    return module.getClassLoader();
+
+    return new WeakReferenceClassLoader(module.getClassLoader());
   }
 
   @Override

@@ -3,6 +3,7 @@ package io.sunshower.kernel.dependencies;
 import io.sunshower.kernel.Coordinate;
 import io.sunshower.kernel.Module;
 import java.util.*;
+import java.util.stream.Collectors;
 import lombok.NonNull;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
@@ -67,5 +68,36 @@ public class DependencyGraph implements Iterable<Module> {
 
   public Module get(Coordinate dependency) {
     return adjacencies.get(dependency).module;
+  }
+
+  public DependencyGraph add(Module module) {
+    val modules =
+        adjacencies
+            .values()
+            .stream()
+            .map(t -> t.module)
+            .collect(Collectors.toCollection(ArrayList::new));
+    modules.add(module);
+    return DependencyGraph.create(modules);
+  }
+
+  public List<Module> getDependants(Coordinate coordinate) {
+    return adjacencies
+        .values()
+        .stream()
+        .filter(t -> t.dependsOn(coordinate))
+        .map(t -> t.module)
+        .collect(Collectors.toList());
+  }
+
+  public DependencyGraph remove(Coordinate coordinate) {
+    val modules =
+        adjacencies
+            .values()
+            .stream()
+            .filter(t -> !t.coordinate.equals(coordinate))
+            .map(t -> t.module)
+            .collect(Collectors.toCollection(ArrayList::new));
+    return DependencyGraph.create(modules);
   }
 }

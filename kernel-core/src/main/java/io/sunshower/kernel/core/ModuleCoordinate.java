@@ -2,6 +2,7 @@ package io.sunshower.kernel.core;
 
 import io.sunshower.kernel.Coordinate;
 import io.sunshower.kernel.Version;
+import java.util.regex.Pattern;
 import lombok.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -12,8 +13,15 @@ public final class ModuleCoordinate implements Coordinate {
   @NonNull private final String group;
   @NonNull private final Version version;
 
+  static final Pattern pattern = Pattern.compile(":");
+
   public static Coordinate create(String group, String name, String version) {
     return new ModuleCoordinate(name, group, new SemanticVersion(version));
+  }
+
+  public static Coordinate parse(@NonNull String name) {
+    val segs = pattern.split(name);
+    return create(segs[0], segs[1], segs[2]);
   }
 
   @Override

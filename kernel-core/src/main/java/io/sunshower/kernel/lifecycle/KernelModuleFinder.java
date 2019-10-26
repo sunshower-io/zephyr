@@ -18,9 +18,11 @@ public final class KernelModuleFinder implements ModuleFinder {
 
   static final Logger log = Logging.get(KernelModuleFinder.class, "ModuleClassloading");
   private final Module module;
+  private final ModuleLoader moduleLoader;
 
-  public KernelModuleFinder(@NonNull Module module) {
+  public KernelModuleFinder(@NonNull Module module, @NonNull final ModuleLoader loader) {
     this.module = module;
+    this.moduleLoader = loader;
   }
 
   @Override
@@ -69,6 +71,7 @@ public final class KernelModuleFinder implements ModuleFinder {
       val dep =
           new ModuleDependencySpecBuilder()
               .setName(dependency.getCoordinate().toCanonicalForm())
+              .setModuleLoader(moduleLoader)
               .build();
       moduleSpec.addDependency(dep);
     }
