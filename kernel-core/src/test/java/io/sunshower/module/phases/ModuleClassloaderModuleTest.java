@@ -93,8 +93,9 @@ public class ModuleClassloaderModuleTest extends AbstractModulePhaseTestCase {
           new WeakReferenceClassLoader(
               contextLoader.loadModule(imod.getCoordinate().toCanonicalForm()).getClassLoader());
       try {
-        Class.forName("plugin1.Test", true, cl);
-
+        val clazz = Class.forName("plugin1.Test", true, cl);
+        val obj = clazz.getConstructor().newInstance();
+        assertNotNull(obj);
       } catch (Exception ex) {
         fail("Should not have reached here");
       }
