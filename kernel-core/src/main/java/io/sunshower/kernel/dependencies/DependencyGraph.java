@@ -1,6 +1,7 @@
 package io.sunshower.kernel.dependencies;
 
 import io.sunshower.kernel.Coordinate;
+import io.sunshower.kernel.Dependency;
 import io.sunshower.kernel.Module;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -67,7 +68,12 @@ public class DependencyGraph implements Iterable<Module> {
   }
 
   public Module get(Coordinate dependency) {
-    return adjacencies.get(dependency).module;
+    val dep = adjacencies.get(dependency);
+    if (dep == null) {
+      throw new UnsatisfiedDependencyException(
+          null, new Dependency(Dependency.Type.Library, dependency));
+    }
+    return dep.module;
   }
 
   public DependencyGraph add(Module module) {

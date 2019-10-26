@@ -6,6 +6,8 @@ import io.sunshower.common.Collections;
 import io.sunshower.kernel.DefaultModule;
 import io.sunshower.kernel.Lifecycle;
 import io.sunshower.kernel.Module;
+import io.sunshower.kernel.core.actions.StartLifecycleAction;
+import io.sunshower.kernel.core.actions.VisitingActionTree;
 import io.sunshower.kernel.dependencies.DependencyGraph;
 import io.sunshower.kernel.dependencies.ModuleCycleDetector;
 import io.sunshower.kernel.dependencies.UnsatisfiedDependencyException;
@@ -72,13 +74,35 @@ public class DefaultModuleManager implements ModuleManager {
   }
 
   @Override
+  public LifecycleAction prepareFor(Lifecycle.State starting, Module dependent) {
+    switch (starting) {
+      case Starting:
+        return new StartLifecycleAction(
+            dependent, starting, VisitingActionTree.createFrom(dependent, dependencyGraph));
+      case Stopping:
+        return null;
+      case Active:
+        return null;
+      default:
+        return null;
+        //        return new VisitingActionTree(this, new StartAction(), dependent);
+    }
+  }
+
+  @Override
   public void install(Module module) {
+    val lifecycle = module.getLifecycle();
+    if (isAtLeast(lifecycle, Lifecycle.State.Installed)) {
+      log.log(Level.INFO, "module.lifecycle.state.atleast");
+      return;
+    }
     synchronized (moduleLoaderLock) {
-      module.getLifecycle().setState(Lifecycle.State.Installed);
+      lifecycle.setState(Lifecycle.State.Installed);
       modules.computeIfAbsent(module.getType(), Collections::newList).add(module);
     }
   }
 
+  @SuppressWarnings("PMD.DataflowAnomalyAnalysis")
   private void checkDependencies(Module module) {
     DependencyGraph prospective;
     try {
@@ -113,5 +137,14 @@ public class DefaultModuleManager implements ModuleManager {
       }
     }
     return local;
+  }
+
+  @SuppressWarnings("PMD.UnusedPrivateMethod")
+  private boolean isAtLeast(Lifecycle lifecycle, Lifecycle.State installed) {
+    val state = lifecycle.getState();
+    if (state == null) {
+      return false;
+    }
+    return state.isAtLeast(installed);
   }
 }

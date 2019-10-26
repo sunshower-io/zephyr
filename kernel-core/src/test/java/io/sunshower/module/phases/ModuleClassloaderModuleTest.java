@@ -71,8 +71,11 @@ public class ModuleClassloaderModuleTest extends AbstractModulePhaseTestCase {
 
   @Test
   void ensureLoadingFromModuleDependencyWorks() throws Exception {
+
+    contextLoader.updateDependencies(dependencyGraph.add(installationContext.getInstalledModule()));
     val ic = resolve("test-plugin-2");
     val imod = ic.getInstalledModule();
+    contextLoader.updateDependencies(dependencyGraph.add(imod));
     contextLoader.install(imod);
 
     try {
@@ -85,8 +88,12 @@ public class ModuleClassloaderModuleTest extends AbstractModulePhaseTestCase {
 
   @Test
   void ensureUnloadingModuleWorks() throws Exception {
+    contextLoader.updateDependencies(dependencyGraph.add(installationContext.getInstalledModule()));
+
     val ic = resolve("test-plugin-2");
     val imod = ic.getInstalledModule();
+    contextLoader.updateDependencies(dependencyGraph.add(imod));
+    contextLoader.install(installationContext.getInstalledModule());
     contextLoader.install(imod);
 
     try {
@@ -103,6 +110,7 @@ public class ModuleClassloaderModuleTest extends AbstractModulePhaseTestCase {
 
       contextLoader.uninstall(installationContext.getInstalledModule());
     } finally {
+      installationContext.getInstalledModule().getFileSystem().close();
       ic.getInstalledModule().getFileSystem().close();
     }
   }

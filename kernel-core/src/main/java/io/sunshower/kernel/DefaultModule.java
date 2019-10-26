@@ -20,9 +20,9 @@ public class DefaultModule
    * mutable state . These can't be final because either the module isn't resolved or there is a
    * mutual dependency
    */
-  @Setter private ModuleLoader loader;
+  @Setter private Module module;
 
-  @Getter @Setter private Module module;
+  @Setter private ModuleLoader loader;
 
   @Getter @Setter private Lifecycle lifecycle;
 

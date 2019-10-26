@@ -45,7 +45,7 @@ public final class KernelModuleLoader extends ModuleLoader {
     uninstall(module.getCoordinate());
   }
 
-  void updateDependencies(@NonNull DependencyGraph graph) {
+  public void updateDependencies(@NonNull DependencyGraph graph) {
     this.graph = graph;
   }
 
