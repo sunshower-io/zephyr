@@ -15,7 +15,11 @@ public final class ModuleCycleDetector {
   private final DependencyGraph modules;
 
   public static ModuleCycleDetector newDetector(Collection<Module> asList) {
-    return new ModuleCycleDetector(DependencyGraph.create(asList));
+    return newDetector(DependencyGraph.create(asList));
+  }
+
+  public static ModuleCycleDetector newDetector(DependencyGraph prospective) {
+    return new ModuleCycleDetector(prospective);
   }
 
   @SuppressWarnings("PMD.DataflowAnomalyAnalysis")

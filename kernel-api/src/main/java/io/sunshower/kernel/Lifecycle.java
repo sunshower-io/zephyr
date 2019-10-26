@@ -10,12 +10,23 @@ public interface Lifecycle {
   void setState(State resolved);
 
   enum State {
-    Installed,
-    Resolved,
-    Uninstalled,
-    Starting,
-    Active,
-    Stopping,
+    Installed(0),
+    Resolved(1),
+    Uninstalled(2),
+    Starting(3),
+    Active(4),
+    Stopping(5),
+    ;
+
+    final int value;
+
+    State(final int value) {
+      this.value = value;
+    }
+
+    public boolean isAtLeast(State state) {
+      return value >= state.value;
+    }
   }
 
   Module getModule();

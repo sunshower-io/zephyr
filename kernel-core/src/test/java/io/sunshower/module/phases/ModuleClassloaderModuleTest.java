@@ -5,8 +5,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import io.sunshower.kernel.Module;
 import io.sunshower.kernel.WeakReferenceClassLoader;
+import io.sunshower.kernel.core.KernelModuleLoader;
 import io.sunshower.kernel.dependencies.DependencyGraph;
-import io.sunshower.kernel.lifecycle.KernelModuleLoader;
 import io.sunshower.kernel.misc.SuppressFBWarnings;
 import java.io.IOException;
 import java.util.Collections;
@@ -39,6 +39,7 @@ public class ModuleClassloaderModuleTest extends AbstractModulePhaseTestCase {
     module = installationContext.getInstalledModule();
     moduleId = module.getCoordinate().toCanonicalForm();
     dependencyGraph = DependencyGraph.create(Collections.singleton(module));
+
     contextLoader = new KernelModuleLoader(dependencyGraph);
     contextLoader.install(installationContext.getInstalledModule());
     moduleClasspath = contextLoader.loadModule(moduleId);

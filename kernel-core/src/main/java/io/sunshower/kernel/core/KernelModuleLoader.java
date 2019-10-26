@@ -1,9 +1,8 @@
-package io.sunshower.kernel.lifecycle;
+package io.sunshower.kernel.core;
 
 import io.sunshower.kernel.Coordinate;
 import io.sunshower.kernel.DefaultModule;
 import io.sunshower.kernel.Module;
-import io.sunshower.kernel.core.ModuleCoordinate;
 import io.sunshower.kernel.dependencies.DependencyGraph;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,12 +13,11 @@ import org.jboss.modules.ModuleLoadException;
 import org.jboss.modules.ModuleLoader;
 import org.jboss.modules.ModuleNotFoundException;
 
+/** this class is intentionally not thread-safe and must be protected by its owner */
 @SuppressWarnings("PMD.AvoidUsingVolatile")
-public class KernelModuleLoader extends ModuleLoader {
+public final class KernelModuleLoader extends ModuleLoader {
 
-  private final Object lock = new Object();
-
-  private volatile DependencyGraph graph;
+  private DependencyGraph graph;
   private final Map<String, UnloadableKernelModuleLoader> moduleLoaders;
 
   public KernelModuleLoader(final DependencyGraph graph) {
@@ -28,28 +26,26 @@ public class KernelModuleLoader extends ModuleLoader {
   }
 
   public void install(Module module) {
-    synchronized (lock) {
-      graph = graph.add(module);
-      val coordinate = module.getCoordinate();
-      val id = coordinate.toCanonicalForm();
-      val loader = new UnloadableKernelModuleLoader(new KernelModuleFinder(module, this));
-      moduleLoaders.put(id, loader);
-    }
+    val coordinate = module.getCoordinate();
+    val id = coordinate.toCanonicalForm();
+    val loader = new UnloadableKernelModuleLoader(new KernelModuleFinder(module, this));
+    moduleLoaders.put(id, loader);
   }
 
   @SneakyThrows
   public void uninstall(Coordinate coordinate) {
-    synchronized (lock) {
-      val id = coordinate.toCanonicalForm();
-      val loader = moduleLoaders.get(id);
-      loader.unload(coordinate);
-      moduleLoaders.remove(id);
-      graph = graph.remove(coordinate);
-    }
+    val id = coordinate.toCanonicalForm();
+    val loader = moduleLoaders.get(id);
+    loader.unload(coordinate);
+    moduleLoaders.remove(id);
   }
 
   public void uninstall(@NonNull Module module) {
     uninstall(module.getCoordinate());
+  }
+
+  void updateDependencies(@NonNull DependencyGraph graph) {
+    this.graph = graph;
   }
 
   @Override

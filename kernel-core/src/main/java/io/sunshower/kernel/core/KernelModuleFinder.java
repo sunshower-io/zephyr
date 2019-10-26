@@ -1,4 +1,4 @@
-package io.sunshower.kernel.lifecycle;
+package io.sunshower.kernel.core;
 
 import io.sunshower.kernel.Library;
 import io.sunshower.kernel.Module;
@@ -20,7 +20,7 @@ public final class KernelModuleFinder implements ModuleFinder {
   private final Module module;
   private final ModuleLoader moduleLoader;
 
-  public KernelModuleFinder(@NonNull Module module, @NonNull final ModuleLoader loader) {
+  KernelModuleFinder(@NonNull Module module, @NonNull final ModuleLoader loader) {
     this.module = module;
     this.moduleLoader = loader;
   }

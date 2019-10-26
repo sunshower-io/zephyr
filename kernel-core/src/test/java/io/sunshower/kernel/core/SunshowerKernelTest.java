@@ -2,6 +2,7 @@ package io.sunshower.kernel.core;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import io.sunshower.kernel.launch.KernelOptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -13,7 +14,10 @@ public class SunshowerKernelTest {
   @BeforeEach
   void setUp() {
 
-    cfg = DaggerSunshowerKernelConfiguration.builder().build();
+    cfg =
+        DaggerSunshowerKernelConfiguration.builder()
+            .sunshowerKernelInjectionModule(new SunshowerKernelInjectionModule(new KernelOptions()))
+            .build();
   }
 
   @Test

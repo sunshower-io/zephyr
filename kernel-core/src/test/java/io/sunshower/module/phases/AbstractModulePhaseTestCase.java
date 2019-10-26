@@ -3,8 +3,9 @@ package io.sunshower.module.phases;
 import static io.sunshower.test.common.Tests.relativeToProjectBuild;
 
 import io.sunshower.kernel.Module;
-import io.sunshower.kernel.core.DefaultModuleManager;
+import io.sunshower.kernel.core.DaggerSunshowerKernelConfiguration;
 import io.sunshower.kernel.core.SunshowerKernel;
+import io.sunshower.kernel.core.SunshowerKernelInjectionModule;
 import io.sunshower.kernel.launch.KernelOptions;
 import io.sunshower.kernel.process.KernelProcess;
 import io.sunshower.kernel.process.KernelProcessContext;
@@ -50,7 +51,13 @@ public abstract class AbstractModulePhaseTestCase {
     sunshowerHome = Tests.createTemp(".sunshower-home");
     options = new KernelOptions();
     options.setHomeDirectory(sunshowerHome);
-    kernel = new SunshowerKernel(new DefaultModuleManager());
+
+    val injectionModule =
+        DaggerSunshowerKernelConfiguration.builder()
+            .sunshowerKernelInjectionModule(new SunshowerKernelInjectionModule(options))
+            .build();
+
+    kernel = (SunshowerKernel) injectionModule.kernel();
     context = new KernelProcessContext(kernel);
 
     SunshowerKernel.setKernelOptions(options);
