@@ -7,6 +7,7 @@ import java.util.HashSet;
 import lombok.val;
 import org.junit.jupiter.api.Test;
 
+@SuppressWarnings("PMD.AvoidDuplicateLiterals")
 class ModuleCoordinateTest {
 
   @Test

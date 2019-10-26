@@ -29,6 +29,7 @@ public final class ModuleCoordinate implements Coordinate {
   }
 
   @Override
+  @SuppressWarnings("PMD.DataflowAnomalyAnalysis")
   public int hashCode() {
     int result = getName().hashCode();
     result = 31 * result + getGroup().hashCode();

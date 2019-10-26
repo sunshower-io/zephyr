@@ -11,6 +11,7 @@ public class ModuleContextLoader {
 
   final DependencyGraph dependencyGraph;
 
+  @SuppressWarnings({"PMD.DataflowAnomalyAnalysis", "PMD.AvoidInstantiatingObjectsInLoops"})
   public ModuleLoader createModuleContext() {
     val results = new ModuleFinder[dependencyGraph.size()];
     val moduleIterator = dependencyGraph.iterator();

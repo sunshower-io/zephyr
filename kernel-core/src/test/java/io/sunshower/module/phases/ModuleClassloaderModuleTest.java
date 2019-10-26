@@ -13,6 +13,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+@SuppressWarnings({"PMD.JUnitAssertionsShouldIncludeMessage", "PMD.JUnitTestsShouldIncludeAssert"})
 public class ModuleClassloaderModuleTest extends AbstractModulePhaseTestCase {
 
   private Module module;
@@ -22,6 +23,7 @@ public class ModuleClassloaderModuleTest extends AbstractModulePhaseTestCase {
   private InstallationContext installationContext;
   private org.jboss.modules.Module moduleClasspath;
 
+  @Override
   @BeforeEach
   void setUp() throws Exception {
     super.setUp();
@@ -74,6 +76,7 @@ public class ModuleClassloaderModuleTest extends AbstractModulePhaseTestCase {
     }
   }
 
+  @Override
   @AfterEach
   void tearDown() throws IOException {
     super.tearDown();

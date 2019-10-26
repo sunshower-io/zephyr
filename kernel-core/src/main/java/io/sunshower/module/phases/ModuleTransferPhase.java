@@ -66,7 +66,6 @@ public class ModuleTransferPhase extends AbstractPhase<KernelProcessEvent, Kerne
       context.setContextValue(MODULE_ASSEMBLY_FILE, assembly);
       log.log(Level.INFO, "transfer.file.complete", new Object[] {file, assembly});
     } catch (IOException ex) {
-      ex.printStackTrace();
       val message =
           MessageFormat.format(
               bundle.getString("transfer.file.failed"), assembly, file, ex.getMessage());

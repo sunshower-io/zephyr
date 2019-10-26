@@ -39,7 +39,7 @@ class ModuleInstallationCompletionPhaseTest extends AbstractModulePhaseTestCase 
     context.setContextValue(
         ModuleUnpackPhase.LIBRARY_DIRECTORIES, Collections.singleton("WEB-INF/lib/"));
     process.call();
-    val modules = kernel.getModuleManager().getModules(Module.Type.KernelModule);
+    val modules = kernel.getModuleManager().getModules(Module.Type.Plugin);
     assertFalse(modules.isEmpty(), "module must be installed");
   }
 

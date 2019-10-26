@@ -1,6 +1,5 @@
 package io.sunshower.kernel.lifecycle;
 
-import com.sun.enterprise.module.ModuleDependency;
 import io.sunshower.kernel.Library;
 import io.sunshower.kernel.Module;
 import io.sunshower.kernel.log.Logging;
@@ -14,7 +13,8 @@ import lombok.NonNull;
 import lombok.val;
 import org.jboss.modules.*;
 
-public class KernelModuleFinder implements ModuleFinder {
+@SuppressWarnings("PMD.UnusedPrivateMethod")
+public final class KernelModuleFinder implements ModuleFinder {
 
   static final Logger log = Logging.get(KernelModuleFinder.class, "ModuleClassloading");
   private final Module module;
@@ -23,6 +23,8 @@ public class KernelModuleFinder implements ModuleFinder {
     this.module = module;
   }
 
+  @Override
+  @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
   public ModuleSpec findModule(String name, ModuleLoader delegateLoader)
       throws ModuleLoadException {
     val coordinate = module.getCoordinate();
@@ -64,9 +66,10 @@ public class KernelModuleFinder implements ModuleFinder {
     moduleSpec.addDependency(DependencySpec.OWN_DEPENDENCY);
     val dependencies = module.getDependencies();
     for (val dependency : dependencies) {
-      val dep = new ModuleDependencySpecBuilder()
-          .setName(dependency.getCoordinate().toCanonicalForm())
-          .build();
+      val dep =
+          new ModuleDependencySpecBuilder()
+              .setName(dependency.getCoordinate().toCanonicalForm())
+              .build();
       moduleSpec.addDependency(dep);
     }
 
