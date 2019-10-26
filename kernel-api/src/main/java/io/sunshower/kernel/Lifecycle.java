@@ -16,7 +16,7 @@ public interface Lifecycle {
     Starting(3),
     Active(4),
     Stopping(5),
-    ;
+    Failed(-1);
 
     final int value;
 

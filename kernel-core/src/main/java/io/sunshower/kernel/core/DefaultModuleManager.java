@@ -8,6 +8,7 @@ import io.sunshower.kernel.Lifecycle;
 import io.sunshower.kernel.Module;
 import io.sunshower.kernel.dependencies.DependencyGraph;
 import io.sunshower.kernel.dependencies.ModuleCycleDetector;
+import io.sunshower.kernel.dependencies.UnsatisfiedDependencyException;
 import io.sunshower.kernel.log.Logging;
 import io.sunshower.kernel.status.Status;
 import java.util.*;
@@ -58,6 +59,7 @@ public class DefaultModuleManager implements ModuleManager {
     log.log(Level.INFO, "module.state.attempting.resolve", coordinate);
 
     checkDependencies(module);
+    moduleLoader.install(module);
 
     val mod = ((DefaultModule) module).getModule();
     if (mod == null) {
@@ -78,8 +80,15 @@ public class DefaultModuleManager implements ModuleManager {
   }
 
   private void checkDependencies(Module module) {
-    val current = getDependencyGraph(module);
-    val prospective = current.add(module);
+    DependencyGraph prospective;
+    try {
+      val current = getDependencyGraph(module);
+      prospective = current.add(module);
+    } catch (UnsatisfiedDependencyException ex) {
+      log.log(Level.WARNING, "module.dependency.unsatisfied", ex.getMessage());
+      module.getLifecycle().setState(Lifecycle.State.Failed);
+      throw ex;
+    }
 
     val components = ModuleCycleDetector.newDetector(prospective).compute();
 
@@ -99,6 +108,7 @@ public class DefaultModuleManager implements ModuleManager {
         local = dependencyGraph;
         if (local == null) {
           dependencyGraph = local = DependencyGraph.create(singleton(module));
+          moduleLoader = new KernelModuleLoader(dependencyGraph);
         }
       }
     }

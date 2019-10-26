@@ -7,8 +7,10 @@ import java.util.ServiceLoader;
 import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.SneakyThrows;
 import lombok.val;
 import org.jboss.modules.Module;
+import org.jboss.modules.ModuleLoader;
 import org.jetbrains.annotations.NotNull;
 
 public class DefaultModule
@@ -18,6 +20,8 @@ public class DefaultModule
    * mutable state . These can't be final because either the module isn't resolved or there is a
    * mutual dependency
    */
+  @Setter private ModuleLoader loader;
+
   @Getter @Setter private Module module;
 
   @Getter @Setter private Lifecycle lifecycle;
@@ -51,6 +55,18 @@ public class DefaultModule
     this.fileSystem = fileSystem;
     this.dependencies = dependencies;
     this.moduleDirectory = moduleDirectory;
+  }
+
+  @SneakyThrows
+  public Module getModule() {
+    if (module == null) {
+      if (loader == null) {
+        throw new IllegalStateException("ModuleLoader must not be null");
+      }
+
+      module = loader.loadModule(coordinate.toCanonicalForm());
+    }
+    return module;
   }
 
   @Override

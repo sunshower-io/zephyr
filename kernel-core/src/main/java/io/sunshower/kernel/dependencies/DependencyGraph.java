@@ -49,7 +49,7 @@ public class DependencyGraph implements Iterable<Module> {
     for (val dependency : module.getDependencies()) {
       val depmod = links.get(dependency.getCoordinate());
       if (depmod == null) {
-        throw new IllegalArgumentException("Node depends on non-existing module");
+        throw new UnsatisfiedDependencyException(module, dependency);
       }
       // this is ok because we actually don't know if we can build out the full dependency structure
       // yet (i.e. the graph doesn't have a topological order).  This is computed later
