@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import io.sunshower.kernel.Lifecycle;
 import io.sunshower.kernel.ModuleLifecycle;
-import io.sunshower.kernel.dependencies.UnsatisfiedDependencyException;
+import io.sunshower.kernel.UnsatisfiedDependencyException;
 import io.sunshower.module.phases.AbstractModulePhaseTestCase;
 import lombok.val;
 import org.junit.jupiter.api.DisplayName;

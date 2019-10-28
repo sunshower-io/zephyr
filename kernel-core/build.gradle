@@ -26,6 +26,7 @@ dependencies {
     implementation group: 'com.github.zafarkhaja', name: 'java-semver', version: '0.9.0'
 
 //    implementation group: 'org.jboss', name: 'jboss-vfs', version: '3.2.14.Final'
+    implementation project(':kernel-modules:kernel-lib')
     api 'com.google.dagger:dagger:2.24'
     annotationProcessor 'com.google.dagger:dagger-compiler:2.24'
     testAnnotationProcessor 'com.google.dagger:dagger-compiler:2.24'

@@ -1,0 +1,5 @@
+apply plugin: 'java'
+dependencies {
+    compileOnly project(':kernel-api')
+    compileOnly project(':kernel-modules:sunshower-spring')
+}

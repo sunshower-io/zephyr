@@ -3,6 +3,7 @@ apply plugin: 'java-library'
 
 dependencies {
 
+    api project(':kernel-api')
     [
             "org.junit.jupiter:junit-jupiter-api",
             "org.junit.jupiter:junit-jupiter-engine",

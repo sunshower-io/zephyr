@@ -1,0 +1,12 @@
+apply plugin: 'war'
+apply plugin: 'java-library'
+dependencies {
+
+    [
+            'spring-beans',
+            'spring-core',
+            'spring-context'
+    ].each {
+        api "org.springframework:$it"
+    }
+}

@@ -5,12 +5,14 @@ include(
         'kernel-tests',
         'kernel-tests:kernel-test',
 
+	'kernel-modules:sunshower-spring',
 
+		'kernel-modules:kernel-lib',
         'kernel-modules:sunshower-felix',
         'kernel-modules:sunshower-yaml-reader',
 
 
-        /**
+		/**
          * test plugins
          */
         'kernel-tests:test-plugins:test-plugin-1',
@@ -23,5 +25,6 @@ include(
          */
         'kernel-tests:test-modules:test-module-1',
         'kernel-tests:test-modules:test-module-2',
-        'kernel-tests:test-modules:test-module-3'
+        'kernel-tests:test-modules:test-module-3',
+		'kernel-tests:test-plugins:test-plugin-spring'
 )
