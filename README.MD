@@ -64,3 +64,7 @@ Second, kernel-modules are loaded before any plugins are.
 
 
 
+#### Kernel Module Registry
+when a kernel module is installed, the kernel saves the entry to droplet://kernel/registry.modlist
+upon starting the kernel, modules are read from this list 
+

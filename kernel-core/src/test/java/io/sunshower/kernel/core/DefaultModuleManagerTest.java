@@ -140,6 +140,15 @@ class DefaultModuleManagerTest extends AbstractModulePhaseTestCase {
   }
 
   @Test
+  void ensurePluginClassIsNotAvailableOnCurrentClassloader() {
+    assertThrows(
+        ClassNotFoundException.class,
+        () -> {
+          Class.forName("plugin1.Test");
+        });
+  }
+
+  @Test
   void ensureLoadingServiceFromFirstPluginWorks() throws Exception {
     val first = resolve("test-plugin-1").getInstalledModule();
     kernel.getModuleManager().install(first);

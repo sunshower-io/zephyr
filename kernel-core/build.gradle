@@ -57,14 +57,6 @@ dependencies {
 
     implementation project(':kernel-api')
 
-    [
-            'test-plugin-1',
-            'test-plugin-2',
-            'test-plugin-3'
-    ].each {
-        testImplementation project(":kernel-tests:test-plugins:$it")
-    }
-
 
     [
             'sunshower-felix',
