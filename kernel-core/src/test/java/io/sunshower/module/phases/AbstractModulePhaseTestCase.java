@@ -25,6 +25,7 @@ import org.junit.jupiter.api.BeforeEach;
 
 @SuppressWarnings("PMD.AbstractClassWithoutAbstractMethod")
 public abstract class AbstractModulePhaseTestCase {
+  static final String MODULE_TEMPLATE = "kernel-modules:%s";
   static final String PLUGIN_TEMPLATE = "kernel-tests:test-plugins:%s";
 
   protected File sunshowerHome;
@@ -73,6 +74,21 @@ public abstract class AbstractModulePhaseTestCase {
     return String.format(PLUGIN_TEMPLATE, name);
   }
 
+  protected InstallationContext resolveModule(String module) throws Exception {
+
+    val ctx = installModule(module);
+    val process = new KernelProcess(context);
+    process.addPhase(new ModuleDownloadPhase());
+    process.addPhase(new ModuleScanPhase());
+    process.addPhase(new ModuleTransferPhase());
+    process.addPhase(new ModuleUnpackPhase());
+    process.addPhase(new ModuleInstallationCompletionPhase());
+    process.call();
+    ctx.installedModule =
+        context.getContextValue(ModuleInstallationCompletionPhase.INSTALLED_MODULE);
+    return ctx;
+  }
+
   protected InstallationContext resolve(String plugin) throws Exception {
     val ctx = install(plugin);
 
@@ -100,6 +116,11 @@ public abstract class AbstractModulePhaseTestCase {
     context.context.setContextValue(
         ModuleDownloadPhase.TARGET_DIRECTORY, kernelFileSystem.getPath("modules"));
     return context;
+  }
+
+  protected InstallationContext installModule(String module) throws MalformedURLException {
+    val file = relativeToProjectBuild(String.format(MODULE_TEMPLATE, module), "war", "libs");
+    return install(file);
   }
 
   protected InstallationContext install(String plugin) throws MalformedURLException {

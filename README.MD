@@ -68,3 +68,22 @@ Second, kernel-modules are loaded before any plugins are.
 when a kernel module is installed, the kernel saves the entry to droplet://kernel/registry.modlist
 upon starting the kernel, modules are read from this list 
 
+
+#### Kernel Module Lifecycle
+The kernel module lifecycle is designed so that kernel module functionality and classpaths become available
+at the very earliest opportunity.  The lifecycle is as follows:
+
+1. Kernel Start
+    1. Kernel Filesystem is created
+    1. `droplet://kernel/modules.list` is read, producing list of existing kernel modules
+    1. Kernel classloader is created as the combination of all kernel modules 
+    1. Kernel loads all existing modules (initially none), sorted by `order`
+    1. Plugin set is loaded
+    
+#### modules.list
+The modules.list file contains the minimum amount of information required to load the kernel modules, and has the following format
+```
+<order>:<module-group>:<module-name>:<module-version>:[directory-list]
+```
+
+    
