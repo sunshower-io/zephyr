@@ -11,7 +11,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import lombok.NonNull;
 import lombok.val;
-import org.jetbrains.annotations.NotNull;
 
 public abstract class AbstractFileValidationStep implements ValidationStep<KernelOptions> {
 
@@ -27,7 +26,6 @@ public abstract class AbstractFileValidationStep implements ValidationStep<Kerne
     this.source = source;
   }
 
-  @NotNull
   protected ValidationErrors doValidate(KernelOptions target, String property) {
     log.log(Level.FINE, "options.file.locating", new Object[] {keyName, source});
     if (property != null) {

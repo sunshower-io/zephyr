@@ -1,6 +1,7 @@
 package io.sunshower.module.phases;
 
 import io.sunshower.kernel.core.ModuleDescriptor;
+import io.sunshower.kernel.log.Logger;
 import io.sunshower.kernel.log.Logging;
 import io.sunshower.kernel.process.*;
 import io.sunshower.kernel.process.Process;
@@ -15,7 +16,6 @@ import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import lombok.val;
 
 /**

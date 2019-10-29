@@ -4,6 +4,7 @@ import static java.text.MessageFormat.format;
 
 import io.sunshower.kernel.core.ModuleDescriptor;
 import io.sunshower.kernel.core.ModuleScanner;
+import io.sunshower.kernel.log.Logger;
 import io.sunshower.kernel.log.Logging;
 import io.sunshower.kernel.process.*;
 import io.sunshower.kernel.process.Process;
@@ -11,7 +12,6 @@ import java.io.File;
 import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
-import java.util.logging.Logger;
 import lombok.val;
 
 /**

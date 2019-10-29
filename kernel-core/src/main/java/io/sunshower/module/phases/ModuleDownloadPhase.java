@@ -7,6 +7,7 @@ import io.sunshower.common.io.MonitorableChannels;
 import io.sunshower.kernel.events.Event;
 import io.sunshower.kernel.events.EventListener;
 import io.sunshower.kernel.io.ChannelTransferListener;
+import io.sunshower.kernel.log.Logger;
 import io.sunshower.kernel.log.Logging;
 import io.sunshower.kernel.process.*;
 import io.sunshower.kernel.process.Process;
@@ -18,7 +19,6 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Path;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import lombok.AllArgsConstructor;
 import lombok.val;
 

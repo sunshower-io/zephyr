@@ -15,7 +15,7 @@ public final class ModuleCycleDetector {
   private final DependencyGraph modules;
 
   public static ModuleCycleDetector newDetector(Collection<Module> asList) {
-    return newDetector(DependencyGraph.create(asList));
+    return newDetector(DefaultDependencyGraph.create(asList));
   }
 
   public static ModuleCycleDetector newDetector(DependencyGraph prospective) {
@@ -101,10 +101,12 @@ public final class ModuleCycleDetector {
       components.add(component);
     }
 
+    @Override
     public boolean hasCycle() {
       return components.stream().anyMatch(Component::isCyclic);
     }
 
+    @Override
     public List<io.sunshower.kernel.dependencies.Component> getCycles() {
       return components.stream().filter(Component::isCyclic).collect(Collectors.toList());
     }
@@ -119,10 +121,12 @@ public final class ModuleCycleDetector {
       this.root = root;
     }
 
+    @Override
     public boolean isCyclic() {
       return size() > 1;
     }
 
+    @Override
     public int size() {
       return members.size();
     }

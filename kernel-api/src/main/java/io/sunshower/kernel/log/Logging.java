@@ -1,11 +1,13 @@
 package io.sunshower.kernel.log;
 
-import java.util.logging.Logger;
+import lombok.val;
 
 public class Logging {
+  private Logging() {}
 
   public static Logger get(Class<?> logger) {
-    return Logger.getLogger(logger.getName(), "i18n." + logger.getName());
+    val name = logger.getName();
+    return new DelegatingLoggingFacade(name, "i18n." + name);
   }
 
   /**
@@ -15,7 +17,8 @@ public class Logging {
    *     <code>rbSimpleName</code>
    */
   public static Logger get(Class<?> logger, String rbSimpleName) {
-    return Logger.getLogger(
-        logger.getName(), "i18n." + logger.getPackageName() + "." + rbSimpleName);
+    val name = logger.getName();
+    val pkg = logger.getPackageName();
+    return new DelegatingLoggingFacade(name, "i18n." + pkg + "." + rbSimpleName);
   }
 }

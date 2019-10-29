@@ -2,16 +2,27 @@ package io.sunshower.kernel.core;
 
 import dagger.Module;
 import dagger.Provides;
+import io.sunshower.kernel.dependencies.DefaultDependencyGraph;
+import io.sunshower.kernel.dependencies.DependencyGraph;
 import io.sunshower.kernel.launch.KernelOptions;
+import java.util.ServiceLoader;
 import lombok.NonNull;
 
 @Module
 public class SunshowerKernelInjectionModule {
 
   private final KernelOptions options;
+  private final ClassLoader classLoader;
 
-  public SunshowerKernelInjectionModule(@NonNull final KernelOptions options) {
+  public SunshowerKernelInjectionModule(
+      @NonNull final KernelOptions options, @NonNull final ClassLoader kernelClassLoader) {
     this.options = options;
+    this.classLoader = kernelClassLoader;
+  }
+
+  @Provides
+  public DependencyGraph dependencyGraph() {
+    return new DefaultDependencyGraph();
   }
 
   @Provides
@@ -30,7 +41,16 @@ public class SunshowerKernelInjectionModule {
   }
 
   @Provides
-  public ModuleManager pluginManager(DefaultModuleContext context) {
-    return new DefaultModuleManager(context);
+  public ModuleManager pluginManager(
+      DefaultModuleContext context, ModuleClasspathManager classpathManager) {
+    return new DefaultModuleManager(context, classpathManager);
+  }
+
+  @Provides
+  public ModuleClasspathManager moduleClasspathManager(DependencyGraph graph) {
+    return ServiceLoader.load(ModuleClasspathManagerProvider.class, classLoader)
+        .findFirst()
+        .get()
+        .create(graph);
   }
 }

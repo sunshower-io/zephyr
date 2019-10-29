@@ -1,24 +1,26 @@
-package io.sunshower.kernel;
+package io.sunshower.kernel.core;
 
+import io.sunshower.kernel.*;
+import io.sunshower.kernel.Module;
 import io.sunshower.kernel.misc.SuppressFBWarnings;
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
 import java.util.ServiceLoader;
 import java.util.Set;
-import lombok.*;
-import org.jboss.modules.Module;
-import org.jboss.modules.ModuleLoader;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.SneakyThrows;
+import lombok.val;
 
-public class DefaultModule
-    implements io.sunshower.kernel.Module, Comparable<io.sunshower.kernel.Module> {
+public class DefaultModule implements Module, Comparable<Module> {
 
   /**
    * mutable state . These can't be final because either the module isn't resolved or there is a
    * mutual dependency
    */
-  @Setter private Module module;
+  @Setter private ModuleLoader moduleLoader;
 
-  @Setter private ModuleLoader loader;
+  @Setter private ModuleClasspath moduleClasspath;
 
   @Getter @Setter private Lifecycle lifecycle;
 
@@ -54,26 +56,25 @@ public class DefaultModule
   }
 
   @SneakyThrows
-  public Module getModule() {
-    if (module == null) {
-      if (loader == null) {
+  public ModuleClasspath getModuleClasspath() {
+    if (moduleClasspath == null) {
+      if (moduleLoader == null) {
         throw new IllegalStateException("ModuleLoader must not be null");
       }
 
-      module = loader.loadModule(coordinate.toCanonicalForm());
+      moduleClasspath = moduleLoader.loadModule(coordinate);
     }
-    return module;
+    return moduleClasspath;
   }
 
   @Override
   @SuppressFBWarnings
   public ClassLoader getClassLoader() {
-    if (module == null) {
+    if (moduleClasspath == null) {
       throw new IllegalModuleStateException(
           "Module must be in at least the 'RESOLVED' state to perform this operation");
     }
-
-    return new WeakReferenceClassLoader(module.getClassLoader());
+    return moduleClasspath.getClassLoader();
   }
 
   @Override
@@ -83,11 +84,11 @@ public class DefaultModule
 
   @Override
   public <S> ServiceLoader<S> resolveServiceLoader(Class<S> type) {
-    return module.loadService(type);
+    return moduleClasspath.resolveServiceLoader(type);
   }
 
   @Override
-  public int compareTo(@NonNull io.sunshower.kernel.Module o) {
+  public int compareTo(io.sunshower.kernel.Module o) {
     return coordinate.compareTo(o.getCoordinate());
   }
 

@@ -1,5 +1,6 @@
 package io.sunshower.kernel;
 
+import io.sunshower.kernel.core.ModuleClasspath;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
@@ -7,13 +8,12 @@ import java.net.URL;
 import java.util.Enumeration;
 import java.util.stream.Stream;
 import lombok.val;
-import org.jboss.modules.ModuleClassLoader;
 
 public class WeakReferenceClassLoader extends ClassLoader {
-  final WeakReference<ModuleClassLoader> classloader;
+  final WeakReference<ClassLoader> classloader;
 
-  public WeakReferenceClassLoader(ModuleClassLoader classLoader) {
-    this.classloader = new WeakReference<>(classLoader);
+  public WeakReferenceClassLoader(ModuleClasspath classLoader) {
+    this.classloader = new WeakReference<>(classLoader.getClassLoader());
   }
 
   private ClassLoader check() {

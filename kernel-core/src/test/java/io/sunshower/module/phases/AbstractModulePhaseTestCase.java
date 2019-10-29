@@ -54,7 +54,8 @@ public abstract class AbstractModulePhaseTestCase {
 
     val injectionModule =
         DaggerSunshowerKernelConfiguration.builder()
-            .sunshowerKernelInjectionModule(new SunshowerKernelInjectionModule(options))
+            .sunshowerKernelInjectionModule(
+                new SunshowerKernelInjectionModule(options, ClassLoader.getSystemClassLoader()))
             .build();
 
     kernel = (SunshowerKernel) injectionModule.kernel();

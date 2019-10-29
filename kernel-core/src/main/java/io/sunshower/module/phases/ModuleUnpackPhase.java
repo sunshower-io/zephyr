@@ -3,6 +3,7 @@ package io.sunshower.module.phases;
 import io.sunshower.common.io.Files;
 import io.sunshower.kernel.Assembly;
 import io.sunshower.kernel.Library;
+import io.sunshower.kernel.log.Logger;
 import io.sunshower.kernel.log.Logging;
 import io.sunshower.kernel.misc.SuppressFBWarnings;
 import io.sunshower.kernel.process.*;
@@ -17,7 +18,6 @@ import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import lombok.val;
 
 @SuppressWarnings("PMD.UnusedPrivateMethod")

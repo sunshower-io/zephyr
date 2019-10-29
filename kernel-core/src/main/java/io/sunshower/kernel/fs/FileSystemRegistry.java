@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import lombok.NonNull;
 import lombok.val;
-import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings({"PMD.DataflowAnomalyAnalysis", "PMD.UseVarargs"})
 public class FileSystemRegistry implements Iterable<FileSystem> {
@@ -145,7 +144,6 @@ public class FileSystemRegistry implements Iterable<FileSystem> {
     return current;
   }
 
-  @NotNull
   @Override
   public Iterator<FileSystem> iterator() {
     return new RegistryIterator(root);

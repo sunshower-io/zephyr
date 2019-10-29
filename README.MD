@@ -57,16 +57,10 @@ installation request, at which the following phases are executed:
 2. The ModuleUnpackPhase   
 
 
-
-
-
-
-
-
-
-
-
-
+### Modules vs Plugins
+Modules and plugins share many similarities, but differ in important ways.  
+For instance, any kernel-module's classpath is visible to the kernel.
+Second, kernel-modules are loaded before any plugins are.
 
 
 

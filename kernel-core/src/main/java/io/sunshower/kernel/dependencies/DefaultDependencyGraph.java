@@ -9,14 +9,19 @@ import java.util.stream.Collectors;
 import lombok.NonNull;
 import lombok.val;
 
-public class DependencyGraph implements Iterable<Module> {
+public final class DefaultDependencyGraph implements DependencyGraph {
 
   private final Map<Coordinate, DependencyNode> adjacencies;
 
-  private DependencyGraph(@NonNull final Map<Coordinate, DependencyNode> adjacencies) {
+  private DefaultDependencyGraph(@NonNull final Map<Coordinate, DependencyNode> adjacencies) {
     this.adjacencies = adjacencies;
   }
 
+  public DefaultDependencyGraph() {
+    adjacencies = new HashMap<>();
+  }
+
+  @Override
   public int size() {
     return adjacencies.size();
   }
@@ -27,7 +32,7 @@ public class DependencyGraph implements Iterable<Module> {
   }
 
   @SuppressWarnings({"PMD.DataflowAnomalyAnalysis", "PMD.AvoidInstantiatingObjectsInLoops"})
-  public static DependencyGraph create(Collection<Module> modules) {
+  public static DefaultDependencyGraph create(Collection<Module> modules) {
     val result = new LinkedHashMap<Coordinate, DependencyNode>(modules.size());
     val links = buildCoordinateLinks(modules);
 
@@ -36,7 +41,7 @@ public class DependencyGraph implements Iterable<Module> {
       computeDependencies(links, module, node);
       result.put(module.getCoordinate(), node);
     }
-    return new DependencyGraph(result);
+    return new DefaultDependencyGraph(result);
   }
 
   @SuppressWarnings({
@@ -66,6 +71,7 @@ public class DependencyGraph implements Iterable<Module> {
     return coordinateLinks;
   }
 
+  @Override
   public Module get(Coordinate dependency) {
     val dep = adjacencies.get(dependency);
     if (dep == null) {
@@ -75,34 +81,59 @@ public class DependencyGraph implements Iterable<Module> {
     return dep.module;
   }
 
-  public DependencyGraph add(Module module) {
-    val modules =
-        adjacencies
-            .values()
-            .stream()
-            .map(t -> t.module)
-            .collect(Collectors.toCollection(ArrayList::new));
-    modules.add(module);
-    return DependencyGraph.create(modules);
+  @Override
+  @SuppressWarnings({"PMD.AvoidInstantiatingObjectsInLoops"})
+  public void add(@NonNull Module module) {
+    val modDeps = module.getDependencies();
+    val dependencies = new ArrayList<DependencyNode>(modDeps.size());
+    val coordinate = module.getCoordinate();
+    for (val dependency : modDeps) {
+      val dependentModule = get(dependency.getCoordinate());
+      dependencies.add(
+          new DependencyNode(dependentModule, dependency.getCoordinate(), Collections.emptyList()));
+    }
+    val toAdd = new DependencyNode(module, coordinate, dependencies);
+    adjacencies.put(coordinate, toAdd);
   }
 
-  public List<Module> getDependants(Coordinate coordinate) {
+  @Override
+  public void remove(Module module) {}
+
+  @Override
+  public Set<Module> getDependants(Coordinate coordinate) {
     return adjacencies
         .values()
         .stream()
         .filter(t -> t.dependsOn(coordinate))
         .map(t -> t.module)
-        .collect(Collectors.toList());
+        .collect(Collectors.toUnmodifiableSet());
   }
 
-  public DependencyGraph remove(Coordinate coordinate) {
-    val modules =
-        adjacencies
-            .values()
-            .stream()
-            .filter(t -> !t.coordinate.equals(coordinate))
-            .map(t -> t.module)
-            .collect(Collectors.toCollection(ArrayList::new));
-    return DependencyGraph.create(modules);
+  @Override
+  public Set<Module> getDependencies(Coordinate coordinate) {
+    return get(coordinate)
+        .getDependencies()
+        .stream()
+        .map(t -> get(t.getCoordinate()))
+        .collect(Collectors.toSet());
+  }
+
+  @Override
+  public boolean contains(Coordinate coordinate) {
+    return adjacencies.containsKey(coordinate);
+  }
+
+  @Override
+  public Set<Coordinate> getUnresolvedDependencies(Module module) {
+    return module
+        .getDependencies()
+        .stream()
+        .filter(t -> !contains(t.getCoordinate()))
+        .map(Dependency::getCoordinate)
+        .collect(Collectors.toSet());
+  }
+
+  public void remove(Coordinate coordinate) {
+    adjacencies.remove(coordinate);
   }
 }

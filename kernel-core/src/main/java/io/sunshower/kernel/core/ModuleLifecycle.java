@@ -1,5 +1,7 @@
-package io.sunshower.kernel;
+package io.sunshower.kernel.core;
 
+import io.sunshower.kernel.Lifecycle;
+import io.sunshower.kernel.Module;
 import lombok.NonNull;
 
 public class ModuleLifecycle implements Lifecycle {

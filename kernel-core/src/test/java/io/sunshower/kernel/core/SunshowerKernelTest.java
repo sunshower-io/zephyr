@@ -16,7 +16,9 @@ public class SunshowerKernelTest {
 
     cfg =
         DaggerSunshowerKernelConfiguration.builder()
-            .sunshowerKernelInjectionModule(new SunshowerKernelInjectionModule(new KernelOptions()))
+            .sunshowerKernelInjectionModule(
+                new SunshowerKernelInjectionModule(
+                    new KernelOptions(), ClassLoader.getSystemClassLoader()))
             .build();
   }
 

@@ -1,8 +1,8 @@
 package io.sunshower.kernel.core;
 
 import io.sunshower.kernel.Coordinate;
-import io.sunshower.kernel.DefaultModule;
 import io.sunshower.kernel.Module;
+import io.sunshower.kernel.ModuleException;
 import io.sunshower.kernel.dependencies.DependencyGraph;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,7 +15,8 @@ import org.jboss.modules.ModuleNotFoundException;
 
 /** this class is intentionally not thread-safe and must be protected by its owner */
 @SuppressWarnings("PMD.AvoidUsingVolatile")
-public final class KernelModuleLoader extends ModuleLoader {
+public final class KernelModuleLoader extends ModuleLoader
+    implements io.sunshower.kernel.core.ModuleLoader, ModuleClasspathManager {
 
   private DependencyGraph graph;
   private final Map<String, UnloadableKernelModuleLoader> moduleLoaders;
@@ -25,14 +26,16 @@ public final class KernelModuleLoader extends ModuleLoader {
     this.graph = graph;
   }
 
+  @Override
   public void install(Module module) {
     val coordinate = module.getCoordinate();
     val id = coordinate.toCanonicalForm();
     val loader = new UnloadableKernelModuleLoader(new KernelModuleFinder(module, this));
-    ((DefaultModule) module).setLoader(loader);
+    ((DefaultModule) module).setModuleLoader(loader);
     moduleLoaders.put(id, loader);
   }
 
+  @Override
   @SneakyThrows
   public void uninstall(Coordinate coordinate) {
     val id = coordinate.toCanonicalForm();
@@ -41,12 +44,9 @@ public final class KernelModuleLoader extends ModuleLoader {
     moduleLoaders.remove(id);
   }
 
+  @Override
   public void uninstall(@NonNull Module module) {
     uninstall(module.getCoordinate());
-  }
-
-  public void updateDependencies(@NonNull DependencyGraph graph) {
-    this.graph = graph;
   }
 
   @Override
@@ -61,11 +61,21 @@ public final class KernelModuleLoader extends ModuleLoader {
       result = ModuleLoader.preloadModule(name, loader);
     }
     val target = (DefaultModule) graph.get(ModuleCoordinate.parse(name));
-    target.setModule(result);
+    target.setModuleClasspath(new DefaultModuleClasspath(result, this));
     return result;
   }
 
-  final class UnloadableKernelModuleLoader extends ModuleLoader {
+  @Override
+  public ModuleClasspath loadModule(Coordinate coordinate) {
+    try {
+      return new DefaultModuleClasspath(loadModule(coordinate.toCanonicalForm()), this);
+    } catch (ModuleLoadException ex) {
+      throw new ModuleException(ex);
+    }
+  }
+
+  final class UnloadableKernelModuleLoader extends ModuleLoader
+      implements io.sunshower.kernel.core.ModuleLoader {
 
     final KernelModuleLoader loader;
 
@@ -80,7 +90,7 @@ public final class KernelModuleLoader extends ModuleLoader {
 
       for (val dependant : dependants) {
         val typedDep = (DefaultModule) dependant;
-        val actualModule = typedDep.getModule();
+        val actualModule = typedDep.getModuleClasspath();
         val actualModuleLoader = (UnloadableKernelModuleLoader) actualModule.getModuleLoader();
         actualModuleLoader.loader.uninstall(dependant.getCoordinate());
       }
@@ -91,6 +101,15 @@ public final class KernelModuleLoader extends ModuleLoader {
       relink(module);
 
       return result;
+    }
+
+    @Override
+    public ModuleClasspath loadModule(Coordinate coordinate) {
+      try {
+        return new DefaultModuleClasspath(loadModule(coordinate.toCanonicalForm()), this);
+      } catch (ModuleLoadException e) {
+        throw new ModuleException(e);
+      }
     }
   }
 }

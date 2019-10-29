@@ -2,7 +2,10 @@ package io.sunshower.module.phases;
 
 import io.sunshower.kernel.*;
 import io.sunshower.kernel.Module;
+import io.sunshower.kernel.core.DefaultModule;
 import io.sunshower.kernel.core.ModuleDescriptor;
+import io.sunshower.kernel.core.ModuleLifecycle;
+import io.sunshower.kernel.core.ModuleSource;
 import io.sunshower.kernel.process.AbstractPhase;
 import io.sunshower.kernel.process.KernelProcessContext;
 import io.sunshower.kernel.process.KernelProcessEvent;

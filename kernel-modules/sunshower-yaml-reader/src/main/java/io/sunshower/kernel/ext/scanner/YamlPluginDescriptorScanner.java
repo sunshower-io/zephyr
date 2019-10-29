@@ -52,6 +52,11 @@ public class YamlPluginDescriptorScanner implements ModuleScanner {
   static final String DEPENDENCY = "dependency";
 
   static final String REQUIRED = "required";
+  static final String DEPENDENCY_TYPE = MODULE_TYPE;
+
+  static final String DEPENDENCY_GROUP = GROUP;
+  static final String DEPENDENCY_NAME = NAME;
+  static final String DEPENDENCY_VERSION = VERSION;
 
   @Override
   public Optional<ModuleDescriptor> scan(File file, URL source) {
@@ -130,17 +135,33 @@ public class YamlPluginDescriptorScanner implements ModuleScanner {
               source,
               0,
               sourceFile,
-              ModuleCoordinate.create(name, group, version),
+              ModuleCoordinate.create(group, name, version),
               dependencies,
               description);
       return Optional.of(descriptor);
     }
   }
 
+  @SuppressWarnings("unchecked")
   private void parseDependency(List<Dependency> dependencies, Map<String, Object> dep) {
+    val dependency = (Map<String, Object>) dep.get(DEPENDENCY);
 
-    System.out.println(dep);
-    //    val dependency = new Dependency()
+    val depType = optional(dependency, DEPENDENCY_TYPE);
+    final Dependency.Type type;
+    if (depType != null) {
+      type = Dependency.Type.parse(depType);
+    } else {
+      type = Dependency.Type.Library;
+    }
+
+    val required = Boolean.valueOf(optional(dependency, REQUIRED));
+
+    val depName = require(dependency, DEPENDENCY_NAME);
+    val depGroup = require(dependency, DEPENDENCY_GROUP);
+    val depVersion = require(dependency, DEPENDENCY_VERSION);
+    val dependencyDescriptor =
+        new Dependency(type, ModuleCoordinate.create(depGroup, depName, depVersion));
+    dependencies.add(dependencyDescriptor);
   }
 
   private String optional(Map<String, Object> pluginDescriptor, String description) {

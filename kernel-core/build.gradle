@@ -26,12 +26,14 @@ dependencies {
     implementation group: 'com.github.zafarkhaja', name: 'java-semver', version: '0.9.0'
 
 //    implementation group: 'org.jboss', name: 'jboss-vfs', version: '3.2.14.Final'
-    implementation project(':kernel-modules:kernel-lib')
     api 'com.google.dagger:dagger:2.24'
     annotationProcessor 'com.google.dagger:dagger-compiler:2.24'
     testAnnotationProcessor 'com.google.dagger:dagger-compiler:2.24'
 //    implementation group: 'org.apache.commons', name: 'commons-vfs2', version: '2.4.1'
 
+    implementation 'info.picocli:picocli:4.0.4'
+
+    testImplementation 'org.jboss.modules:jboss-modules'
     /**
      * Jersey
      */
@@ -41,6 +43,7 @@ dependencies {
         implementation "org.springframework.boot:spring-boot-starter-$it"
     }
 
+    testImplementation project(':kernel-modules:kernel-lib')
 
     /**
      * Spring boot starter tests
@@ -49,16 +52,6 @@ dependencies {
             'test'
     ].each {
         testImplementation "org.springframework.boot:spring-boot-starter-$it"
-    }
-
-    [
-            'info.picocli:picocli',
-            'net.openhft:chronicle-map',
-            'org.jboss.modules:jboss-modules',
-            'com.github.resource4j:resource4j-spring',
-            'org.apache.felix:org.apache.felix.framework'
-    ].each { dep ->
-        implementation dep
     }
 
 
@@ -79,7 +72,7 @@ dependencies {
     ].each {
         testImplementation project(":kernel-modules:$it")
     }
-    implementation project(path: ":kernel-modules:sunshower-yaml-reader")
+
 
     testImplementation project(':kernel-tests:kernel-test')
 

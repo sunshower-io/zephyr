@@ -5,6 +5,7 @@ import static java.lang.String.format;
 
 import io.sunshower.common.io.FilePermissionChecker;
 import io.sunshower.common.io.Files;
+import io.sunshower.kernel.log.Logger;
 import io.sunshower.kernel.log.Logging;
 import java.io.Closeable;
 import java.io.File;
@@ -17,10 +18,9 @@ import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.FileAttributeView;
 import java.nio.file.spi.FileSystemProvider;
 import java.util.*;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
+import lombok.NonNull;
 import lombok.val;
-import org.jetbrains.annotations.NotNull;
 
 public class ModuleFileSystemProvider extends FileSystemProvider implements Closeable {
 
@@ -94,10 +94,9 @@ public class ModuleFileSystemProvider extends FileSystemProvider implements Clos
     return result;
   }
 
-  @NotNull
   @Override
   @SuppressWarnings({"PMD.DataflowAnomalyAnalysis", "PMD.AvoidLiteralsInIfCondition"})
-  public Path getPath(@NotNull URI uri) {
+  public Path getPath(@NonNull URI uri) {
     val fs = getFileSystem(uri);
     val path = uri.getPath();
     val segments = path.split(Files.separator);
