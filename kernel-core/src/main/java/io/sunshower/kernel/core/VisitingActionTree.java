@@ -1,8 +1,7 @@
-package io.sunshower.kernel.lifecycle;
+package io.sunshower.kernel.core;
 
 import io.sunshower.kernel.Coordinate;
 import io.sunshower.kernel.Module;
-import io.sunshower.kernel.core.ActionTree;
 import io.sunshower.kernel.dependencies.DependencyGraph;
 import java.util.ArrayList;
 import java.util.List;

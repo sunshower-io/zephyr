@@ -9,6 +9,11 @@ import java.util.stream.Collectors;
 import lombok.NonNull;
 import lombok.val;
 
+@SuppressWarnings({
+  "PMD.DataflowAnomalyAnalysis",
+  "PMD.AvoidInstantiatingObjectsInLoops",
+  "PMD.UnusedPrivateMethod"
+})
 public final class DefaultDependencyGraph implements DependencyGraph {
 
   private final Map<Coordinate, DependencyNode> adjacencies;
@@ -31,7 +36,7 @@ public final class DefaultDependencyGraph implements DependencyGraph {
     return adjacencies.values().stream().map(t -> t.module).iterator();
   }
 
-  @SuppressWarnings({"PMD.DataflowAnomalyAnalysis", "PMD.AvoidInstantiatingObjectsInLoops"})
+  @SuppressWarnings({"PMD.DataflowAnomalyAnalysis"})
   public static DefaultDependencyGraph create(Collection<Module> modules) {
     val result = new LinkedHashMap<Coordinate, DependencyNode>(modules.size());
     val links = buildCoordinateLinks(modules);
@@ -44,17 +49,13 @@ public final class DefaultDependencyGraph implements DependencyGraph {
     return new DefaultDependencyGraph(result);
   }
 
-  @SuppressWarnings({
-    "PMD.DataflowAnomalyAnalysis",
-    "PMD.AvoidInstantiatingObjectsInLoops",
-    "PMD.UnusedPrivateMethod"
-  })
+  @SuppressWarnings({"PMD.DataflowAnomalyAnalysis", "PMD.UnusedPrivateMethod"})
   private static void computeDependencies(
       Map<Coordinate, Module> links, Module module, DependencyNode node) {
     for (val dependency : module.getDependencies()) {
       val depmod = links.get(dependency.getCoordinate());
       if (depmod == null) {
-        throw new UnsatisfiedDependencyException(module, dependency);
+        throw new UnsatisfiedDependencyException(module, Collections.singleton(dependency));
       }
       // this is ok because we actually don't know if we can build out the full dependency structure
       // yet (i.e. the graph doesn't have a topological order).  This is computed later
@@ -76,22 +77,22 @@ public final class DefaultDependencyGraph implements DependencyGraph {
     val dep = adjacencies.get(dependency);
     if (dep == null) {
       throw new UnsatisfiedDependencyException(
-          null, new Dependency(Dependency.Type.Library, dependency));
+          null, Collections.singleton(new Dependency(Dependency.Type.Library, dependency)));
     }
     return dep.module;
   }
 
   @Override
-  @SuppressWarnings({"PMD.AvoidInstantiatingObjectsInLoops"})
   public void add(@NonNull Module module) {
     val modDeps = module.getDependencies();
     val dependencies = new ArrayList<DependencyNode>(modDeps.size());
     val coordinate = module.getCoordinate();
-    for (val dependency : modDeps) {
-      val dependentModule = get(dependency.getCoordinate());
-      dependencies.add(
-          new DependencyNode(dependentModule, dependency.getCoordinate(), Collections.emptyList()));
-    }
+    //    for (val dependency : modDeps) {
+    //      val dependentModule = get(dependency.getCoordinate());
+    //      dependencies.add(
+    //          new DependencyNode(dependentModule, dependency.getCoordinate(),
+    // Collections.emptyList()));
+    //    }
     val toAdd = new DependencyNode(module, coordinate, dependencies);
     adjacencies.put(coordinate, toAdd);
   }

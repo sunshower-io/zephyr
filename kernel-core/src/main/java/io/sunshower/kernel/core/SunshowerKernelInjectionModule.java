@@ -6,6 +6,7 @@ import io.sunshower.kernel.dependencies.DefaultDependencyGraph;
 import io.sunshower.kernel.dependencies.DependencyGraph;
 import io.sunshower.kernel.launch.KernelOptions;
 import java.util.ServiceLoader;
+import javax.inject.Singleton;
 import lombok.NonNull;
 
 @Module
@@ -21,6 +22,7 @@ public class SunshowerKernelInjectionModule {
   }
 
   @Provides
+  @Singleton
   public DependencyGraph dependencyGraph() {
     return new DefaultDependencyGraph();
   }
@@ -42,8 +44,10 @@ public class SunshowerKernelInjectionModule {
 
   @Provides
   public ModuleManager pluginManager(
-      DefaultModuleContext context, ModuleClasspathManager classpathManager) {
-    return new DefaultModuleManager(context, classpathManager);
+      DefaultModuleContext context,
+      ModuleClasspathManager classpathManager,
+      DependencyGraph dependencyGraph) {
+    return new DefaultModuleManager(context, classpathManager, dependencyGraph);
   }
 
   @Provides

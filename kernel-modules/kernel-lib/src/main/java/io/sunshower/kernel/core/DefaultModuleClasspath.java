@@ -1,8 +1,7 @@
 package io.sunshower.kernel.core;
 
-import org.jboss.modules.Module;
-
 import java.util.ServiceLoader;
+import org.jboss.modules.Module;
 
 public class DefaultModuleClasspath implements ModuleClasspath {
   final Module module;
@@ -10,7 +9,7 @@ public class DefaultModuleClasspath implements ModuleClasspath {
 
   public DefaultModuleClasspath(Module module, ModuleLoader loader) {
     this.module = module;
-    this.moduleLoader = getModuleLoader();
+    this.moduleLoader = loader;
   }
 
   @Override
@@ -25,6 +24,6 @@ public class DefaultModuleClasspath implements ModuleClasspath {
 
   @Override
   public <S> ServiceLoader<S> resolveServiceLoader(Class<S> type) {
-    return module.loadServiceDirectly(type);
+    return module.loadService(type);
   }
 }

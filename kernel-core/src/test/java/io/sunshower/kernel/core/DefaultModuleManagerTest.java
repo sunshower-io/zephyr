@@ -93,7 +93,6 @@ class DefaultModuleManagerTest extends AbstractModulePhaseTestCase {
         kernel.getModuleManager().resolve(dependent);
         fail("should have not been able to resolve module");
       } catch (UnsatisfiedDependencyException ex) {
-
       }
 
       kernel.getModuleManager().install(dependency);

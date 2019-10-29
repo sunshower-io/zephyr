@@ -3,6 +3,7 @@ package io.sunshower.kernel.core;
 import io.sunshower.kernel.Coordinate;
 import io.sunshower.kernel.Module;
 import io.sunshower.kernel.ModuleException;
+import io.sunshower.kernel.UnsatisfiedDependencyException;
 import io.sunshower.kernel.dependencies.DependencyGraph;
 import java.util.HashMap;
 import java.util.Map;
@@ -61,7 +62,10 @@ public final class KernelModuleLoader extends ModuleLoader
       result = ModuleLoader.preloadModule(name, loader);
     }
     val target = (DefaultModule) graph.get(ModuleCoordinate.parse(name));
-    target.setModuleClasspath(new DefaultModuleClasspath(result, this));
+    val loader = new UnloadableKernelModuleLoader(new KernelModuleFinder(target, this));
+    val classpath = new DefaultModuleClasspath(result, loader);
+    target.setModuleLoader(loader);
+    target.setModuleClasspath(classpath);
     return result;
   }
 
@@ -108,7 +112,7 @@ public final class KernelModuleLoader extends ModuleLoader
       try {
         return new DefaultModuleClasspath(loadModule(coordinate.toCanonicalForm()), this);
       } catch (ModuleLoadException e) {
-        throw new ModuleException(e);
+        throw new UnsatisfiedDependencyException(e);
       }
     }
   }

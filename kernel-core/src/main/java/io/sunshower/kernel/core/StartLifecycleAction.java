@@ -1,9 +1,7 @@
-package io.sunshower.kernel.lifecycle;
+package io.sunshower.kernel.core;
 
 import io.sunshower.kernel.Lifecycle;
 import io.sunshower.kernel.Module;
-import io.sunshower.kernel.core.ActionTree;
-import io.sunshower.kernel.core.LifecycleAction;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

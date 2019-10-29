@@ -1,10 +1,18 @@
-package io.sunshower.kernel.lifecycle;
+package io.sunshower.kernel.core;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import lombok.val;
 import org.junit.jupiter.api.Test;
 
+@SuppressWarnings({
+  "PMD.EmptyCatchBlock",
+  "PMD.JUnitUseExpected",
+  "PMD.AvoidDuplicateLiterals",
+  "PMD.UseProperClassLoader",
+  "PMD.JUnitTestContainsTooManyAsserts",
+  "PMD.JUnitAssertionsShouldIncludeMessage",
+})
 class VisitingActionTreeTest {
 
   @Test

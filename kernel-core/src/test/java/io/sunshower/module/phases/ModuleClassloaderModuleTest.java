@@ -5,10 +5,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import io.sunshower.kernel.Module;
 import io.sunshower.kernel.core.KernelModuleLoader;
-import io.sunshower.kernel.dependencies.DefaultDependencyGraph;
 import io.sunshower.kernel.misc.SuppressFBWarnings;
 import java.io.IOException;
-import java.util.Collections;
 import lombok.val;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,7 +23,6 @@ public class ModuleClassloaderModuleTest extends AbstractModulePhaseTestCase {
   private Module module;
   private String moduleId;
   private KernelModuleLoader contextLoader;
-  private DefaultDependencyGraph defaultDependencyGraph;
   private InstallationContext installationContext;
   private org.jboss.modules.Module moduleClasspath;
 
@@ -37,9 +34,9 @@ public class ModuleClassloaderModuleTest extends AbstractModulePhaseTestCase {
 
     module = installationContext.getInstalledModule();
     moduleId = module.getCoordinate().toCanonicalForm();
-    defaultDependencyGraph = DefaultDependencyGraph.create(Collections.singleton(module));
 
-    contextLoader = new KernelModuleLoader(defaultDependencyGraph);
+    contextLoader = new KernelModuleLoader(dependencyGraph);
+
     contextLoader.install(installationContext.getInstalledModule());
     moduleClasspath = contextLoader.loadModule(moduleId);
   }
@@ -71,10 +68,10 @@ public class ModuleClassloaderModuleTest extends AbstractModulePhaseTestCase {
   @Test
   void ensureLoadingFromModuleDependencyWorks() throws Exception {
 
-    defaultDependencyGraph.add(installationContext.getInstalledModule());
+    dependencyGraph.add(installationContext.getInstalledModule());
     val ic = resolve("test-plugin-2");
     val imod = ic.getInstalledModule();
-    defaultDependencyGraph.add(imod);
+    dependencyGraph.add(imod);
     contextLoader.install(imod);
 
     try {
@@ -87,11 +84,11 @@ public class ModuleClassloaderModuleTest extends AbstractModulePhaseTestCase {
 
   @Test
   void ensureUnloadingModuleWorks() throws Exception {
-    defaultDependencyGraph.add(installationContext.getInstalledModule());
+    dependencyGraph.add(installationContext.getInstalledModule());
 
     val ic = resolve("test-plugin-2");
     val imod = ic.getInstalledModule();
-    defaultDependencyGraph.add(imod);
+    dependencyGraph.add(imod);
     contextLoader.install(installationContext.getInstalledModule());
     contextLoader.install(imod);
 
