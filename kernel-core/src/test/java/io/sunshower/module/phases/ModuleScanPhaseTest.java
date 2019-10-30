@@ -1,5 +1,6 @@
 package io.sunshower.module.phases;
 
+import static io.sunshower.kernel.Tests.install;
 import static org.junit.jupiter.api.Assertions.*;
 
 import io.sunshower.kernel.Module.Type;
@@ -25,7 +26,7 @@ class ModuleScanPhaseTest extends AbstractModulePhaseTestCase {
   void setUp() throws Exception {
     super.setUp();
     phase = new ModuleScanPhase();
-    val pluginFile = install("test-plugin-2").getPluginFile();
+    val pluginFile = install("test-plugin-2", context).getPluginFile();
     context.setContextValue(ModuleDownloadPhase.DOWNLOADED_FILE, pluginFile);
   }
 

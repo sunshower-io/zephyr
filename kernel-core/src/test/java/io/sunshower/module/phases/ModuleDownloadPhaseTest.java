@@ -1,5 +1,6 @@
 package io.sunshower.module.phases;
 
+import static io.sunshower.kernel.Tests.install;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -14,7 +15,7 @@ class ModuleDownloadPhaseTest extends AbstractModulePhaseTestCase {
   @Test
   void ensureSuccessfulDownloadResultsInFileBeingTransferredToCorrectLocation()
       throws MalformedURLException {
-    install("test-plugin-2");
+    install("test-plugin-2", context);
     downloadPhase = spy(new ModuleDownloadPhase());
     downloadPhase.doExecute(null, context);
     File file = context.getContextValue(ModuleDownloadPhase.DOWNLOADED_FILE);
@@ -23,7 +24,7 @@ class ModuleDownloadPhaseTest extends AbstractModulePhaseTestCase {
 
   @Test
   void ensureSuccessfulDownloadResultsInEventsBeingCalled() throws MalformedURLException {
-    install("test-plugin-2");
+    install("test-plugin-2", context);
     downloadPhase = spy(new ModuleDownloadPhase());
     downloadPhase.doExecute(null, context);
     verify(downloadPhase, atLeastOnce()).onTransfer(any(), anyDouble());

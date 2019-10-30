@@ -1,5 +1,6 @@
 package io.sunshower.module.phases;
 
+import static io.sunshower.kernel.Tests.install;
 import static org.junit.jupiter.api.Assertions.*;
 
 import io.sunshower.kernel.Module;
@@ -35,7 +36,7 @@ class ModuleInstallationCompletionPhaseTest extends AbstractModulePhaseTestCase 
 
   @Test
   void ensureModuleTransferWorksUpToTransferPhase() throws Exception {
-    install("test-plugin-2");
+    install("test-plugin-2", context);
     context.setContextValue(
         ModuleUnpackPhase.LIBRARY_DIRECTORIES, Collections.singleton("WEB-INF/lib/"));
     process.call();

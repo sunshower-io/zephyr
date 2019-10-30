@@ -1,5 +1,7 @@
 package io.sunshower.kernel.core;
 
+import static io.sunshower.kernel.Tests.resolve;
+import static io.sunshower.kernel.Tests.resolveModule;
 import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -22,7 +24,7 @@ import org.junit.jupiter.api.Test;
 class DefaultModuleManagerTest extends AbstractModulePhaseTestCase {
   @Test
   void ensureInstallingAndResolvingModuleWithNoDependenciesWorks() throws Exception {
-    val ctx = resolve("test-plugin-1");
+    val ctx = resolve("test-plugin-1", context);
     val mod = ctx.getInstalledModule();
     try {
 
@@ -44,7 +46,7 @@ class DefaultModuleManagerTest extends AbstractModulePhaseTestCase {
   @Test
   @DisplayName("modules must be installable but not resolvable")
   void ensureInstallingModuleWithoutDependencySucceeds() throws Exception {
-    val ctx = resolve("test-plugin-2");
+    val ctx = resolve("test-plugin-2", context);
     val mod = ctx.getInstalledModule();
     try {
       assertEquals(
@@ -60,7 +62,7 @@ class DefaultModuleManagerTest extends AbstractModulePhaseTestCase {
 
   @Test
   void ensureResolvingModuleWithoutDependencyFails() throws Exception {
-    val ctx = resolve("test-plugin-2");
+    val ctx = resolve("test-plugin-2", context);
     val mod = ctx.getInstalledModule();
     try {
       assertEquals(
@@ -84,8 +86,8 @@ class DefaultModuleManagerTest extends AbstractModulePhaseTestCase {
   void
       ensureInstallingModuleWithMissingDependencyThenInstallingDependencyThenResolvingOriginalWorks()
           throws Exception {
-    val dependent = resolve("test-plugin-2").getInstalledModule();
-    val dependency = resolve("test-plugin-1").getInstalledModule();
+    val dependent = resolve("test-plugin-2", context).getInstalledModule();
+    val dependency = resolve("test-plugin-1", context).getInstalledModule();
 
     try {
       kernel.getModuleManager().install(dependent);
@@ -107,7 +109,7 @@ class DefaultModuleManagerTest extends AbstractModulePhaseTestCase {
 
   @Test
   void ensureActionTreeIsCorrectForIndependentModule() throws Exception {
-    val dependent = resolve("test-plugin-1").getInstalledModule();
+    val dependent = resolve("test-plugin-1", context).getInstalledModule();
     try {
       kernel.getModuleManager().install(dependent);
       kernel.getModuleManager().resolve(dependent);
@@ -122,9 +124,9 @@ class DefaultModuleManagerTest extends AbstractModulePhaseTestCase {
 
   @Test
   void ensureActionTreeIsCorrectForDependentModule() throws Exception {
-    val first = resolve("test-plugin-1").getInstalledModule();
+    val first = resolve("test-plugin-1", context).getInstalledModule();
 
-    val dependent = resolve("test-plugin-2").getInstalledModule();
+    val dependent = resolve("test-plugin-2", context).getInstalledModule();
     try {
       kernel.getModuleManager().install(first);
       kernel.getModuleManager().install(dependent);
@@ -151,7 +153,7 @@ class DefaultModuleManagerTest extends AbstractModulePhaseTestCase {
 
   @Test
   void ensureLoadingServiceFromFirstPluginWorks() throws Exception {
-    val first = resolve("test-plugin-1").getInstalledModule();
+    val first = resolve("test-plugin-1", context).getInstalledModule();
     kernel.getModuleManager().install(first);
     kernel.getModuleManager().resolve(first);
     val activator = first.resolveServiceLoader(ModuleActivator.class);
@@ -175,7 +177,7 @@ class DefaultModuleManagerTest extends AbstractModulePhaseTestCase {
 
   @Test
   void ensureResolvedPluginHasCorrectModuleType() throws Exception {
-    val module = resolve("test-plugin-1").getInstalledModule();
+    val module = resolve("test-plugin-1", context).getInstalledModule();
     try {
       kernel.getModuleManager().install(module);
       kernel.getModuleManager().resolve(module);
@@ -187,7 +189,7 @@ class DefaultModuleManagerTest extends AbstractModulePhaseTestCase {
 
   @Test
   void ensureResolvedModuleHasCorrectModuleType() throws Exception {
-    val module = resolveModule("kernel-lib").getInstalledModule();
+    val module = resolveModule("kernel-lib", context).getInstalledModule();
     try {
       kernel.getModuleManager().install(module);
       kernel.getModuleManager().resolve(module);

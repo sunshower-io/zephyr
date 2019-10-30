@@ -1,5 +1,6 @@
 package io.sunshower.module.phases;
 
+import static io.sunshower.kernel.Tests.install;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
@@ -21,7 +22,7 @@ class ModuleTransferPhaseTest extends AbstractModulePhaseTestCase {
 
   @Test
   void ensureModuleTransferWorksUpToTransferPhase() throws Exception {
-    install("test-plugin-2");
+    install("test-plugin-2", context);
     val transfer = spy(new ModuleTransferPhase());
     val process = new KernelProcess(context);
     process.addPhase(new ModuleDownloadPhase());

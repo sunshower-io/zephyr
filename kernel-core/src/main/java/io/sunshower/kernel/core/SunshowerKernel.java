@@ -4,6 +4,7 @@ import io.sunshower.kernel.Module;
 import io.sunshower.kernel.concurrency.ConcurrentProcess;
 import io.sunshower.kernel.concurrency.Scheduler;
 import io.sunshower.kernel.launch.KernelOptions;
+import java.nio.file.FileSystem;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
@@ -19,6 +20,8 @@ public class SunshowerKernel implements Kernel {
   @Setter private static KernelOptions kernelOptions;
 
   /** Instance fields */
+  @Getter @Setter private FileSystem fileSystem;
+
   @Getter private final ModuleManager moduleManager;
 
   @Getter private final Scheduler scheduler;

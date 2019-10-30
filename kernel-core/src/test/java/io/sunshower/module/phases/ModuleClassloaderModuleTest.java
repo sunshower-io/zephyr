@@ -1,9 +1,11 @@
 package io.sunshower.module.phases;
 
+import static io.sunshower.kernel.Tests.resolve;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import io.sunshower.kernel.Module;
+import io.sunshower.kernel.Tests;
 import io.sunshower.kernel.core.KernelModuleLoader;
 import io.sunshower.kernel.misc.SuppressFBWarnings;
 import java.io.IOException;
@@ -23,14 +25,14 @@ public class ModuleClassloaderModuleTest extends AbstractModulePhaseTestCase {
   private Module module;
   private String moduleId;
   private KernelModuleLoader contextLoader;
-  private InstallationContext installationContext;
+  private Tests.InstallationContext installationContext;
   private org.jboss.modules.Module moduleClasspath;
 
   @Override
   @BeforeEach
   void setUp() throws Exception {
     super.setUp();
-    installationContext = resolve("test-plugin-1");
+    installationContext = resolve("test-plugin-1", context);
 
     module = installationContext.getInstalledModule();
     moduleId = module.getCoordinate().toCanonicalForm();
@@ -69,7 +71,7 @@ public class ModuleClassloaderModuleTest extends AbstractModulePhaseTestCase {
   void ensureLoadingFromModuleDependencyWorks() throws Exception {
 
     dependencyGraph.add(installationContext.getInstalledModule());
-    val ic = resolve("test-plugin-2");
+    val ic = resolve("test-plugin-2", context);
     val imod = ic.getInstalledModule();
     dependencyGraph.add(imod);
     contextLoader.install(imod);
@@ -86,7 +88,7 @@ public class ModuleClassloaderModuleTest extends AbstractModulePhaseTestCase {
   void ensureUnloadingModuleWorks() throws Exception {
     dependencyGraph.add(installationContext.getInstalledModule());
 
-    val ic = resolve("test-plugin-2");
+    val ic = resolve("test-plugin-2", context);
     val imod = ic.getInstalledModule();
     dependencyGraph.add(imod);
     contextLoader.install(installationContext.getInstalledModule());

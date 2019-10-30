@@ -1,5 +1,6 @@
 package io.sunshower.module.phases;
 
+import static io.sunshower.kernel.Tests.install;
 import static org.junit.jupiter.api.Assertions.*;
 
 import io.sunshower.kernel.Assembly;
@@ -59,7 +60,7 @@ class ModuleUnpackPhaseTest extends AbstractModulePhaseTestCase {
   }
 
   private void doConfigure() throws Exception {
-    install("test-plugin-2");
+    install("test-plugin-2", context);
     context.setContextValue(
         ModuleUnpackPhase.LIBRARY_DIRECTORIES, Collections.singleton("WEB-INF/lib/"));
     val process = createProcess();
