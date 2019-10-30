@@ -10,8 +10,6 @@ import lombok.AllArgsConstructor;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 @SuppressWarnings({
   "PMD.EmptyCatchBlock",
@@ -37,13 +35,10 @@ class MultichannelCapableSchedulerTest {
     val processor = mock(Processor.class);
     given(processor.getChannel()).willReturn("test");
     doAnswer(
-            new Answer() {
-              @Override
-              public Object answer(InvocationOnMock invocation) throws Throwable {
-                ConcurrentProcess proc = invocation.getArgument(0);
-                proc.perform();
-                return null;
-              }
+            invocation -> {
+              ConcurrentProcess proc = invocation.getArgument(0);
+              proc.perform();
+              return null;
             })
         .when(processor)
         .process(any());

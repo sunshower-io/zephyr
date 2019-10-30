@@ -21,6 +21,14 @@ public class KernelOptions extends AbstractValidatable<KernelOptions> {
   @CommandLine.Option(names = {"-h", "--home-directory"})
   private File homeDirectory;
 
+  @Getter
+  @CommandLine.Option(
+    names = {"-c", "--max-concurrency"},
+    defaultValue = "2",
+    type = Integer.class
+  )
+  private int concurrency = 2;
+
   public KernelOptions() {
     registerStep(KernelOptionsValidations.homeDirectory());
   }

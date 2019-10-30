@@ -7,6 +7,7 @@ import io.sunshower.kernel.launch.KernelOptions;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
+import java.util.concurrent.ExecutorService;
 import javax.inject.Inject;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,9 +21,15 @@ public class SunshowerKernel implements Kernel {
   /** Instance fields */
   @Getter private final ModuleManager moduleManager;
 
+  @Getter private final Scheduler scheduler;
+  @Getter private final ExecutorService executorService;
+
   @Inject
-  public SunshowerKernel(ModuleManager moduleManager) {
+  public SunshowerKernel(
+      ModuleManager moduleManager, Scheduler scheduler, ExecutorService executorService) {
+    this.scheduler = scheduler;
     this.moduleManager = moduleManager;
+    this.executorService = executorService;
   }
 
   public static KernelOptions getKernelOptions() {
