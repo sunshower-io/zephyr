@@ -140,11 +140,16 @@ public class MultichannelCapableScheduler implements Scheduler {
       running = true;
       while (running) {
         try {
-          val action = processQueue.take();
           synchronized (lock) {
+            ConcurrentProcess action;
+            do {
+              action = processQueue.peek();
+              Thread.yield();
+            } while (action == null);
             for (val processor : processors) {
               processor.process(action);
             }
+            processQueue.take();
           }
         } catch (InterruptedException ex) {
           throw new KernelException(ex);

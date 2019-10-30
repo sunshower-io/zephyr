@@ -84,16 +84,8 @@ public final class DefaultDependencyGraph implements DependencyGraph {
 
   @Override
   public void add(@NonNull Module module) {
-    val modDeps = module.getDependencies();
-    val dependencies = new ArrayList<DependencyNode>(modDeps.size());
     val coordinate = module.getCoordinate();
-    //    for (val dependency : modDeps) {
-    //      val dependentModule = get(dependency.getCoordinate());
-    //      dependencies.add(
-    //          new DependencyNode(dependentModule, dependency.getCoordinate(),
-    // Collections.emptyList()));
-    //    }
-    val toAdd = new DependencyNode(module, coordinate, dependencies);
+    val toAdd = new DependencyNode(module, coordinate, Collections.emptyList());
     adjacencies.put(coordinate, toAdd);
   }
 
