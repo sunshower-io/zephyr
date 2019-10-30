@@ -7,7 +7,8 @@ public class Logging {
 
   public static Logger get(Class<?> logger) {
     val name = logger.getName();
-    return new DelegatingLoggingFacade(name, "i18n." + name);
+    val delegate = java.util.logging.Logger.getLogger(name, "i18n." + name);
+    return new DelegatingLoggingFacade(delegate);
   }
 
   /**
@@ -19,6 +20,7 @@ public class Logging {
   public static Logger get(Class<?> logger, String rbSimpleName) {
     val name = logger.getName();
     val pkg = logger.getPackageName();
-    return new DelegatingLoggingFacade(name, "i18n." + pkg + "." + rbSimpleName);
+    val delegate = java.util.logging.Logger.getLogger(name, "i18n." + pkg + "." + rbSimpleName);
+    return new DelegatingLoggingFacade(delegate);
   }
 }

@@ -1,12 +1,16 @@
 package io.sunshower.kernel.log;
 
-import java.util.logging.Level;
+import java.util.logging.*;
 import java.util.logging.Logger;
+import lombok.experimental.Delegate;
 import lombok.val;
 
-public class DelegatingLoggingFacade extends Logger implements io.sunshower.kernel.log.Logger {
-  protected DelegatingLoggingFacade(String name, String resourceBundleName) {
-    super(name, resourceBundleName);
+public class DelegatingLoggingFacade implements io.sunshower.kernel.log.Logger {
+
+  @Delegate private Logger logger;
+
+  protected DelegatingLoggingFacade(Logger delegate) {
+    this.logger = delegate;
   }
 
   @Override

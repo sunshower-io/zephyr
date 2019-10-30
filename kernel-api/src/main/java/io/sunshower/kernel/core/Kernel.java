@@ -18,4 +18,6 @@ public interface Kernel {
   Scheduler getScheduler();
 
   FileSystem getFileSystem();
+
+  void start();
 }

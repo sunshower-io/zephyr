@@ -1,6 +1,7 @@
 package io.sunshower.kernel.core;
 
 import io.sunshower.kernel.Module;
+import io.sunshower.kernel.classloading.KernelClassloader;
 import io.sunshower.kernel.concurrency.ConcurrentProcess;
 import io.sunshower.kernel.concurrency.Scheduler;
 import io.sunshower.kernel.launch.KernelOptions;
@@ -20,11 +21,14 @@ public class SunshowerKernel implements Kernel {
   @Setter private static KernelOptions kernelOptions;
 
   /** Instance fields */
+  private ClassLoader classLoader;
+
+  private final Scheduler scheduler;
+
   @Getter @Setter private FileSystem fileSystem;
 
   @Getter private final ModuleManager moduleManager;
 
-  @Getter private final Scheduler scheduler;
   @Getter private final ExecutorService executorService;
 
   @Inject
@@ -44,7 +48,7 @@ public class SunshowerKernel implements Kernel {
 
   @Override
   public ClassLoader getClassLoader() {
-    return Thread.currentThread().getContextClassLoader();
+    return classLoader;
   }
 
   @Override
@@ -67,7 +71,17 @@ public class SunshowerKernel implements Kernel {
 
   @Override
   public Scheduler getScheduler() {
-    return null;
+    return scheduler;
+  }
+
+  @Override
+  public void start() {
+    if (!scheduler.isRunning()) {
+      scheduler.start();
+    }
+    val process = new KernelStartProcess(this);
+    scheduler.registerHandler(process);
+    scheduler.scheduleTask(process);
   }
 
   @SuppressWarnings("PMD.UnusedPrivateMethod")
@@ -76,5 +90,9 @@ public class SunshowerKernel implements Kernel {
     for (val service : loader) {
       result.add(service);
     }
+  }
+
+  public void setClassLoader(KernelClassloader loader) {
+    this.classLoader = loader;
   }
 }

@@ -55,5 +55,5 @@ public abstract class AbstractPhase<E, T> extends AbstractEventSource<E, T> impl
     }
   }
 
-  protected void doExecute(Process<E, T> process, T context) {}
+  protected abstract void doExecute(Process<E, T> process, T context);
 }
