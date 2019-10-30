@@ -42,6 +42,7 @@ public class ModuleInstallationCompletionPhase
 
     DefaultModule module =
         new DefaultModule(
+            descriptor.getOrder(),
             descriptor.getType(),
             source,
             assembly,

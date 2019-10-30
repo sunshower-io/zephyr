@@ -29,6 +29,8 @@ public interface Module extends Comparable<Module> {
     }
   }
 
+  int getOrder();
+
   /** @return the relative paths of any created library directories */
   Set<Library> getLibraries();
 

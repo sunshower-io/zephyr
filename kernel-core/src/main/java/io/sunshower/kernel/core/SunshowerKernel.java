@@ -1,6 +1,8 @@
 package io.sunshower.kernel.core;
 
 import io.sunshower.kernel.Module;
+import io.sunshower.kernel.concurrency.ConcurrentProcess;
+import io.sunshower.kernel.concurrency.Scheduler;
 import io.sunshower.kernel.launch.KernelOptions;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +50,14 @@ public class SunshowerKernel implements Kernel {
       }
     }
     return result;
+  }
+
+  @Override
+  public void scheduleTask(ConcurrentProcess process) {}
+
+  @Override
+  public Scheduler getScheduler() {
+    return null;
   }
 
   @SuppressWarnings("PMD.UnusedPrivateMethod")

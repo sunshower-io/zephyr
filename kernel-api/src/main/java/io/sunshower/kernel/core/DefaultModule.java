@@ -14,6 +14,7 @@ import lombok.val;
 
 public class DefaultModule implements Module, Comparable<Module> {
 
+  @Getter private final int order;
   /**
    * mutable state . These can't be final because either the module isn't resolved or there is a
    * mutual dependency
@@ -37,6 +38,7 @@ public class DefaultModule implements Module, Comparable<Module> {
   @Getter private final Set<Dependency> dependencies;
 
   public DefaultModule(
+      int order,
       Type type,
       Source source,
       Assembly assembly,
@@ -45,6 +47,7 @@ public class DefaultModule implements Module, Comparable<Module> {
       FileSystem fileSystem,
       Set<Library> libraries,
       Set<Dependency> dependencies) {
+    this.order = order;
     this.type = type;
     this.source = source;
     this.assembly = assembly;
@@ -53,6 +56,27 @@ public class DefaultModule implements Module, Comparable<Module> {
     this.fileSystem = fileSystem;
     this.dependencies = dependencies;
     this.moduleDirectory = moduleDirectory;
+  }
+
+  public DefaultModule(
+      Type type,
+      Source source,
+      Assembly assembly,
+      Path moduleDirectory,
+      Coordinate coordinate,
+      FileSystem fileSystem,
+      Set<Library> libraries,
+      Set<Dependency> dependencies) {
+    this(
+        10,
+        type,
+        source,
+        assembly,
+        moduleDirectory,
+        coordinate,
+        fileSystem,
+        libraries,
+        dependencies);
   }
 
   @SneakyThrows

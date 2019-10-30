@@ -3,32 +3,31 @@ package io.sunshower.kernel.module;
 import io.sunshower.kernel.core.KernelException;
 import io.sunshower.kernel.log.Logger;
 import io.sunshower.kernel.log.Logging;
-import lombok.val;
-
+import io.sunshower.kernel.misc.SuppressFBWarnings;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PushbackInputStream;
 import java.net.URI;
-import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
-import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
+import lombok.val;
 
+@SuppressWarnings({
+  "PMD.DataflowAnomalyAnalysis",
+  "PMD.AvoidInstantiatingObjectsInLoops",
+  "PMD.AvoidLiteralsInIfCondition"
+})
 public class ModuleListParser {
 
   static final Logger log = Logging.get(ModuleListParser.class);
 
-  static final String MODULE_LIST = "module.list";
   static final String FILE_SYSTEM_URI = "droplet://kernel";
 
   static final int BUFFER_SIZE = 8192;
@@ -44,6 +43,7 @@ public class ModuleListParser {
     return results;
   }
 
+  @SuppressFBWarnings
   static void read(File file, List<KernelModuleEntry> kernelModuleEntries) {
 
     try (val channel = FileChannel.open(file.toPath(), StandardOpenOption.READ);
@@ -51,7 +51,7 @@ public class ModuleListParser {
       val inputStream = new PushbackInputStream(Channels.newInputStream(channel));
       doParse(inputStream, kernelModuleEntries, new Position());
     } catch (IOException e) {
-      e.printStackTrace();
+      throw new ModuleListSyntaxException(e);
     }
   }
 
@@ -74,7 +74,7 @@ public class ModuleListParser {
         directories = Collections.emptyList();
       }
       kernelModuleEntries.add(new KernelModuleEntry(order, name, group, version, directories));
-      System.out.println((char) inputStream.read());
+      inputStream.read();
       trimWhitespace(inputStream, pos);
       val pint = peekInt(inputStream);
       if (pint == -1 || pint == 255) {
@@ -192,7 +192,7 @@ public class ModuleListParser {
   }
 
   File resolveModuleFile(FileSystem fs) {
-    val path = fs.getPath(MODULE_LIST);
+    val path = fs.getPath(KernelModuleEntry.MODULE_LIST);
     val file = path.toFile();
     if (!file.exists()) {
       log.log(Level.INFO, "module.file.create.attempting", "droplet://kernel/module.list", path);
@@ -203,7 +203,8 @@ public class ModuleListParser {
           log.log(Level.INFO, "module.file.create.succeeded", "droplet://kernel/module.list", path);
         }
       } catch (IOException ex) {
-        throw new KernelException("Failed to create file and it does not exist--cannot continue");
+        throw new KernelException(
+            "Failed to create file and it does not exist--cannot continue", ex);
       }
     }
     return file.getAbsoluteFile();

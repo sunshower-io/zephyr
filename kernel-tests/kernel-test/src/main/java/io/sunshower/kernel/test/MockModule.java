@@ -21,6 +21,11 @@ public class MockModule implements Module {
   }
 
   @Override
+  public int getOrder() {
+    return 0;
+  }
+
+  @Override
   public Set<Library> getLibraries() {
     return null;
   }

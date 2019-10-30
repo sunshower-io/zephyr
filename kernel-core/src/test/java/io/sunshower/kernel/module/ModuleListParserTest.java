@@ -1,9 +1,8 @@
 package io.sunshower.kernel.module;
 
-import io.sunshower.module.phases.AbstractModulePhaseTestCase;
-import lombok.val;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
+import io.sunshower.module.phases.AbstractModulePhaseTestCase;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.PushbackInputStream;
@@ -11,9 +10,17 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+import lombok.val;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
-
+@SuppressWarnings({
+  "PMD.EmptyCatchBlock",
+  "PMD.JUnitUseExpected",
+  "PMD.AvoidDuplicateLiterals",
+  "PMD.UseProperClassLoader",
+  "PMD.JUnitTestContainsTooManyAsserts",
+  "PMD.JUnitAssertionsShouldIncludeMessage",
+})
 class ModuleListParserTest extends AbstractModulePhaseTestCase {
 
   @Test
