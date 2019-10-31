@@ -139,6 +139,8 @@ public class FileSystemRegistry implements Iterable<FileSystem> {
         current = found;
       } else if (found != null) {
         current = found;
+      } else {
+        return null; // not found
       }
     }
     return current;

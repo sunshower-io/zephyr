@@ -27,6 +27,7 @@ public class ModuleInstallationCompletionPhase
 
   public ModuleInstallationCompletionPhase() {
     super(EventType.class);
+    addPhase(new KernelModuleEntryPhase());
   }
 
   @Override

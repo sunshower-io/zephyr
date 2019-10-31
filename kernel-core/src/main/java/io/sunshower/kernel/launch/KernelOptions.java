@@ -27,7 +27,7 @@ public class KernelOptions extends AbstractValidatable<KernelOptions> {
     defaultValue = "2",
     type = Integer.class
   )
-  private int concurrency = 2;
+  private int concurrency = 8;
 
   public KernelOptions() {
     registerStep(KernelOptionsValidations.homeDirectory());

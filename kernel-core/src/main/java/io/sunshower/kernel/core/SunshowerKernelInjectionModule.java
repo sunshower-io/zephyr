@@ -34,7 +34,7 @@ public class SunshowerKernelInjectionModule {
   @Provides
   @Singleton
   public ExecutorService executorService() {
-    return Executors.newWorkStealingPool(options.getConcurrency());
+    return Executors.newCachedThreadPool(); //hmmm--right type?
   }
 
   @Provides

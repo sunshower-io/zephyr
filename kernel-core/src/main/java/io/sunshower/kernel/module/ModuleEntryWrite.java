@@ -17,6 +17,7 @@ import java.util.List;
 import lombok.val;
 
 public class ModuleEntryWrite implements ConcurrentProcess {
+
   static final String channel = "kernel:module:module:write";
 
   final Path file;
@@ -64,6 +65,22 @@ public class ModuleEntryWrite implements ConcurrentProcess {
     for (val library : libraries) {
       result.add(library.getFile().getAbsolutePath());
     }
+    result.add(module.getAssembly().getFile().getAbsolutePath());
     return result;
+  }
+
+  @Override
+  public int hashCode() {
+    return channel.hashCode();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (o == null) return false;
+    if (o == this) return true;
+    if (getClass().equals(o.getClass())) {
+      return ((ModuleEntryWrite) o).getChannel().equals(getChannel());
+    }
+    return false;
   }
 }

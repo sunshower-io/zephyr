@@ -34,6 +34,25 @@ class FileSystemRegistryTest {
   }
 
   @Test
+  void ensureRegistryDoesNotContainInvalidSegments() {
+    val fs = mock(FileSystem.class);
+    registry.add("kernel", fs);
+
+    assertFalse(
+        registry.contains(
+            new String[] {"io", "sunshower", "kernel", "kernel-lib", "1.0.0-SNAPSHOT"}),
+        "registry must not contain entry that does not exist");
+  }
+
+  @Test
+  void ensureRegistryContainsValidSegments() {
+    val fs = mock(FileSystem.class);
+    val key = new String[] {"io", "sunshower", "kernel", "kernel-lib", "1.0.0-SNAPSHOT"};
+    registry.add(key, fs);
+    assertTrue(registry.contains(key), "registry must contain entry that exists");
+  }
+
+  @Test
   void ensureInsertingIntoRegistryWorks() {
     val fs = mock(FileSystem.class);
     assertNull(registry.add("com.whatever.bean", fs), "Added filesystem must not exist");

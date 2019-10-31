@@ -20,4 +20,8 @@ public interface Kernel {
   FileSystem getFileSystem();
 
   void start();
+
+  void reload();
+
+  void stop();
 }

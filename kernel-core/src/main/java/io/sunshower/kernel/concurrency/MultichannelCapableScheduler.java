@@ -16,7 +16,11 @@ import lombok.val;
  * acquires lock:lock via start(channel) MT holds lock:lock, processors:lock for all of start() and
  * releases
  */
-@SuppressWarnings("PMD.AvoidUsingVolatile")
+@SuppressWarnings({
+  "PMD.AvoidUsingVolatile",
+  "PMD.DataflowAnomalyAnalysis",
+  "PMD.AvoidLiteralsInIfCondition"
+})
 public class MultichannelCapableScheduler implements Scheduler {
 
   static final String MAINTENANCE_CHANNEL = "kernel:scheduler:maintenance";
@@ -29,7 +33,7 @@ public class MultichannelCapableScheduler implements Scheduler {
   private final Map<String, ProcessingModule> processors;
 
   public MultichannelCapableScheduler(ExecutorService service) {
-    processors = new HashMap<>();
+    processors = new ConcurrentHashMap<>();
     this.executorService = service;
   }
 
@@ -64,18 +68,6 @@ public class MultichannelCapableScheduler implements Scheduler {
     log.log(Level.INFO, "kernel.scheduler.starting");
     this.running = true;
     log.log(Level.INFO, "kernel.scheduler.started");
-    registerHandler(
-        new Processor() {
-          @Override
-          public String getChannel() {
-            return MAINTENANCE_CHANNEL;
-          }
-
-          @Override
-          public void process(ConcurrentProcess process) {
-            process.perform();
-          }
-        });
   }
 
   @Override
@@ -107,10 +99,17 @@ public class MultichannelCapableScheduler implements Scheduler {
 
   @Override
   public void awaitShutdown() {
-    running = false;
+
     while (!processors.isEmpty()) {
-      processors.values().removeIf(module -> module.processQueue.isEmpty());
+      synchronized (lock) {
+        if (processors.size() == 1) {
+          if (processors.containsKey(MAINTENANCE_CHANNEL)) {
+            break;
+          }
+        }
+      }
     }
+    running = false;
   }
 
   @Override
@@ -140,27 +139,15 @@ public class MultichannelCapableScheduler implements Scheduler {
     val channel = processor.getChannel();
     log.log(Level.INFO, "kernel.scheduler.processor.unregistering", channel);
     // need to schedule a maintenance task to avoid synchronizing on processors from another thread
-    scheduleTask(
-        new ConcurrentProcess() {
-          @Override
-          public String getChannel() {
-            return MAINTENANCE_CHANNEL;
-          }
-
-          @Override
-          public void perform() {
-            val module = processors.get(channel);
-            if (module.processors.remove(processor)) {
-              log.log(Level.INFO, "kernel.scheduler.processor.unregistered", channel);
-            }
-            if (module.processors.isEmpty()) {
-              log.log(Level.INFO, "kernel.scheduler.module.noprocessors", channel);
-              module.stop();
-              // log after this because the thread may've already exited
-              log.log(Level.INFO, "kernel.channel.stopped", channel);
-            }
-          }
-        });
+    synchronized (processors) {
+      val module = processors.get(channel);
+      if (module != null) {
+        module.processors.remove(processor);
+        if (module.processors.isEmpty()) {
+          processors.remove(channel);
+        }
+      }
+    }
   }
 
   @Override
@@ -171,53 +158,58 @@ public class MultichannelCapableScheduler implements Scheduler {
         throw new IllegalStateException(
             "Error: cannot schedule a task because no processor for it exists ");
       }
-      return module.processQueue.offer(action);
+      return module.enqueue(action);
     }
   }
 
   @SuppressWarnings("PMD.DoNotUseThreads")
-  static class ProcessingModule implements Runnable {
+  class ProcessingModule implements Runnable {
     final Object lock = new Object();
 
     volatile boolean running;
     private final String channel;
-    private final List<Processor> processors;
-    private final TransferQueue<ConcurrentProcess> processQueue;
+    private final Set<Processor> processors;
+    private final BlockingQueue<ConcurrentProcess> processQueue;
 
     public ProcessingModule(final String channel) {
       this.channel = channel;
-      this.processors = new LinkedList<>();
-      this.processQueue = new LinkedTransferQueue<>();
+      this.processors = new HashSet<>();
+      this.processQueue = new LinkedBlockingQueue<>();
     }
 
     void register(Processor processor) {
-      // can this possibly deadlock with start() if synchronized on lock()?
-      // yes--synchronize on processors
       synchronized (processors) {
-        processors.add(processor);
+        if (!processors.add(processor)) {
+          log.warning("processor already registered");
+        }
       }
+    }
+
+    boolean enqueue(ConcurrentProcess process) {
+      log.log(Level.INFO, "scheduler.enqueuing", channel, process.getChannel());
+      return processQueue.offer(process);
     }
 
     @SuppressWarnings("PMD.DataflowAnomalyAnalysis")
     void start() {
-      running = true;
       while (running) {
-        try {
-          synchronized (lock) {
-            ConcurrentProcess action;
-            do {
-              action = processQueue.peek();
-              Thread.yield();
-            } while (action == null);
-            for (val processor : processors) {
-              processor.process(action);
-            }
-            processQueue
-                .take(); // must take from queue after processors have processed task so that
-            // await() and awaitShutdown() block correctly
+        synchronized (lock) {
+          log.log(Level.FINE, channel, Thread.currentThread().getName());
+          if (processors.isEmpty()) {
+            running = false;
+            MultichannelCapableScheduler.this.processors.remove(channel);
           }
-        } catch (InterruptedException ex) {
-          return;
+
+
+          val action = processQueue.peek();
+          if (action == null) {
+            continue;
+          }
+          for (val processor : processors) {
+            processor.process(action);
+          }
+          // must remove from queue to ensure processors have time to act
+          processQueue.poll();
         }
       }
     }
@@ -229,6 +221,8 @@ public class MultichannelCapableScheduler implements Scheduler {
 
     @Override
     public void run() {
+      log.log(Level.INFO, "scheduler.channel.starting", channel);
+      running = true;
       start();
     }
   }

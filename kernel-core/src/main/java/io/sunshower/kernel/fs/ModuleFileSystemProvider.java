@@ -62,7 +62,6 @@ public class ModuleFileSystemProvider extends FileSystemProvider implements Clos
       throw new FileSystemException("Cannot create filesystem from null or blank host");
     }
     val segments = computeSegments(uri);
-
     if (registry.contains(segments)) {
       throw new FileSystemAlreadyExistsException(host);
     }

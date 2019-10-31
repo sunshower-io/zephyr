@@ -1,16 +1,15 @@
 package io.sunshower.kernel.core;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static io.sunshower.kernel.Tests.resolveModule;
+import static org.junit.jupiter.api.Assertions.*;
 
 import io.sunshower.kernel.launch.KernelOptions;
+import io.sunshower.kernel.process.KernelProcessContext;
 import io.sunshower.test.common.Tests;
 import java.io.IOException;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
 @SuppressWarnings("PMD.JUnitTestContainsTooManyAsserts")
@@ -18,14 +17,10 @@ public class SunshowerKernelTest {
 
   private Kernel kernel;
   private SunshowerKernelConfiguration cfg;
+  private KernelProcessContext context;
 
   @BeforeEach
   void setUp() {
-
-    val logger = Logger.getGlobal();
-    logger.addHandler(new ConsoleHandler());
-    logger.setLevel(Level.ALL);
-
     val options = new KernelOptions();
     options.setHomeDirectory(Tests.createTemp("sunshower-kernel-tests"));
     SunshowerKernel.setKernelOptions(options);
@@ -36,6 +31,7 @@ public class SunshowerKernelTest {
                 new SunshowerKernelInjectionModule(options, ClassLoader.getSystemClassLoader()))
             .build();
     kernel = cfg.kernel();
+    context = new KernelProcessContext(kernel);
   }
 
   @Test
@@ -51,13 +47,48 @@ public class SunshowerKernelTest {
   }
 
   @Test
-  void ensureStartingKernelWorks() throws IOException {
+  void ensureStartingKernelProducesFileSystem() throws IOException {
     try {
       assertNull(kernel.getFileSystem(), "kernel filesystem must initially be null");
       kernel.start();
       kernel.getScheduler().await(KernelStartProcess.channel);
       assertNotNull(kernel.getFileSystem(), "kernel filesystem must now be set");
     } finally {
+      kernel.getFileSystem().close();
+    }
+  }
+
+  @Test
+  void ensureStartingKernelProducesClassLoader() throws IOException {
+
+    try {
+      assertNull(kernel.getClassLoader(), "kernel filesystem must initially be null");
+      kernel.start();
+      kernel.getScheduler().await(KernelStartProcess.channel);
+      assertNotNull(kernel.getClassLoader(), "kernel filesystem must now be set");
+    } finally {
+      kernel.getFileSystem().close();
+    }
+  }
+
+  @Test
+  @RepeatedTest(10)
+  @SuppressWarnings("PMD.UseProperClassLoader")
+  void
+      ensureInstallingKernelModuleThenStartingKernelResultsInKernelModuleClassesBeingAvailableInClassloader()
+          throws Exception {
+    kernel.start();
+    kernel.getScheduler().await(KernelStartProcess.channel);
+    val ctx = resolveModule("sunshower-yaml-reader", context).getInstalledModule();
+    try {
+      val cl = kernel.getClassLoader();
+      val clazz =
+          Class.forName("io.sunshower.kernel.ext.scanner.YamlPluginDescriptorScanner", true, cl);
+      assertNotEquals(
+          clazz.getClassLoader(), getClass().getClassLoader(), "must not be the same classloader");
+      kernel.stop();
+    } finally {
+      ctx.getFileSystem().close();
       kernel.getFileSystem().close();
     }
   }

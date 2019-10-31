@@ -1,6 +1,5 @@
 package io.sunshower.kernel.core;
 
-import io.sunshower.kernel.Module;
 import io.sunshower.kernel.classloading.KernelClassloader;
 import io.sunshower.kernel.concurrency.ConcurrentProcess;
 import io.sunshower.kernel.concurrency.Scheduler;
@@ -10,22 +9,27 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.RejectedExecutionHandler;
+import java.util.concurrent.ThreadPoolExecutor;
 import javax.inject.Inject;
+
+import io.sunshower.kernel.module.ModuleEntryWriteProcessor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
 
+@SuppressWarnings({"PMD.AvoidUsingVolatile", "PMD.DoNotUseThreads"})
 public class SunshowerKernel implements Kernel {
 
   /** class fields */
   @Setter private static KernelOptions kernelOptions;
 
   /** Instance fields */
-  private ClassLoader classLoader;
+  private volatile ClassLoader classLoader;
 
   private final Scheduler scheduler;
 
-  @Getter @Setter private FileSystem fileSystem;
+  @Getter @Setter private volatile FileSystem fileSystem;
 
   @Getter private final ModuleManager moduleManager;
 
@@ -37,6 +41,12 @@ public class SunshowerKernel implements Kernel {
     this.scheduler = scheduler;
     this.moduleManager = moduleManager;
     this.executorService = executorService;
+    ((ThreadPoolExecutor) executorService)
+        .setRejectedExecutionHandler(
+            new RejectedExecutionHandler() {
+              @Override
+              public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {}
+            });
   }
 
   public static KernelOptions getKernelOptions() {
@@ -56,18 +66,13 @@ public class SunshowerKernel implements Kernel {
     val result = new ArrayList<T>();
     load(result, type, getClassLoader());
 
-    val modules = moduleManager.getModules(Module.Type.KernelModule);
-    for (val module : modules) {
-      val loader = module.resolveServiceLoader(type);
-      for (val service : loader) {
-        result.add(service);
-      }
-    }
     return result;
   }
 
   @Override
-  public void scheduleTask(ConcurrentProcess process) {}
+  public void scheduleTask(ConcurrentProcess process) {
+    scheduler.scheduleTask(process);
+  }
 
   @Override
   public Scheduler getScheduler() {
@@ -76,12 +81,33 @@ public class SunshowerKernel implements Kernel {
 
   @Override
   public void start() {
-    if (!scheduler.isRunning()) {
-      scheduler.start();
+    if(scheduler.isRunning()) {
+      throw new IllegalStateException("Can't call start");
     }
+    scheduler.start();
+    scheduler.registerHandler(ModuleEntryWriteProcessor.getInstance());
     val process = new KernelStartProcess(this);
     scheduler.registerHandler(process);
     scheduler.scheduleTask(process);
+  }
+
+  @Override
+  public void reload() {
+    stop();
+    start();
+  }
+
+  @Override
+  public void stop() {
+    if (!scheduler.isRunning()) {
+      throw new IllegalStateException("Kernel is not running");
+    }
+    scheduler.unregisterHandler(ModuleEntryWriteProcessor.getInstance());
+
+    val process = new KernelStopProcess(this);
+    scheduler.registerHandler(process);
+    scheduler.scheduleTask(process);
+    scheduler.awaitShutdown();
   }
 
   @SuppressWarnings("PMD.UnusedPrivateMethod")

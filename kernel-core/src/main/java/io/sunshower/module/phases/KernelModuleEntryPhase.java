@@ -19,8 +19,10 @@ public class KernelModuleEntryPhase
 
   static final Logger log = Logging.get(KernelModuleEntryPhase.class);
 
-  protected KernelModuleEntryPhase(Class<? extends KernelProcessEvent> type) {
-    super(type);
+  enum EventType implements KernelProcessEvent {}
+
+  public KernelModuleEntryPhase() {
+    super(EventType.class);
   }
 
   @Override

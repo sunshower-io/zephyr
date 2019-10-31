@@ -58,12 +58,12 @@ dependencies {
     implementation project(':kernel-api')
 
 
-    [
-            'sunshower-felix',
-            'sunshower-yaml-reader'
-    ].each {
-        testImplementation project(":kernel-modules:$it")
-    }
+//    [
+//            'sunshower-felix',
+//            'sunshower-yaml-reader'
+//    ].each {
+//        testImplementation project(":kernel-modules:$it")
+//    }
 
 
     testImplementation project(':kernel-tests:kernel-test')
