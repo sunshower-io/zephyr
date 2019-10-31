@@ -1,7 +1,7 @@
 package io.sunshower.module.phases;
 
 import static io.sunshower.kernel.Tests.resolve;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import io.sunshower.kernel.Module;

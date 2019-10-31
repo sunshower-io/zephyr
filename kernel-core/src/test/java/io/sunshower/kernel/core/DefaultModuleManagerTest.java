@@ -2,8 +2,7 @@ package io.sunshower.kernel.core;
 
 import static io.sunshower.kernel.Tests.resolve;
 import static io.sunshower.kernel.Tests.resolveModule;
-import static org.junit.Assert.*;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 import io.sunshower.kernel.Lifecycle;
 import io.sunshower.kernel.Module;
@@ -32,15 +31,15 @@ class DefaultModuleManagerTest extends AbstractModulePhaseTestCase {
     try {
 
       assertEquals(
-          "Module must be installed",
           mod.getLifecycle().getState(),
-          ModuleLifecycle.State.Installed);
+          ModuleLifecycle.State.Installed,
+          "Module must be installed");
 
       kernel.getModuleManager().install(mod);
       kernel.getModuleManager().resolve(mod);
 
       assertEquals(
-          "Module must be resolved", mod.getLifecycle().getState(), ModuleLifecycle.State.Resolved);
+          mod.getLifecycle().getState(), ModuleLifecycle.State.Resolved, "Module must be resolved");
     } finally {
       mod.getFileSystem().close();
     }
@@ -53,9 +52,9 @@ class DefaultModuleManagerTest extends AbstractModulePhaseTestCase {
     val mod = ctx.getInstalledModule();
     try {
       assertEquals(
-          "Module must be installed",
           mod.getLifecycle().getState(),
-          ModuleLifecycle.State.Installed);
+          ModuleLifecycle.State.Installed,
+          "Module must be installed");
 
       kernel.getModuleManager().install(mod);
     } finally {
@@ -69,9 +68,9 @@ class DefaultModuleManagerTest extends AbstractModulePhaseTestCase {
     val mod = ctx.getInstalledModule();
     try {
       assertEquals(
-          "Module must be installed",
           mod.getLifecycle().getState(),
-          ModuleLifecycle.State.Installed);
+          ModuleLifecycle.State.Installed,
+          "Module must be installed");
 
       kernel.getModuleManager().install(mod);
       assertThrows(
@@ -118,8 +117,8 @@ class DefaultModuleManagerTest extends AbstractModulePhaseTestCase {
       kernel.getModuleManager().resolve(dependent);
 
       val action = kernel.getModuleManager().prepareFor(Lifecycle.State.Starting, dependent);
-      assertEquals("Action tree must have at least one element", action.getActionTree().size(), 1);
-      assertEquals("Action tree height must be one", action.getActionTree().height(), 1);
+      assertEquals(action.getActionTree().size(), 1, "Action tree must have at least one element");
+      assertEquals(action.getActionTree().height(), 1, "Action tree height must be one");
     } finally {
       dependent.getFileSystem().close();
     }
@@ -137,8 +136,8 @@ class DefaultModuleManagerTest extends AbstractModulePhaseTestCase {
       kernel.getModuleManager().resolve(dependent);
 
       val action = kernel.getModuleManager().prepareFor(Lifecycle.State.Starting, dependent);
-      assertEquals("Action tree must have at least one element", action.getActionTree().size(), 2);
-      assertEquals("Action tree height must be one", action.getActionTree().height(), 2);
+      assertEquals(action.getActionTree().size(), 2, "Action tree must have at least one element");
+      assertEquals(action.getActionTree().height(), 2, "Action tree height must be one");
     } finally {
       first.getFileSystem().close();
       dependent.getFileSystem().close();
@@ -161,7 +160,7 @@ class DefaultModuleManagerTest extends AbstractModulePhaseTestCase {
     kernel.getModuleManager().resolve(first);
     val activator = first.resolveServiceLoader(ModuleActivator.class);
     val fst = activator.findFirst();
-    assertTrue("service must be present", fst.isPresent());
+    assertTrue(fst.isPresent(), "service must be present");
 
     try {
       fst.get()

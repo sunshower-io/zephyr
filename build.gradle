@@ -1,9 +1,10 @@
-
-
 plugins {
+    id 'pmd'
+    id "com.diffplug.gradle.spotless" version "$spotlessPluginVersion"
+    id 'com.github.spotbugs' version "$spotbugsPluginVersion" apply false
     id "org.springframework.boot" version "$springBootPluginVersion" apply false
     id "io.spring.dependency-management" version "$dependencyManagementPluginVersion" apply false
-    id "com.diffplug.gradle.spotless" version "3.25.0"
+
 }
 
 allprojects {
@@ -28,6 +29,22 @@ allprojects {
 
 subprojects {
     plugins.withType(JavaPlugin) {
+
+        tasks.withType(com.github.spotbugs.SpotBugsTask) {
+            reports {
+                xml.enabled = false
+                html.enabled = true
+            }
+        }
+        pmd {
+            ruleSets = [
+                    "${project.rootDir}/check/pmd/rules/errorprone.xml",
+                    "category/java/multithreading.xml",
+                    "category/java/bestpractices.xml",
+                    "category/java/performance.xml"
+            ]
+
+        }
 
         test {
             useJUnitPlatform()

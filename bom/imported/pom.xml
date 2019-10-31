@@ -7,50 +7,60 @@
         <groupId>io.sunshower.kernel</groupId>
         <artifactId>kernel-bom</artifactId>
         <relativePath>../pom.xml</relativePath>
-        <version>2.0.0.0</version>
+        <version>2.0.0-SNAPSHOT</version>
     </parent>
 
     <properties>
-        <chronicle-map.version>3.17.6</chronicle-map.version>
-        <resteasy-version>4.3.1.Final</resteasy-version>
-        <jaxrs-api.version>2.1.1</jaxrs-api.version>
-        <javax.inject-version>1</javax.inject-version>
-        <osgi.version>6.0.0</osgi.version>
-        <karaf.version>4.2.7</karaf.version>
-        <spring.version>5.2.0.RELEASE</spring.version>
-        <servlet-api.version>4.0.1</servlet-api.version>
-
-        <ipojo.version>1.12.1</ipojo.version>
-        <javax-annotation.version>1.3.2</javax-annotation.version>
-
-        <osgi-annotations.version>1.4.0</osgi-annotations.version>
-        <lombok.version>1.18.10</lombok.version>
-
-        <shrinkwrap.version>1.2.6</shrinkwrap.version>
 
         <!--
-        Test dependency versions
+        Test Dependency Versions
         -->
-        <pax-exam.version>4.13.1</pax-exam.version>
-
         <junit.version>5.5.2</junit.version>
-
-        <spring-boot.version>2.1.9.RELEASE</spring-boot.version>
-        <resource4j.version>3.1.3</resource4j.version>
+        <mockito.version>3.1.0</mockito.version>
 
 
-        <felix.version>6.0.3</felix.version>
+        <!--
+        Compile Dependency Version
+        -->
+        <dagger.version>2.24</dagger.version>
         <picocli.version>4.0.4</picocli.version>
-
-        <shrinkwrap-gradle.version>3.1.3</shrinkwrap-gradle.version>
-        <jboss-modules.version>1.9.1.Final</jboss-modules.version>
-
+        <lombok.version>1.18.10</lombok.version>
         <yamlbeans.version>1.13</yamlbeans.version>
+        <javax.inject-version>1</javax.inject-version>
+        <spring.version>5.2.0.RELEASE</spring.version>
+        <java-semver.version>0.9.0</java-semver.version>
+        <spring-boot.version>2.2.0.RELEASE</spring-boot.version>
+        <jboss-modules.version>1.9.1.Final</jboss-modules.version>
+        <javax-annotation.version>1.3.2</javax-annotation.version>
+
 
     </properties>
 
     <dependencyManagement>
         <dependencies>
+
+
+            <dependency>
+                <groupId>com.github.zafarkhaja</groupId>
+                <artifactId>java-semver</artifactId>
+                <version>${java-semver.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>info.picocli</groupId>
+                <artifactId>picocli</artifactId>
+                <version>${picocli.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.dagger</groupId>
+                <artifactId>dagger-compiler</artifactId>
+                <version>${dagger.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.dagger</groupId>
+                <artifactId>dagger</artifactId>
+                <version>${dagger.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>net.openhft</groupId>
@@ -71,17 +81,6 @@
                 <version>${jboss-modules.version}</version>
             </dependency>
 
-            <dependency>
-                <groupId>org.jboss.shrinkwrap</groupId>
-                <artifactId>shrinkwrap-api</artifactId>
-                <version>${shrinkwrap.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>info.picocli</groupId>
-                <artifactId>picocli</artifactId>
-                <version>${picocli.version}</version>
-            </dependency>
 
             <dependency>
                 <groupId>org.apache.felix</groupId>
@@ -94,12 +93,6 @@
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
                 <version>${lombok.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.github.resource4j</groupId>
-                <artifactId>resource4j-spring</artifactId>
-                <version>${resource4j.version}</version>
             </dependency>
 
             <dependency>
@@ -142,21 +135,6 @@
             </dependency>
 
 
-            <!--
-            Feature Dependencies
-            -->
-
-
-            <dependency>
-                <groupId>org.jboss.resteasy</groupId>
-                <artifactId>resteasy-bom</artifactId>
-                <version>${resteasy-version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-
-
-
             <dependency>
                 <groupId>org.junit</groupId>
                 <artifactId>junit-bom</artifactId>
@@ -164,6 +142,13 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-core</artifactId>
+                <version>${mockito.version}</version>
+            </dependency>
+
 
         </dependencies>
     </dependencyManagement>

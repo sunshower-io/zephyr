@@ -1,0 +1,10 @@
+dependencies {
+
+    implementation project(':kernel-api')
+    implementation project(':kernel-core')
+    implementation project(':kernel-modules:kernel-lib')
+
+
+    testImplementation project(':kernel-tests:kernel-test')
+    implementation 'com.thoughtworks.xstream:xstream:1.4.11.1'
+}
