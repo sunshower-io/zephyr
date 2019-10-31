@@ -76,8 +76,11 @@ public class SunshowerKernelTest {
       ensureInstallingKernelModuleThenStartingKernelResultsInKernelModuleClassesBeingAvailableInClassloader()
           throws Exception {
     kernel.start();
-    kernel.getScheduler().await(KernelStartProcess.channel);
+    kernel.getScheduler().synchronize();
+    //    kernel.getScheduler().await(KernelStartProcess.channel);
     val ctx = resolveModule("sunshower-yaml-reader", context).getInstalledModule();
+    kernel.reload();
+    kernel.getScheduler().synchronize();
     try {
       val cl = kernel.getClassLoader();
       val clazz =

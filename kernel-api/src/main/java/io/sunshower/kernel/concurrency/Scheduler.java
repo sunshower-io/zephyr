@@ -23,4 +23,6 @@ public interface Scheduler {
   boolean scheduleTask(ConcurrentProcess action);
 
   void await(String channel);
+
+  void synchronize();
 }

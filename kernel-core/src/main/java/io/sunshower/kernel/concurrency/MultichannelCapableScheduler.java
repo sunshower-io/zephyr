@@ -2,6 +2,7 @@ package io.sunshower.kernel.concurrency;
 
 import io.sunshower.kernel.log.Logger;
 import io.sunshower.kernel.log.Logging;
+import io.sunshower.kernel.misc.SuppressFBWarnings;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.logging.Level;
@@ -43,6 +44,22 @@ public class MultichannelCapableScheduler implements Scheduler {
       val module = processors.get(channel);
       while (!module.processQueue.isEmpty()) {
         Thread.yield();
+      }
+    }
+  }
+
+  @Override
+  @SuppressFBWarnings
+  public void synchronize() {
+    for (; ; ) {
+      synchronized (lock) {
+        boolean allDone = true;
+        for (val entry : processors.values()) {
+          allDone &= entry.processQueue.isEmpty();
+        }
+        if (allDone) {
+          return;
+        }
       }
     }
   }

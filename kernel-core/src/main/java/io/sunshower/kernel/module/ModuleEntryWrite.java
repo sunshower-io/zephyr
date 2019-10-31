@@ -18,7 +18,7 @@ import lombok.val;
 
 public class ModuleEntryWrite implements ConcurrentProcess {
 
-  static final String channel = "kernel:module:module:write";
+  public static final String channel = "kernel:module:module:write";
 
   final Path file;
   final Module module;
