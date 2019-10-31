@@ -1,19 +1,14 @@
 package io.sunshower.kernel.state.xml;
 
 import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.converters.Converter;
-import com.thoughtworks.xstream.converters.MarshallingContext;
-import com.thoughtworks.xstream.converters.UnmarshallingContext;
-import com.thoughtworks.xstream.io.HierarchicalStreamReader;
-import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import io.sunshower.kernel.state.Caretaker;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-
 import lombok.val;
 
+@SuppressWarnings("PMD.BeanMembersShouldSerialize")
 public class RecursiveMementoContext implements Caretaker {
 
   final File destination;

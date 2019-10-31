@@ -16,11 +16,17 @@ public class KernelOptions extends AbstractValidatable<KernelOptions> {
     public static final String SUNSHOWER_HOME = "SUNSHOWER_HOME";
   }
 
+  /**
+   * Specify the home directory for Sunshower.io. Sunshower data is stored here. For clustered
+   * Sunshower.io kernels, this should be a distributed directory unless a data-distribution module
+   * is installed
+   */
   @Getter
   @Setter
   @CommandLine.Option(names = {"-h", "--home-directory"})
   private File homeDirectory;
 
+  /** Specify the maximum number of threads the Sunshower Kernel may start */
   @Getter
   @CommandLine.Option(
     names = {"-c", "--max-concurrency"},
@@ -28,6 +34,12 @@ public class KernelOptions extends AbstractValidatable<KernelOptions> {
     type = Integer.class
   )
   private int concurrency = 8;
+
+  /** if true, the Sunshower Kernel Launcher will start a shell */
+  @Getter
+  @Setter
+  @CommandLine.Option(names = {"-i", "--interactive"})
+  private boolean interactive;
 
   public KernelOptions() {
     registerStep(KernelOptionsValidations.homeDirectory());

@@ -6,7 +6,6 @@ import io.sunshower.kernel.state.Originator;
 
 public class CoordinateOriginator implements Originator<Coordinate> {
 
-
   @Override
   public Memento<Coordinate> save(Coordinate coordinate) {
 
@@ -16,7 +15,5 @@ public class CoordinateOriginator implements Originator<Coordinate> {
   @Override
   public void restore(Memento<Coordinate> memento) {}
 
-  static class MementoCoordinate implements Memento<Coordinate> {
-    
-  }
+  static class MementoCoordinate implements Memento<Coordinate> {}
 }

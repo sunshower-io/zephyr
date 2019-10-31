@@ -15,6 +15,7 @@ dependencies {
      * Implementation Dependencies
      */
     implementation 'info.picocli:picocli'
+    implementation project(':kernel-modules:kernel-lib')
 
     /**
      * Test Dependencies
