@@ -15,10 +15,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+@SuppressWarnings("PMD.BeanMembersShouldSerialize")
 class YamlPluginDescriptorScannerTest {
 
-  private File moduleFile;
   private URL fileUrl;
+  private File moduleFile;
   private ModuleScanner scanner;
 
   @BeforeEach

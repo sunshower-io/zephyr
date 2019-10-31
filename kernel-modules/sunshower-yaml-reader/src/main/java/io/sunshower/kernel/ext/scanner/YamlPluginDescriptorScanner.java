@@ -25,7 +25,7 @@ import lombok.val;
  * modules and plugins to implement their plugin configurations in YAML dependencies: - dependency:
  * required: true group: io.sunshower.whatever artifact: whatever version: 1.0.0
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "PMD.DataflowAnomalyAnalysis"})
 public class YamlPluginDescriptorScanner implements ModuleScanner {
 
   /**

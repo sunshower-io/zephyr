@@ -1,4 +1,8 @@
 apply plugin: 'war'
+apply plugin: 'pmd'
+apply plugin: 'java'
+apply plugin: 'java-library'
+
 
 
 dependencies {
@@ -10,8 +14,10 @@ dependencies {
     compileOnly project(':kernel-modules:kernel-lib')
 
 
-    testImplementation project(":kernel-api")
-    testImplementation project(":kernel-modules:kernel-lib")
+    testImplementation project(':kernel-core')
+    testImplementation project(':kernel-modules:kernel-lib')
+
+
 
     [
             "org.junit.jupiter:junit-jupiter-api",

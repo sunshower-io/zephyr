@@ -28,6 +28,37 @@ allprojects {
 }
 
 subprojects {
+
+
+    plugins.withType(WarPlugin) {
+
+
+        configurations {
+            plugin {
+                transitive = false
+                extendsFrom implementation
+            }
+        }
+
+
+        tasks.withType(com.github.spotbugs.SpotBugsTask) {
+            reports {
+                xml.enabled = false
+                html.enabled = true
+            }
+        }
+        pmd {
+            ruleSets = [
+                    "${project.rootDir}/check/pmd/rules/errorprone.xml",
+                    "category/java/multithreading.xml",
+                    "category/java/bestpractices.xml",
+                    "category/java/performance.xml"
+            ]
+
+        }
+    }
+
+
     plugins.withType(JavaPlugin) {
 
         tasks.withType(com.github.spotbugs.SpotBugsTask) {
