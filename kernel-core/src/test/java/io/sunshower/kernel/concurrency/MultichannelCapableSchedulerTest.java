@@ -50,9 +50,6 @@ class MultichannelCapableSchedulerTest {
     verify(task, times(1)).perform();
   }
 
-
-
-
   ConcurrentProcess task(String channel) {
     return new TestProcess(channel);
   }

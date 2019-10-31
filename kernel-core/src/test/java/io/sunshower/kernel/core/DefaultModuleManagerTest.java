@@ -9,6 +9,9 @@ import io.sunshower.kernel.Lifecycle;
 import io.sunshower.kernel.Module;
 import io.sunshower.kernel.UnsatisfiedDependencyException;
 import io.sunshower.module.phases.AbstractModulePhaseTestCase;
+import java.net.URI;
+import java.nio.file.FileSystems;
+import java.util.Collections;
 import lombok.val;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -189,12 +192,15 @@ class DefaultModuleManagerTest extends AbstractModulePhaseTestCase {
 
   @Test
   void ensureResolvedModuleHasCorrectModuleType() throws Exception {
+
+    val fs = FileSystems.newFileSystem(URI.create("droplet://kernel"), Collections.emptyMap());
     val module = resolveModule("kernel-lib", context).getInstalledModule();
     try {
       kernel.getModuleManager().install(module);
       kernel.getModuleManager().resolve(module);
       assertEquals(module.getType(), Module.Type.KernelModule);
     } finally {
+      fs.close();
       module.getFileSystem().close();
     }
   }

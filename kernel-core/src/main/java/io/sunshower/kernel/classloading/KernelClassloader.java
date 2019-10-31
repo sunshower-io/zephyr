@@ -1,14 +1,13 @@
 package io.sunshower.kernel.classloading;
 
 import io.sunshower.kernel.misc.SuppressFBWarnings;
-import lombok.val;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Enumeration;
+import lombok.val;
 
 @SuppressWarnings({
   "PMD.DataflowAnomalyAnalysis",
@@ -18,6 +17,8 @@ import java.util.Enumeration;
 public final class KernelClassloader extends URLClassLoader {
 
   static final int BUFFER_SIZE = 1024;
+
+  final Object lock = new Object();
 
   public KernelClassloader(URL[] urls, ClassLoader parent) {
     super(urls, parent);
@@ -52,19 +53,21 @@ public final class KernelClassloader extends URLClassLoader {
 
     for (val url : getURLs()) {
       if (url.toString().endsWith(".droplet")) {
-        val classUrl = new URL("jar:" + url + "!/" + path);
-        try (val input = classUrl.openStream();
-            val output = new ByteArrayOutputStream()) {
+        synchronized (lock) {
+          val classUrl = new URL("jar:" + url + "!/" + path);
+          try (val input = classUrl.openStream();
+              val output = new ByteArrayOutputStream()) {
 
-          byte[] data = new byte[BUFFER_SIZE];
-          int read = 0;
-          for (; ; ) {
-            read = input.read(data, 0, data.length);
-            if (read == -1) break;
-            output.write(data, 0, read);
+            byte[] data = new byte[BUFFER_SIZE];
+            int read = 0;
+            for (; ; ) {
+              read = input.read(data, 0, data.length);
+              if (read == -1) break;
+              output.write(data, 0, read);
+            }
+            byte[] classdata = output.toByteArray();
+            return defineClass(name, classdata, 0, classdata.length);
           }
-          byte[] classdata = output.toByteArray();
-          return defineClass(name, classdata, 0, classdata.length);
         }
       }
     }
@@ -73,15 +76,17 @@ public final class KernelClassloader extends URLClassLoader {
 
   @Override
   protected Class<?> findClass(String name) throws ClassNotFoundException {
-    try {
-      return super.findClass(name);
-    } catch (ClassNotFoundException e) {
-      // eh
-    }
-    try {
-      return searchInDroplets(name);
-    } catch (IOException | ClassNotFoundException e) {
-      throw new ClassNotFoundException(name, e);
+    synchronized (lock) {
+      try {
+        return super.findClass(name);
+      } catch (ClassNotFoundException e) {
+        // eh
+      }
+      try {
+        return searchInDroplets(name);
+      } catch (IOException | ClassNotFoundException e) {
+        throw new ClassNotFoundException(name, e);
+      }
     }
   }
 }

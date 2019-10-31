@@ -9,7 +9,6 @@ import io.sunshower.test.common.Tests;
 import java.io.IOException;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
 @SuppressWarnings("PMD.JUnitTestContainsTooManyAsserts")
@@ -72,7 +71,6 @@ public class SunshowerKernelTest {
   }
 
   @Test
-  @RepeatedTest(10)
   @SuppressWarnings("PMD.UseProperClassLoader")
   void
       ensureInstallingKernelModuleThenStartingKernelResultsInKernelModuleClassesBeingAvailableInClassloader()

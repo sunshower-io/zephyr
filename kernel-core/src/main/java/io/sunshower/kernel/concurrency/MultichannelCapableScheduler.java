@@ -99,14 +99,9 @@ public class MultichannelCapableScheduler implements Scheduler {
 
   @Override
   public void awaitShutdown() {
-
     while (!processors.isEmpty()) {
       synchronized (lock) {
-        if (processors.size() == 1) {
-          if (processors.containsKey(MAINTENANCE_CHANNEL)) {
-            break;
-          }
-        }
+        processors.values().removeIf(next -> next.processQueue.isEmpty());
       }
     }
     running = false;
@@ -199,7 +194,6 @@ public class MultichannelCapableScheduler implements Scheduler {
             running = false;
             MultichannelCapableScheduler.this.processors.remove(channel);
           }
-
 
           val action = processQueue.peek();
           if (action == null) {

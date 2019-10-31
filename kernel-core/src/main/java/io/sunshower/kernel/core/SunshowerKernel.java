@@ -4,6 +4,7 @@ import io.sunshower.kernel.classloading.KernelClassloader;
 import io.sunshower.kernel.concurrency.ConcurrentProcess;
 import io.sunshower.kernel.concurrency.Scheduler;
 import io.sunshower.kernel.launch.KernelOptions;
+import io.sunshower.kernel.module.ModuleEntryWriteProcessor;
 import java.nio.file.FileSystem;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,8 +13,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 import javax.inject.Inject;
-
-import io.sunshower.kernel.module.ModuleEntryWriteProcessor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
@@ -81,7 +80,7 @@ public class SunshowerKernel implements Kernel {
 
   @Override
   public void start() {
-    if(scheduler.isRunning()) {
+    if (scheduler.isRunning()) {
       throw new IllegalStateException("Can't call start");
     }
     scheduler.start();
