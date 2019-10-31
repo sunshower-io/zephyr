@@ -20,10 +20,10 @@ public class DelegatingShellParser implements ShellParser {
   }
 
   @Override
-  public void perform(KernelOptions options) {
+  public boolean perform(KernelOptions options) {
     val line = console.readLine();
     val populated = CommandLine.populateCommand(delegate, lineSplitter.split(line));
-    populated.execute(this);
+    return populated.execute(this);
   }
 
   @Override

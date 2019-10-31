@@ -15,7 +15,7 @@ public class CommandDelegate {
   @CommandLine.Parameters(index = "1..*")
   private String[] arguments;
 
-  public void execute(CommandRegistry registry) {
+  public boolean execute(CommandRegistry registry) {
     val cli = registry.getCommand(command);
     val commandLine = new CommandLine(cli);
     if (arguments == null || arguments.length == 0) {
@@ -23,5 +23,6 @@ public class CommandDelegate {
     } else {
       commandLine.execute(arguments);
     }
+    return true;
   }
 }

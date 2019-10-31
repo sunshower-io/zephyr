@@ -1,6 +1,5 @@
 package io.sunshower.kernel.shell.commands;
 
-import io.sunshower.kernel.shell.ShellExitException;
 import java.util.concurrent.Callable;
 import picocli.CommandLine;
 
@@ -8,6 +7,7 @@ import picocli.CommandLine;
 public class ExitCommand implements Callable<Void> {
   @Override
   public Void call() throws Exception {
-    throw new ShellExitException();
+    System.exit(0);
+    return null;
   }
 }

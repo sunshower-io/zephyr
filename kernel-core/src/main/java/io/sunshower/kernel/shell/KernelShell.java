@@ -11,12 +11,12 @@ public class KernelShell {
   private final KernelOptions options;
 
   public void start() {
-    for (; ; ) {
+    boolean running = true;
+    while (running) {
       try {
         parser.perform(options);
       } catch (ShellExitException ex) {
-        console.format("Goodbye");
-        return;
+        running = false;
       } catch (Exception ex) {
         console.format("Command not understood--run <help> for a list of valid commands\n");
       }

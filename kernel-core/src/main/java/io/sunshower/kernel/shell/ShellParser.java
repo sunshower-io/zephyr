@@ -4,5 +4,5 @@ import io.sunshower.kernel.launch.KernelOptions;
 
 public interface ShellParser extends CommandRegistry {
 
-  void perform(KernelOptions options);
+  boolean perform(KernelOptions options);
 }

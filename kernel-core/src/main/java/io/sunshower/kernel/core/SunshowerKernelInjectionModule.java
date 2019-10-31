@@ -43,22 +43,26 @@ public class SunshowerKernelInjectionModule {
     return new DefaultDependencyGraph();
   }
 
+  @Singleton
   @Provides
   public KernelOptions kernelOptions() {
     return options;
   }
 
+  @Singleton
   @Provides
   public DefaultModuleContext moduleContext() {
     return new DefaultModuleContext();
   }
 
   @Provides
+  @Singleton
   public Kernel sunshowerKernel(SunshowerKernel kernel) {
     return kernel;
   }
 
   @Provides
+  @Singleton
   public ModuleManager pluginManager(
       DefaultModuleContext context,
       ModuleClasspathManager classpathManager,
@@ -67,6 +71,7 @@ public class SunshowerKernelInjectionModule {
   }
 
   @Provides
+  @Singleton
   public ModuleClasspathManager moduleClasspathManager(DependencyGraph graph) {
     return ServiceLoader.load(ModuleClasspathManagerProvider.class, classLoader)
         .findFirst()
