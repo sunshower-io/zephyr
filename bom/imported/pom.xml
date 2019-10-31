@@ -19,6 +19,7 @@
         <mockito.version>3.1.0</mockito.version>
 
 
+
         <!--
         Compile Dependency Version
         -->
@@ -26,6 +27,7 @@
         <picocli.version>4.0.4</picocli.version>
         <lombok.version>1.18.10</lombok.version>
         <yamlbeans.version>1.13</yamlbeans.version>
+        <xstream.version>1.4.11.1</xstream.version>
         <javax.inject-version>1</javax.inject-version>
         <spring.version>5.2.0.RELEASE</spring.version>
         <java-semver.version>0.9.0</java-semver.version>
@@ -147,6 +149,11 @@
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-core</artifactId>
                 <version>${mockito.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.thoughtworks.xstream</groupId>
+                <artifactId>xstream</artifactId>
+                <version>${xstream.version}</version>
             </dependency>
 
 
