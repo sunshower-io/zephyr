@@ -61,10 +61,8 @@ public final class KernelClassloader extends URLClassLoader {
   private Class<?> searchInDroplets(String name) throws IOException, ClassNotFoundException {
     val path = "WEB-INF/classes/" + name.replace('.', '/') + ".class";
 
-    System.out.println("URLS " + Arrays.toString(getURLs()));
     for (val url : getURLs()) {
       if (url.toString().endsWith(".droplet")) {
-        System.out.println("FOUND DROPLET: " + url);
         val classUrl = new URL("jar:" + url + "!/" + path);
         try (val input = classUrl.openStream();
             val output = new ByteArrayOutputStream()) {
@@ -77,7 +75,6 @@ public final class KernelClassloader extends URLClassLoader {
             output.write(data, 0, read);
           }
           byte[] classdata = output.toByteArray();
-          System.out.println("DEFINED " + name);
           return defineClass(name, classdata, 0, classdata.length);
         } catch (FileNotFoundException ex) {
           continue;

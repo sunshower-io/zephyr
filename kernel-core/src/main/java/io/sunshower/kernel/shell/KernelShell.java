@@ -4,6 +4,7 @@ import io.sunshower.kernel.launch.KernelOptions;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
+@SuppressWarnings("PMD.DataflowAnomalyAnalysis")
 public class KernelShell {
 
   private final ShellParser parser;

@@ -9,6 +9,7 @@ import picocli.CommandLine;
   name = "install",
   subcommands = {InstallKernelModule.class, InstallPlugin.class}
 )
+@SuppressWarnings("PMD.DoNotUseThreads")
 public class InstallCommand {
   final LauncherContext context;
 }

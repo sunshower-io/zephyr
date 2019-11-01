@@ -4,6 +4,7 @@ import java.util.concurrent.Callable;
 import lombok.val;
 import picocli.CommandLine;
 
+@SuppressWarnings("PMD.DoNotUseThreads")
 @CommandLine.Command(name = "stop")
 public class KernelStopCommand implements Callable<Void> {
 

@@ -3,16 +3,22 @@ package io.sunshower.kernel.process;
 import io.sunshower.kernel.concurrency.ConcurrentProcess;
 import io.sunshower.kernel.concurrency.Processor;
 import io.sunshower.kernel.core.Kernel;
+import io.sunshower.kernel.log.Logger;
+import io.sunshower.kernel.log.Logging;
 import io.sunshower.kernel.module.ModuleEntryWriteProcessor;
 import io.sunshower.module.phases.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collections;
+import java.util.logging.Level;
 import lombok.AllArgsConstructor;
 import lombok.val;
 
 @AllArgsConstructor
+@SuppressWarnings("PMD.UnusedPrivateMethod")
 public class ModuleInstallProcess implements ConcurrentProcess, Processor {
+
+  static final Logger log = Logging.get(ModuleInstallProcess.class);
   public static final String channel = "kernel:process:install";
 
   final String url;
@@ -35,7 +41,7 @@ public class ModuleInstallProcess implements ConcurrentProcess, Processor {
     try {
       create().call();
     } catch (Exception e) {
-      e.printStackTrace();
+      log.log(Level.WARNING, "module.install.failed");
     }
   }
 
@@ -60,7 +66,7 @@ public class ModuleInstallProcess implements ConcurrentProcess, Processor {
       ctx.setContextValue(
           ModuleUnpackPhase.LIBRARY_DIRECTORIES, Collections.singleton("WEB-INF/lib"));
     } catch (MalformedURLException e) {
-      e.printStackTrace();
+      log.log(Level.WARNING, "module.install.failed", e.getMessage());
     }
   }
 }

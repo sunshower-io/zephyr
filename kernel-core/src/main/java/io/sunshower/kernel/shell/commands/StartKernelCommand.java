@@ -4,12 +4,14 @@ import io.sunshower.kernel.core.DaggerSunshowerKernelConfiguration;
 import io.sunshower.kernel.core.SunshowerKernelInjectionModule;
 import io.sunshower.kernel.shell.KernelLauncherContext;
 import java.util.concurrent.Callable;
+import lombok.Setter;
 import lombok.val;
 import picocli.CommandLine;
 
+@SuppressWarnings("PMD.DoNotUseThreads")
 @CommandLine.Command(name = "start")
 public class StartKernelCommand implements Callable<Void> {
-  @CommandLine.ParentCommand private KernelCommandSet kernelCommandSet;
+  @Setter @CommandLine.ParentCommand private KernelCommandSet kernelCommandSet;
 
   @Override
   public Void call() throws Exception {

@@ -8,12 +8,16 @@ apply plugin: 'com.github.spotbugs'
 dependencies {
 
     /**
+     * API dependencies
+     */
+    api 'org.jboss.modules:jboss-modules'
+    api 'com.github.zafarkhaja:java-semver'
+
+    /**
      * Implementation dependencies
      */
     implementation project(':kernel-api')
     implementation 'javax.inject:javax.inject'
-    implementation 'org.jboss.modules:jboss-modules'
-    implementation 'com.github.zafarkhaja:java-semver'
 
     /**
      * Test Implementation Dependencies

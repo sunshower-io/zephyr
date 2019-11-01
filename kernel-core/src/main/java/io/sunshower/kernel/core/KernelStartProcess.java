@@ -7,13 +7,19 @@ import io.sunshower.kernel.core.lifecycle.KernelFileSystemCreatePhase;
 import io.sunshower.kernel.core.lifecycle.KernelModuleListReadPhase;
 import io.sunshower.kernel.process.KernelProcess;
 import io.sunshower.kernel.process.KernelProcessContext;
-import lombok.AllArgsConstructor;
 import lombok.val;
 
-@AllArgsConstructor
 public class KernelStartProcess implements ConcurrentProcess, Processor {
   static final String channel = "kernel:lifecycle:process:start";
+
   final Kernel kernel;
+  final SunshowerKernel.DefaultLifecycle lifecycle;
+
+  public KernelStartProcess(Kernel kernel, SunshowerKernel.DefaultLifecycle lifecycle) {
+    this.kernel = kernel;
+    this.lifecycle = lifecycle;
+    lifecycle.state = KernelLifecycle.State.Stopping;
+  }
 
   @Override
   public String getChannel() {
@@ -30,6 +36,7 @@ public class KernelStartProcess implements ConcurrentProcess, Processor {
     val process = createProcess();
     try {
       process.call();
+      lifecycle.state = KernelLifecycle.State.Running;
     } catch (Exception e) {
       throw new KernelException(e);
     } finally {

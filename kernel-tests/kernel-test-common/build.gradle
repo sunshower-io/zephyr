@@ -1,0 +1,14 @@
+
+apply plugin: 'java'
+apply plugin: 'java-library'
+
+dependencies {
+    api project(':kernel-api')
+    [
+            'org.mockito:mockito-core',
+            "org.junit.jupiter:junit-jupiter-api",
+            "org.junit.jupiter:junit-jupiter-engine",
+    ].each {
+        api it
+    }
+}

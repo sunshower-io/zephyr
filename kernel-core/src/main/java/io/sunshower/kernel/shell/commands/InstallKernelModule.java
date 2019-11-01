@@ -1,14 +1,14 @@
 package io.sunshower.kernel.shell.commands;
 
-import java.util.List;
-
 import io.sunshower.kernel.concurrency.ConcurrentProcess;
 import io.sunshower.kernel.concurrency.Processor;
 import io.sunshower.kernel.process.ModuleInstallProcess;
+import java.util.List;
 import lombok.val;
 import picocli.CommandLine;
 
 @CommandLine.Command(name = "kernel-module")
+@SuppressWarnings({"PMD.DoNotUseThreads", "PMD.DataflowAnomalyAnalysis"})
 public class InstallKernelModule implements Runnable {
 
   @CommandLine.Parameters private List<String> modules;

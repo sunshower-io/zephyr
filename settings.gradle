@@ -12,6 +12,8 @@ include(
         'kernel-modules:sunshower-yaml-reader',
 
 
+        'kernel-tests:kernel-system-tests',
+        'kernel-tests:kernel-test-common',
         /**
          * test plugins
          */

@@ -163,7 +163,7 @@ public class MultichannelCapableScheduler implements Scheduler {
   }
 
   @Override
-  public boolean scheduleTask(ConcurrentProcess action) {
+  public CompletableFuture<Void> scheduleTask(ConcurrentProcess action) {
     synchronized (processors) { // all operations on processors must use processors' monitor
       val module = processors.get(action.getChannel());
       if (module == null) {
@@ -182,11 +182,13 @@ public class MultichannelCapableScheduler implements Scheduler {
     private final String channel;
     private final Set<Processor> processors;
     private final BlockingQueue<ConcurrentProcess> processQueue;
+    private Map<ConcurrentProcess, CompletableFuture<Void>> outstanding;
 
     public ProcessingModule(final String channel) {
       this.channel = channel;
       this.processors = new HashSet<>();
       this.processQueue = new LinkedBlockingQueue<>();
+      this.outstanding = new HashMap<>();
     }
 
     void register(Processor processor) {
@@ -197,9 +199,14 @@ public class MultichannelCapableScheduler implements Scheduler {
       }
     }
 
-    boolean enqueue(ConcurrentProcess process) {
-      log.log(Level.INFO, "scheduler.enqueuing", channel, process.getChannel());
-      return processQueue.offer(process);
+    CompletableFuture<Void> enqueue(ConcurrentProcess process) {
+      synchronized (lock) {
+        log.log(Level.INFO, "scheduler.enqueuing", channel, process.getChannel());
+        processQueue.offer(process);
+        val future = new CompletableFuture<Void>();
+        outstanding.put(process, future);
+        return future;
+      }
     }
 
     @SuppressWarnings("PMD.DataflowAnomalyAnalysis")
@@ -216,9 +223,11 @@ public class MultichannelCapableScheduler implements Scheduler {
           if (action == null) {
             continue;
           }
+          val future = outstanding.remove(action);
           for (val processor : processors) {
             processor.process(action);
           }
+          future.complete(null);
           // must remove from queue to ensure processors have time to act
           processQueue.poll();
         }

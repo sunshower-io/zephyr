@@ -11,7 +11,6 @@ import java.net.URI;
 import java.nio.file.FileSystems;
 import java.util.Collections;
 import java.util.logging.Level;
-
 import lombok.val;
 
 public class KernelFileSystemCreatePhase
@@ -36,8 +35,7 @@ public class KernelFileSystemCreatePhase
         val fs = FileSystems.newFileSystem(URI.create(FILE_SYSTEM_ROOT), Collections.emptyMap());
         ((SunshowerKernel) context.getKernel()).setFileSystem(fs);
         log.log(Level.INFO, "kernel.lifecycle.filesystem.created", fs.getRootDirectories());
-      } catch (Throwable e) {
-        e.printStackTrace();
+      } catch (Exception e) {
         log.log(Level.SEVERE, "kernel.lifecycle.filesystem.failed", e.getMessage());
         val status = new Status(StatusType.FAILED, "failed", false);
         process.addStatus(status);

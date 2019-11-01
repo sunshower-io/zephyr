@@ -31,10 +31,10 @@ public class DefaultModuleManager implements ModuleManager {
 
   @Inject
   public DefaultModuleManager(
-      @NonNull final DefaultModuleContext context,
+      @NonNull final ModuleContext context,
       @NonNull final ModuleClasspathManager classpathManager,
       @NonNull final DependencyGraph graph) {
-    this.context = context;
+    this.context = (DefaultModuleContext) context;
     this.dependencyGraph = graph;
     this.classpathManager = classpathManager;
     modules = new EnumMap<>(Module.Type.class);

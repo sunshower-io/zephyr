@@ -1,5 +1,7 @@
 package io.sunshower.kernel.concurrency;
 
+import java.util.concurrent.CompletableFuture;
+
 public interface Scheduler {
 
   void terminate();
@@ -20,7 +22,7 @@ public interface Scheduler {
 
   void unregisterHandler(Processor processor);
 
-  boolean scheduleTask(ConcurrentProcess action);
+  CompletableFuture<Void> scheduleTask(ConcurrentProcess action);
 
   void await(String channel);
 

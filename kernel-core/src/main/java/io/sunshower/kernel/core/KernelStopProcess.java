@@ -6,14 +6,19 @@ import io.sunshower.kernel.core.lifecycle.UnloadKernelClassloaderPhase;
 import io.sunshower.kernel.core.lifecycle.UnloadKernelFilesystemPhase;
 import io.sunshower.kernel.process.KernelProcess;
 import io.sunshower.kernel.process.KernelProcessContext;
-import lombok.AllArgsConstructor;
 import lombok.val;
 
-@AllArgsConstructor
 public class KernelStopProcess implements ConcurrentProcess, Processor {
   static final String channel = "kernel:lifecycle:process:stop";
 
   final Kernel kernel;
+  final SunshowerKernel.DefaultLifecycle lifecycle;
+
+  public KernelStopProcess(Kernel kernel, SunshowerKernel.DefaultLifecycle lifecycle) {
+    this.kernel = kernel;
+    this.lifecycle = lifecycle;
+    lifecycle.state = KernelLifecycle.State.Stopping;
+  }
 
   @Override
   public String getChannel() {
@@ -30,6 +35,7 @@ public class KernelStopProcess implements ConcurrentProcess, Processor {
     val process = createProcess();
     try {
       process.call();
+      lifecycle.state = KernelLifecycle.State.Stopped;
     } catch (Exception e) {
       throw new KernelException(e);
     } finally {

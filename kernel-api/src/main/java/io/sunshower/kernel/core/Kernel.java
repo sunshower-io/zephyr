@@ -7,6 +7,8 @@ import java.util.List;
 
 public interface Kernel {
 
+  KernelLifecycle getLifecycle();
+
   ClassLoader getClassLoader();
 
   ModuleManager getModuleManager();

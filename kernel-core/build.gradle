@@ -14,6 +14,7 @@ dependencies {
     /**
      * Implementation Dependencies
      */
+    implementation project(':kernel-api')
     implementation 'info.picocli:picocli'
     implementation project(':kernel-modules:kernel-lib')
 
@@ -26,17 +27,18 @@ dependencies {
     testImplementation 'org.jboss.modules:jboss-modules'
 
     testImplementation project(':kernel-modules:kernel-lib')
+    testImplementation project(':kernel-tests:kernel-test-common')
 
 
 
-    implementation project(':kernel-api')
 
 
-    testImplementation project(':kernel-tests:kernel-test')
 
+    /**
+     * Annotation Processors
+     */
 
     annotationProcessor 'com.google.dagger:dagger-compiler'
-    testAnnotationProcessor 'com.google.dagger:dagger-compiler'
 
 }
 

@@ -5,16 +5,18 @@ import io.sunshower.kernel.concurrency.ConcurrentProcess;
 import io.sunshower.kernel.concurrency.Scheduler;
 import io.sunshower.kernel.launch.KernelOptions;
 import io.sunshower.kernel.module.ModuleEntryWriteProcessor;
+
+import java.io.IOException;
 import java.nio.file.FileSystem;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.RejectedExecutionHandler;
-import java.util.concurrent.ThreadPoolExecutor;
 import javax.inject.Inject;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.SneakyThrows;
 import lombok.val;
 
 @SuppressWarnings({"PMD.AvoidUsingVolatile", "PMD.DoNotUseThreads"})
@@ -34,18 +36,15 @@ public class SunshowerKernel implements Kernel {
 
   @Getter private final ExecutorService executorService;
 
+  @Getter private final KernelLifecycle lifecycle;
+
   @Inject
   public SunshowerKernel(
       ModuleManager moduleManager, Scheduler scheduler, ExecutorService executorService) {
     this.scheduler = scheduler;
     this.moduleManager = moduleManager;
     this.executorService = executorService;
-    ((ThreadPoolExecutor) executorService)
-        .setRejectedExecutionHandler(
-            new RejectedExecutionHandler() {
-              @Override
-              public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {}
-            });
+    lifecycle = new DefaultLifecycle();
   }
 
   public static KernelOptions getKernelOptions() {
@@ -53,6 +52,11 @@ public class SunshowerKernel implements Kernel {
       throw new IllegalStateException("Error: KernelOptions are null--this is definitely a bug");
     }
     return kernelOptions;
+  }
+
+  @Override
+  public KernelLifecycle getLifecycle() {
+    return lifecycle;
   }
 
   @Override
@@ -79,15 +83,12 @@ public class SunshowerKernel implements Kernel {
   }
 
   @Override
+  @SneakyThrows
   public void start() {
-    if (scheduler.isRunning()) {
-      throw new IllegalStateException("Can't call start");
+    val lcycle = lifecycle.start();
+    if (lcycle != null) {
+      scheduler.synchronize();
     }
-    scheduler.start();
-    scheduler.registerHandler(ModuleEntryWriteProcessor.getInstance());
-    val process = new KernelStartProcess(this);
-    scheduler.registerHandler(process);
-    scheduler.scheduleTask(process);
   }
 
   @Override
@@ -97,16 +98,12 @@ public class SunshowerKernel implements Kernel {
   }
 
   @Override
+  @SneakyThrows
   public void stop() {
-    if (!scheduler.isRunning()) {
-      throw new IllegalStateException("Kernel is not running");
+    val lcycle = lifecycle.stop();
+    if (lcycle != null) {
+      scheduler.synchronize();
     }
-    scheduler.unregisterHandler(ModuleEntryWriteProcessor.getInstance());
-
-    val process = new KernelStopProcess(this);
-    scheduler.registerHandler(process);
-    scheduler.scheduleTask(process);
-    scheduler.awaitShutdown();
   }
 
   @SuppressWarnings("PMD.UnusedPrivateMethod")
@@ -119,5 +116,45 @@ public class SunshowerKernel implements Kernel {
 
   public void setClassLoader(KernelClassloader loader) {
     this.classLoader = loader;
+  }
+
+  class DefaultLifecycle implements KernelLifecycle {
+
+    volatile State state;
+
+    @Override
+    public State getState() {
+      return state;
+    }
+
+    @Override
+    public CompletableFuture<Void> stop() {
+      if (state == State.Stopped || state == State.Stopping) {
+        return null;
+      }
+      scheduler.unregisterHandler(ModuleEntryWriteProcessor.getInstance());
+
+      val process = new KernelStopProcess(SunshowerKernel.this, this);
+      scheduler.registerHandler(process);
+      return scheduler.scheduleTask(process);
+    }
+
+    @Override
+    public CompletableFuture<Void> start() {
+      if (state == State.Starting || state == State.Running) {
+        return null;
+      }
+      state = State.Starting;
+      scheduler.start();
+      scheduler.registerHandler(ModuleEntryWriteProcessor.getInstance());
+      val process = new KernelStartProcess(SunshowerKernel.this, this);
+      scheduler.registerHandler(process);
+      return scheduler.scheduleTask(process);
+    }
+
+    @Override
+    public CompletableFuture<Void> setState(State state) {
+      return null;
+    }
   }
 }
