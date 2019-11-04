@@ -2,7 +2,7 @@ package io.sunshower.gyre;
 
 import java.util.Set;
 
-public interface Graph<E, V> {
+public interface Graph<E, V> extends Cloneable {
 
   int edgeCount();
   int vertexCount();
@@ -13,6 +13,13 @@ public interface Graph<E, V> {
 
   E disconnect(V source, V target, E edge);
 
+  /**
+   * this removes all connections between source and target
+   * @param source
+   * @param target
+   */
+  Set<E> disconnect(V source, V target);
+
   Set<E> getEdges();
 
   Set<V> getVertices();
@@ -22,6 +29,8 @@ public interface Graph<E, V> {
   V getSource(E edge);
 
   V getTarget(E edge);
+
+
 
   Set<E> adjacentEdges(V vertex);
 
@@ -35,4 +44,6 @@ public interface Graph<E, V> {
   boolean add(V vertex);
 
   boolean remove(V vertex);
+
+  Graph<E, V> clone();
 }

@@ -7,6 +7,14 @@ public interface DirectedGraph<E, V> extends Graph<DirectedGraph.Edge<E>, V> {
   byte IN_FLAG = 0x1;
   byte OUT_FLAG = IN_FLAG << 1;
 
+  static <E> Edge<E> incoming(E label) {
+    return new Edge<>(label, Direction.Incoming);
+  }
+
+  static <E> Edge<E> outgoing(E label) {
+    return new Edge<>(label, Direction.Outgoing);
+  }
+
   enum Direction {
     Incoming(IN_FLAG),
     Outgoing(OUT_FLAG);
@@ -17,10 +25,10 @@ public interface DirectedGraph<E, V> extends Graph<DirectedGraph.Edge<E>, V> {
       this.value = value;
     }
 
-
     public byte clear(byte v) {
       return (byte) (v & ~value);
     }
+
     public byte set(byte v) {
       return (byte) (v | value);
     }
@@ -67,4 +75,6 @@ public interface DirectedGraph<E, V> extends Graph<DirectedGraph.Edge<E>, V> {
   Set<E> adjacentEdges(V vertex, Direction direction);
 
   int degreeOf(V vertex, Direction direction);
+
+  DirectedGraph<E, V> clone();
 }

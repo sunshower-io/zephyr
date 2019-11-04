@@ -6,10 +6,14 @@ import java.util.*;
 
 public class AbstractDirectedGraph<E, V> implements DirectedGraph<E, V> {
 
-  private final Map<V, Map<V, Adjacency<E>>> adjacencies;
+  private final Map<V, Set<Adjacency<E, V>>> adjacencies;
 
   public AbstractDirectedGraph() {
     adjacencies = createAdjacencyStructure();
+  }
+
+  private AbstractDirectedGraph(Map<V, Set<Adjacency<E, V>>> adjacencies) {
+    this.adjacencies = adjacencies;
   }
 
   @Override
@@ -19,12 +23,12 @@ public class AbstractDirectedGraph<E, V> implements DirectedGraph<E, V> {
       return false;
     }
 
-    val targets = neighbors.get(target);
-
-    if (targets == null) {
-      return false;
+    for (val neighbor : neighbors) {
+      if (d.is(neighbor.directions) && Objects.equals(target, neighbor.target)) {
+        return true;
+      }
     }
-    return d.is(targets.directions);
+    return false;
   }
 
   @Override
@@ -33,8 +37,8 @@ public class AbstractDirectedGraph<E, V> implements DirectedGraph<E, V> {
     if (neighbors == null || neighbors.isEmpty()) {
       return Collections.emptySet();
     }
-    val results = new HashSet<E>();
-    for (val neighbor : neighbors.values()) {
+    val results = new HashSet<E>(neighbors.size());
+    for (val neighbor : neighbors) {
       if (direction.is(neighbor.directions)) {
         results.add(neighbor.value);
       }
@@ -49,7 +53,7 @@ public class AbstractDirectedGraph<E, V> implements DirectedGraph<E, V> {
       return 0;
     }
     int count = 0;
-    for (val neighbor : neighbors.values()) {
+    for (val neighbor : neighbors) {
       if (direction.is(neighbor.directions)) {
         count++;
       }
@@ -81,15 +85,15 @@ public class AbstractDirectedGraph<E, V> implements DirectedGraph<E, V> {
 
     var neighbors = adjacencies.get(source);
     if (neighbors == null) {
-      neighbors = new HashMap<>();
+      neighbors = new HashSet<>();
       adjacencies.put(source, neighbors);
     }
 
-    val neighbor = new Adjacency<E>(edge.value);
+    val neighbor = new Adjacency<E, V>(source, target, edge.value);
     neighbor.directions = edge.direction.set(neighbor.directions);
-    neighbors.put(target, neighbor);
+    neighbors.add(neighbor);
     if (!adjacencies.containsKey(target)) {
-      adjacencies.put(target, new HashMap<>());
+      adjacencies.put(target, new HashSet<>());
     } else {
       return edge;
     }
@@ -103,12 +107,7 @@ public class AbstractDirectedGraph<E, V> implements DirectedGraph<E, V> {
       return null;
     }
 
-    val actual = adjacencies.get(target);
-    if (actual == null || actual.isEmpty()) {
-      return null;
-    }
-
-    val iter = actual.values().iterator();
+    val iter = neighbors.iterator();
     while (iter.hasNext()) {
       val next = iter.next();
       if (edge.direction.is(next.directions) && Objects.equals(edge.value, next.value)) {
@@ -120,10 +119,34 @@ public class AbstractDirectedGraph<E, V> implements DirectedGraph<E, V> {
   }
 
   @Override
+  public Set<Edge<E>> disconnect(V source, V target) {
+    val neighbors = adjacencies.get(source);
+    if (neighbors == null || neighbors.isEmpty()) {
+      return Collections.emptySet();
+    }
+
+    val result = new HashSet<Edge<E>>(neighbors.size());
+
+    val iter = neighbors.iterator();
+    while (iter.hasNext()) {
+      val next = iter.next();
+      if (Objects.equals(next.target, target)) {
+        for (val direction : Direction.values()) {
+          if (direction.is(next.directions)) {
+            result.add(new Edge<>(next.value, direction));
+            iter.remove();
+          }
+        }
+      }
+    }
+    return result;
+  }
+
+  @Override
   public Set<Edge<E>> getEdges() {
     Set<Edge<E>> results = new HashSet<>(adjacencies.size());
     for (val adjs : adjacencies.values()) {
-      for (val neighbors : adjs.values()) {
+      for (val neighbors : adjs) {
         for (val type : Direction.values()) {
           if (type.is(neighbors.directions)) {
             results.add(new Edge<>(neighbors.value, type));
@@ -136,21 +159,39 @@ public class AbstractDirectedGraph<E, V> implements DirectedGraph<E, V> {
 
   @Override
   public Set<V> getVertices() {
-    return null;
+    return adjacencies.keySet();
   }
 
   @Override
   public int degreeOf(V vertex) {
-    return 0;
+    val neighbors = adjacencies.get(vertex);
+    if (neighbors == null || neighbors.isEmpty()) {
+      return 0;
+    }
+    return neighbors.size();
   }
 
   @Override
   public V getSource(Edge<E> edge) {
+    for (val adjacency : adjacencies.entrySet()) {
+      for (val actual : adjacency.getValue()) {
+        if (edge.direction.is(actual.directions) && Objects.equals(actual.value, edge.value)) {
+          return adjacency.getKey();
+        }
+      }
+    }
     return null;
   }
 
   @Override
   public V getTarget(Edge<E> edge) {
+    for (val adjacency : adjacencies.entrySet()) {
+      for (val actual : adjacency.getValue()) {
+        if (edge.direction.is(actual.directions) && Objects.equals(actual.value, edge.value)) {
+          return actual.target;
+        }
+      }
+    }
     return null;
   }
 
@@ -162,7 +203,7 @@ public class AbstractDirectedGraph<E, V> implements DirectedGraph<E, V> {
     }
 
     val result = new HashSet<Edge<E>>(neighbors.size());
-    for (val r : neighbors.values()) {
+    for (val r : neighbors) {
       for (val d : Direction.values()) {
         if (d.is(r.directions)) {
           result.add(new Edge<>(r.value, d));
@@ -179,7 +220,11 @@ public class AbstractDirectedGraph<E, V> implements DirectedGraph<E, V> {
       return Collections.emptySet();
     }
 
-    return neighbors.keySet();
+    val result = new HashSet<V>(neighbors.size());
+    for (val neighbor : neighbors) {
+      result.add(neighbor.target);
+    }
+    return result;
   }
 
   @Override
@@ -188,7 +233,12 @@ public class AbstractDirectedGraph<E, V> implements DirectedGraph<E, V> {
     if (neighbors == null || neighbors.isEmpty()) {
       return false;
     }
-    return neighbors.containsKey(target);
+    for (val v : neighbors) {
+      if (Objects.equals(target, v.target)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   @Override
@@ -198,7 +248,7 @@ public class AbstractDirectedGraph<E, V> implements DirectedGraph<E, V> {
 
   @Override
   public boolean add(V vertex) {
-    return adjacencies.put(vertex, new HashMap<>()) != null;
+    return adjacencies.put(vertex, new HashSet<>()) != null;
   }
 
   @Override
@@ -206,17 +256,29 @@ public class AbstractDirectedGraph<E, V> implements DirectedGraph<E, V> {
     return adjacencies.remove(vertex) != null;
   }
 
-  protected Map<V, Map<V, Adjacency<E>>> createAdjacencyStructure() {
+  protected Map<V, Set<Adjacency<E, V>>> createAdjacencyStructure() {
     return new HashMap<>();
   }
 
-  private static final class Adjacency<E> {
+  private static final class Adjacency<E, V> {
+    final V source;
+    final V target;
     final E value;
     byte directions;
 
-    private Adjacency(E value) {
+    private Adjacency(V source, V target, E value) {
       this.value = value;
       this.directions = 0;
+      this.source = source;
+      this.target = target;
     }
+  }
+
+  public DirectedGraph<E, V> clone() {
+    val adjacencyStructure = createAdjacencyStructure();
+    for (val adjacencyList : adjacencies.entrySet()) {
+      adjacencyStructure.put(adjacencyList.getKey(), new HashSet<>(adjacencyList.getValue()));
+    }
+    return new AbstractDirectedGraph<>(adjacencyStructure);
   }
 }
