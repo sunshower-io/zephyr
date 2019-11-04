@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import io.sunshower.kernel.test.KernelTest;
 import javax.inject.Inject;
+
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.ExecutionException;
@@ -20,6 +22,12 @@ public class SunshowerKernelSystemTest {
     assertNotNull(kernel, "kernel must not be null");
   }
 
+
+  @Test
+  void ensureReloadingWorks() {
+    kernel.reload();
+
+  }
   @Test
   void ensureKernelCanBeStarted() throws ExecutionException, InterruptedException {
     kernelLifecycle.start().get();

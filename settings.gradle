@@ -1,4 +1,11 @@
 include(
+        'kernel-gyre:gyre-api',
+        'kernel-gyre:gyre-core',
+        'kernel-gyre:gyre-breeze',
+        'kernel-gyre:gyre-common',
+
+
+
         'kernel-api',
         'kernel-core',
         'kernel-tests',

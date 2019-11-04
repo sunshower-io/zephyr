@@ -1,0 +1,4 @@
+apply plugin: 'java'
+dependencies {
+    testImplementation project(':kernel-tests:kernel-test-common')
+}
