@@ -98,6 +98,24 @@ public class AbstractDirectedGraph<E, V> implements DirectedGraph<E, V> {
 
   @Override
   public Edge<E> disconnect(V source, V target, Edge<E> edge) {
+    val neighbors = adjacencies.get(source);
+    if (neighbors == null || neighbors.isEmpty()) {
+      return null;
+    }
+
+    val actual = adjacencies.get(target);
+    if (actual == null || actual.isEmpty()) {
+      return null;
+    }
+
+    val iter = actual.values().iterator();
+    while (iter.hasNext()) {
+      val next = iter.next();
+      if (edge.direction.is(next.directions) && Objects.equals(edge.value, next.value)) {
+        iter.remove();
+        return edge;
+      }
+    }
     return null;
   }
 
@@ -138,12 +156,30 @@ public class AbstractDirectedGraph<E, V> implements DirectedGraph<E, V> {
 
   @Override
   public Set<Edge<E>> adjacentEdges(V vertex) {
-    return null;
+    val neighbors = adjacencies.get(vertex);
+    if (neighbors == null || neighbors.isEmpty()) {
+      return Collections.emptySet();
+    }
+
+    val result = new HashSet<Edge<E>>(neighbors.size());
+    for (val r : neighbors.values()) {
+      for (val d : Direction.values()) {
+        if (d.is(r.directions)) {
+          result.add(new Edge<>(r.value, d));
+        }
+      }
+    }
+    return result;
   }
 
   @Override
   public Set<V> neighbors(V vertex) {
-    return null;
+    val neighbors = adjacencies.get(vertex);
+    if (neighbors == null || neighbors.isEmpty()) {
+      return Collections.emptySet();
+    }
+
+    return neighbors.keySet();
   }
 
   @Override
@@ -157,17 +193,17 @@ public class AbstractDirectedGraph<E, V> implements DirectedGraph<E, V> {
 
   @Override
   public boolean containsVertex(V vertex) {
-    return false;
+    return adjacencies.containsKey(vertex);
   }
 
   @Override
   public boolean add(V vertex) {
-    return false;
+    return adjacencies.put(vertex, new HashMap<>()) != null;
   }
 
   @Override
   public boolean remove(V vertex) {
-    return false;
+    return adjacencies.remove(vertex) != null;
   }
 
   protected Map<V, Map<V, Adjacency<E>>> createAdjacencyStructure() {
