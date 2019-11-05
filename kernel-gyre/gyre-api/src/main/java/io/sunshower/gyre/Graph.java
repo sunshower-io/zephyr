@@ -25,9 +25,9 @@ public interface Graph<E, V> extends Cloneable {
    */
   Set<E> disconnect(V source, V target);
 
-  Set<E> getEdges();
+  Set<E> edgeSet();
 
-  Set<V> getVertices();
+  Set<V> vertexSet();
 
   int degreeOf(V vertex);
 
@@ -37,9 +37,15 @@ public interface Graph<E, V> extends Cloneable {
 
   V getTarget(E edge);
 
-  Set<E> adjacentEdges(V vertex);
+  default Set<E> adjacentEdges(V vertex) {
+    return adjacentEdges(vertex, EdgeFilters.acceptAll());
+  }
+
+  Set<E> adjacentEdges(V vertex, Predicate<E> edgeFilter);
 
   Set<V> neighbors(V vertex);
+
+  Set<Pair<E, V>> neighbors(V vertex, Predicate<E> edgeFilter);
 
   boolean containsEdge(V source, V target);
 

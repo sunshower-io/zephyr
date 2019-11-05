@@ -26,7 +26,7 @@ public class ParallelScheduler<E, V> implements Transformation<E, V, ParallelSch
 
   private TaskSet<E, V> collectAndRemove(Graph<E, V> copy, Predicate<E> edgeFilter) {
     val taskSet = new MutableTaskSet<E, V>();
-    for (val v : copy.getVertices()) {
+    for (val v : copy.vertexSet()) {
       if (copy.degreeOf(v, edgeFilter) == 0) {
         val edges = copy.remove(v, edgeFilter);
         taskSet.tasks.add(new LabeledTask<>(v, edges));

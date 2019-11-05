@@ -170,7 +170,7 @@ public class AbstractDirectedGraph<E, V> implements DirectedGraph<E, V> {
   }
 
   @Override
-  public Set<Edge<E>> getEdges() {
+  public Set<Edge<E>> edgeSet() {
     Set<Edge<E>> results = new HashSet<>(adjacencies.size());
     for (val adjs : adjacencies.values()) {
       for (val neighbors : adjs) {
@@ -185,7 +185,7 @@ public class AbstractDirectedGraph<E, V> implements DirectedGraph<E, V> {
   }
 
   @Override
-  public Set<V> getVertices() {
+  public Set<V> vertexSet() {
     return new HashSet<>(adjacencies.keySet());
   }
 
@@ -240,7 +240,7 @@ public class AbstractDirectedGraph<E, V> implements DirectedGraph<E, V> {
   }
 
   @Override
-  public Set<Edge<E>> adjacentEdges(V vertex) {
+  public Set<Edge<E>> adjacentEdges(V vertex, Predicate<Edge<E>> edgeFilter) {
     val neighbors = adjacencies.get(vertex);
     if (neighbors == null || neighbors.isEmpty()) {
       return Collections.emptySet();
@@ -248,6 +248,9 @@ public class AbstractDirectedGraph<E, V> implements DirectedGraph<E, V> {
 
     val result = new HashSet<Edge<E>>(neighbors.size());
     for (val r : neighbors) {
+      if (!edgeFilter.test(r)) {
+        continue;
+      }
       for (val d : Direction.values()) {
         if (d.is(r.directions)) {
           result.add(new DirectedEdge<>(r.value, d));
@@ -257,8 +260,8 @@ public class AbstractDirectedGraph<E, V> implements DirectedGraph<E, V> {
     return result;
   }
 
-  @Override
   public Set<V> neighbors(V vertex) {
+
     val neighbors = adjacencies.get(vertex);
     if (neighbors == null || neighbors.isEmpty()) {
       return Collections.emptySet();
@@ -267,6 +270,21 @@ public class AbstractDirectedGraph<E, V> implements DirectedGraph<E, V> {
     val result = new HashSet<V>(neighbors.size());
     for (val neighbor : neighbors) {
       result.add(neighbor.target);
+    }
+    return result;
+  }
+
+  public Set<Pair<Edge<E>, V>> neighbors(V vertex, Predicate<Edge<E>> edgeFilter) {
+    val neighbors = adjacencies.get(vertex);
+    if (neighbors == null || neighbors.isEmpty()) {
+      return Collections.emptySet();
+    }
+
+    val result = new HashSet<Pair<Edge<E>, V>>(neighbors.size());
+    for (val neighbor : neighbors) {
+      if (edgeFilter.test(neighbor)) {
+        result.add(Pair.of(neighbor, neighbor.target));
+      }
     }
     return result;
   }
@@ -333,6 +351,19 @@ public class AbstractDirectedGraph<E, V> implements DirectedGraph<E, V> {
     return false;
   }
 
+  public DirectedGraph<E, V> clone() {
+    val adjacencyStructure = createAdjacencyStructure();
+    for (val adjacencyList : adjacencies.entrySet()) {
+      adjacencyStructure.put(adjacencyList.getKey(), new HashSet<>(adjacencyList.getValue()));
+    }
+    return new AbstractDirectedGraph<>(adjacencyStructure);
+  }
+
+  @Override
+  public boolean isEmpty() {
+    return size() == 0;
+  }
+
   protected Map<V, Set<Adjacency<E, V>>> createAdjacencyStructure() {
     return new HashMap<>();
   }
@@ -362,18 +393,28 @@ public class AbstractDirectedGraph<E, V> implements DirectedGraph<E, V> {
       }
       return Direction.Outgoing;
     }
-  }
 
-  public DirectedGraph<E, V> clone() {
-    val adjacencyStructure = createAdjacencyStructure();
-    for (val adjacencyList : adjacencies.entrySet()) {
-      adjacencyStructure.put(adjacencyList.getKey(), new HashSet<>(adjacencyList.getValue()));
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (!(o instanceof DirectedGraph.Edge)) return false;
+
+      Edge<?> edge = (Edge<?>) o;
+
+      if (value != null ? !value.equals(edge.getLabel()) : edge.getLabel() != null) return false;
+      return getDirection() == edge.getDirection();
     }
-    return new AbstractDirectedGraph<>(adjacencyStructure);
-  }
 
-  @Override
-  public boolean isEmpty() {
-    return size() == 0;
+    @Override
+    public int hashCode() {
+      int result = value != null ? value.hashCode() : 0;
+      result = 31 * result + getDirection().hashCode();
+      return result;
+    }
+
+    @Override
+    public String toString() {
+      return String.format("E[%s:%s]", value, getDirection());
+    }
   }
 }

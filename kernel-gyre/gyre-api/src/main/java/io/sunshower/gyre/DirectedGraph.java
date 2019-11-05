@@ -68,12 +68,12 @@ public interface DirectedGraph<E, V> extends Graph<DirectedGraph.Edge<E>, V> {
     @Override
     public boolean equals(Object o) {
       if (this == o) return true;
-      if (!(o instanceof DirectedGraph.DirectedEdge)) return false;
+      if (!(o instanceof DirectedGraph.Edge)) return false;
 
-      DirectedEdge<?> edge = (DirectedEdge<?>) o;
+      Edge<?> edge = (Edge<?>) o;
 
-      if (value != null ? !value.equals(edge.value) : edge.value != null) return false;
-      return direction == edge.direction;
+      if (value != null ? !value.equals(edge.getLabel()) : edge.getLabel() != null) return false;
+      return direction == edge.getDirection();
     }
 
     @Override

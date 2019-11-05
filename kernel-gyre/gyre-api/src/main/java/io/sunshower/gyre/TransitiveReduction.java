@@ -33,7 +33,7 @@ public class TransitiveReduction<E, V> implements Transformation<E, V, Graph<E, 
       original[i] = new BitSet(n);
     }
 
-    val edges = source.getEdges();
+    val edges = source.edgeSet();
 
     for (val edge : edges) {
       val fst = source.getSource(edge);
@@ -59,7 +59,7 @@ public class TransitiveReduction<E, V> implements Transformation<E, V, Graph<E, 
 
   private List<V> createIndexTable(Graph<E, V> source, Predicate<V> nodeFilter) {
     val vertices = new ArrayList<V>(source.size());
-    for (val vertex : source.getVertices()) {
+    for (val vertex : source.vertexSet()) {
       if (nodeFilter.test(vertex)) {
         vertices.add(vertex);
       }

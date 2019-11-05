@@ -45,7 +45,7 @@ class AbstractDirectedGraphTest {
     val edgeLabel = new Object();
     val edge = new DirectedGraph.DirectedEdge<>(edgeLabel, DirectedGraph.Direction.Incoming);
     values.connect(source, target, edge);
-    assertTrue(values.getEdges().contains(edge), "edge must exist in edge set");
+    assertTrue(values.edgeSet().contains(edge), "edge must exist in edge set");
   }
 
   @Test
@@ -176,7 +176,7 @@ class AbstractDirectedGraphTest {
   @Test
   void ensureGraphDoesNotContainEdgesInitially() {
     assertEquals(values.size(), 0, "graph must be empty");
-    assertEquals(values.getEdges().size(), 0, "graph must be empty");
-    assertEquals(values.getEdges().size(), 0, "graph must initially be empty");
+    assertEquals(values.edgeSet().size(), 0, "graph must be empty");
+    assertEquals(values.edgeSet().size(), 0, "graph must initially be empty");
   }
 }
