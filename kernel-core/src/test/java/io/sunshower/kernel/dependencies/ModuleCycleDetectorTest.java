@@ -119,12 +119,12 @@ class ModuleCycleDetectorTest {
 
     val modules = new ArrayList<Module>();
     for (int i = 0; i < alphabet.length(); i++) {
-      val c  = "" + alphabet.charAt(i);
+      val c = String.valueOf(alphabet.charAt(i));
       modules.add(create(c, c, "1.0.0-SNAPSHOT"));
     }
 
     val c = newDetector(modules).compute();
-    System.out.println(c);
+    assertEquals(c.getCycles().size(), 0, "no cycles must exist");
   }
 
   @Test
@@ -140,7 +140,6 @@ class ModuleCycleDetectorTest {
 
     connect(five, eleven);
     connect(eleven, two);
-
 
     connect(seven, eleven);
     connect(seven, eight);
