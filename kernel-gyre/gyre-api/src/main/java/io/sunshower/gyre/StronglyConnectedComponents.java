@@ -1,6 +1,5 @@
 package io.sunshower.gyre;
 
-import lombok.AllArgsConstructor;
 import lombok.val;
 
 import java.util.*;
@@ -20,94 +19,87 @@ public class StronglyConnectedComponents<E, V> implements Transformation<E, V, P
   public Partition<E, V> apply(
       Graph<E, V> graph, Predicate<E> edgeFilter, Predicate<V> nodeFilter) {
 
-    val links = new HashMap<V, Link>();
+    val links = new HashMap<V, Link<E, V>>();
     val component = new Stack<Link<E, V>>();
     val partition = new MutablePartition<E, V>();
+    val considering = new HashSet<V>();
 
-    return doCompute(graph, component, partition, links, edgeFilter, nodeFilter, 0);
-  }
-
-  private Partition<E, V> doCompute(
-      Graph<E, V> graph,
-      Stack<Link<E, V>> component,
-      MutablePartition<E, V> partition,
-      HashMap<V, Link> links,
-      Predicate<E> edgeFilter,
-      Predicate<V> nodeFilter,
-      int idx) {
-    for (val vertex : graph.vertexSet()) {
-      if (!links.containsKey(vertex)) {
-        idx =
-            computeComponent(
-                idx, null, vertex, graph, component, links, edgeFilter, nodeFilter, partition);
-      }
-    }
+    doCompute(graph, component, partition, links, considering, edgeFilter);
     return partition;
   }
 
-  private int computeComponent(
-      int idx,
-      E edge,
-      V vertex,
+  private void doCompute(
       Graph<E, V> graph,
       Stack<Link<E, V>> component,
-      HashMap<V, Link> links,
-      Predicate<E> edgeFilter,
-      Predicate<V> nodeFilter,
-      MutablePartition<E, V> partition) {
+      MutablePartition<E, V> partition,
+      Map<V, Link<E, V>> links,
+      Set<V> considering,
+      Predicate<E> edgeFilter) {
+    var index = 0;
 
-    var result = idx;
-    val link = configureLink(edge, vertex, component, links, result);
-    result = result + 1;
+    for (val vertex : graph.vertexSet()) {
+      if (!links.containsKey(vertex)) {
+        computeComponent(
+            null, vertex, index, graph, links, component, considering, edgeFilter, partition);
+      }
+    }
+  }
+
+  private int computeComponent(
+      E edge,
+      V vertex,
+      int index,
+      Graph<E, V> graph,
+      Map<V, Link<E, V>> links,
+      Stack<Link<E, V>> stack,
+      Set<V> considering,
+      Predicate<E> edgeFilter,
+      MutablePartition<E, V> partition) {
+    val link = new Link<E, V>(index, index, edge, vertex);
+    links.put(vertex, link);
+    index = index + 1;
+    stack.push(link);
+    considering.add(vertex);
 
     for (val ve : graph.neighbors(vertex, edgeFilter)) {
-      val e = ve.fst;
       val neighbor = ve.snd;
       if (!links.containsKey(neighbor)) {
-        result =
+        index =
             computeComponent(
-                result, e, neighbor, graph, component, links, edgeFilter, nodeFilter, partition);
-        link.link = min(links.get(vertex).link, links.get(neighbor).link);
-      } else {
-        val prospect = links.get(neighbor);
-        link.link = min(link.link, prospect.index);
+                ve.fst, neighbor, index, graph, links, stack, considering, edgeFilter, partition);
+        link.link = min(link.link, links.get(neighbor).link);
+      } else if (considering.contains(neighbor)) {
+        link.link = min(link.link, links.get(neighbor).index);
       }
     }
 
-    if (link.index == link.link) {
-      partition.add(extractComponent(edge, vertex, component));
+    if (link.link == link.index) {
+      val scc = new SCComponent<E, V>(edge, vertex);
+      V w;
+      do {
+        val wlink = stack.pop();
+        w = wlink.vertex;
+        considering.remove(w);
+        scc.add(wlink.edge, w);
+      } while (!Objects.equals(w, vertex));
+      partition.add(scc);
     }
-
-    return result;
+    return index;
   }
 
-  private Component<E, V> extractComponent(E edge, V vertex, Stack<Link<E, V>> currentComponent) {
-
-    val component = new SCComponent<>(edge, vertex);
-    V current;
-    do {
-      val head = currentComponent.pop();
-      current = head.vertex;
-      component.add(head.edge, current);
-    } while (!(currentComponent.isEmpty() || Objects.equals(vertex, current)));
-
-    return component;
-  }
-
-  private Link<E, V> configureLink(
-      E edge, V vertex, Stack<Link<E, V>> component, HashMap<V, Link> links, int idx) {
-    val link = new Link<E, V>(idx, idx, edge, vertex);
-    component.push(link);
-    links.put(vertex, link);
-    return link;
-  }
-
-  @AllArgsConstructor
   private static final class Link<E, V> {
     private int link;
     private int index;
     private final E edge;
     private final V vertex;
+
+    public Link(int link, int index, E edge, V vertex) {
+      this.edge = edge;
+      this.link = link;
+      this.index = index;
+      this.vertex = vertex;
+    }
+
   }
 
   private static final class SCComponent<E, V> implements Component<E, V> {

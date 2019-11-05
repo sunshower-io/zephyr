@@ -6,18 +6,17 @@ import lombok.val;
 import java.util.*;
 import java.util.function.Predicate;
 
-public class ParallelScheduler<E, V> implements Transformation<E, V, ParallelSchedule<E, V>> {
+public class ParallelScheduler<E, V> implements Transformation<E, V, Schedule<E, V>> {
 
   @Override
-  public ParallelSchedule<E, V> apply(Graph<E, V> graph) {
+  public Schedule<E, V> apply(Graph<E, V> graph) {
     return apply(graph, EdgeFilters.acceptAll(), NodeFilters.acceptAll());
   }
 
   @Override
-  public ParallelSchedule<E, V> apply(
-      Graph<E, V> graph, Predicate<E> edgeFilter, Predicate<V> nodeFilter) {
+  public Schedule<E, V> apply(Graph<E, V> graph, Predicate<E> edgeFilter, Predicate<V> nodeFilter) {
     val copy = graph.clone();
-    val result = new MutableParallelSchedule<E, V>();
+    val result = new MutableSchedule<E, V>();
     while (!copy.isEmpty()) {
       result.tasks.add(collectAndRemove(copy, edgeFilter));
     }
@@ -35,11 +34,11 @@ public class ParallelScheduler<E, V> implements Transformation<E, V, ParallelSch
     return taskSet;
   }
 
-  static final class MutableParallelSchedule<E, V> implements ParallelSchedule<E, V> {
+  static final class MutableSchedule<E, V> implements Schedule<E, V> {
 
     final List<TaskSet<E, V>> tasks;
 
-    MutableParallelSchedule() {
+    MutableSchedule() {
       tasks = new ArrayList<>();
     }
 
@@ -82,6 +81,14 @@ public class ParallelScheduler<E, V> implements Transformation<E, V, ParallelSch
 
   static final class MutableTaskSet<E, V> implements TaskSet<E, V> {
     final List<Task<E, V>> tasks;
+
+    MutableTaskSet(List<Task<E, V>> tasks) {
+      this.tasks = tasks;
+    }
+
+    MutableTaskSet(Task<E, V> task) {
+      this(Collections.singletonList(task));
+    }
 
     MutableTaskSet() {
       tasks = new ArrayList<>();

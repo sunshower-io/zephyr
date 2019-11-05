@@ -2,8 +2,7 @@ package io.sunshower.kernel.dependencies;
 
 import static io.sunshower.kernel.dependencies.ModuleCycleDetector.newDetector;
 import static java.util.Arrays.asList;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import io.sunshower.kernel.Dependency;
 import io.sunshower.kernel.Module;
@@ -112,6 +111,47 @@ class ModuleCycleDetectorTest {
 
     val cycle = newDetector(graph).compute().getCycles().get(0);
     assertCycle(cycle, "d", "h", "l", "n", "k", "f", "a");
+  }
+
+  @Test
+  void ensureCycleIsComputedCorrectly() {
+    String alphabet = "abcdefghijklmnopqrstuvwxyz";
+
+    val modules = new ArrayList<Module>();
+    for (int i = 0; i < alphabet.length(); i++) {
+      val c  = "" + alphabet.charAt(i);
+      modules.add(create(c, c, "1.0.0-SNAPSHOT"));
+    }
+
+    val c = newDetector(modules).compute();
+    System.out.println(c);
+  }
+
+  @Test
+  void ensureAllModulesAreRepresented() {
+    val five = create("5", "5", "1.0.0");
+    val seven = create("7", "7", "1.0.0");
+    val three = create("3", "3", "1.0.0");
+    val eleven = create("11", "11", "1.0.0");
+    val eight = create("8", "8", "1.0.0");
+    val two = create("2", "2", "1.0.0");
+    val nine = create("9", "9", "1.0.0");
+    val ten = create("10", "10", "1.0.0");
+
+    connect(five, eleven);
+    connect(eleven, two);
+
+
+    connect(seven, eleven);
+    connect(seven, eight);
+    connect(three, eight);
+    connect(three, ten);
+
+    connect(eleven, nine);
+    connect(eight, nine);
+    connect(eleven, ten);
+    val c = newDetector(Arrays.asList(five, seven, three, eleven, eight, two, nine, ten)).compute();
+    assertFalse(c.hasCycle());
   }
 
   @Test

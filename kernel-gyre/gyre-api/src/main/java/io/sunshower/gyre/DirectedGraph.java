@@ -82,6 +82,12 @@ public interface DirectedGraph<E, V> extends Graph<DirectedGraph.Edge<E>, V> {
       result = 31 * result + direction.hashCode();
       return result;
     }
+
+    @Override
+    public String toString() {
+      return String.format("E[%s:%s]", value, getDirection());
+    }
+
   }
 
   boolean containsEdge(V source, V target, Direction d);

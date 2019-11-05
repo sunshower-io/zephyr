@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static io.sunshower.gyre.DirectedGraph.outgoing;
+import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.*;
 
 class StronglyConnectedComponentsTest {
@@ -41,7 +42,84 @@ class StronglyConnectedComponentsTest {
     val cycle = cycles.get(0);
     assertEquals(cycle.getOrigin(), Pair.of(null, "a"));
     val eles = cycle.getElements();
-    assertEquals(eles.get(0).fst, outgoing("a -> b"), "must be correct edge");
+    assertEquals(eles.get(1).fst, outgoing("a -> b"), "must be correct edge");
+  }
+
+  @Test
+  void ensureComplexMultiComponentsAreDetected() {
+
+    // first
+    c("1", "2");
+
+    //second
+    c("2", "4");
+    c("2", "5");
+    c("4", "5");
+    c("5", "2");
+
+
+    //third
+    c("2", "3");
+    c("3", "6");
+    c("6", "3");
+    c("5", "6");
+
+
+    //fourth
+    c("4", "7");
+    c("5", "7");
+    c("6", "8");
+    c("7", "8");
+    c("8", "7");
+    c("9", "7");
+    c("7", "10");
+    c("10", "9");
+    c("10", "11");
+    c("11", "12");
+    c("12", "10");
+
+
+
+    val c = cycleDectector.apply(graph);
+    assertEquals(c.getElements().size(), 4);
+
+
+  }
+
+
+  @Test
+  void ensureTopologicalOrderIsCorrect() {
+    graph.connect("5", "11", outgoing("5 -> 11"));
+    graph.connect("11", "2", outgoing("11 -> 2"));
+    graph.connect("7", "11", outgoing("7 -> 11"));
+    graph.connect("7", "8", outgoing("7 -> 8"));
+    graph.connect("3", "8", outgoing("3 -> 8"));
+    graph.connect("3", "10", outgoing("3 -> 10"));
+    graph.connect("11", "9", outgoing("11 -> 9"));
+    graph.connect("8", "9", outgoing("8 -> 9"));
+    graph.connect("11", "10", outgoing("11 -> 10"));
+    val c = cycleDectector.apply(graph);
+    System.out.println(c);
+  }
+
+  @Test
+  void ensureScenario1IsCorrect() {
+    c("1", "0");
+    c("0", "2");
+    c("2", "1");
+    c("0", "3");
+    c("3", "4");
+    val g = cycleDectector.apply(graph);
+
+    val els = g.getElements();
+    assertEquals(els.size(), 3, "must have 3 elements");
+    var el = els.get(0);
+    assertEquals(el.getElements().get(0).snd, "4");
+    el = els.get(1);
+    assertEquals(el.getElements().size(), 1);
+    assertEquals(el.getElements().get(0).snd, "3");
+    el = els.get(2);
+    assertEquals(el.getElements().size(), 3);
   }
 
   @Test
@@ -57,7 +135,7 @@ class StronglyConnectedComponentsTest {
     for (int i = 0; i < vowels.length() - 1; i++) {
       char fst = vowels.charAt(i);
       char snd = vowels.charAt(i + 1);
-      val label = String.format("%s -> %s", fst, snd);
+      val label = format("%s -> %s", fst, snd);
       graph.connect("" + fst, "" + snd, outgoing(label));
     }
 
@@ -67,5 +145,9 @@ class StronglyConnectedComponentsTest {
     graph.connect("y", "a", outgoing("y -> a"));
     c = cycleDectector.apply(graph);
     assertTrue(c.isCyclic());
+  }
+
+  private void c(String source, String target) {
+    graph.connect(source, target, outgoing(format("%s -> %s", source, target)));
   }
 }

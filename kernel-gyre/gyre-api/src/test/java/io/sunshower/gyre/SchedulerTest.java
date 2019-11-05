@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import static io.sunshower.gyre.DirectedGraph.outgoing;
 import static org.junit.jupiter.api.Assertions.*;
 
-class ParallelSchedulerTest {
+class SchedulerTest {
 
   Graph<DirectedGraph.Edge<String>, String> graph;
   private ParallelScheduler<DirectedGraph.Edge<String>, String> scheduler;
