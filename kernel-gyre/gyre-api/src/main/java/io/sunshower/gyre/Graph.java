@@ -1,10 +1,12 @@
 package io.sunshower.gyre;
 
 import java.util.Set;
+import java.util.function.Predicate;
 
 public interface Graph<E, V> extends Cloneable {
 
   int edgeCount();
+
   int vertexCount();
 
   int size();
@@ -13,8 +15,11 @@ public interface Graph<E, V> extends Cloneable {
 
   E disconnect(V source, V target, E edge);
 
+  Set<E> disconnect(V source, V target, Predicate<E> edgeFilter);
+
   /**
    * this removes all connections between source and target
+   *
    * @param source
    * @param target
    */
@@ -26,18 +31,17 @@ public interface Graph<E, V> extends Cloneable {
 
   int degreeOf(V vertex);
 
+  int degreeOf(V vertex, Predicate<E> edgeFilter);
+
   V getSource(E edge);
 
   V getTarget(E edge);
-
-
 
   Set<E> adjacentEdges(V vertex);
 
   Set<V> neighbors(V vertex);
 
   boolean containsEdge(V source, V target);
-
 
   boolean containsVertex(V vertex);
 
@@ -46,4 +50,8 @@ public interface Graph<E, V> extends Cloneable {
   boolean remove(V vertex);
 
   Graph<E, V> clone();
+
+  boolean isEmpty();
+
+  Set<E> remove(V v, Predicate<E> edgeFilter);
 }

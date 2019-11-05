@@ -8,11 +8,11 @@ public interface DirectedGraph<E, V> extends Graph<DirectedGraph.Edge<E>, V> {
   byte OUT_FLAG = IN_FLAG << 1;
 
   static <E> Edge<E> incoming(E label) {
-    return new Edge<>(label, Direction.Incoming);
+    return new DirectedEdge<>(label, Direction.Incoming);
   }
 
   static <E> Edge<E> outgoing(E label) {
-    return new Edge<>(label, Direction.Outgoing);
+    return new DirectedEdge<>(label, Direction.Outgoing);
   }
 
   enum Direction {
@@ -42,21 +42,35 @@ public interface DirectedGraph<E, V> extends Graph<DirectedGraph.Edge<E>, V> {
     }
   }
 
-  final class Edge<E> {
+  interface Edge<E> {
+    E getLabel();
+
+    Direction getDirection();
+  }
+
+  final class DirectedEdge<E> implements Edge<E> {
     final E value;
     final Direction direction;
 
-    public Edge(E value, Direction direction) {
+    public DirectedEdge(E value, Direction direction) {
       this.value = value;
       this.direction = direction;
+    }
+
+    public E getLabel() {
+      return value;
+    }
+
+    public Direction getDirection() {
+      return direction;
     }
 
     @Override
     public boolean equals(Object o) {
       if (this == o) return true;
-      if (!(o instanceof Edge)) return false;
+      if (!(o instanceof DirectedGraph.DirectedEdge)) return false;
 
-      Edge<?> edge = (Edge<?>) o;
+      DirectedEdge<?> edge = (DirectedEdge<?>) o;
 
       if (value != null ? !value.equals(edge.value) : edge.value != null) return false;
       return direction == edge.direction;

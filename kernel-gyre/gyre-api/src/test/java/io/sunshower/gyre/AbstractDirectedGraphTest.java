@@ -20,7 +20,7 @@ class AbstractDirectedGraphTest {
     val source = new Object();
     val target = new Object();
     val edgeLabel = new Object();
-    val edge = new DirectedGraph.Edge<>(edgeLabel, DirectedGraph.Direction.Incoming);
+    val edge = new DirectedGraph.DirectedEdge<>(edgeLabel, DirectedGraph.Direction.Incoming);
     values.connect(source, target, edge);
     assertTrue(values.containsEdge(source, target), "connected edge must exist");
   }
@@ -30,7 +30,7 @@ class AbstractDirectedGraphTest {
     val source = new Object();
     val target = new Object();
     val edgeLabel = new Object();
-    val edge = new DirectedGraph.Edge<>(edgeLabel, DirectedGraph.Direction.Incoming);
+    val edge = new DirectedGraph.DirectedEdge<>(edgeLabel, DirectedGraph.Direction.Incoming);
     values.connect(source, target, edge);
     assertTrue(values.containsEdge(source, target), "connected edge must exist");
     values.disconnect(source, target, edge);
@@ -43,7 +43,7 @@ class AbstractDirectedGraphTest {
     val source = new Object();
     val target = new Object();
     val edgeLabel = new Object();
-    val edge = new DirectedGraph.Edge<>(edgeLabel, DirectedGraph.Direction.Incoming);
+    val edge = new DirectedGraph.DirectedEdge<>(edgeLabel, DirectedGraph.Direction.Incoming);
     values.connect(source, target, edge);
     assertTrue(values.getEdges().contains(edge), "edge must exist in edge set");
   }
@@ -54,7 +54,7 @@ class AbstractDirectedGraphTest {
     val source = new Object();
     val target = new Object();
     val edgeLabel = new Object();
-    val edge = new DirectedGraph.Edge<>(edgeLabel, DirectedGraph.Direction.Incoming);
+    val edge = new DirectedGraph.DirectedEdge<>(edgeLabel, DirectedGraph.Direction.Incoming);
     values.connect(source, target, edge);
     assertTrue(
         values.adjacentEdges(source, DirectedGraph.Direction.Incoming).contains(edgeLabel),
@@ -66,7 +66,7 @@ class AbstractDirectedGraphTest {
     val source = new Object();
     val target = new Object();
     val edgeLabel = new Object();
-    val edge = new DirectedGraph.Edge<>(edgeLabel, DirectedGraph.Direction.Incoming);
+    val edge = new DirectedGraph.DirectedEdge<>(edgeLabel, DirectedGraph.Direction.Incoming);
     values.connect(source, target, edge);
     assertTrue(values.neighbors(source).contains(target), "edge must exist");
   }
@@ -77,7 +77,7 @@ class AbstractDirectedGraphTest {
     val source = new Object();
     val target = new Object();
     val edgeLabel = new Object();
-    val edge = new DirectedGraph.Edge<>(edgeLabel, DirectedGraph.Direction.Incoming);
+    val edge = new DirectedGraph.DirectedEdge<>(edgeLabel, DirectedGraph.Direction.Incoming);
     values.connect(source, target, edge);
     assertTrue(values.adjacentEdges(source).contains(edge), "edge must exist");
   }
@@ -88,7 +88,7 @@ class AbstractDirectedGraphTest {
     val source = new Object();
     val target = new Object();
     val edgeLabel = new Object();
-    val edge = new DirectedGraph.Edge<>(edgeLabel, DirectedGraph.Direction.Incoming);
+    val edge = new DirectedGraph.DirectedEdge<>(edgeLabel, DirectedGraph.Direction.Incoming);
     values.connect(source, target, edge);
     assertTrue(
         values.containsEdge(source, target, DirectedGraph.Direction.Incoming),
@@ -104,9 +104,9 @@ class AbstractDirectedGraphTest {
     val source = new Object();
     val target = new Object();
     val edgeLabel = new Object();
-    var edge = new DirectedGraph.Edge<>(edgeLabel, DirectedGraph.Direction.Incoming);
+    var edge = new DirectedGraph.DirectedEdge<>(edgeLabel, DirectedGraph.Direction.Incoming);
     values.connect(source, target, edge);
-    edge = new DirectedGraph.Edge<>(edgeLabel, DirectedGraph.Direction.Outgoing);
+    edge = new DirectedGraph.DirectedEdge<>(edgeLabel, DirectedGraph.Direction.Outgoing);
     values.connect(source, target, edge);
     assertEquals(values.edgeCount(), 2, "edge count must be correct");
   }
@@ -116,9 +116,9 @@ class AbstractDirectedGraphTest {
     val source = new Object();
     val target = new Object();
     val edgeLabel = new Object();
-    var edge = new DirectedGraph.Edge<>(edgeLabel, DirectedGraph.Direction.Incoming);
+    var edge = new DirectedGraph.DirectedEdge<>(edgeLabel, DirectedGraph.Direction.Incoming);
     values.connect(source, target, edge);
-    edge = new DirectedGraph.Edge<>(new Object(), DirectedGraph.Direction.Outgoing);
+    edge = new DirectedGraph.DirectedEdge<>(new Object(), DirectedGraph.Direction.Outgoing);
     values.connect(source, target, edge);
     assertEquals(
         values.degreeOf(source, DirectedGraph.Direction.Outgoing), 1, "degree of must be correct");
@@ -132,9 +132,9 @@ class AbstractDirectedGraphTest {
     val source = new Object();
     val target = new Object();
     val edgeLabel = new Object();
-    var edge = new DirectedGraph.Edge<>(edgeLabel, DirectedGraph.Direction.Incoming);
+    var edge = new DirectedGraph.DirectedEdge<>(edgeLabel, DirectedGraph.Direction.Incoming);
     values.connect(source, target, edge);
-    edge = new DirectedGraph.Edge<>(new Object(), DirectedGraph.Direction.Incoming);
+    edge = new DirectedGraph.DirectedEdge<>(new Object(), DirectedGraph.Direction.Incoming);
     values.connect(source, target, edge);
     assertEquals(values.degreeOf(source), 2, "degree of must be correct");
   }
@@ -144,7 +144,7 @@ class AbstractDirectedGraphTest {
     val source = new Object();
     val target = new Object();
     val edgeLabel = new Object();
-    val edge = new DirectedGraph.Edge<>(edgeLabel, DirectedGraph.Direction.Incoming);
+    val edge = new DirectedGraph.DirectedEdge<>(edgeLabel, DirectedGraph.Direction.Incoming);
     values.connect(source, target, edge);
     assertEquals(values.edgeCount(), 1, "must have single edge");
     assertEquals(values.vertexCount(), 2, "must have 2 vertices");
@@ -156,7 +156,7 @@ class AbstractDirectedGraphTest {
     val source = new Object();
     val target = new Object();
     val edgeLabel = new Object();
-    val edge = new DirectedGraph.Edge<>(edgeLabel, DirectedGraph.Direction.Incoming);
+    val edge = new DirectedGraph.DirectedEdge<>(edgeLabel, DirectedGraph.Direction.Incoming);
     values.connect(source, target, edge);
 
     assertEquals(source, values.getSource(edge), "source must be correct");
@@ -167,7 +167,7 @@ class AbstractDirectedGraphTest {
     val source = new Object();
     val target = new Object();
     val edgeLabel = new Object();
-    val edge = new DirectedGraph.Edge<>(edgeLabel, DirectedGraph.Direction.Incoming);
+    val edge = new DirectedGraph.DirectedEdge<>(edgeLabel, DirectedGraph.Direction.Incoming);
     values.connect(source, target, edge);
 
     assertEquals(target, values.getTarget(edge), "target must be correct");

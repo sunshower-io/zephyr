@@ -21,18 +21,19 @@ class TransitiveReductionTest {
     graph.connect("c", "d", DirectedGraph.incoming("cd"));
     graph.connect("c", "e", DirectedGraph.incoming("ce"));
     graph.connect("d", "e", DirectedGraph.incoming("de"));
-    reduction = new TransitiveReduction<DirectedGraph.Edge<String>, String>();
+    reduction = new TransitiveReduction<>();
   }
 
   @Test
   void ensureTransitiveReductionProducesCorrectEdgeCount() {
-    val result = reduction.compute(graph);
+    val result =
+        reduction.apply(graph, EdgeFilters.directionFilter(DirectedGraph.Direction.Incoming));
     assertEquals(result.edgeCount(), 5);
   }
 
   @Test
   void ensureTransitiveReductionRemovesRedudantEdges() {
-    val result = reduction.compute(graph);
+    val result = reduction.apply(graph);
     assertFalse(result.containsEdge("a", "e"), "edge between a and e must be removed");
     assertTrue(graph.containsEdge("a", "e"), "edge between a and e must be preserved in original");
   }
