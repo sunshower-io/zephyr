@@ -63,7 +63,7 @@ public class TopologyAwareParallelScheduler<K> {
         try {
           latch.await();
         } catch (InterruptedException e) {
-          //eh
+          // eh
 
         }
       }
@@ -82,7 +82,7 @@ public class TopologyAwareParallelScheduler<K> {
     }
   }
 
-  private static class NotifyingTask<K, V> implements Callable<V> {
+  private static class NotifyingTask<K> implements Callable<Object> {
     private final ReductionScope scope;
     private final NotifyingLatch<K> latch;
     private final io.sunshower.gyre.Task<DirectedGraph.Edge<K>, Task> task;
@@ -98,11 +98,11 @@ public class TopologyAwareParallelScheduler<K> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public V call() throws Exception {
+    public Object call() throws Exception {
       try {
         latch.beforeTask();
         val result = task.getValue().run(scope);
-        return (V) result.value;
+        return result.value;
       } finally {
         latch.decrement();
         latch.afterTask();

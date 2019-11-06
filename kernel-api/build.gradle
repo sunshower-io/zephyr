@@ -2,6 +2,7 @@ apply plugin: 'java'
 apply plugin: 'java-library'
 
 dependencies {
+    api project(':kernel-gyre:gyre-api')
     testImplementation project(':kernel-tests:kernel-test')
 
 }

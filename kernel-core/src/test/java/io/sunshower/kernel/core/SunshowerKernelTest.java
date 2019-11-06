@@ -50,7 +50,6 @@ public class SunshowerKernelTest {
     try {
       assertNull(kernel.getFileSystem(), "kernel filesystem must initially be null");
       kernel.start();
-      kernel.getScheduler().await(KernelStartProcess.channel);
       assertNotNull(kernel.getFileSystem(), "kernel filesystem must now be set");
     } finally {
       kernel.getFileSystem().close();
@@ -63,7 +62,6 @@ public class SunshowerKernelTest {
     try {
       assertNull(kernel.getClassLoader(), "kernel filesystem must initially be null");
       kernel.start();
-      kernel.getScheduler().await(KernelStartProcess.channel);
       assertNotNull(kernel.getClassLoader(), "kernel filesystem must now be set");
     } finally {
       kernel.getFileSystem().close();
@@ -76,10 +74,8 @@ public class SunshowerKernelTest {
       ensureInstallingKernelModuleThenStartingKernelResultsInKernelModuleClassesBeingAvailableInClassloader()
           throws Exception {
     kernel.start();
-    kernel.getScheduler().synchronize();
     val ctx = resolveModule("sunshower-yaml-reader", context).getInstalledModule();
     kernel.reload();
-    kernel.getScheduler().synchronize();
     try {
       val cl = kernel.getClassLoader();
       val clazz =

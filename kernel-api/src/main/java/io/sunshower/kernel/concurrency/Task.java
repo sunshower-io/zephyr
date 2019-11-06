@@ -2,13 +2,13 @@ package io.sunshower.kernel.concurrency;
 
 import lombok.AllArgsConstructor;
 
-public interface Task<T> {
+public interface Task {
 
-  TaskValue<T> run(Context context);
+  TaskValue run(Context context);
 
   @AllArgsConstructor
-  final class TaskValue<T> {
-    final T value;
+  final class TaskValue {
+    final Object value;
     final String name;
   }
 }

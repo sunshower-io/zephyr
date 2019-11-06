@@ -7,4 +7,6 @@ public interface Context extends Scope {
   Object set(String key, Object value);
 
   <T> T get(String key);
+
+  <T> T get(Class<T> type);
 }

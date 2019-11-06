@@ -2,8 +2,6 @@ package io.sunshower.kernel.core;
 
 import dagger.Module;
 import dagger.Provides;
-import io.sunshower.kernel.concurrency.MultichannelCapableScheduler;
-import io.sunshower.kernel.concurrency.Scheduler;
 import io.sunshower.kernel.dependencies.DefaultDependencyGraph;
 import io.sunshower.kernel.dependencies.DependencyGraph;
 import io.sunshower.kernel.launch.KernelOptions;
@@ -25,11 +23,11 @@ public class SunshowerKernelInjectionModule {
     this.classLoader = kernelClassLoader;
   }
 
-  @Provides
-  @Singleton
-  public Scheduler scheduler(ExecutorService executorService) {
-    return new MultichannelCapableScheduler(executorService);
-  }
+  //  @Provides
+  //  @Singleton
+  //  public Scheduler scheduler(ExecutorService executorService) {
+  //    return new MultichannelCapableScheduler(executorService);
+  //  }
 
   @Provides
   @Singleton

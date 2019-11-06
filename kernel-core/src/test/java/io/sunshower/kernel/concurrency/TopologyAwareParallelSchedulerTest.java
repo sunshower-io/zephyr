@@ -55,7 +55,8 @@ class TopologyAwareParallelSchedulerTest {
 
   private Process<String> scheduleFrom(TaskGraph<String> graph) {
     val serialSchedule = new SerialScheduler<DirectedGraph.Edge<String>, Task>().apply(graph);
-    return new Process<>(serialSchedule);
+    return null;
+    //    return new Process<>(serialSchedule);
   }
 
   @Test
@@ -85,7 +86,8 @@ class TopologyAwareParallelSchedulerTest {
         DirectedGraph.incoming("a dependsOn b"));
 
     var topoSchedule = new SerialScheduler<DirectedGraph.Edge<String>, Task>().apply(g);
-    var process = new Process<>(topoSchedule);
+    //    var process = new Process<>(topoSchedule);
+    Process<String> process = null;
     var result = scheduler.submit(process, ReductionScope.newRoot(context));
     result.get();
     assertEquals(results.get(0), "b", "be must be first");

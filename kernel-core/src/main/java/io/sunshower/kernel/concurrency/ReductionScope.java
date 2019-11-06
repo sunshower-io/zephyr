@@ -80,6 +80,32 @@ public final class ReductionScope implements Context, HierarchicalScope {
   }
 
   @Override
+  @SuppressFBWarnings
+  @SuppressWarnings("unchecked")
+  public <T> T get(Class<T> type) {
+
+    var c = this;
+    for (; ; ) {
+      if (c.parent == null) {
+        for (val local : c.globals.getLocals()) {
+          val el = local.getValue();
+          if (el != null && type.isAssignableFrom(el.getClass())) {
+            return (T) el;
+          }
+        }
+        return null;
+      }
+      for (val local : c.locals.values()) {
+        val el = local.getValue();
+        if (el != null && type.isAssignableFrom(el.getClass())) {
+          return (T) el;
+        }
+      }
+      c = c.parent;
+    }
+  }
+
+  @Override
   public Scope getRootScope() {
     var c = this;
     for (; ; ) {

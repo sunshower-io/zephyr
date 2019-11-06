@@ -2,7 +2,6 @@ package io.sunshower.kernel;
 
 import static io.sunshower.test.common.Tests.relativeToProjectBuild;
 
-import io.sunshower.kernel.module.ModuleEntryWriteProcessor;
 import io.sunshower.kernel.process.KernelProcess;
 import io.sunshower.kernel.process.KernelProcessContext;
 import io.sunshower.module.phases.*;
@@ -31,7 +30,6 @@ public class Tests {
     process.addPhase(new ModuleTransferPhase());
     process.addPhase(new ModuleUnpackPhase());
     process.addPhase(new ModuleInstallationCompletionPhase());
-    context.getKernel().getScheduler().registerHandler(ModuleEntryWriteProcessor.getInstance());
     process.call();
     ctx.installedModule =
         context.getContextValue(ModuleInstallationCompletionPhase.INSTALLED_MODULE);

@@ -1,7 +1,5 @@
 package io.sunshower.kernel.test;
 
-import io.sunshower.kernel.concurrency.MultichannelCapableScheduler;
-import io.sunshower.kernel.concurrency.Scheduler;
 import io.sunshower.kernel.core.*;
 import io.sunshower.kernel.dependencies.DefaultDependencyGraph;
 import io.sunshower.kernel.dependencies.DependencyGraph;
@@ -63,14 +61,14 @@ public class KernelTestConfiguration {
     return Executors.newCachedThreadPool();
   }
 
-  @Bean
-  public Scheduler scheduler(ExecutorService executorService) {
-    return new MultichannelCapableScheduler(executorService);
-  }
-
-  @Bean
-  public Kernel kernel(
-      ModuleManager moduleManager, Scheduler scheduler, ExecutorService executorService) {
-    return new SunshowerKernel(moduleManager, scheduler, executorService);
-  }
+  //  @Bean
+  //  public Scheduler scheduler(ExecutorService executorService) {
+  //    return new MultichannelCapableScheduler(executorService);
+  //  }
+  //
+  //  @Bean
+  //  public Kernel kernel(
+  //      ModuleManager moduleManager, Scheduler scheduler, ExecutorService executorService) {
+  //    return new SunshowerKernel(moduleManager, scheduler, executorService);
+  //  }
 }

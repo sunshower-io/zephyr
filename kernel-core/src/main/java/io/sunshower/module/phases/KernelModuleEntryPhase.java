@@ -4,7 +4,6 @@ import io.sunshower.kernel.Module;
 import io.sunshower.kernel.log.Logger;
 import io.sunshower.kernel.log.Logging;
 import io.sunshower.kernel.module.KernelModuleEntry;
-import io.sunshower.kernel.module.ModuleEntryWrite;
 import io.sunshower.kernel.process.AbstractPhase;
 import io.sunshower.kernel.process.KernelProcessContext;
 import io.sunshower.kernel.process.KernelProcessEvent;
@@ -33,7 +32,7 @@ public class KernelModuleEntryPhase
       log.log(Level.INFO, "module.type.kernel.begin", module.getCoordinate());
       val fileSystem = FileSystems.getFileSystem(URI.create("droplet://kernel"));
       val path = fileSystem.getPath(KernelModuleEntry.MODULE_LIST);
-      context.getKernel().scheduleTask(new ModuleEntryWrite(path, module));
+      //      context.getKernel().scheduleTask(new ModuleEntryWrite(path, module));
     } else {
       log.log(Level.INFO, "module.type.plugin", module.getCoordinate());
     }

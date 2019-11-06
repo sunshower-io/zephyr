@@ -1,28 +1,24 @@
 package io.sunshower.kernel.module;
 
-import io.sunshower.kernel.concurrency.ConcurrentProcess;
-import io.sunshower.kernel.concurrency.Processor;
-import java.util.logging.Logger;
+public class ModuleEntryWriteProcessor {
 
-public class ModuleEntryWriteProcessor implements Processor {
-
-  static final Logger log = Logger.getLogger(ModuleEntryWriteProcessor.class.getName());
-
-  @Override
-  public String getChannel() {
-    return ModuleEntryWrite.channel;
-  }
-
-  public static final Processor instance = new ModuleEntryWriteProcessor();
-
-  public static Processor getInstance() {
-    return instance;
-  }
-
-  @Override
-  public void process(ConcurrentProcess process) {
-    log.info("Writing module entries");
-    process.perform();
-    log.info("Successfully wrote module entries");
-  }
+  //  static final Logger log = Logger.getLogger(ModuleEntryWriteProcessor.class.getName());
+  //
+  //  @Override
+  //  public String getChannel() {
+  //    return ModuleEntryWrite.channel;
+  //  }
+  //
+  //  public static final Processor instance = new ModuleEntryWriteProcessor();
+  //
+  //  public static Processor getInstance() {
+  //    return instance;
+  //  }
+  //
+  //  @Override
+  //  public void process(ConcurrentProcess process) {
+  //    log.info("Writing module entries");
+  //    process.perform();
+  //    log.info("Successfully wrote module entries");
+  //  }
 }
