@@ -17,6 +17,7 @@ import lombok.val;
  * acquires lock:lock via start(channel) MT holds lock:lock, processors:lock for all of start() and
  * releases
  */
+@SuppressFBWarnings
 @SuppressWarnings({
   "PMD.AvoidUsingVolatile",
   "PMD.DataflowAnomalyAnalysis",

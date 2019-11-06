@@ -16,6 +16,7 @@ dependencies {
      */
     implementation project(':kernel-api')
     implementation 'info.picocli:picocli'
+    implementation project(':kernel-gyre:gyre-api')
     implementation project(':kernel-modules:kernel-lib')
 
     /**
@@ -24,8 +25,8 @@ dependencies {
 
 
 
+    testImplementation project(':kernel-gyre:gyre-api')
     testImplementation 'org.jboss.modules:jboss-modules'
-
     testImplementation project(':kernel-modules:kernel-lib')
     testImplementation project(':kernel-tests:kernel-test-common')
 

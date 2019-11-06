@@ -5,7 +5,6 @@ import io.sunshower.kernel.concurrency.ConcurrentProcess;
 import io.sunshower.kernel.concurrency.Scheduler;
 import io.sunshower.kernel.launch.KernelOptions;
 import io.sunshower.kernel.module.ModuleEntryWriteProcessor;
-
 import java.nio.file.FileSystem;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +34,7 @@ public class SunshowerKernel implements Kernel {
 
   @Getter private final ExecutorService executorService;
 
-  @Getter private final KernelLifecycle lifecycle;
+  private final KernelLifecycle lifecycle;
 
   @Inject
   public SunshowerKernel(

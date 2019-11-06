@@ -1,6 +1,7 @@
 package io.sunshower.gyre;
 
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import lombok.val;
 
 import java.util.*;
@@ -59,7 +60,7 @@ public class ParallelScheduler<E, V> implements Transformation<E, V, Schedule<E,
 
     @Override
     public Iterator<TaskSet<E, V>> iterator() {
-      return null;
+      return tasks.iterator();
     }
   }
 
@@ -97,6 +98,11 @@ public class ParallelScheduler<E, V> implements Transformation<E, V, Schedule<E,
     @Override
     public List<Task<E, V>> getTasks() {
       return tasks;
+    }
+
+    @Override
+    public int size() {
+      return tasks.size();
     }
   }
 }

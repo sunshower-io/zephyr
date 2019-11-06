@@ -11,6 +11,7 @@ public class UnloadKernelFilesystemPhase
   enum EventType implements KernelProcessEvent {}
 
   static final Logger logger = Logger.getLogger(UnloadKernelFilesystemPhase.class.getName());
+
   public UnloadKernelFilesystemPhase() {
     super(EventType.class);
   }
