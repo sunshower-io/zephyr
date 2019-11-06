@@ -1,11 +1,10 @@
 package io.sunshower.gyre;
 
-import lombok.val;
-
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 import java.util.function.Predicate;
+import lombok.val;
 
 public class TransitiveReduction<E, V> implements Transformation<E, V, Graph<E, V>> {
 

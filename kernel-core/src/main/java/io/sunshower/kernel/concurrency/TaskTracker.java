@@ -4,4 +4,8 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Future;
 
 public interface TaskTracker<E>
-    extends CompletionStage<Context>, TaskEventObservable<E>, Future<Context> {}
+    extends CompletionStage<Context>, TaskEventObservable<E>, Future<Context> {
+  Context getRootScope();
+
+  Context getCurrentScope();
+}

@@ -7,4 +7,14 @@ class DefaultTaskEventDispatcher<K> extends CompletableFuture<Context>
 
   @Override
   public void dispatch(TaskEventType type, TaskPhaseEvent taskPhaseEvent) {}
+
+  @Override
+  public Context getRootScope() {
+    return null;
+  }
+
+  @Override
+  public Context getCurrentScope() {
+    return null;
+  }
 }

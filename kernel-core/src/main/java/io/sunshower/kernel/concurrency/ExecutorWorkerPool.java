@@ -5,6 +5,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+@SuppressWarnings("PMD.DoNotUseThreads")
 public class ExecutorWorkerPool implements WorkerPool {
   final ExecutorService executorService;
   final ExecutorService kernelExecutorService;

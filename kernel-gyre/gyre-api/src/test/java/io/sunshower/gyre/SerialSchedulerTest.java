@@ -1,12 +1,12 @@
 package io.sunshower.gyre;
 
-import lombok.val;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import static io.sunshower.gyre.DirectedGraph.outgoing;
 import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.*;
+
+import lombok.val;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 class SerialSchedulerTest {
   Graph<DirectedGraph.Edge<String>, String> graph;

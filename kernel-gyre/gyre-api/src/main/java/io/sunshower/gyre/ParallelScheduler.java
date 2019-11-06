@@ -1,11 +1,9 @@
 package io.sunshower.gyre;
 
-import lombok.AllArgsConstructor;
-import lombok.NonNull;
-import lombok.val;
-
 import java.util.*;
 import java.util.function.Predicate;
+import lombok.AllArgsConstructor;
+import lombok.val;
 
 public class ParallelScheduler<E, V> implements Transformation<E, V, Schedule<E, V>> {
 

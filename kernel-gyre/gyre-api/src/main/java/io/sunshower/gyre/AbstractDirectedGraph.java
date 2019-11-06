@@ -1,9 +1,8 @@
 package io.sunshower.gyre;
 
-import lombok.val;
-
 import java.util.*;
 import java.util.function.Predicate;
+import lombok.val;
 
 public class AbstractDirectedGraph<E, V> implements DirectedGraph<E, V> {
 

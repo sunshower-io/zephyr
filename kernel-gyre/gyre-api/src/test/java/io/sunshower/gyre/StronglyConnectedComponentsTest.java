@@ -1,12 +1,12 @@
 package io.sunshower.gyre;
 
-import lombok.val;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import static io.sunshower.gyre.DirectedGraph.outgoing;
 import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.*;
+
+import lombok.val;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 class StronglyConnectedComponentsTest {
 
@@ -57,13 +57,11 @@ class StronglyConnectedComponentsTest {
     c("4", "5");
     c("5", "2");
 
-
     //third
     c("2", "3");
     c("3", "6");
     c("6", "3");
     c("5", "6");
-
 
     //fourth
     c("4", "7");
@@ -78,14 +76,9 @@ class StronglyConnectedComponentsTest {
     c("11", "12");
     c("12", "10");
 
-
-
     val c = cycleDectector.apply(graph);
     assertEquals(c.getElements().size(), 4);
-
-
   }
-
 
   @Test
   void ensureTopologicalOrderIsCorrect() {

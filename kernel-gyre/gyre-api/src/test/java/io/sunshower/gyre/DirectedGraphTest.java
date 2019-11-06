@@ -1,8 +1,8 @@
 package io.sunshower.gyre;
 
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.Test;
 
 class DirectedGraphTest {
 
@@ -18,10 +18,13 @@ class DirectedGraphTest {
   @Test
   void ensureSettingIncomingWorks() {
     byte i = 0;
-    assertFalse(DirectedGraph.Direction.is(i, DirectedGraph.Direction.Incoming), "must not initally be incoming");
+    assertFalse(
+        DirectedGraph.Direction.is(i, DirectedGraph.Direction.Incoming),
+        "must not initally be incoming");
     i = DirectedGraph.Direction.Incoming.set(i);
-    assertTrue(DirectedGraph.Direction.is(i, DirectedGraph.Direction.Incoming), "must not initally be incoming");
-
+    assertTrue(
+        DirectedGraph.Direction.is(i, DirectedGraph.Direction.Incoming),
+        "must not initally be incoming");
   }
 
   @Test
@@ -40,6 +43,5 @@ class DirectedGraphTest {
     i = DirectedGraph.Direction.Outgoing.set(i);
     i = DirectedGraph.Direction.Outgoing.clear(i);
     assertFalse(DirectedGraph.Direction.Outgoing.is(i), "must be cleared");
-
   }
 }

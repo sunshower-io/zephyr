@@ -1,8 +1,7 @@
 package io.sunshower.gyre;
 
-import lombok.AllArgsConstructor;
-
 import java.util.function.Predicate;
+import lombok.AllArgsConstructor;
 
 public class EdgeFilters {
 

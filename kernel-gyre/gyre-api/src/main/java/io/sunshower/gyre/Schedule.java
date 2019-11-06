@@ -8,5 +8,4 @@ public interface Schedule<E, V> extends Iterable<TaskSet<E, V>> {
   int size();
 
   TaskSet<E, V> get(int i);
-
 }

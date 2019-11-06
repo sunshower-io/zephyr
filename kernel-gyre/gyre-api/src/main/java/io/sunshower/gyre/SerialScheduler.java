@@ -1,10 +1,9 @@
 package io.sunshower.gyre;
 
-import lombok.AllArgsConstructor;
-import lombok.val;
-
 import java.util.Collections;
 import java.util.function.Predicate;
+import lombok.AllArgsConstructor;
+import lombok.val;
 
 @AllArgsConstructor
 public class SerialScheduler<E, V> implements Transformation<E, V, Schedule<E, V>> {
