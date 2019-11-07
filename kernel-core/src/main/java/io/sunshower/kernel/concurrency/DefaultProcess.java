@@ -2,11 +2,13 @@ package io.sunshower.kernel.concurrency;
 
 import io.sunshower.gyre.DirectedGraph;
 import io.sunshower.gyre.Graph;
+import io.sunshower.gyre.ParallelScheduler;
 import io.sunshower.gyre.TaskSet;
 import java.util.Iterator;
 import java.util.List;
 
 public class DefaultProcess<T> implements Process<T> {
+  public Context context;
   final TaskGraph<T> graph;
 
   public DefaultProcess(TaskGraph<T> graph) {
@@ -25,7 +27,7 @@ public class DefaultProcess<T> implements Process<T> {
 
   @Override
   public Context getContext() {
-    return null;
+    return context;
   }
 
   @Override
@@ -35,7 +37,7 @@ public class DefaultProcess<T> implements Process<T> {
 
   @Override
   public List<TaskSet<DirectedGraph.Edge<T>, Task>> getTasks() {
-    return null;
+    return new ParallelScheduler<DirectedGraph.Edge<T>, Task>().apply(graph).getTasks();
   }
 
   @Override

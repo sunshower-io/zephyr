@@ -1,5 +1,10 @@
 package io.sunshower.kernel.core.lifecycle;
 
+import io.sunshower.kernel.concurrency.Context;
+import io.sunshower.kernel.concurrency.Task;
+import io.sunshower.kernel.concurrency.TaskException;
+import io.sunshower.kernel.concurrency.TaskStatus;
+import io.sunshower.kernel.core.Kernel;
 import io.sunshower.kernel.module.KernelModuleEntry;
 import io.sunshower.kernel.module.ModuleListParser;
 import io.sunshower.kernel.process.*;
@@ -8,32 +13,27 @@ import io.sunshower.kernel.status.Status;
 import io.sunshower.kernel.status.StatusType;
 import lombok.val;
 
-public class KernelModuleListReadPhase
-    extends AbstractPhase<KernelProcessEvent, KernelProcessContext> {
-
-  public enum EventType implements KernelProcessEvent {}
-
+public class KernelModuleListReadPhase implements Task {
   public static final String INSTALLED_MODULE_LIST = "MODULE_LIST_INSTALLED";
 
-  public KernelModuleListReadPhase() {
-    super(EventType.class);
-  }
+  public KernelModuleListReadPhase() {}
 
   @Override
-  protected void doExecute(
-      Process<KernelProcessEvent, KernelProcessContext> process, KernelProcessContext context) {
-    val fs = context.getKernel().getFileSystem();
+  public TaskValue run(Context context) {
+    val fs = context.get(Kernel.class).getFileSystem();
 
     if (fs == null) {
-      val status =
-          new Status(
-              StatusType.FAILED,
-              "kernel filesystem has not been correctly created--cannot continue",
-              false);
-      process.addStatus(status);
-      throw status.toException();
+      throw new TaskException(TaskStatus.UNRECOVERABLE);
+      //      val status =
+      //          new Status(
+      //              StatusType.FAILED,
+      //              "kernel filesystem has not been correctly created--cannot continue",
+      //              false);
+      //      process.addStatus(status);
+      //      throw status.toException();
     }
     val entries = ModuleListParser.read(fs, KernelModuleEntry.MODULE_LIST);
-    context.setContextValue(INSTALLED_MODULE_LIST, entries);
+    context.set(INSTALLED_MODULE_LIST, entries);
+    return null;
   }
 }

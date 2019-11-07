@@ -2,6 +2,8 @@ package io.sunshower.gyre;
 
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
 import lombok.AllArgsConstructor;
 import lombok.val;
 
@@ -14,23 +16,34 @@ public class ParallelScheduler<E, V> implements Transformation<E, V, Schedule<E,
 
   @Override
   public Schedule<E, V> apply(Graph<E, V> graph, Predicate<E> edgeFilter, Predicate<V> nodeFilter) {
-    val copy = graph.clone();
+    val copy = removeSelfDependencies(graph);
     val result = new MutableSchedule<E, V>();
+
     while (!copy.isEmpty()) {
-      result.tasks.add(collectAndRemove(copy, edgeFilter));
+      val frontier = collectFrontier(copy, edgeFilter);
+      val ts = new MutableTaskSet<E, V>();
+      result.tasks.add(ts);
+      for (val node : frontier) {
+        copy.delete(node);
+        ts.tasks.add(new LabeledTask<>(node, Collections.emptySet()));
+      }
+
+      for (val node : frontier) {
+        copy.removeDependents(node, edgeFilter);
+      }
     }
     return result;
   }
 
-  private TaskSet<E, V> collectAndRemove(Graph<E, V> copy, Predicate<E> edgeFilter) {
-    val taskSet = new MutableTaskSet<E, V>();
-    for (val v : copy.vertexSet()) {
-      if (copy.degreeOf(v, edgeFilter) == 0) {
-        val edges = copy.remove(v, edgeFilter);
-        taskSet.tasks.add(new LabeledTask<>(v, edges));
-      }
-    }
-    return taskSet;
+  private Graph<E, V> removeSelfDependencies(Graph<E, V> graph) {
+    val copy = graph.clone();
+    return copy.clone();
+  }
+
+  private List<V> collectFrontier(Graph<E, V> copy, Predicate<E> edgeFilter) {
+    return copy.vertexSet().stream()
+        .filter(t -> copy.degreeOf(t, edgeFilter) == 0)
+        .collect(Collectors.toList());
   }
 
   static final class MutableSchedule<E, V> implements Schedule<E, V> {

@@ -46,7 +46,7 @@ public class TopologyAwareParallelScheduler<K> {
     public StagedScheduleEnqueuer(Process<K> process, Context context) {
       this.context = context;
       this.process = process;
-      rootScope = ReductionScope.newRoot(context);
+      rootScope = (ReductionScope) context;
       currentScope = rootScope;
     }
 

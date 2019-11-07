@@ -1,5 +1,8 @@
 package io.sunshower.kernel.concurrency;
 
+import lombok.ToString;
+
+@ToString
 public class NamedTask implements Task {
 
   final Task task;

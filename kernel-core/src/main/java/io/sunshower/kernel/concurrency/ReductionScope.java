@@ -86,6 +86,13 @@ public final class ReductionScope implements Context, HierarchicalScope {
 
     var c = this;
     for (; ; ) {
+      for (val local : c.locals.values()) {
+        val el = local.getValue();
+        if (el != null && type.isAssignableFrom(el.getClass())) {
+          return (T) el;
+        }
+      }
+
       if (c.parent == null) {
         for (val local : c.globals.getLocals()) {
           val el = local.getValue();
@@ -94,12 +101,6 @@ public final class ReductionScope implements Context, HierarchicalScope {
           }
         }
         return null;
-      }
-      for (val local : c.locals.values()) {
-        val el = local.getValue();
-        if (el != null && type.isAssignableFrom(el.getClass())) {
-          return (T) el;
-        }
       }
       c = c.parent;
     }
@@ -169,6 +170,9 @@ public final class ReductionScope implements Context, HierarchicalScope {
         return c.locals.get(name);
       }
       if (c.parent == null) {
+        if (c.globals == null) {
+          return null;
+        }
         val result = c.globals.get(name);
         if (result != null) {
           return new Element(name, result);
