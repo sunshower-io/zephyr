@@ -24,13 +24,6 @@ public class KernelModuleListReadPhase implements Task {
 
     if (fs == null) {
       throw new TaskException(TaskStatus.UNRECOVERABLE);
-      //      val status =
-      //          new Status(
-      //              StatusType.FAILED,
-      //              "kernel filesystem has not been correctly created--cannot continue",
-      //              false);
-      //      process.addStatus(status);
-      //      throw status.toException();
     }
     val entries = ModuleListParser.read(fs, KernelModuleEntry.MODULE_LIST);
     context.set(INSTALLED_MODULE_LIST, entries);

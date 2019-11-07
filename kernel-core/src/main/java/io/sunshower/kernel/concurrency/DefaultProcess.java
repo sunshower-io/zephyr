@@ -7,12 +7,27 @@ import io.sunshower.gyre.TaskSet;
 import java.util.Iterator;
 import java.util.List;
 
+import static java.lang.String.format;
+
 public class DefaultProcess<T> implements Process<T> {
-  public Context context;
+  final String name;
+  final boolean coalesce;
+  final boolean parallel;
+  final Context context;
   final TaskGraph<T> graph;
 
-  public DefaultProcess(TaskGraph<T> graph) {
+  public DefaultProcess(
+      String name, boolean coalesce, boolean parallel, Context context, TaskGraph<T> graph) {
+    this.name = name;
+    this.coalesce = coalesce;
+    this.parallel = parallel;
+    this.context = context;
     this.graph = graph;
+  }
+
+  @Override
+  public String toString() {
+    return format("Process(name=%s, coalesce paths=%b, parallel=%b)", name, coalesce, parallel);
   }
 
   @Override

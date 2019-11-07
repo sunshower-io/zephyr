@@ -10,6 +10,8 @@ public class ProcessBuilder {
 
   final Map<String, NamedTask> tasks;
   final HashMap<String, List<Task>> dependencies;
+  boolean parallel = false;
+  boolean coalesce = false;
   /** mutable state */
   Context context;
 
@@ -17,6 +19,16 @@ public class ProcessBuilder {
     this.name = name;
     this.tasks = new HashMap<>();
     this.dependencies = new HashMap<>();
+  }
+
+  public ProcessBuilder coalesce() {
+    this.coalesce = true;
+    return this;
+  }
+
+  public ProcessBuilder parallel() {
+    this.parallel = true;
+    return this;
   }
 
   public ProcessBuilder withContext(Context ctx) {

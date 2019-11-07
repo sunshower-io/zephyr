@@ -358,7 +358,6 @@ public class AbstractDirectedGraph<E, V> implements DirectedGraph<E, V> {
    */
   @Override
   public boolean remove(V vertex) {
-    //    return adjacencies.remove(vertex) != null;
     if (adjacencies.remove(vertex) != null) {
       for (val adjacency : adjacencies.values()) {
         val adjiter = adjacency.iterator();

@@ -1,7 +1,6 @@
 package io.sunshower.kernel.lifecycle.processes;
 
 import io.sunshower.kernel.concurrency.*;
-import io.sunshower.kernel.core.Kernel;
 import io.sunshower.kernel.core.ModuleManager;
 import io.sunshower.kernel.core.SunshowerKernel;
 import io.sunshower.kernel.core.lifecycle.KernelClassLoaderCreationPhase;
@@ -36,7 +35,7 @@ class KernelStartProcessTest {
     kernelOptions = new KernelOptions();
     kernelOptions.setHomeDirectory(Tests.createTemp());
     SunshowerKernel.setKernelOptions(kernelOptions);
-    kernel = new SunshowerKernel(mock(ModuleManager.class), mock(ExecutorService.class));
+    kernel = spy(new SunshowerKernel(mock(ModuleManager.class), mock(ExecutorService.class)));
 
     context = ReductionScope.newContext();
     context.set("SunshowerKernel", kernel);

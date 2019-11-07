@@ -73,8 +73,8 @@ class SchedulerTest {
     assertEquals(schedule.size(), 3, "must have 3 levels");
 
     expect(schedule.get(0), "2", "9", "10");
-    expect(schedule.get(1), "11", "5", "8");
-    expect(schedule.get(2), "3", "7");
+    expect(schedule.get(1), "11", "8");
+    expect(schedule.get(2), "3", "5", "7");
   }
 
   private void expect(TaskSet<DirectedGraph.Edge<String>, String> stringTaskSet, String... labels) {

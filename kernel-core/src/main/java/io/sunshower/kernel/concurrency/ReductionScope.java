@@ -166,6 +166,9 @@ public final class ReductionScope implements Context, HierarchicalScope {
 
     var c = this;
     for (; ; ) {
+      if (c == null) {
+        return null;
+      }
       if (c.locals.containsKey(name)) {
         return c.locals.get(name);
       }

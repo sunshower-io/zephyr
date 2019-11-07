@@ -33,6 +33,7 @@ public class TopologyAwareParallelScheduler<K> {
     log.log(Level.INFO, "parallel.scheduler.schedulingtask", process);
     val result = new StagedScheduleEnqueuer(process, context);
     workerPool.submitKernelAllocated(result);
+    log.log(Level.INFO, "parallel.scheduler.scheduledtask", process);
     return result;
   }
 

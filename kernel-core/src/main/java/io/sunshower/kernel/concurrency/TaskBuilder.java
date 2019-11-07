@@ -37,13 +37,14 @@ public class TaskBuilder {
         }
       }
     }
-    val process = new DefaultProcess<>(graph);
+    Context context;
     if (processBuilder.context != null) {
-      process.context = processBuilder.context;
+      context = processBuilder.context;
     } else {
-      process.context = ReductionScope.newContext();
+      context = ReductionScope.newContext();
     }
-    return process;
+    return new DefaultProcess<>(
+        processBuilder.name, processBuilder.coalesce, processBuilder.parallel, context, graph);
   }
 
   public TaskBuilder dependsOn(String name, Task task) {
@@ -67,7 +68,7 @@ public class TaskBuilder {
     if (phase instanceof NamedTask) {
       c = (NamedTask) phase;
     } else {
-      c = new NamedTask(name, task);
+      c = new NamedTask(name, phase);
     }
     current = c;
     processBuilder.register(c);
