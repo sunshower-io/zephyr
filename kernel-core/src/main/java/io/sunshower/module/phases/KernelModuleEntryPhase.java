@@ -31,8 +31,8 @@ public class KernelModuleEntryPhase
     if (module.getType() == Module.Type.KernelModule) {
       log.log(Level.INFO, "module.type.kernel.begin", module.getCoordinate());
       val fileSystem = FileSystems.getFileSystem(URI.create("droplet://kernel"));
-      val path = fileSystem.getPath(KernelModuleEntry.MODULE_LIST);
-      //      context.getKernel().scheduleTask(new ModuleEntryWrite(path, module));
+//      val path = fileSystem.getPath(KernelModuleEntry.MODULE_LIST);
+//      //      context.getKernel().scheduleTask(new ModuleEntryWrite(path, module));
     } else {
       log.log(Level.INFO, "module.type.plugin", module.getCoordinate());
     }

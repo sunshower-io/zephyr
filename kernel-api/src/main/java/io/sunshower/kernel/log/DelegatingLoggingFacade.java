@@ -2,7 +2,6 @@ package io.sunshower.kernel.log;
 
 import java.util.logging.*;
 import java.util.logging.Logger;
-import lombok.SneakyThrows;
 import lombok.experimental.Delegate;
 import lombok.val;
 
@@ -13,7 +12,6 @@ public class DelegatingLoggingFacade implements io.sunshower.kernel.log.Logger {
   protected DelegatingLoggingFacade(Class<?> callingClass, String name, String resourceBundleName) {
     logger = Logger.getLogger(name, resourceBundleName);
   }
-
 
   @Override
   public void log(Level level, String msg, Object fst, Object... params) {

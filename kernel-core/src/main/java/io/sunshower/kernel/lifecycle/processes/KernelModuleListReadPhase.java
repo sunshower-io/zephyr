@@ -1,4 +1,4 @@
-package io.sunshower.kernel.core.lifecycle;
+package io.sunshower.kernel.lifecycle.processes;
 
 import io.sunshower.kernel.concurrency.Context;
 import io.sunshower.kernel.concurrency.Task;
@@ -7,10 +7,6 @@ import io.sunshower.kernel.concurrency.TaskStatus;
 import io.sunshower.kernel.core.Kernel;
 import io.sunshower.kernel.module.KernelModuleEntry;
 import io.sunshower.kernel.module.ModuleListParser;
-import io.sunshower.kernel.process.*;
-import io.sunshower.kernel.process.Process;
-import io.sunshower.kernel.status.Status;
-import io.sunshower.kernel.status.StatusType;
 import lombok.val;
 
 public class KernelModuleListReadPhase implements Task {

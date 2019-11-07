@@ -1,11 +1,11 @@
 package io.sunshower.kernel.concurrency;
 
 import io.sunshower.gyre.DirectedGraph;
-import io.sunshower.kernel.core.lifecycle.KernelModuleListReadPhase;
 import lombok.val;
 
 import java.util.NoSuchElementException;
 
+@SuppressWarnings("PMD.AvoidFieldNameMatchingMethodName")
 public class TaskBuilder {
 
   final String name;
