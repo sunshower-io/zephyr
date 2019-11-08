@@ -1,10 +1,12 @@
 package io.sunshower.kernel.shell.commands;
 
+import io.sunshower.kernel.misc.SuppressFBWarnings;
 import java.util.concurrent.Callable;
 import lombok.Setter;
 import picocli.CommandLine;
 
 @SuppressWarnings("PMD.DoNotUseThreads")
+@SuppressFBWarnings
 @CommandLine.Command(name = "start")
 public class StartKernelCommand implements Callable<Void> {
   @Setter @CommandLine.ParentCommand private KernelCommandSet kernelCommandSet;

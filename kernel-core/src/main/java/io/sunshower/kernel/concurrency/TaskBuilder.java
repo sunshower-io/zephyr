@@ -1,9 +1,8 @@
 package io.sunshower.kernel.concurrency;
 
 import io.sunshower.gyre.DirectedGraph;
-import lombok.val;
-
 import java.util.NoSuchElementException;
+import lombok.val;
 
 @SuppressWarnings("PMD.AvoidFieldNameMatchingMethodName")
 public class TaskBuilder {

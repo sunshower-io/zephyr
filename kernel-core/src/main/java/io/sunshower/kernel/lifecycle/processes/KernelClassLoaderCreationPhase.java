@@ -6,10 +6,8 @@ import io.sunshower.kernel.concurrency.Task;
 import io.sunshower.kernel.concurrency.TaskException;
 import io.sunshower.kernel.concurrency.TaskStatus;
 import io.sunshower.kernel.core.SunshowerKernel;
-import io.sunshower.kernel.lifecycle.processes.KernelModuleListReadPhase;
 import io.sunshower.kernel.misc.SuppressFBWarnings;
 import io.sunshower.kernel.module.KernelModuleEntry;
-
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -18,6 +16,7 @@ import java.util.List;
 import java.util.Set;
 import lombok.val;
 
+@SuppressFBWarnings
 public class KernelClassLoaderCreationPhase implements Task {
 
   public static final String INSTALLED_KERNEL_CLASSLOADER = "INSTALLED_KERNEL_CLASSLOADER";

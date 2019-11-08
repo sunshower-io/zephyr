@@ -1,5 +1,7 @@
 package io.sunshower.kernel.concurrency;
 
+import static java.lang.String.format;
+
 import io.sunshower.gyre.DirectedGraph;
 import io.sunshower.gyre.Graph;
 import io.sunshower.gyre.ParallelScheduler;
@@ -7,8 +9,7 @@ import io.sunshower.gyre.TaskSet;
 import java.util.Iterator;
 import java.util.List;
 
-import static java.lang.String.format;
-
+@SuppressWarnings("PMD.AvoidFieldNameMatchingMethodName")
 public class DefaultProcess<T> implements Process<T> {
   final String name;
   final boolean coalesce;

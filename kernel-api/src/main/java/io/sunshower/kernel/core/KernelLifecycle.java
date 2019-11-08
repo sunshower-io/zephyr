@@ -1,6 +1,6 @@
 package io.sunshower.kernel.core;
 
-import java.util.concurrent.CompletableFuture;
+import io.sunshower.kernel.concurrency.TaskTracker;
 
 public interface KernelLifecycle {
 
@@ -20,9 +20,9 @@ public interface KernelLifecycle {
 
   State getState();
 
-  CompletableFuture<Void> stop();
+  TaskTracker<String> stop();
 
-  CompletableFuture<Void> start();
+  TaskTracker<String> start();
 
-  CompletableFuture<Void> setState(State state);
+  TaskTracker<String> setState(State state);
 }

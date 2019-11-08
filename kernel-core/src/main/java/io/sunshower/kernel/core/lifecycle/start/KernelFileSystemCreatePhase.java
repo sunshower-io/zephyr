@@ -1,4 +1,4 @@
-package io.sunshower.kernel.core.lifecycle;
+package io.sunshower.kernel.core.lifecycle.start;
 
 import io.sunshower.kernel.core.SunshowerKernel;
 import io.sunshower.kernel.log.Logger;

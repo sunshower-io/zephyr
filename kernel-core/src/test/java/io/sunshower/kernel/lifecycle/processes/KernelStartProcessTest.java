@@ -1,26 +1,26 @@
 package io.sunshower.kernel.lifecycle.processes;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.*;
+
 import io.sunshower.kernel.concurrency.*;
 import io.sunshower.kernel.core.ModuleManager;
 import io.sunshower.kernel.core.SunshowerKernel;
 import io.sunshower.kernel.launch.KernelOptions;
 import io.sunshower.test.common.Tests;
-import lombok.val;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.RepeatedTest;
-import org.junit.jupiter.api.Test;
-
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.FileSystems;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import lombok.val;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.*;
-
+@SuppressWarnings("PMD.AvoidDuplicateLiterals")
 class KernelStartProcessTest {
 
   private Context context;
@@ -45,7 +45,6 @@ class KernelStartProcessTest {
     FileSystems.getFileSystem(URI.create("droplet://kernel")).close();
   }
 
-  @Test
   @RepeatedTest(2)
   void ensureFilesystemProcessCreatesFilesystem() throws ExecutionException, InterruptedException {
     val process =
@@ -84,7 +83,6 @@ class KernelStartProcessTest {
             .register("kernel:lifecycle:module:list", new KernelModuleListReadPhase())
             .register("kernel:lifecycle:filesystem:create", new KernelFilesystemCreatePhase())
             .register("kernel:lifecycle:classloader", new KernelClassLoaderCreationPhase())
-
             .task("kernel:lifecycle:module:list")
             .dependsOn("kernel:lifecycle:filesystem:create")
             .task("kernel:lifecycle:classloader")

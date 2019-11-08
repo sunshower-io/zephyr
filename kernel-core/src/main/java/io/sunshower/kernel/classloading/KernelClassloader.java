@@ -10,6 +10,7 @@ import java.net.URLClassLoader;
 import java.util.Enumeration;
 import lombok.val;
 
+@SuppressFBWarnings
 @SuppressWarnings({
   "PMD.DataflowAnomalyAnalysis",
   "PMD.AvoidInstantiatingObjectsInLoops",

@@ -33,7 +33,8 @@ class ReductionScopeTest {
     context.set("Hello", test);
 
     val descendent = scope.pushScope(null).pushScope(null).pushScope(null);
-    assertEquals(context.get(ReductionScopeTest.class), test, "must be retrievable in hierarchy");
+    assertEquals(
+        descendent.get(ReductionScopeTest.class), test, "must be retrievable in hierarchy");
   }
 
   @Test

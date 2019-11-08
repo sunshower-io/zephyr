@@ -7,15 +7,19 @@ import java.util.Map;
 
 @SuppressWarnings("PMD.AvoidFieldNameMatchingMethodName")
 public class ProcessBuilder {
+
+  /** Mutable state */
+  boolean parallel;
+
+  boolean coalesce;
+  Context context;
+
+  /** Immutable state */
   final String name;
 
   final Map<String, NamedTask> tasks;
-  final HashMap<String, List<Task>> dependencies;
-  boolean parallel = false;
-  boolean coalesce = false;
+  final Map<String, List<Task>> dependencies;
   /** mutable state */
-  Context context;
-
   public ProcessBuilder(String name) {
     this.name = name;
     this.tasks = new HashMap<>();

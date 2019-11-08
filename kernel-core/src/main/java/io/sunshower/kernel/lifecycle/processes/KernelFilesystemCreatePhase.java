@@ -5,7 +5,7 @@ import io.sunshower.kernel.concurrency.Task;
 import io.sunshower.kernel.concurrency.TaskException;
 import io.sunshower.kernel.concurrency.TaskStatus;
 import io.sunshower.kernel.core.SunshowerKernel;
-import io.sunshower.kernel.core.lifecycle.KernelFileSystemCreatePhase;
+import io.sunshower.kernel.core.lifecycle.start.KernelFileSystemCreatePhase;
 import io.sunshower.kernel.log.Logger;
 import io.sunshower.kernel.log.Logging;
 import java.net.URI;
@@ -17,7 +17,6 @@ import lombok.val;
 public class KernelFilesystemCreatePhase implements Task {
 
   static final Logger log = Logging.get(KernelFileSystemCreatePhase.class, "KernelLifecycle");
-  final Object lock = new Object();
   static final String FILE_SYSTEM_ROOT = "droplet://kernel";
 
   @Override

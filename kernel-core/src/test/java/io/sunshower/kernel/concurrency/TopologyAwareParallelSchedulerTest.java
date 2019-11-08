@@ -3,7 +3,6 @@ package io.sunshower.kernel.concurrency;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.sunshower.gyre.DirectedGraph;
-import io.sunshower.gyre.SerialScheduler;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
@@ -11,7 +10,11 @@ import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-@SuppressWarnings({"PMD.DataflowAnomalyAnalysis", "PMD.JUnitTestContainsTooManyAsserts"})
+@SuppressWarnings({
+  "PMD.DataflowAnomalyAnalysis",
+  "PMD.JUnitTestContainsTooManyAsserts",
+  "PMD.AvoidDuplicateLiterals"
+})
 class TopologyAwareParallelSchedulerTest {
 
   private Context context;
@@ -54,9 +57,7 @@ class TopologyAwareParallelSchedulerTest {
   }
 
   private Process<String> scheduleFrom(TaskGraph<String> graph) {
-    val serialSchedule = new SerialScheduler<DirectedGraph.Edge<String>, Task>().apply(graph);
-    return null;
-    //    return new Process<>(serialSchedule);
+    return new DefaultProcess<>("test", false, false, ReductionScope.newContext(), graph);
   }
 
   @Test
@@ -85,7 +86,7 @@ class TopologyAwareParallelSchedulerTest {
         },
         DirectedGraph.incoming("a dependsOn b"));
 
-    var topoSchedule = new SerialScheduler<DirectedGraph.Edge<String>, Task>().apply(g);
+    //    var topoSchedule = new SerialScheduler<DirectedGraph.Edge<String>, Task>().apply(g);
     //    var process = new Process<>(topoSchedule);
     Process<String> process = null;
     var result = scheduler.submit(process, ReductionScope.newRoot(context));
