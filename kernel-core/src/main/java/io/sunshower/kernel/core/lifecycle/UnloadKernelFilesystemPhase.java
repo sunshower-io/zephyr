@@ -12,7 +12,7 @@ public class UnloadKernelFilesystemPhase extends Task {
   }
 
   @Override
-  public TaskValue run(Context context) {
+  public TaskValue run(Context context, io.sunshower.gyre.Task.TaskScope scope) {
     try {
       context.get(Kernel.class).getFileSystem().close();
     } catch (Exception ex) {

@@ -23,7 +23,7 @@ public class KernelFilesystemCreatePhase extends Task {
   }
 
   @Override
-  public TaskValue run(Context context) {
+  public TaskValue run(Context context, io.sunshower.gyre.Task.TaskScope scope) {
     try {
       log.log(Level.INFO, "kernel.lifecycle.filesystem.init");
 

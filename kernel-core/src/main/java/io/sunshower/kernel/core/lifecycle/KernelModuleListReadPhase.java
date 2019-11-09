@@ -18,7 +18,7 @@ public class KernelModuleListReadPhase extends Task {
   }
 
   @Override
-  public TaskValue run(Context context) {
+  public TaskValue run(Context context, io.sunshower.gyre.Task.TaskScope scope) {
     val fs = context.get(Kernel.class).getFileSystem();
 
     if (fs == null) {

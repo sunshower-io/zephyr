@@ -7,7 +7,6 @@ import io.sunshower.kernel.concurrency.TaskException;
 import io.sunshower.kernel.concurrency.TaskStatus;
 import io.sunshower.kernel.core.Kernel;
 
-
 public class UnloadKernelClassloaderPhase extends Task {
 
   public UnloadKernelClassloaderPhase(String name) {
@@ -15,7 +14,7 @@ public class UnloadKernelClassloaderPhase extends Task {
   }
 
   @Override
-  public TaskValue run(Context context) {
+  public TaskValue run(Context context, io.sunshower.gyre.Task.TaskScope scope) {
     try {
       ((KernelClassloader) context.get(Kernel.class).getClassLoader()).close();
     } catch (Exception ex) {

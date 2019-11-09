@@ -18,20 +18,32 @@ public class ParallelScheduler<E, V> implements Transformation<E, V, Schedule<E,
     val copy = removeSelfDependencies(graph);
     val result = new MutableSchedule<E, V>();
 
+    val tasks = new HashMap<V, Task<E, V>>();
     while (!copy.isEmpty()) {
       val frontier = collectFrontier(copy, edgeFilter);
 
-      if(frontier.isEmpty() && !copy.isEmpty()) {
+      if (frontier.isEmpty() && !copy.isEmpty()) {
         throw new IllegalStateException("Error: cyclic graph");
       }
       val ts = new MutableTaskSet<E, V>();
       result.tasks.add(ts);
       for (val node : frontier) {
         copy.delete(node);
-        ts.tasks.add(new LabeledTask<>(node, Collections.emptySet()));
+        val task = new LabeledTask<E, V>(node, Collections.emptySet(), new HashSet<>());
+        tasks.put(node, task);
+        ts.tasks.add(task);
       }
 
       for (val node : frontier) {
+        LabeledTask<E, V> actualTask = (LabeledTask<E, V>) tasks.get(node);
+
+        if (actualTask == null) {
+          throw new IllegalStateException("weird--coulda sworn that task was right there");
+        }
+
+        for (val neighbor : graph.neighbors(node)) {
+          actualTask.predecessors.add(tasks.get(neighbor));
+        }
         copy.removeDependents(node, edgeFilter);
       }
     }
@@ -45,15 +57,15 @@ public class ParallelScheduler<E, V> implements Transformation<E, V, Schedule<E,
 
   private List<V> collectFrontier(Graph<E, V> copy, Predicate<E> edgeFilter) {
     val results = new ArrayList<V>();
-    for(val c : copy.vertexSet()) {
-      if(copy.degreeOf(c, edgeFilter) == 0) {
+    for (val c : copy.vertexSet()) {
+      if (copy.degreeOf(c, edgeFilter) == 0) {
         results.add(c);
       }
     }
     return results;
-//    return copy.vertexSet().stream()
-//        .filter(t -> copy.degreeOf(t, edgeFilter) == 0)
-//        .collect(Collectors.toList());
+    //    return copy.vertexSet().stream()
+    //        .filter(t -> copy.degreeOf(t, edgeFilter) == 0)
+    //        .collect(Collectors.toList());
   }
 
   static final class MutableSchedule<E, V> implements Schedule<E, V> {
@@ -89,10 +101,21 @@ public class ParallelScheduler<E, V> implements Transformation<E, V, Schedule<E,
   static final class LabeledTask<E, V> implements Task<E, V> {
     final V value;
     final Set<E> edges;
+    final Set<Task<E, V>> predecessors;
 
     @Override
     public V getValue() {
       return value;
+    }
+
+    @Override
+    public TaskScope getScope() {
+      return null;
+    }
+
+    @Override
+    public Set<Task<E, V>> getPredecessors() {
+      return predecessors;
     }
 
     @Override

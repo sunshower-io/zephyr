@@ -37,14 +37,14 @@ class TopologyAwareParallelSchedulerTest {
     graph.connect(
         new Task("a") {
           @Override
-          public TaskValue run(Context context) {
+          public TaskValue run(Context context, io.sunshower.gyre.Task.TaskScope scope) {
             assertEquals(context.get("test"), "hello world!", "message should be correct");
             return null;
           }
         },
         new Task("b") {
           @Override
-          public TaskValue run(Context context) {
+          public TaskValue run(Context context, io.sunshower.gyre.Task.TaskScope scope) {
             context.set("test", "hello world!");
             return null;
           }
@@ -66,7 +66,7 @@ class TopologyAwareParallelSchedulerTest {
     g.connect(
         new Task("a") {
           @Override
-          public Task.TaskValue run(Context c) {
+          public Task.TaskValue run(Context c, io.sunshower.gyre.Task.TaskScope scope) {
             results.add(name);
             return null;
           }
@@ -74,7 +74,7 @@ class TopologyAwareParallelSchedulerTest {
         new Task("b") {
 
           @Override
-          public Task.TaskValue run(Context c) {
+          public Task.TaskValue run(Context c, io.sunshower.gyre.Task.TaskScope scope) {
             results.add(name);
             return null;
           }

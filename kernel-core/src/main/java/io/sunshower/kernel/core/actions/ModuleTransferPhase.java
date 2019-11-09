@@ -45,7 +45,7 @@ public class ModuleTransferPhase extends Task {
   }
 
   @SuppressWarnings("PMD.PreserveStackTrace")
-  public TaskValue run(Context context) {
+  public TaskValue run(Context context, io.sunshower.gyre.Task.TaskScope scope) {
     val fs = createFilesystem(context);
     context.set(MODULE_FILE_SYSTEM, fs);
 

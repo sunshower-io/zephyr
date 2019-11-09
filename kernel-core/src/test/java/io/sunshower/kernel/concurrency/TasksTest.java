@@ -67,7 +67,7 @@ class TasksTest {
     }
 
     @Override
-    public TaskValue run(Context context) {
+    public TaskValue run(Context context, io.sunshower.gyre.Task.TaskScope scope) {
       return null;
     }
   }

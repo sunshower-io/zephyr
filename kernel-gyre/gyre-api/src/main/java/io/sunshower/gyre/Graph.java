@@ -62,7 +62,9 @@ public interface Graph<E, V> extends Cloneable {
 
   Set<E> remove(V v, Predicate<E> edgeFilter);
 
-  Set<E> removeDependents(V v, Predicate<E> edgeFilter);
+  Set<Pair<V, E>> removeDependents(V v, Predicate<E> edgeFilter);
+
+
 
   Collection<E> getDependents(V v, Predicate<E> edgeFilter);
 

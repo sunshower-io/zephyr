@@ -59,13 +59,9 @@ public class TopologyAwareParallelScheduler<K> {
         val latch = new NotifyingLatch<K>(this, taskSet.size());
         currentScope = currentScope.pushScope(taskSet);
         for (val task : taskSet.getTasks()) {
-          workerPool.submit(new NotifyingTask<>(task, latch, currentScope));
+          workerPool.submit(new NotifyingTask<>(task, latch, currentScope.pushScope(task)));
         }
         currentScope = currentScope.popScope();
-
-        // need to push a new scope every level-set so that task downstream
-        // inherits results of previous computations
-        //          currentScope = currentScope.popScope();
         try {
           latch.await();
         } catch (InterruptedException e) {
@@ -105,7 +101,7 @@ public class TopologyAwareParallelScheduler<K> {
     public Object call() throws Exception {
       try {
         latch.beforeTask();
-        val result = task.getValue().run(scope);
+        val result = task.getValue().run(scope, task.getScope());
         if (result != null) {
           return result.value;
         }

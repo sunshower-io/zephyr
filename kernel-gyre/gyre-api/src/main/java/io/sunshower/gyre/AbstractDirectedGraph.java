@@ -335,15 +335,15 @@ public class AbstractDirectedGraph<E, V> implements DirectedGraph<E, V> {
   }
 
   @Override
-  public Set<Edge<E>> removeDependents(V vertex, Predicate<Edge<E>> edgeFilter) {
+  public Set<Pair<V, Edge<E>>> removeDependents(V vertex, Predicate<Edge<E>> edgeFilter) {
 
-    Set<Edge<E>> results = new HashSet<>();
+    Set<Pair<V, Edge<E>>> results = new HashSet<>();
     for (val adjacency : adjacencies.values()) {
       val adjiter = adjacency.iterator();
       while (adjiter.hasNext()) {
         val next = adjiter.next();
         if (Objects.equals(next.target, vertex)) {
-          results.add(next);
+          results.add(Pair.of(next.target, next));
           adjiter.remove();
         }
       }

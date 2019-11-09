@@ -41,7 +41,7 @@ public class ModuleDownloadPhase extends Task implements ChannelTransferListener
   }
 
   @Override
-  public Task.TaskValue run(Context context) {
+  public Task.TaskValue run(Context context, io.sunshower.gyre.Task.TaskScope scope) {
     URL downloadUrl = (URL) parameters().get(DOWNLOAD_URL);
     Path moduleDirectory = context.get(TARGET_DIRECTORY);
     downloadModule(downloadUrl, moduleDirectory, context);

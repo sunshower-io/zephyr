@@ -2,6 +2,8 @@ package io.sunshower.kernel.concurrency;
 
 import io.sunshower.gyre.Scope;
 
+import java.io.File;
+
 public interface Context extends Scope {
   /** Set a named value visible to this scope and its children */
   Object set(String key, Object value);
@@ -15,4 +17,6 @@ public interface Context extends Scope {
   <T> T pop();
 
   int stackDepth();
+
+  <T> T peek();
 }

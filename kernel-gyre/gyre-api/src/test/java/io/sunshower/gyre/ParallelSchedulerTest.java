@@ -3,6 +3,7 @@ package io.sunshower.gyre;
 import static io.sunshower.gyre.DirectedGraph.incoming;
 import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,6 +42,16 @@ class ParallelSchedulerTest {
     assertEquals(result.size(), 4, "must have 4 elements");
   }
 
+  @Test
+  void ensureDependentsAreCorrect() {
+    parse(toSchedule);
+    val result = scheduler.apply(graph);
+    val dware = find("dware", result);
+    assertTrue(
+        dware.getPredecessors().contains(find("ieee", result)),
+        "must contain correct simple neighbor");
+  }
+
   private void parse(String value) {
     String[] lines = value.split("\n");
     for (String line : lines) {
@@ -52,5 +63,17 @@ class ParallelSchedulerTest {
         graph.connect(source, dep, incoming(format("%s <- %s", line, dep)));
       }
     }
+  }
+
+  Task<DirectedGraph.Edge<String>, String> find(
+      String name, Schedule<DirectedGraph.Edge<String>, String> result) {
+    for (val s : result) {
+      for (val t : s.getTasks()) {
+        if (t.getValue().equals(name)) {
+          return t;
+        }
+      }
+    }
+    return null;
   }
 }

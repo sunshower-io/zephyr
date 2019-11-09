@@ -44,7 +44,7 @@ public final class ReductionScope implements Context, HierarchicalScope {
     this.globals = null;
     this.parent = parent;
     this.enclosingValue = enclosingValue;
-    if(parent == null) {
+    if (parent == null) {
       this.runtimeStack = new Stack<>();
     } else {
       this.runtimeStack = parent.runtimeStack;
@@ -131,6 +131,14 @@ public final class ReductionScope implements Context, HierarchicalScope {
   public int stackDepth() {
     synchronized (runtimeStack) {
       return runtimeStack.size();
+    }
+  }
+
+  @Override
+  @SuppressWarnings("unchecked")
+  public <T> T peek() {
+    synchronized (runtimeStack) {
+      return (T) runtimeStack.peek();
     }
   }
 

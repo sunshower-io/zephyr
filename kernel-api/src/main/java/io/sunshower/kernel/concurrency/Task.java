@@ -24,7 +24,7 @@ public abstract class Task {
     return parameters;
   }
 
-  public abstract TaskValue run(Context context);
+  public abstract TaskValue run(Context context, io.sunshower.gyre.Task.TaskScope scope);
 
   @AllArgsConstructor
   public static final class TaskValue {

@@ -54,7 +54,7 @@ public class ModuleScanPhase extends Task {
   }
 
   @Override
-  public TaskValue run(Context context) {
+  public TaskValue run(Context context, io.sunshower.gyre.Task.TaskScope scope) {
     File downloaded = context.get(ModuleDownloadPhase.DOWNLOADED_FILE);
     context.set(ModuleScanPhase.MODULE_DESCRIPTOR, scan(downloaded, context));
     return null;
