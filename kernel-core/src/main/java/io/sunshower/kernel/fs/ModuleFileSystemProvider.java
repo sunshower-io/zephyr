@@ -5,7 +5,6 @@ import static java.lang.String.format;
 
 import io.sunshower.common.io.FilePermissionChecker;
 import io.sunshower.common.io.Files;
-import io.sunshower.kernel.log.Logger;
 import io.sunshower.kernel.log.Logging;
 import java.io.Closeable;
 import java.io.File;
@@ -18,6 +17,7 @@ import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.FileAttributeView;
 import java.nio.file.spi.FileSystemProvider;
 import java.util.*;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import lombok.NonNull;
 import lombok.val;

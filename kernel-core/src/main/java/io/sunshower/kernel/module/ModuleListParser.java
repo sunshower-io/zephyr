@@ -1,7 +1,6 @@
 package io.sunshower.kernel.module;
 
 import io.sunshower.kernel.core.KernelException;
-import io.sunshower.kernel.log.Logger;
 import io.sunshower.kernel.log.Logging;
 import io.sunshower.kernel.misc.SuppressFBWarnings;
 import java.io.File;
@@ -15,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import lombok.val;
 
 @SuppressWarnings({
@@ -201,12 +201,21 @@ public class ModuleListParser {
     val path = fs.getPath(modFile);
     val file = path.toFile();
     if (!file.exists()) {
-      log.log(Level.INFO, "module.file.create.attempting", "droplet://kernel/module.list", path);
+      log.log(
+          Level.INFO,
+          "module.file.create.attempting",
+          new Object[] {"droplet://kernel/module.list", path});
       try {
         if (!file.createNewFile()) {
-          log.log(Level.WARNING, "module.file.create.failed", "droplet://kernel/module.list", path);
+          log.log(
+              Level.WARNING,
+              "module.file.create.failed",
+              new Object[] {"droplet://kernel/module.list", path});
         } else {
-          log.log(Level.INFO, "module.file.create.succeeded", "droplet://kernel/module.list", path);
+          log.log(
+              Level.INFO,
+              "module.file.create.succeeded",
+              new Object[] {"droplet://kernel/module.list", path});
         }
       } catch (IOException ex) {
         throw new KernelException(

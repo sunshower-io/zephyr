@@ -5,9 +5,9 @@ import static org.mockito.Mockito.mock;
 
 import io.sunshower.gyre.DirectedGraph;
 import io.sunshower.gyre.ParallelScheduler;
-import io.sunshower.kernel.lifecycle.processes.KernelClassLoaderCreationPhase;
-import io.sunshower.kernel.lifecycle.processes.KernelFilesystemCreatePhase;
-import io.sunshower.kernel.lifecycle.processes.KernelModuleListReadPhase;
+import io.sunshower.kernel.core.lifecycle.KernelClassLoaderCreationPhase;
+import io.sunshower.kernel.core.lifecycle.KernelFilesystemCreatePhase;
+import io.sunshower.kernel.core.lifecycle.KernelModuleListReadPhase;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

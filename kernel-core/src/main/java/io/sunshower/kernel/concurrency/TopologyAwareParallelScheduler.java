@@ -1,11 +1,11 @@
 package io.sunshower.kernel.concurrency;
 
 import io.sunshower.gyre.DirectedGraph;
-import io.sunshower.kernel.log.Logger;
 import io.sunshower.kernel.log.Logging;
 import io.sunshower.kernel.misc.SuppressFBWarnings;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import lombok.val;
 
 @SuppressFBWarnings

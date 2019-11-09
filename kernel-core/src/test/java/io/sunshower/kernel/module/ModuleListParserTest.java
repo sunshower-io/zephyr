@@ -2,7 +2,6 @@ package io.sunshower.kernel.module;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import io.sunshower.module.phases.AbstractModulePhaseTestCase;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.PushbackInputStream;
@@ -21,7 +20,7 @@ import org.junit.jupiter.api.Test;
   "PMD.JUnitTestContainsTooManyAsserts",
   "PMD.JUnitAssertionsShouldIncludeMessage",
 })
-class ModuleListParserTest extends AbstractModulePhaseTestCase {
+class ModuleListParserTest {
 
   @Test
   void ensureParsingOrderWorks() throws IOException {

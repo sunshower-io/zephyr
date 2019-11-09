@@ -2,13 +2,13 @@ package io.sunshower.kernel.core;
 
 import io.sunshower.kernel.Library;
 import io.sunshower.kernel.Module;
-import io.sunshower.kernel.log.Logger;
 import io.sunshower.kernel.log.Logging;
 import java.io.File;
 import java.io.IOException;
 import java.util.Set;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import lombok.NonNull;
 import lombok.val;
 import org.jboss.modules.*;

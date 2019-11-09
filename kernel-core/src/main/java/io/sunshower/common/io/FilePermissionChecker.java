@@ -1,8 +1,8 @@
 package io.sunshower.common.io;
 
-import io.sunshower.common.Logging;
 import io.sunshower.kernel.ObjectCheckException;
 import java.io.File;
+import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
@@ -27,7 +27,9 @@ public class FilePermissionChecker {
       val check = iter.next();
       if (!check.check(file)) {
         val rb = log.getResourceBundle();
-        throw new ObjectCheckException(file, Logging.message(rb, "file.check.failed", file, check));
+        val fmt = rb.getString("file.check.failed");
+        val msg = MessageFormat.format(fmt, file, check);
+        throw new ObjectCheckException(file, msg);
       }
     }
   }

@@ -1,12 +1,13 @@
 package io.sunshower.kernel.core;
 
 import io.sunshower.kernel.classloading.KernelClassloader;
+import io.sunshower.kernel.concurrency.Scheduler;
+import io.sunshower.kernel.core.lifecycle.DefaultKernelLifecycle;
 import io.sunshower.kernel.launch.KernelOptions;
 import java.nio.file.FileSystem;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
-import java.util.concurrent.ExecutorService;
 import javax.inject.Inject;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,14 +27,12 @@ public class SunshowerKernel implements Kernel {
 
   @Getter private final ModuleManager moduleManager;
 
-  @Getter private final ExecutorService executorService;
-
-  private KernelLifecycle lifecycle;
+  private final KernelLifecycle lifecycle;
 
   @Inject
-  public SunshowerKernel(ModuleManager moduleManager, ExecutorService executorService) {
+  public SunshowerKernel(ModuleManager moduleManager, Scheduler<String> scheduler) {
     this.moduleManager = moduleManager;
-    this.executorService = executorService;
+    this.lifecycle = new DefaultKernelLifecycle(this, scheduler);
   }
 
   public static KernelOptions getKernelOptions() {
@@ -63,7 +62,9 @@ public class SunshowerKernel implements Kernel {
 
   @Override
   @SneakyThrows
-  public void start() {}
+  public void start() {
+    lifecycle.start().get();
+  }
 
   @Override
   public void reload() {
@@ -72,7 +73,6 @@ public class SunshowerKernel implements Kernel {
   }
 
   @Override
-  @SneakyThrows
   public void stop() {}
 
   @SuppressWarnings("PMD.UnusedPrivateMethod")

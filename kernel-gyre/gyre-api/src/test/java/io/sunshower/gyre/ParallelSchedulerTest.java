@@ -1,12 +1,12 @@
 package io.sunshower.gyre;
 
-import lombok.val;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import static io.sunshower.gyre.DirectedGraph.incoming;
 import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import lombok.val;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 class ParallelSchedulerTest {
 

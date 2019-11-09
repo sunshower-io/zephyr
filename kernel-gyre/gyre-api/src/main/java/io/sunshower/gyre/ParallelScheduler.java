@@ -3,7 +3,6 @@ package io.sunshower.gyre;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-
 import lombok.AllArgsConstructor;
 import lombok.val;
 
@@ -41,7 +40,8 @@ public class ParallelScheduler<E, V> implements Transformation<E, V, Schedule<E,
   }
 
   private List<V> collectFrontier(Graph<E, V> copy, Predicate<E> edgeFilter) {
-    return copy.vertexSet().stream()
+    return copy.vertexSet()
+        .stream()
         .filter(t -> copy.degreeOf(t, edgeFilter) == 0)
         .collect(Collectors.toList());
   }

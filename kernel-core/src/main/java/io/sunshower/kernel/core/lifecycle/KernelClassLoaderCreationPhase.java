@@ -1,4 +1,4 @@
-package io.sunshower.kernel.lifecycle.processes;
+package io.sunshower.kernel.core.lifecycle;
 
 import io.sunshower.kernel.classloading.KernelClassloader;
 import io.sunshower.kernel.concurrency.Context;

@@ -6,7 +6,6 @@ import io.sunshower.gyre.DirectedGraph;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
-import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -52,12 +51,8 @@ class TopologyAwareParallelSchedulerTest {
         },
         DirectedGraph.outgoing("a dependsOn b"));
 
-    val task = scheduler.submit(scheduleFrom(graph), scope);
+    var task = scheduler.submit(scheduleFrom(graph), scope);
     task.get();
-  }
-
-  private Process<String> scheduleFrom(TaskGraph<String> graph) {
-    return new DefaultProcess<>("test", false, false, ReductionScope.newContext(), graph);
   }
 
   @Test
@@ -85,10 +80,7 @@ class TopologyAwareParallelSchedulerTest {
           }
         },
         DirectedGraph.incoming("a dependsOn b"));
-
-    //    var topoSchedule = new SerialScheduler<DirectedGraph.Edge<String>, Task>().apply(g);
-    //    var process = new Process<>(topoSchedule);
-    Process<String> process = null;
+    var process = scheduleFrom(g);
     var result = scheduler.submit(process, ReductionScope.newRoot(context));
     result.get();
     assertEquals(results.get(0), "b", "be must be first");
@@ -101,5 +93,9 @@ class TopologyAwareParallelSchedulerTest {
     protected NamedTask(String name) {
       this.name = name;
     }
+  }
+
+  private Process<String> scheduleFrom(TaskGraph<String> graph) {
+    return new DefaultProcess<>("test", false, false, ReductionScope.newContext(), graph);
   }
 }

@@ -1,12 +1,25 @@
-package io.sunshower.kernel.core;
+package io.sunshower.kernel.module;
 
 import io.sunshower.kernel.Lifecycle;
 import io.sunshower.kernel.Module;
+import lombok.Getter;
 import lombok.NonNull;
 
 public class ModuleLifecycle implements Lifecycle {
   private State state;
   private final Module module;
+
+  public enum Actions {
+    Install,
+    Resolve(Install),
+    Activate(Install, Resolve);
+
+    @Getter final Actions[] predecessors;
+
+    Actions(Actions... predecessors) {
+      this.predecessors = predecessors;
+    }
+  }
 
   public ModuleLifecycle(@NonNull final Module module) {
     this.module = module;
