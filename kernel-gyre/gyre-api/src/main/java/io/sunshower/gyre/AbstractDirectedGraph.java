@@ -213,7 +213,11 @@ public class AbstractDirectedGraph<E, V> implements DirectedGraph<E, V> {
   }
 
   @Override
+  @SuppressWarnings("unchecked")
   public V getSource(Edge<E> edge) {
+    if (edge instanceof Adjacency) {
+      return (V) ((Adjacency) edge).source;
+    }
     for (val adjacency : adjacencies.entrySet()) {
       for (val actual : adjacency.getValue()) {
         if (edge.getDirection().is(actual.directions)
@@ -348,10 +352,24 @@ public class AbstractDirectedGraph<E, V> implements DirectedGraph<E, V> {
   }
 
   @Override
+  public Collection<Edge<E>> getDependents(V vertex, Predicate<Edge<E>> edgeFilter) {
+    List<Edge<E>> results = new ArrayList<>();
+    for (val adjacency : adjacencies.values()) {
+      val adjiter = adjacency.iterator();
+      while (adjiter.hasNext()) {
+        val next = adjiter.next();
+        if (Objects.equals(next.target, vertex)) {
+          results.add(next);
+        }
+      }
+    }
+    return results;
+  }
+
+  @Override
   public void delete(V node) {
     adjacencies.remove(node);
   }
-
   /**
    * this method removes a vertex from the graph, including from all of the adjacency-lists that
    * vertex appears in

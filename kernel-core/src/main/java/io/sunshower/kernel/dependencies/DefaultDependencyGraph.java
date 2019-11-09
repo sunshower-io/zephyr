@@ -1,11 +1,9 @@
 package io.sunshower.kernel.dependencies;
 
+import io.sunshower.gyre.*;
 import io.sunshower.kernel.Coordinate;
-import io.sunshower.kernel.Dependency;
 import io.sunshower.kernel.Module;
-import io.sunshower.kernel.UnsatisfiedDependencyException;
 import java.util.*;
-import java.util.stream.Collectors;
 import lombok.NonNull;
 import lombok.val;
 
@@ -16,117 +14,148 @@ import lombok.val;
 })
 public final class DefaultDependencyGraph implements DependencyGraph {
 
-  private final Map<Coordinate, DependencyNode> adjacencies;
-
-  private DefaultDependencyGraph(@NonNull final Map<Coordinate, DependencyNode> adjacencies) {
-    this.adjacencies = adjacencies;
-  }
+  final Map<Coordinate, Module> modules;
+  final Graph<DirectedGraph.Edge<Coordinate>, Coordinate> dependencyGraph;
 
   public DefaultDependencyGraph() {
-    adjacencies = new HashMap<>();
+    modules = new HashMap<>();
+    dependencyGraph = new AbstractDirectedGraph<>();
+  }
+
+  @Override
+  public Set<UnsatisfiedDependencySet> add(Module a) {
+    return addAll(Collections.singleton(a));
   }
 
   @Override
   public int size() {
-    return adjacencies.size();
+    return dependencyGraph.size();
   }
 
   @Override
-  public Iterator<Module> iterator() {
-    return adjacencies.values().stream().map(t -> t.module).iterator();
-  }
-
-  @SuppressWarnings({"PMD.DataflowAnomalyAnalysis"})
-  public static DefaultDependencyGraph create(Collection<Module> modules) {
-    val result = new LinkedHashMap<Coordinate, DependencyNode>(modules.size());
-    val links = buildCoordinateLinks(modules);
-
-    for (val module : modules) {
-      val node = new DependencyNode(module, module.getCoordinate(), new ArrayList<>());
-      computeDependencies(links, module, node);
-      result.put(module.getCoordinate(), node);
-    }
-    return new DefaultDependencyGraph(result);
-  }
-
-  @SuppressWarnings({"PMD.DataflowAnomalyAnalysis", "PMD.UnusedPrivateMethod"})
-  private static void computeDependencies(
-      Map<Coordinate, Module> links, Module module, DependencyNode node) {
-    for (val dependency : module.getDependencies()) {
-      val depmod = links.get(dependency.getCoordinate());
-      if (depmod == null) {
-        throw new UnsatisfiedDependencyException(module, Collections.singleton(dependency));
-      }
-      // this is ok because we actually don't know if we can build out the full dependency structure
-      // yet (i.e. the graph doesn't have a topological order).  This is computed later
-      val depnode = new DependencyNode(depmod, dependency.getCoordinate(), Collections.emptyList());
-      node.addDependency(depnode);
-    }
-  }
-
-  private static Map<Coordinate, Module> buildCoordinateLinks(Collection<Module> modules) {
-    val coordinateLinks = new HashMap<Coordinate, Module>();
-    for (val module : modules) {
-      coordinateLinks.put(module.getCoordinate(), module);
-    }
-    return coordinateLinks;
-  }
-
-  @Override
-  public Module get(Coordinate dependency) {
-    val dep = adjacencies.get(dependency);
-    if (dep == null) {
-      throw new UnsatisfiedDependencyException(
-          null, Collections.singleton(new Dependency(Dependency.Type.Library, dependency)));
-    }
-    return dep.module;
-  }
-
-  @Override
-  public void add(@NonNull Module module) {
+  public UnsatisfiedDependencySet getUnresolvedDependencies(@NonNull Module module) {
     val coordinate = module.getCoordinate();
-    val toAdd = new DependencyNode(module, coordinate, Collections.emptyList());
-    adjacencies.put(coordinate, toAdd);
+
+    val dependencies = module.getDependencies();
+
+    val result = new HashSet<Coordinate>();
+    for (val dependency : dependencies) {
+      val depcoord = dependency.getCoordinate();
+      if (!modules.containsKey(depcoord)) {
+        result.add(depcoord);
+      }
+    }
+    if (result.isEmpty()) {
+      return new UnsatisfiedDependencySet(coordinate, Collections.emptySet());
+    } else {
+      return new UnsatisfiedDependencySet(coordinate, result);
+    }
   }
 
   @Override
-  public void remove(Module module) {}
+  public Set<UnsatisfiedDependencySet> getUnresolvedDependencies(Collection<Module> modules) {
+    val prospective = new HashMap<>(this.modules);
+    for (val module : modules) {
+      prospective.put(module.getCoordinate(), module);
+    }
+    val results = new HashSet<UnsatisfiedDependencySet>();
+    for (val module : modules) {
+      val unsatisfied = new HashSet<Coordinate>();
+      for (val dependency : module.getDependencies()) {
+        val depcoord = dependency.getCoordinate();
+        if (!prospective.containsKey(depcoord)) {
+          unsatisfied.add(depcoord);
+        }
+      }
+
+      if (unsatisfied.isEmpty()) {
+        results.add(new UnsatisfiedDependencySet(module.getCoordinate(), Collections.emptySet()));
+      } else {
+        results.add(new UnsatisfiedDependencySet(module.getCoordinate(), unsatisfied));
+      }
+    }
+    return results;
+  }
 
   @Override
-  public Set<Module> getDependants(Coordinate coordinate) {
-    return adjacencies
-        .values()
-        .stream()
-        .filter(t -> t.dependsOn(coordinate))
-        .map(t -> t.module)
-        .collect(Collectors.toUnmodifiableSet());
+  public Set<UnsatisfiedDependencySet> addAll(Collection<Module> modules) {
+    val prospective = new HashMap<>(this.modules);
+    for (val module : modules) {
+      prospective.put(module.getCoordinate(), module);
+    }
+    val results = new HashSet<UnsatisfiedDependencySet>();
+    for (val module : modules) {
+      val unsatisfied = new HashSet<Coordinate>();
+      for (val dependency : module.getDependencies()) {
+        val depcoord = dependency.getCoordinate();
+        if (!prospective.containsKey(depcoord)) {
+          unsatisfied.add(depcoord);
+        }
+      }
+      if (unsatisfied.isEmpty()) {
+        results.add(new UnsatisfiedDependencySet(module.getCoordinate(), Collections.emptySet()));
+        val coordinate = module.getCoordinate();
+        this.modules.put(coordinate, module);
+        dependencyGraph.add(coordinate);
+        for (val dep : module.getDependencies()) {
+          dependencyGraph.connect(
+              coordinate, dep.getCoordinate(), DirectedGraph.outgoing(dep.getCoordinate()));
+        }
+      } else {
+        results.add(new UnsatisfiedDependencySet(module.getCoordinate(), unsatisfied));
+      }
+    }
+    return results;
+  }
+
+  @Override
+  public void remove(Module module) {
+    val coord = module.getCoordinate();
+    dependencyGraph.remove(coord);
+  }
+
+  @Override
+  public Module get(Coordinate coordinate) {
+    return modules.get(coordinate);
+  }
+
+  @Override
+  public Collection<Module> getDependents(Coordinate coordinate) {
+    val module = modules.get(coordinate);
+    if (module == null) {
+      return Collections.emptySet();
+    }
+    val dependents = dependencyGraph.getDependents(coordinate, EdgeFilters.acceptAll());
+    val results = new HashSet<Module>();
+    for (val dependent : dependents) {
+      results.add(modules.get(dependencyGraph.getSource(dependent)));
+    }
+    return results;
   }
 
   @Override
   public Set<Module> getDependencies(Coordinate coordinate) {
-    return get(coordinate)
-        .getDependencies()
-        .stream()
-        .map(t -> get(t.getCoordinate()))
-        .collect(Collectors.toSet());
+    val neighbors = dependencyGraph.neighbors(coordinate);
+    val result = new HashSet<Module>(neighbors.size());
+    for (val neighbor : neighbors) {
+      result.add(modules.get(neighbor));
+    }
+    return result;
   }
 
   @Override
   public boolean contains(Coordinate coordinate) {
-    return adjacencies.containsKey(coordinate);
+    return modules.containsKey(coordinate);
   }
 
   @Override
-  public Set<Coordinate> getUnresolvedDependencies(Module module) {
-    return module
-        .getDependencies()
-        .stream()
-        .filter(t -> !contains(t.getCoordinate()))
-        .map(Dependency::getCoordinate)
-        .collect(Collectors.toSet());
+  public Partition<DirectedGraph.Edge<Coordinate>, Coordinate> computeCycles() {
+    return new StronglyConnectedComponents<DirectedGraph.Edge<Coordinate>, Coordinate>()
+        .apply(dependencyGraph);
   }
 
-  public void remove(Coordinate coordinate) {
-    adjacencies.remove(coordinate);
+  @Override
+  public Iterator<Module> iterator() {
+    return modules.values().iterator();
   }
 }

@@ -117,6 +117,11 @@ public class StronglyConnectedComponents<E, V> implements Transformation<E, V, P
     }
 
     @Override
+    public int size() {
+      return elements.size();
+    }
+
+    @Override
     public boolean isCyclic() {
       return elements.size() > 1;
     }

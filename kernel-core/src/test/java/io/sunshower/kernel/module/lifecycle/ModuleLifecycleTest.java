@@ -11,7 +11,6 @@ import io.sunshower.test.common.Tests;
 import java.net.MalformedURLException;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class ModuleLifecycleTest {
@@ -35,7 +34,6 @@ class ModuleLifecycleTest {
   }
 
   @Test
-  @Disabled
   void ensureInstallingKernelModuleWorks() throws MalformedURLException {
     val request = new ModuleInstallationRequest();
     request.setLocation(

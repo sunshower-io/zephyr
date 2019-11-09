@@ -1,8 +1,13 @@
 package io.sunshower.kernel.dependencies;
 
+import io.sunshower.gyre.DirectedGraph;
+import io.sunshower.gyre.Partition;
 import io.sunshower.kernel.Coordinate;
 import io.sunshower.kernel.Module;
+import java.util.Collection;
 import java.util.Set;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 /**
  * this class is generally not required to be thread-safe. Consumers should protect access in
@@ -10,17 +15,31 @@ import java.util.Set;
  */
 public interface DependencyGraph extends Iterable<Module> {
 
+  Set<UnsatisfiedDependencySet> add(Module a);
+
+  @Getter
+  @AllArgsConstructor
+  class UnsatisfiedDependencySet {
+    final Coordinate source;
+    final Set<Coordinate> dependencies;
+
+    public boolean isSatisfied() {
+      return dependencies.isEmpty();
+    }
+  }
+
   /** @return the size of this graph */
   int size();
 
   /**
-   * @param module the module to add
-   * @throws io.sunshower.kernel.UnsatisfiedDependencyException if the dependencies of this module
-   *     do not exist in the graph. Implementors must ensure that dependencies are added before the
-   *     module is
+   * @param module
+   * @return an unsatisified dependency set
    */
-  void add(Module module);
+  UnsatisfiedDependencySet getUnresolvedDependencies(Module module);
 
+  Set<UnsatisfiedDependencySet> getUnresolvedDependencies(Collection<Module> modules);
+
+  Set<UnsatisfiedDependencySet> addAll(Collection<Module> modules);
   /**
    * @param module the module to remove from this dependency graph. This should only be called if
    *     getDependants() returns an empty set
@@ -38,7 +57,7 @@ public interface DependencyGraph extends Iterable<Module> {
    * @param coordinate the coordinate for which to compute dependent modules
    * @return the set of modules which have the module at <code>coordinate</code> as a dependency
    */
-  Set<Module> getDependants(Coordinate coordinate);
+  Collection<Module> getDependents(Coordinate coordinate);
 
   /**
    * @param coordinate the coordinate to get all of the dependencies for
@@ -52,9 +71,6 @@ public interface DependencyGraph extends Iterable<Module> {
    *     the module with that coordinate)
    */
   boolean contains(Coordinate coordinate);
-  /**
-   * @param coordinate the coordinate to retrieve the unresolved dependencies of
-   * @return the set of all dependencies of <code>coordinate</code> that do not exist in this graph
-   */
-  Set<Coordinate> getUnresolvedDependencies(Module module);
+
+  Partition<DirectedGraph.Edge<Coordinate>, Coordinate> computeCycles();
 }

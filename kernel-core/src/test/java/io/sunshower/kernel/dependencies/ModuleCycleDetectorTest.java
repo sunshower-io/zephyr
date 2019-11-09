@@ -1,14 +1,18 @@
 package io.sunshower.kernel.dependencies;
 
-import static io.sunshower.kernel.dependencies.ModuleCycleDetector.newDetector;
 import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.*;
 
+import io.sunshower.gyre.Component;
+import io.sunshower.gyre.DirectedGraph;
+import io.sunshower.gyre.Partition;
+import io.sunshower.kernel.Coordinate;
 import io.sunshower.kernel.Dependency;
 import io.sunshower.kernel.Module;
 import io.sunshower.kernel.core.ModuleCoordinate;
 import io.sunshower.kernel.test.MockModule;
 import java.util.*;
+import java.util.stream.Collectors;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -56,15 +60,15 @@ class ModuleCycleDetectorTest {
     val module = create("test", "test", "1.0.0");
     module.addDependency(new Dependency(Dependency.Type.Service, module.getCoordinate()));
 
-    val components = newDetector(Collections.singletonList(module)).compute();
-    assertEquals(components.getCycles().size(), 0, "must be allowed");
+    val components = newDetector(Collections.singletonList(module));
+    assertEquals(getCycles(components).size(), 0, "must be allowed");
   }
 
   @Test
   void ensureNoCyclesAreDetectedForTrivialGraph() {
     val module = create("test", "test", "1.0.0");
-    val components = newDetector(Collections.singletonList(module)).compute();
-    assertEquals(components.getCycles().size(), 0, "no cycle must be detected");
+    val components = newDetector(Collections.singletonList(module));
+    assertEquals(getCycles(components).size(), 0, "no cycle must be detected");
   }
 
   @Test
@@ -72,7 +76,7 @@ class ModuleCycleDetectorTest {
     val a = create("a", "a", "1.0.3");
     val b = create("b", "b", "1.0.3");
     connect(a, b);
-    val result = newDetector(asList(a, b)).compute().getCycles();
+    val result = getCycles(newDetector(asList(a, b)));
     assertTrue(result.isEmpty(), "no cycles were detected");
   }
 
@@ -87,12 +91,12 @@ class ModuleCycleDetectorTest {
 
     a.addDependency(new Dependency(Dependency.Type.Service, b.getCoordinate()));
     b.addDependency(new Dependency(Dependency.Type.Service, a.getCoordinate()));
-    val result = newDetector(asList(a, b)).compute();
-    assertEquals(result.getCycles().size(), 1);
-    val cycle = result.getCycles().get(0);
+    val result = newDetector(asList(a, b));
+    assertEquals(getCycles(result).size(), 1);
+    val cycle = getCycles(result).get(0);
     assertEquals(cycle.size(), 2);
-    assertEquals(cycle.getMembers().get(0).getCoordinate().getName(), "b");
-    assertEquals(cycle.getMembers().get(1).getCoordinate().getName(), "a");
+    assertEquals(cycle.getElements().get(0).snd.getName(), "a");
+    assertEquals(cycle.getElements().get(1).snd.getName(), "b");
   }
 
   @Test
@@ -109,8 +113,8 @@ class ModuleCycleDetectorTest {
     connect(k, f);
     connect(f, a);
 
-    val cycle = newDetector(graph).compute().getCycles().get(0);
-    assertCycle(cycle, "d", "h", "l", "n", "k", "f", "a");
+    val cycle = getCycles(newDetector(graph)).get(0);
+    assertEquals(cycle.size(), 7, "must have 7 components");
   }
 
   @Test
@@ -123,8 +127,15 @@ class ModuleCycleDetectorTest {
       modules.add(create(c, c, "1.0.0-SNAPSHOT"));
     }
 
-    val c = newDetector(modules).compute();
-    assertEquals(c.getCycles().size(), 0, "no cycles must exist");
+    val c = newDetector(modules);
+    assertFalse(c.isCyclic(), "no cycles must exist");
+  }
+
+  private Partition<DirectedGraph.Edge<Coordinate>, Coordinate> newDetector(
+      Collection<Module> modules) {
+    val g = new DefaultDependencyGraph();
+    g.addAll(modules);
+    return g.computeCycles();
   }
 
   @Test
@@ -149,8 +160,8 @@ class ModuleCycleDetectorTest {
     connect(eleven, nine);
     connect(eight, nine);
     connect(eleven, ten);
-    val c = newDetector(Arrays.asList(five, seven, three, eleven, eight, two, nine, ten)).compute();
-    assertFalse(c.hasCycle());
+    val c = newDetector(Arrays.asList(five, seven, three, eleven, eight, two, nine, ten));
+    assertFalse(c.isCyclic());
   }
 
   @Test
@@ -162,32 +173,42 @@ class ModuleCycleDetectorTest {
     connect(n, k);
     connect(k, f);
 
-    val cycle = newDetector(graph).compute();
+    val cycle = newDetector(graph);
 
-    assertTrue(cycle.getCycles().isEmpty(), "no cycles must be found");
+    assertTrue(getCycles(cycle).isEmpty(), "no cycles must be found");
   }
 
   @SuppressWarnings("PMD.DataflowAnomalyAnalysis")
-  private void assertCycle(Component component, String... labels) {
+  private void assertCycle(
+      Component<DirectedGraph.Edge<Coordinate>, Coordinate> component, String... labels) {
 
     assertEquals(component.size(), labels.length, "cycle length must be equal to label length");
 
-    val members = component.getMembers();
+    val members = component.getElements();
     val sublist = members.subList(0, members.size() - 1);
     Collections.reverse(sublist);
     val iter = sublist.iterator();
     for (int i = 0; i < labels.length - 1; i++) {
       val label = labels[i];
-      val g = iter.next().getCoordinate().getGroup();
+      val g = iter.next().snd.getGroup();
       assertEquals(label, g, "must be equal");
     }
     assertEquals(
-        members.get(members.size() - 1).getCoordinate().getGroup(),
+        members.get(members.size() - 1).snd.getGroup(),
         labels[labels.length - 1],
         "last element must be the same");
   }
 
   private MockModule create(String group, String name, String version) {
     return new MockModule(ModuleCoordinate.create(group, name, version), new ArrayList<>());
+  }
+
+  private List<io.sunshower.gyre.Component<DirectedGraph.Edge<Coordinate>, Coordinate>> getCycles(
+      Partition<DirectedGraph.Edge<Coordinate>, Coordinate> components) {
+    return components
+        .getElements()
+        .stream()
+        .filter(io.sunshower.gyre.Component::isCyclic)
+        .collect(Collectors.toList());
   }
 }

@@ -61,4 +61,9 @@ public final class ModuleCoordinate implements Coordinate {
 
     return version.compareTo(o.getVersion());
   }
+
+  @Override
+  public String toString() {
+    return String.format("%s:%s:%s", group, name, version);
+  }
 }

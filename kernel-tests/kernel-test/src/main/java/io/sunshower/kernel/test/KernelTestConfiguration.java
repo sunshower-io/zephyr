@@ -39,15 +39,8 @@ public class KernelTestConfiguration {
   }
 
   @Bean
-  public ModuleContext moduleContext() {
-    return new DefaultModuleContext();
-  }
-
-  @Bean
   public ModuleManager moduleManager(
-      ModuleContext moduleContext,
-      ModuleClasspathManager moduleClasspathManager,
-      DependencyGraph dependencyGraph) {
+      ModuleClasspathManager moduleClasspathManager, DependencyGraph dependencyGraph) {
     return new DefaultModuleManager();
     //    return new DefaultModuleManager(moduleContext, moduleClasspathManager, dependencyGraph);
   }

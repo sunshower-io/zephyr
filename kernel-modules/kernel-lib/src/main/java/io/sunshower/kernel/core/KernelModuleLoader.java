@@ -90,7 +90,7 @@ public final class KernelModuleLoader extends ModuleLoader
 
     boolean unload(Coordinate coordinate) throws ModuleLoadException {
       val id = coordinate.toCanonicalForm();
-      val dependants = graph.getDependants(coordinate);
+      val dependants = graph.getDependents(coordinate);
 
       for (val dependant : dependants) {
         val typedDep = (DefaultModule) dependant;

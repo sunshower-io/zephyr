@@ -1,5 +1,6 @@
 package io.sunshower.gyre;
 
+import java.util.Collection;
 import java.util.Set;
 import java.util.function.Predicate;
 
@@ -62,6 +63,8 @@ public interface Graph<E, V> extends Cloneable {
   Set<E> remove(V v, Predicate<E> edgeFilter);
 
   Set<E> removeDependents(V v, Predicate<E> edgeFilter);
+
+  Collection<E> getDependents(V v, Predicate<E> edgeFilter);
 
   void delete(V node);
 }

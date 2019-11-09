@@ -58,24 +58,18 @@ public class SunshowerKernelInjectionModule {
     return options;
   }
 
-  @Singleton
   @Provides
-  public DefaultModuleContext moduleContext() {
-    return new DefaultModuleContext();
-  }
+  @Singleton
+  public Kernel sunshowerKernel(SunshowerKernel kernel, ModuleManager moduleManager) {
 
-  @Provides
-  @Singleton
-  public Kernel sunshowerKernel(SunshowerKernel kernel) {
+    moduleManager.initialize(kernel);
     return kernel;
   }
 
   @Provides
   @Singleton
   public ModuleManager pluginManager(
-      DefaultModuleContext context,
-      ModuleClasspathManager classpathManager,
-      DependencyGraph dependencyGraph) {
+      ModuleClasspathManager classpathManager, DependencyGraph dependencyGraph) {
     return new DefaultModuleManager();
     //    return new DefaultModuleManager(context, classpathManager, dependencyGraph);
   }
