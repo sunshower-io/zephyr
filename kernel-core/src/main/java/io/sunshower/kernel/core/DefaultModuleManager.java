@@ -6,6 +6,7 @@ import io.sunshower.gyre.Pair;
 import io.sunshower.kernel.concurrency.*;
 import io.sunshower.kernel.core.actions.ModuleDownloadPhase;
 import io.sunshower.kernel.core.actions.ModuleScanPhase;
+import io.sunshower.kernel.core.actions.ModuleTransferPhase;
 import io.sunshower.kernel.core.lifecycle.KernelModuleListReadPhase;
 import io.sunshower.kernel.dependencies.DependencyGraph;
 import io.sunshower.kernel.log.Logging;
@@ -80,6 +81,12 @@ public class DefaultModuleManager implements ModuleManager {
           .define(Pair.of(ModuleDownloadPhase.DOWNLOAD_URL, URL.class), request.getLocation());
       taskBuilder.register(scanTask);
       taskBuilder.task(moduleName).dependsOn(name);
+
+      /** transfer modules */
+      val transferModuleName = format("module:transfer:%s", location);
+      val transferTask = new ModuleTransferPhase(transferModuleName);
+      taskBuilder.register(transferTask);
+      taskBuilder.task(transferModuleName).dependsOn(moduleName);
     }
     status.setProcess(taskBuilder.create());
   }

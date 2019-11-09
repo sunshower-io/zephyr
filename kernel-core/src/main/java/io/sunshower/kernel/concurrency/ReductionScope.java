@@ -2,10 +2,9 @@ package io.sunshower.kernel.concurrency;
 
 import io.sunshower.gyre.Scope;
 import io.sunshower.kernel.misc.SuppressFBWarnings;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
+
 import lombok.val;
 
 /**
@@ -30,12 +29,14 @@ public final class ReductionScope implements Context, HierarchicalScope {
   private final Object enclosingValue;
 
   private final Context globals;
+  private final Stack<Object> runtimeStack;
   private final Map<String, Element> locals;
 
   private ReductionScope(Context globals) {
     this.parent = null;
     this.enclosingValue = null;
     this.globals = globals;
+    this.runtimeStack = ((ReductionScope) globals).runtimeStack;
     this.locals = new HashMap<>(2);
   }
 
@@ -43,6 +44,11 @@ public final class ReductionScope implements Context, HierarchicalScope {
     this.globals = null;
     this.parent = parent;
     this.enclosingValue = enclosingValue;
+    if(parent == null) {
+      this.runtimeStack = new Stack<>();
+    } else {
+      this.runtimeStack = parent.runtimeStack;
+    }
     // using ultra-dense hashmaps /may/ be a mistake, but consider that
     // a: a task typically has very few locals
     // and b: there are a fuck-ton of these in large reductions
@@ -103,6 +109,28 @@ public final class ReductionScope implements Context, HierarchicalScope {
         return null;
       }
       c = c.parent;
+    }
+  }
+
+  @Override
+  public <T> void push(T value) {
+    synchronized (runtimeStack) {
+      runtimeStack.push(value);
+    }
+  }
+
+  @Override
+  @SuppressWarnings("unchecked")
+  public <T> T pop() {
+    synchronized (runtimeStack) {
+      return (T) runtimeStack.pop();
+    }
+  }
+
+  @Override
+  public int stackDepth() {
+    synchronized (runtimeStack) {
+      return runtimeStack.size();
     }
   }
 

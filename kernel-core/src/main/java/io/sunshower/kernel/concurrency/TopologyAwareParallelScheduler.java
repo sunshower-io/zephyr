@@ -61,6 +61,8 @@ public class TopologyAwareParallelScheduler<K> {
         for (val task : taskSet.getTasks()) {
           workerPool.submit(new NotifyingTask<>(task, latch, currentScope));
         }
+        currentScope = currentScope.popScope();
+
         // need to push a new scope every level-set so that task downstream
         // inherits results of previous computations
         //          currentScope = currentScope.popScope();

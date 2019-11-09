@@ -27,7 +27,9 @@ public class KernelClassLoaderCreationPhase extends Task {
 
   @Override
   public TaskValue run(Context context) {
-    List<KernelModuleEntry> entries = context.get(KernelModuleListReadPhase.INSTALLED_MODULE_LIST);
+    //    List<KernelModuleEntry> entries =
+    // context.get(KernelModuleListReadPhase.INSTALLED_MODULE_LIST);
+    List<KernelModuleEntry> entries = context.pop();
     val kernel = context.get(SunshowerKernel.class);
 
     try {

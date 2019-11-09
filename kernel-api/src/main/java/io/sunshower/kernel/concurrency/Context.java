@@ -9,4 +9,10 @@ public interface Context extends Scope {
   <T> T get(String key);
 
   <T> T get(Class<T> type);
+
+  <T> void push(T value);
+
+  <T> T pop();
+
+  int stackDepth();
 }
