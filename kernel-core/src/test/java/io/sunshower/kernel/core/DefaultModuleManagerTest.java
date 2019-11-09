@@ -14,6 +14,7 @@ import java.net.MalformedURLException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import lombok.val;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -41,6 +42,11 @@ class DefaultModuleManagerTest {
     kernel = cfg.kernel();
     manager.initialize(kernel);
     kernel.start();
+  }
+
+  @AfterEach
+  void tearDown() {
+    kernel.stop();
   }
 
 

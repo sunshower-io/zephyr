@@ -29,7 +29,7 @@ public class DefaultKernelLifecycle implements KernelLifecycle {
 
   @Override
   public TaskTracker<String> stop() {
-    return null;
+    return scheduler.submit(LifecycleProcessHolder.stopInstance(kernel));
   }
 
   @Override
@@ -43,6 +43,18 @@ public class DefaultKernelLifecycle implements KernelLifecycle {
   }
 
   static final class LifecycleProcessHolder {
+
+    static final Process<String> stopInstance(Kernel kernel) {
+      val scope = ReductionScope.newContext();
+      scope.set("SunshowerKernel", kernel);
+      return Tasks.newProcess("kernel:stop")
+          .withContext(scope)
+          .register(new UnloadKernelFilesystemPhase("kernel:stop:filesystem"))
+          .register(new UnloadKernelClassloaderPhase("kernel:stop:classloader"))
+          .task("kernel:stop:classloader")
+          .dependsOn("kernel:stop:filesystem")
+          .create();
+    }
 
     static final Process<String> startInstance(Kernel kernel) {
       val scope = ReductionScope.newContext();

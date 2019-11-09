@@ -12,6 +12,7 @@ import lombok.extern.java.Log;
 import lombok.val;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
 @Log
@@ -69,5 +70,12 @@ public class SunshowerKernelTest {
     assertNull(kernel.getClassLoader(), "kernel filesystem must initially be null");
     kernel.start();
     assertNotNull(kernel.getClassLoader(), "kernel filesystem must now be set");
+  }
+
+  @Test
+  @RepeatedTest(1000)
+  void ensureKernelLoadingIsIdempotent() throws InterruptedException {
+    kernel.start();
+    kernel.stop();
   }
 }

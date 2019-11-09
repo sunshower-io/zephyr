@@ -73,7 +73,10 @@ public class SunshowerKernel implements Kernel {
   }
 
   @Override
-  public void stop() {}
+  @SneakyThrows
+  public void stop() {
+    lifecycle.stop().get();
+  }
 
   @SuppressWarnings("PMD.UnusedPrivateMethod")
   private <T> void load(List<T> result, Class<T> type, ClassLoader classLoader) {
