@@ -7,6 +7,4 @@ public interface LifecycleAction {
   Module getTarget();
 
   Lifecycle.State getState();
-
-  ActionTree getActionTree();
 }

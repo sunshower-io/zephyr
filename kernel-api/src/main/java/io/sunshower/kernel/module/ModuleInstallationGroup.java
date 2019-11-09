@@ -3,9 +3,10 @@ package io.sunshower.kernel.module;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import lombok.Getter;
 
 public class ModuleInstallationGroup {
-  final List<ModuleInstallationRequest> modules;
+  @Getter final List<ModuleInstallationRequest> modules;
 
   public ModuleInstallationGroup(ModuleInstallationRequest... modules) {
     this.modules = new ArrayList<>(modules.length);

@@ -20,6 +20,10 @@ public class ParallelScheduler<E, V> implements Transformation<E, V, Schedule<E,
 
     while (!copy.isEmpty()) {
       val frontier = collectFrontier(copy, edgeFilter);
+
+      if(frontier.isEmpty() && !copy.isEmpty()) {
+        throw new IllegalStateException("Error: cyclic graph");
+      }
       val ts = new MutableTaskSet<E, V>();
       result.tasks.add(ts);
       for (val node : frontier) {
@@ -40,10 +44,16 @@ public class ParallelScheduler<E, V> implements Transformation<E, V, Schedule<E,
   }
 
   private List<V> collectFrontier(Graph<E, V> copy, Predicate<E> edgeFilter) {
-    return copy.vertexSet()
-        .stream()
-        .filter(t -> copy.degreeOf(t, edgeFilter) == 0)
-        .collect(Collectors.toList());
+    val results = new ArrayList<V>();
+    for(val c : copy.vertexSet()) {
+      if(copy.degreeOf(c, edgeFilter) == 0) {
+        results.add(c);
+      }
+    }
+    return results;
+//    return copy.vertexSet().stream()
+//        .filter(t -> copy.degreeOf(t, edgeFilter) == 0)
+//        .collect(Collectors.toList());
   }
 
   static final class MutableSchedule<E, V> implements Schedule<E, V> {

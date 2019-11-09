@@ -13,10 +13,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import lombok.val;
 
-public class KernelFilesystemCreatePhase implements Task {
+public class KernelFilesystemCreatePhase extends Task {
 
   static final Logger log = Logging.get(KernelFilesystemCreatePhase.class, "KernelLifecycle");
   static final String FILE_SYSTEM_ROOT = "droplet://kernel";
+
+  public KernelFilesystemCreatePhase(String name) {
+    super(name);
+  }
 
   @Override
   public TaskValue run(Context context) {

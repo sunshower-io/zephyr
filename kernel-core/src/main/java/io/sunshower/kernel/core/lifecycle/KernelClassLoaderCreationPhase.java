@@ -17,9 +17,13 @@ import java.util.Set;
 import lombok.val;
 
 @SuppressFBWarnings
-public class KernelClassLoaderCreationPhase implements Task {
+public class KernelClassLoaderCreationPhase extends Task {
 
   public static final String INSTALLED_KERNEL_CLASSLOADER = "INSTALLED_KERNEL_CLASSLOADER";
+
+  public KernelClassLoaderCreationPhase(String name) {
+    super(name);
+  }
 
   @Override
   public TaskValue run(Context context) {

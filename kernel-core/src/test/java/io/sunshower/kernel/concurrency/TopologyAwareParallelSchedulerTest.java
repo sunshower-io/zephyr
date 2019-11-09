@@ -35,14 +35,14 @@ class TopologyAwareParallelSchedulerTest {
   void ensureDependentTaskRetrievesPredecessorValueForSimpleTaskGraph()
       throws ExecutionException, InterruptedException {
     graph.connect(
-        new NamedTask("a") {
+        new Task("a") {
           @Override
           public TaskValue run(Context context) {
             assertEquals(context.get("test"), "hello world!", "message should be correct");
             return null;
           }
         },
-        new NamedTask("b") {
+        new Task("b") {
           @Override
           public TaskValue run(Context context) {
             context.set("test", "hello world!");
@@ -64,14 +64,14 @@ class TopologyAwareParallelSchedulerTest {
         new TopologyAwareParallelScheduler(new ExecutorWorkerPool(Executors.newFixedThreadPool(1)));
 
     g.connect(
-        new NamedTask("a") {
+        new Task("a") {
           @Override
           public Task.TaskValue run(Context c) {
             results.add(name);
             return null;
           }
         },
-        new NamedTask("b") {
+        new Task("b") {
 
           @Override
           public Task.TaskValue run(Context c) {
@@ -85,14 +85,6 @@ class TopologyAwareParallelSchedulerTest {
     result.get();
     assertEquals(results.get(0), "b", "be must be first");
     assertEquals(results.get(1), "a", "must be second");
-  }
-
-  abstract static class NamedTask implements Task {
-    final String name;
-
-    protected NamedTask(String name) {
-      this.name = name;
-    }
   }
 
   private Process<String> scheduleFrom(TaskGraph<String> graph) {

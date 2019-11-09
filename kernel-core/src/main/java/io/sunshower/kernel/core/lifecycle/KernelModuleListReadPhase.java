@@ -9,10 +9,13 @@ import io.sunshower.kernel.module.KernelModuleEntry;
 import io.sunshower.kernel.module.ModuleListParser;
 import lombok.val;
 
-public class KernelModuleListReadPhase implements Task {
+public class KernelModuleListReadPhase extends Task {
+
   public static final String INSTALLED_MODULE_LIST = "MODULE_LIST_INSTALLED";
 
-  public KernelModuleListReadPhase() {}
+  public KernelModuleListReadPhase(String name) {
+    super(name);
+  }
 
   @Override
   public TaskValue run(Context context) {

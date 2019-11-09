@@ -70,7 +70,7 @@ public class SunshowerKernelInjectionModule {
   @Singleton
   public ModuleManager pluginManager(
       ModuleClasspathManager classpathManager, DependencyGraph dependencyGraph) {
-    return new DefaultModuleManager();
+    return new DefaultModuleManager(dependencyGraph);
     //    return new DefaultModuleManager(context, classpathManager, dependencyGraph);
   }
 

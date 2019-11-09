@@ -1,7 +1,6 @@
 package io.sunshower.kernel.concurrency;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
 
 import io.sunshower.gyre.DirectedGraph;
 import io.sunshower.gyre.ParallelScheduler;
@@ -31,8 +30,8 @@ class TasksTest {
 
   @Test
   void ensureProcessBuilderWithSimpleTaskProducesCorrectGraph() {
-    val task = mock(Task.class);
-    val process = Tasks.newProcess("a").withContext(scope).register("test", task).create();
+    val task = new T("a");
+    val process = Tasks.newProcess("a").withContext(scope).register(task).create();
     val graph = scheduler.apply(process.getExecutionGraph());
     assertEquals(graph.size(), 1);
     val t = graph.get(0).getTasks().get(0);
@@ -45,11 +44,12 @@ class TasksTest {
         Tasks.newProcess("kernel:start:filesystem")
             .withContext(context)
             // a
-            .register("kernel:lifecycle:module:list", new KernelModuleListReadPhase())
+            .register(new KernelModuleListReadPhase("kernel:lifecycle:module:list"))
+
             // b
-            .register("kernel:lifecycle:filesystem:create", new KernelFilesystemCreatePhase())
+            .register(new KernelFilesystemCreatePhase("kernel:lifecycle:filesystem:create"))
             // c
-            .register("kernel:lifecycle:classloader", new KernelClassLoaderCreationPhase())
+            .register(new KernelClassLoaderCreationPhase("kernel:lifecycle:classloader"))
             .task("kernel:lifecycle:module:list")
             .dependsOn("kernel:lifecycle:filesystem:create")
             .task("kernel:lifecycle:classloader")
@@ -60,17 +60,29 @@ class TasksTest {
     assertEquals(s.size(), 3, "must have 3 items");
   }
 
+  static class T extends Task {
+
+    protected T(String name) {
+      super(name);
+    }
+
+    @Override
+    public TaskValue run(Context context) {
+      return null;
+    }
+  }
+
   @Test
   void ensureWithContextDoesntChangeExecutionGraph() {
-    val taskA = mock(Task.class);
-    val taskB = mock(Task.class);
-    val taskC = mock(Task.class);
+    val taskA = new T("a");
+    val taskB = new T("b");
+    val taskC = new T("c");
     val proc =
         Tasks.newProcess("s")
             .withContext(context)
-            .register("a", taskA)
-            .register("b", taskB)
-            .register("c", taskC)
+            .register(taskA)
+            .register(taskB)
+            .register(taskC)
             .task("a")
             .dependsOn("b")
             .task("b")
@@ -79,21 +91,21 @@ class TasksTest {
 
     val s = scheduler.apply(proc.getExecutionGraph());
     assertEquals(s.size(), 3);
-    assertEquals(((NamedTask) s.get(0).getTasks().get(0).getValue()).name, "c");
-    assertEquals(((NamedTask) s.get(1).getTasks().get(0).getValue()).name, "b");
-    assertEquals(((NamedTask) s.get(2).getTasks().get(0).getValue()).name, "a");
+    assertEquals(s.get(0).getTasks().get(0).getValue().name, "c");
+    assertEquals(s.get(1).getTasks().get(0).getValue().name, "b");
+    assertEquals(s.get(2).getTasks().get(0).getValue().name, "a");
   }
 
   @Test
   void ensureSimpleLinearDependenciesWork() {
-    val taskA = mock(Task.class);
-    val taskB = mock(Task.class);
-    val taskC = mock(Task.class);
+    val taskA = new T("a");
+    val taskB = new T("b");
+    val taskC = new T("c");
     val proc =
         Tasks.newProcess("s")
-            .register("a", taskA)
-            .register("b", taskB)
-            .register("c", taskC)
+            .register(taskA)
+            .register(taskB)
+            .register(taskC)
             .task("a")
             .dependsOn("b")
             .task("b")
@@ -102,8 +114,8 @@ class TasksTest {
 
     val s = scheduler.apply(proc.getExecutionGraph());
     assertEquals(s.size(), 3);
-    assertEquals(((NamedTask) s.get(0).getTasks().get(0).getValue()).name, "c");
-    assertEquals(((NamedTask) s.get(1).getTasks().get(0).getValue()).name, "b");
-    assertEquals(((NamedTask) s.get(2).getTasks().get(0).getValue()).name, "a");
+    assertEquals((s.get(0).getTasks().get(0).getValue()).name, "c");
+    assertEquals((s.get(1).getTasks().get(0).getValue()).name, "b");
+    assertEquals((s.get(2).getTasks().get(0).getValue()).name, "a");
   }
 }

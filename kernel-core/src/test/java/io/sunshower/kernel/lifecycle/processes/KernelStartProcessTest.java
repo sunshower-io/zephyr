@@ -54,7 +54,7 @@ class KernelStartProcessTest {
     val process =
         Tasks.newProcess("kernel:start:filesystem")
             .withContext(context)
-            .register("kernel:lifecycle:filesystem:create", new KernelFilesystemCreatePhase())
+            .register(new KernelFilesystemCreatePhase("kernel:lifecycle:filesystem:create"))
             .create();
 
     val tracker = scheduler.submit(process);
@@ -68,8 +68,10 @@ class KernelStartProcessTest {
     val process =
         Tasks.newProcess("kernel:start:filesystem")
             .withContext(context)
-            .register("kernel:lifecycle:module:list", new KernelModuleListReadPhase())
-            .dependsOn("kernel:lifecycle:filesystem:create", new KernelFilesystemCreatePhase())
+            .register(new KernelModuleListReadPhase("kernel:lifecycle:module:list"))
+            .register(new KernelFilesystemCreatePhase("kernel:lifecycle:filesystem:create"))
+            .task("kernel:lifecycle:module:list")
+            .dependsOn("kernel:lifecycle:filesystem:create")
             .create();
     val tracker = scheduler.submit(process);
     tracker.get();
@@ -84,9 +86,9 @@ class KernelStartProcessTest {
     val process =
         Tasks.newProcess("kernel:start:filesystem")
             .withContext(context)
-            .register("kernel:lifecycle:module:list", new KernelModuleListReadPhase())
-            .register("kernel:lifecycle:filesystem:create", new KernelFilesystemCreatePhase())
-            .register("kernel:lifecycle:classloader", new KernelClassLoaderCreationPhase())
+            .register(new KernelModuleListReadPhase("kernel:lifecycle:module:list"))
+            .register(new KernelFilesystemCreatePhase("kernel:lifecycle:filesystem:create"))
+            .register(new KernelClassLoaderCreationPhase("kernel:lifecycle:classloader"))
             .task("kernel:lifecycle:module:list")
             .dependsOn("kernel:lifecycle:filesystem:create")
             .task("kernel:lifecycle:classloader")

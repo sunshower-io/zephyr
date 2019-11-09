@@ -1,5 +1,6 @@
 package io.sunshower.kernel.concurrency;
 
+import io.sunshower.kernel.misc.SuppressFBWarnings;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,7 +18,7 @@ public class ProcessBuilder {
   /** Immutable state */
   final String name;
 
-  final Map<String, NamedTask> tasks;
+  final Map<String, Task> tasks;
   final Map<String, List<Task>> dependencies;
   /** mutable state */
   public ProcessBuilder(String name) {
@@ -41,16 +42,18 @@ public class ProcessBuilder {
     return this;
   }
 
-  public TaskBuilder register(String name, Task task) {
-    return new TaskBuilder(name, task, this);
+  @SuppressFBWarnings
+  public TaskBuilder register(Task task) {
+    return new TaskBuilder(task.name, task, this);
   }
 
-  ProcessBuilder register(NamedTask task) {
+  ProcessBuilder doRegister(Task task) {
+
     tasks.put(task.name, task);
     return this;
   }
 
-  ProcessBuilder dependsOn(NamedTask source, NamedTask target) {
+  ProcessBuilder dependsOn(Task source, Task target) {
     if (target == null) {
       throw new IllegalStateException("A task can't depend on a null dependency");
     }

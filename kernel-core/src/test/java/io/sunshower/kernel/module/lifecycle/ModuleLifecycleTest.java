@@ -8,9 +8,14 @@ import io.sunshower.kernel.module.ModuleInstallationGroup;
 import io.sunshower.kernel.module.ModuleInstallationRequest;
 import io.sunshower.kernel.module.ModuleLifecycle;
 import io.sunshower.test.common.Tests;
+import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.nio.file.FileSystems;
 import lombok.val;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class ModuleLifecycleTest {
@@ -31,6 +36,12 @@ class ModuleLifecycleTest {
                 new SunshowerKernelInjectionModule(options, ClassLoader.getSystemClassLoader()))
             .build();
     kernel = cfg.kernel();
+    kernel.start();
+  }
+
+  @AfterEach
+  void tearDown() throws IOException {
+    FileSystems.getFileSystem(URI.create("droplet://kernel")).close();
   }
 
   @Test

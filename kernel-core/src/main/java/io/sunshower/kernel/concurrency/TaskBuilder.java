@@ -9,15 +9,15 @@ public class TaskBuilder {
 
   final String name;
   final Task task;
+  private Task current;
   final ProcessBuilder processBuilder;
-  private NamedTask current;
 
   public TaskBuilder(String name, Task task, ProcessBuilder processBuilder) {
     this.name = name;
     this.task = task;
     this.processBuilder = processBuilder;
-    current = new NamedTask(name, task);
-    processBuilder.register(current);
+    current = task;
+    processBuilder.doRegister(current);
   }
 
   public Process<String> create() {
@@ -46,31 +46,18 @@ public class TaskBuilder {
         processBuilder.name, processBuilder.coalesce, processBuilder.parallel, context, graph);
   }
 
-  public TaskBuilder dependsOn(String name, Task task) {
-    if (current == null) {
-      throw new IllegalStateException("Error: must have a current task");
+  public TaskBuilder dependsOn(Task task) {
+    if (!processBuilder.tasks.containsKey(task.name)) {
+      processBuilder.doRegister(task);
     }
-
-    final NamedTask namedTask;
-    if (task instanceof NamedTask) {
-      namedTask = (NamedTask) task;
-    } else {
-      namedTask = new NamedTask(name, task);
-    }
-
-    processBuilder.dependsOn(current, namedTask);
+    task(task.name);
+    processBuilder.dependsOn(current, task);
     return this;
   }
 
-  public TaskBuilder register(String name, Task phase) {
-    NamedTask c;
-    if (phase instanceof NamedTask) {
-      c = (NamedTask) phase;
-    } else {
-      c = new NamedTask(name, phase);
-    }
-    current = c;
-    processBuilder.register(c);
+  public TaskBuilder register(Task phase) {
+    current = phase;
+    processBuilder.doRegister(phase);
     return this;
   }
 

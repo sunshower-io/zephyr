@@ -10,5 +10,4 @@ import lombok.Getter;
 public class StartLifecycleAction implements LifecycleAction {
   final Module target;
   final Lifecycle.State state;
-  final ActionTree actionTree;
 }

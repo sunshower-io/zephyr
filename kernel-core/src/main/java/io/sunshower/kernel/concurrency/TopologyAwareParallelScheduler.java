@@ -43,6 +43,7 @@ public class TopologyAwareParallelScheduler<K> {
     final Process<K> process;
     final ReductionScope rootScope;
     volatile ReductionScope currentScope;
+    final Object lock = new Object();
 
     public StagedScheduleEnqueuer(Process<K> process, Context context) {
       this.context = context;
@@ -58,14 +59,14 @@ public class TopologyAwareParallelScheduler<K> {
         val latch = new NotifyingLatch<K>(this, taskSet.size());
         currentScope = currentScope.pushScope(taskSet);
         for (val task : taskSet.getTasks()) {
-          currentScope = currentScope.pushScope(task);
           workerPool.submit(new NotifyingTask<>(task, latch, currentScope));
         }
+        // need to push a new scope every level-set so that task downstream
+        // inherits results of previous computations
+        //          currentScope = currentScope.popScope();
         try {
           latch.await();
         } catch (InterruptedException e) {
-          // eh
-
         }
       }
       complete(null);
@@ -103,11 +104,16 @@ public class TopologyAwareParallelScheduler<K> {
       try {
         latch.beforeTask();
         val result = task.getValue().run(scope);
-        return result.value;
+        if (result != null) {
+          return result.value;
+        }
+        return null;
+      } catch (Exception ex) {
+        ex.printStackTrace();
+        return null;
       } finally {
         latch.decrement();
         latch.afterTask();
-        scope.popScope();
       }
     }
   }

@@ -49,9 +49,9 @@ public class DefaultKernelLifecycle implements KernelLifecycle {
       scope.set("SunshowerKernel", kernel);
       return Tasks.newProcess("kernel:start:filesystem")
           .withContext(scope)
-          .register("kernel:lifecycle:module:list", new KernelModuleListReadPhase())
-          .register("kernel:lifecycle:filesystem:create", new KernelFilesystemCreatePhase())
-          .register("kernel:lifecycle:classloader", new KernelClassLoaderCreationPhase())
+          .register(new KernelModuleListReadPhase("kernel:lifecycle:module:list"))
+          .register(new KernelFilesystemCreatePhase("kernel:lifecycle:filesystem:create"))
+          .register(new KernelClassLoaderCreationPhase("kernel:lifecycle:classloader"))
           .task("kernel:lifecycle:module:list")
           .dependsOn("kernel:lifecycle:filesystem:create")
           .task("kernel:lifecycle:classloader")

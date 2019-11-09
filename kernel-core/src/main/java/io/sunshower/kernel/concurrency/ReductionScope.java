@@ -205,7 +205,7 @@ public final class ReductionScope implements Context, HierarchicalScope {
   }
 
   @Override
-  public Scope popScope() {
+  public ReductionScope popScope() {
     return parent;
   }
 }

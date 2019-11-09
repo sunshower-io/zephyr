@@ -8,4 +8,8 @@ public class ModuleInstallationRequest implements ModuleRequest {
 
   private URL location;
   private ModuleLifecycle.Actions lifecycleActions;
+
+  public URL getLocation() {
+    return location;
+  }
 }
