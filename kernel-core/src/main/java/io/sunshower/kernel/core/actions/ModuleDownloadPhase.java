@@ -43,6 +43,7 @@ public class ModuleDownloadPhase extends Task implements ChannelTransferListener
   @Override
   public Task.TaskValue run(Scope scope) {
     URL downloadUrl = (URL) parameters().get(DOWNLOAD_URL);
+    scope.set(DOWNLOAD_URL, downloadUrl);
     Path moduleDirectory = scope.get(TARGET_DIRECTORY);
     downloadModule(downloadUrl, moduleDirectory, scope);
     return null;

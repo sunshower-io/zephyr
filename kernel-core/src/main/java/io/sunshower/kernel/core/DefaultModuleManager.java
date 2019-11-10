@@ -5,10 +5,7 @@ import static java.lang.String.format;
 import io.sunshower.gyre.Pair;
 import io.sunshower.gyre.Scope;
 import io.sunshower.kernel.concurrency.*;
-import io.sunshower.kernel.core.actions.ModuleDownloadPhase;
-import io.sunshower.kernel.core.actions.ModuleScanPhase;
-import io.sunshower.kernel.core.actions.ModuleTransferPhase;
-import io.sunshower.kernel.core.actions.ModuleUnpackPhase;
+import io.sunshower.kernel.core.actions.*;
 import io.sunshower.kernel.core.lifecycle.KernelModuleListReadPhase;
 import io.sunshower.kernel.dependencies.DependencyGraph;
 import io.sunshower.kernel.log.Logging;
@@ -62,7 +59,15 @@ public class DefaultModuleManager implements ModuleManager {
       ModuleInstallationStatusGroup status,
       Scope context) {
 
+    /**
+     * synchronization point
+     */
+    val writeModuleList = "module:kernel:write:list";
+    val writeTask = new WriteKernelModuleListPhase(writeModuleList);
+    taskBuilder.register(writeTask);
     val requests = group.getModules();
+
+
 
     for (val request : requests) {
 
@@ -98,6 +103,21 @@ public class DefaultModuleManager implements ModuleManager {
       val unpackTask = new ModuleUnpackPhase(unpackModuleName);
       taskBuilder.register(unpackTask);
       taskBuilder.task(unpackModuleName).dependsOn(transferModuleName);
+
+      /**
+       * create and install module
+       */
+
+      val installModuleName = format("module:install:%s", location);
+      val installTask = new ModuleInstallationCompletionPhase(installModuleName);
+      taskBuilder.register(installTask);
+      taskBuilder.task(installModuleName).dependsOn(unpackModuleName);
+
+      /**
+       * Write kernel list
+       */
+
+      taskBuilder.task(writeModuleList).dependsOn(installModuleName);
     }
     status.setProcess(taskBuilder.create());
   }

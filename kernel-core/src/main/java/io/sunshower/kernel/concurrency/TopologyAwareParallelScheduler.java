@@ -117,5 +117,10 @@ public class TopologyAwareParallelScheduler<K> {
       }
       return (T) result;
     }
+
+    @Override
+    public <E> E computeIfAbsent(String scannedPlugins, E o) {
+      return task.getScope().computeIfAbsent(scannedPlugins, o);
+    }
   }
 }

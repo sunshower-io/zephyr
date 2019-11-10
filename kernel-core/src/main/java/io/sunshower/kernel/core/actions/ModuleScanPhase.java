@@ -1,6 +1,7 @@
 package io.sunshower.kernel.core.actions;
 
 import io.sunshower.gyre.Scope;
+import io.sunshower.kernel.Module;
 import io.sunshower.kernel.concurrency.Task;
 import io.sunshower.kernel.concurrency.TaskException;
 import io.sunshower.kernel.concurrency.TaskStatus;
@@ -10,6 +11,7 @@ import io.sunshower.kernel.core.ModuleScanner;
 import io.sunshower.kernel.log.Logging;
 import java.io.File;
 import java.net.URL;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
@@ -25,6 +27,8 @@ import lombok.val;
 @SuppressWarnings({"PMD.DataflowAnomalyAnalysis", "PMD.UseVarargs"})
 public class ModuleScanPhase extends Task {
   public static final String MODULE_DESCRIPTOR = "MODULE_SCAN_MODULE_DESCRIPTOR";
+  public static final String SCANNED_PLUGINS = "SCANNNED_PLUGINS";
+  public static final String SCANNED_KERNEL_MODULES = "SCANNED_KERNEL_MODULES";
 
   static final ResourceBundle bundle;
   static final Logger logger = Logging.get(ModuleScanPhase.class);
@@ -56,7 +60,14 @@ public class ModuleScanPhase extends Task {
   @Override
   public TaskValue run(Scope context) {
     File downloaded = context.get(ModuleDownloadPhase.DOWNLOADED_FILE);
-    context.set(ModuleScanPhase.MODULE_DESCRIPTOR, scan(downloaded, context));
+    val result = scan(downloaded, context);
+    context.set(ModuleScanPhase.MODULE_DESCRIPTOR, result);
+
+    if (result.getType() == Module.Type.KernelModule) {
+      context.computeIfAbsent(ModuleScanPhase.SCANNED_KERNEL_MODULES, new HashSet<>()).add(result);
+    } else {
+      context.computeIfAbsent(ModuleScanPhase.SCANNED_PLUGINS, new HashSet<>()).add(result);
+    }
     return null;
   }
 }

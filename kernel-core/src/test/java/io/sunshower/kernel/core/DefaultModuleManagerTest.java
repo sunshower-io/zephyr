@@ -8,13 +8,19 @@ import io.sunshower.kernel.module.ModuleInstallationGroup;
 import io.sunshower.kernel.module.ModuleInstallationRequest;
 import io.sunshower.kernel.module.ModuleLifecycle;
 import io.sunshower.test.common.Tests;
+
+import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import lombok.val;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 @SuppressWarnings({
   "PMD.JUnitTestsShouldIncludeAssert",
@@ -51,6 +57,40 @@ class DefaultModuleManagerTest {
   @AfterEach
   void tearDown() {
     kernel.stop();
+  }
+
+  @Test
+  void ensureSavingKernelModuleWorks() throws Exception {
+
+    try {
+      Class.forName(
+          "io.sunshower.kernel.ext.scanner.YamlPluginDescriptorScanner",
+          true,
+          kernel.getClassLoader());
+      fail("should not have been able to create a class");
+    } catch (Exception ex) {
+
+    }
+    val module =
+        Tests.relativeToProjectBuild("kernel-modules:sunshower-yaml-reader", "war", "libs");
+
+    val req1 = new ModuleInstallationRequest();
+    req1.setLifecycleActions(ModuleLifecycle.Actions.Install);
+    req1.setLocation(module.toURI().toURL());
+
+    val grp = new ModuleInstallationGroup(req1);
+
+    val prepped = manager.prepare(grp);
+    scheduler.submit(prepped.getProcess()).get();
+
+    kernel.stop();
+    kernel.start();
+    val cl =
+        Class.forName(
+            "io.sunshower.kernel.ext.scanner.YamlPluginDescriptorScanner",
+            true,
+            kernel.getClassLoader());
+    assertNotNull(cl.getConstructor().newInstance(), "must be able to create");
   }
 
   @Test

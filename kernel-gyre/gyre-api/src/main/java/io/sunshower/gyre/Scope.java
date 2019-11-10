@@ -1,7 +1,8 @@
 package io.sunshower.gyre;
 
-import java.util.HashMap;
-import java.util.Map;
+import lombok.val;
+
+import java.util.*;
 
 public interface Scope {
   <T> void set(String name, T value);
@@ -11,6 +12,8 @@ public interface Scope {
   static Scope root() {
     return new RootScope();
   }
+
+  <E> E computeIfAbsent(String scannedPlugins, E o);
 }
 
 final class RootScope implements Scope {
@@ -26,5 +29,13 @@ final class RootScope implements Scope {
   @SuppressWarnings("unchecked")
   public <T> T get(String name) {
     return (T) values.get(name);
+  }
+
+  @Override
+  @SuppressWarnings("unchecked")
+  public <T> T computeIfAbsent(String name, T value) {
+    synchronized (values) {
+      return (T) values.computeIfAbsent(name, t -> value);
+    }
   }
 }
