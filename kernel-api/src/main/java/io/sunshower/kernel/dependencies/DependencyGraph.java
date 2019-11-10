@@ -73,4 +73,6 @@ public interface DependencyGraph extends Iterable<Module> {
   boolean contains(Coordinate coordinate);
 
   Partition<DirectedGraph.Edge<Coordinate>, Coordinate> computeCycles();
+
+  DependencyGraph clone();
 }

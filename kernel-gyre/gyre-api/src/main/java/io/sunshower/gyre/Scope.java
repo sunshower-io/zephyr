@@ -1,7 +1,5 @@
 package io.sunshower.gyre;
 
-import lombok.val;
-
 import java.util.*;
 
 public interface Scope {

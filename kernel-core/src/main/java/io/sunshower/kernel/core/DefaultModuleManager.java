@@ -53,6 +53,11 @@ public class DefaultModuleManager implements ModuleManager {
     return status;
   }
 
+  @Override
+  public DependencyGraph getDependencyGraph() {
+    return dependencyGraph;
+  }
+
   private void addIntermediates(
       TaskBuilder taskBuilder,
       ModuleInstallationGroup group,

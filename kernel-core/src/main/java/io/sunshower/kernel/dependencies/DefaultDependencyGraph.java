@@ -22,6 +22,11 @@ public final class DefaultDependencyGraph implements DependencyGraph {
     dependencyGraph = new AbstractDirectedGraph<>();
   }
 
+  private DefaultDependencyGraph(DefaultDependencyGraph graph) {
+    modules = new HashMap<>(graph.modules);
+    dependencyGraph = graph.dependencyGraph.clone();
+  }
+
   @Override
   public Set<UnsatisfiedDependencySet> add(Module a) {
     return addAll(Collections.singleton(a));
@@ -152,6 +157,11 @@ public final class DefaultDependencyGraph implements DependencyGraph {
   public Partition<DirectedGraph.Edge<Coordinate>, Coordinate> computeCycles() {
     return new StronglyConnectedComponents<DirectedGraph.Edge<Coordinate>, Coordinate>()
         .apply(dependencyGraph);
+  }
+
+  @Override
+  public DependencyGraph clone() {
+    return new DefaultDependencyGraph(this);
   }
 
   @Override
