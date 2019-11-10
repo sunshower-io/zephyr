@@ -10,16 +10,15 @@ import io.sunshower.kernel.dependencies.DefaultDependencyGraph;
 import io.sunshower.kernel.launch.KernelOptions;
 import io.sunshower.kernel.module.ModuleInstallationGroup;
 import io.sunshower.kernel.module.ModuleInstallationRequest;
+import io.sunshower.kernel.module.ModuleInstallationStatusGroup;
 import io.sunshower.kernel.module.ModuleLifecycle;
 import io.sunshower.test.common.Tests;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
 import lombok.val;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
 @SuppressWarnings({
@@ -33,13 +32,15 @@ class DefaultModuleManagerTest {
   Kernel kernel;
   ModuleManager manager;
   Scheduler<String> scheduler;
-  private SunshowerKernelConfiguration cfg;
+  SunshowerKernelConfiguration cfg;
+
+  File plugin1;
+  File plugin2;
+  ModuleInstallationRequest req2;
+  ModuleInstallationRequest req1;
 
   @BeforeEach
-  void setUp() {
-    //    manager = new DefaultModuleManager(new DefaultDependencyGraph());
-    //    scheduler = new KernelScheduler<>(new
-    // ExecutorWorkerPool(Executors.newFixedThreadPool(2)));
+  void setUp() throws Exception {
 
     val options = new KernelOptions();
     val tempfile = configureFiles();
@@ -57,6 +58,20 @@ class DefaultModuleManagerTest {
     manager.initialize(kernel);
     scheduler = kernel.getScheduler();
     kernel.start();
+
+    plugin1 =
+        Tests.relativeToProjectBuild("kernel-tests:test-plugins:test-plugin-1", "war", "libs");
+    plugin2 =
+        Tests.relativeToProjectBuild("kernel-tests:test-plugins:test-plugin-2", "war", "libs");
+
+    req1 = new ModuleInstallationRequest();
+    req1.setLifecycleActions(ModuleLifecycle.Actions.Install);
+    req1.setLocation(plugin1.toURI().toURL());
+
+    req2 = new ModuleInstallationRequest();
+    req2.setLifecycleActions(ModuleLifecycle.Actions.Install);
+    req2.setLocation(plugin2.toURI().toURL());
+
   }
 
   @AfterEach
@@ -112,21 +127,7 @@ class DefaultModuleManagerTest {
 
   @Test
   void ensureDownloadingAndInstallingModuleWorksCorrectly()
-      throws MalformedURLException, ExecutionException, InterruptedException {
-    //    val tempdir = Tests.createTemp();
-    val plugin1 =
-        Tests.relativeToProjectBuild("kernel-tests:test-plugins:test-plugin-1", "war", "libs");
-    val plugin2 =
-        Tests.relativeToProjectBuild("kernel-tests:test-plugins:test-plugin-2", "war", "libs");
-
-    val req1 = new ModuleInstallationRequest();
-    req1.setLifecycleActions(ModuleLifecycle.Actions.Install);
-    req1.setLocation(plugin1.toURI().toURL());
-
-    val req2 = new ModuleInstallationRequest();
-    req2.setLifecycleActions(ModuleLifecycle.Actions.Install);
-    req2.setLocation(plugin2.toURI().toURL());
-
+      throws ExecutionException, InterruptedException {
     val grp = new ModuleInstallationGroup(req1, req2);
 
     val prepped = manager.prepare(grp);
@@ -136,8 +137,53 @@ class DefaultModuleManagerTest {
     assertEquals(resolved.size(), 2);
   }
 
-  private File configureFiles() {
+  @Test
+  void ensureInstallingSingleModuleResultsInModuleClasspathBeingConfiguredCorrectly()
+      throws Exception {
+    val grp = new ModuleInstallationGroup(req1);
+    val prepped = manager.prepare(grp);
+    scheduler.submit(prepped.getProcess()).get();
 
+    val module = manager.getModules(Lifecycle.State.Resolved).get(0);
+    val result = Class.forName("plugin1.Test", true, module.getClassLoader());
+    val t = result.getConstructor().newInstance();
+    assertNotNull(t);
+  }
+
+  @Test
+  void
+      ensureInstallingSingleModuleResultsInModuleClasspathBeingConfiguredCorrectlyWithoutDependantClassesAppearing()
+          throws Exception {
+    val grp = new ModuleInstallationGroup(req1);
+    val prepped = manager.prepare(grp);
+    scheduler.submit(prepped.getProcess()).get();
+
+    val module = manager.getModules(Lifecycle.State.Resolved).get(0);
+    assertThrows(
+        ClassNotFoundException.class,
+        () -> Class.forName("testproject2.Test", true, module.getClassLoader()),
+        "shouldn't be able to find dependent class in this classloader");
+  }
+
+  @Test
+  void ensureInstallingModuleWithDependentResultsInModuleClasspathBeingConfiguredCorrectly()
+      throws Exception {
+
+    val grp = new ModuleInstallationGroup(req2, req1);
+    val prepped = manager.prepare(grp);
+    scheduler.submit(prepped.getProcess()).get();
+
+    val module =
+        manager.getModules(Lifecycle.State.Resolved).stream()
+            .filter(t -> t.getCoordinate().getName().equals("test-plugin-2"))
+            .findAny()
+            .get();
+    val result = Class.forName("testproject2.Test", true, module.getClassLoader());
+    val t = result.getConstructor().newInstance();
+    assertNotNull(t);
+  }
+
+  private File configureFiles() {
     val tempfile = Tests.createTemp();
     return tempfile;
   }

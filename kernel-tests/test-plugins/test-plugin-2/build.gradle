@@ -1,6 +1,7 @@
 apply plugin: 'war'
 
 dependencies {
+    implementation project(':kernel-tests:test-plugins:test-plugin-1')
     implementation project(':kernel-modules:sunshower-yaml-reader')
 }
 
@@ -13,7 +14,7 @@ war {
                 'group': 'sunshower.io',
                 'name': 'test-plugin-2',
                 'version': '1.0.0-SNAPSHOT',
-                'description' : 'just a test plugin!',
+                'description': 'just a test plugin!',
                 'dependencies': deps,
                 'type': 'plugin'
         )

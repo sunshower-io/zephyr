@@ -95,8 +95,11 @@ public class DefaultModule implements Module, Comparable<Module> {
   @SuppressFBWarnings
   public ClassLoader getClassLoader() {
     if (moduleClasspath == null) {
-      throw new IllegalModuleStateException(
-          "Module must be in at least the 'RESOLVED' state to perform this operation");
+      getModuleClasspath();
+      if (moduleClasspath == null) {
+        throw new IllegalModuleStateException(
+            "Module must be in at least the 'RESOLVED' state to perform this operation");
+      }
     }
     return moduleClasspath.getClassLoader();
   }
