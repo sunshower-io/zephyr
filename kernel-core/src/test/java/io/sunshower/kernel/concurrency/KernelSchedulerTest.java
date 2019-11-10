@@ -10,14 +10,14 @@ import java.util.concurrent.Executors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@SuppressWarnings({"PMD.DataFlowAnomalyAnalysis", "PMD.JUnitAssertionsShouldIncludeMessage"})
 class KernelSchedulerTest {
 
   private KernelScheduler<String> scheduler;
 
   @BeforeEach
   void setUp() {
-    scheduler =
-        new KernelScheduler<>(new ExecutorWorkerPool(Executors.newFixedThreadPool(1)));
+    scheduler = new KernelScheduler<>(new ExecutorWorkerPool(Executors.newFixedThreadPool(1)));
   }
 
   @Test

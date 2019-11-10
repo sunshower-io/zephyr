@@ -1,7 +1,5 @@
 package io.sunshower.kernel.core;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 import io.sunshower.kernel.concurrency.ExecutorWorkerPool;
 import io.sunshower.kernel.concurrency.KernelScheduler;
 import io.sunshower.kernel.dependencies.DefaultDependencyGraph;
@@ -48,8 +46,6 @@ class DefaultModuleManagerTest {
   void tearDown() {
     kernel.stop();
   }
-
-
 
   @Test
   void ensureDownloadingAndInstallingModuleWorksCorrectly()

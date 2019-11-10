@@ -7,6 +7,7 @@ import io.sunshower.kernel.concurrency.TaskException;
 import io.sunshower.kernel.concurrency.TaskStatus;
 import io.sunshower.kernel.core.Kernel;
 
+@SuppressWarnings("PMD.UseProperClassLoader")
 public class UnloadKernelClassloaderPhase extends Task {
 
   public UnloadKernelClassloaderPhase(String name) {

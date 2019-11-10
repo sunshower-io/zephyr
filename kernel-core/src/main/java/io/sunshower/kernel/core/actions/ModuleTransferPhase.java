@@ -44,6 +44,7 @@ public class ModuleTransferPhase extends Task {
     super(name);
   }
 
+  @Override
   @SuppressWarnings("PMD.PreserveStackTrace")
   public TaskValue run(Scope scope) {
     val fs = createFilesystem(scope);
