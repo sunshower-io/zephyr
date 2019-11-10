@@ -83,6 +83,15 @@ class DefaultModuleManagerTest {
     val prepped = manager.prepare(grp);
     scheduler.submit(prepped.getProcess()).get();
 
+    try {
+      Class.forName(
+              "io.sunshower.kernel.ext.scanner.YamlPluginDescriptorScanner",
+              true,
+              kernel.getClassLoader());
+      fail("should not have been able to create a class");
+    } catch (Exception ex) {
+
+    }
     kernel.stop();
     kernel.start();
     val cl =
