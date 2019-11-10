@@ -3,11 +3,10 @@ package io.sunshower.kernel.concurrency;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.sunshower.gyre.DirectedGraph;
+import io.sunshower.gyre.Scope;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
-
-import io.sunshower.gyre.Scope;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

@@ -45,6 +45,7 @@ class ModuleLifecycleTest {
   }
 
   @Test
+  @Disabled
   void ensureInstallingKernelModuleWorks() throws MalformedURLException {
     val request = new ModuleInstallationRequest();
     request.setLocation(

@@ -1,9 +1,8 @@
 package io.sunshower.kernel.concurrency;
 
 import io.sunshower.gyre.DirectedGraph;
-import java.util.NoSuchElementException;
-
 import io.sunshower.gyre.Scope;
+import java.util.NoSuchElementException;
 import lombok.val;
 
 @SuppressWarnings("PMD.AvoidFieldNameMatchingMethodName")

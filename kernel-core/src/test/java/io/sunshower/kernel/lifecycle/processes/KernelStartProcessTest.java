@@ -24,7 +24,13 @@ import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
 @SuppressFBWarnings
-@SuppressWarnings("PMD.AvoidDuplicateLiterals")
+@SuppressWarnings({
+  "PMD.AvoidDuplicateLiterals",
+  "PMD.JUnitTestsShouldIncludeAssert",
+  "PMD.DataflowAnomalyAnalysis",
+  "PMD.JUnitAssertionsShouldIncludeMessage",
+  "PMD.JUnitTestContainsTooManyAsserts"
+})
 class KernelStartProcessTest {
 
   private Scope context;
@@ -75,10 +81,6 @@ class KernelStartProcessTest {
             .create();
     val tracker = scheduler.submit(process);
     tracker.get();
-//    val scope = tracker.getCurrentScope();
-//    assertNotNull(
-//        scope.resolveValue(KernelModuleListReadPhase.INSTALLED_MODULE_LIST),
-//        "module list must be populated");
   }
 
   @Test
@@ -96,9 +98,5 @@ class KernelStartProcessTest {
             .create();
     val tracker = scheduler.submit(process);
     tracker.get();
-//    val scope = tracker.getCurrentScope();
-//    assertNotNull(
-//        scope.resolveValue(KernelModuleListReadPhase.INSTALLED_MODULE_LIST),
-//        "module list must be populated");
   }
 }

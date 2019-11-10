@@ -7,5 +7,4 @@ class DefaultTaskEventDispatcher<K> extends CompletableFuture<Process<K>>
 
   @Override
   public void dispatch(TaskEventType type, TaskPhaseEvent taskPhaseEvent) {}
-
 }

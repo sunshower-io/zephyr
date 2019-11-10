@@ -1,14 +1,13 @@
 package io.sunshower.kernel.concurrency;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import io.sunshower.gyre.Scope;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SuppressWarnings({
   "PMD.DataflowAnomalyAnalysis",

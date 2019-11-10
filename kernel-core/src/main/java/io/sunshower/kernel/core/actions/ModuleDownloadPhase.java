@@ -79,7 +79,9 @@ public class ModuleDownloadPhase extends Task implements ChannelTransferListener
     val targetDirectory = moduleDirectory.toFile();
     if (!targetDirectory.exists()) {
       log.log(Level.INFO, "module.download.targetdir.creating", targetDirectory);
-      targetDirectory.mkdirs();
+      if (!targetDirectory.exists() || targetDirectory.mkdirs()) {
+        throw new TaskException(TaskStatus.UNRECOVERABLE);
+      }
     }
     return targetDirectory;
   }

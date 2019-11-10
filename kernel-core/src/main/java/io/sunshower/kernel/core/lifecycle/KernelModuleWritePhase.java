@@ -6,9 +6,8 @@ import io.sunshower.kernel.concurrency.TaskException;
 import io.sunshower.kernel.concurrency.TaskStatus;
 import io.sunshower.kernel.core.Kernel;
 import io.sunshower.kernel.module.KernelModuleEntry;
-import lombok.val;
-
 import java.util.List;
+import lombok.val;
 
 public class KernelModuleWritePhase extends Task {
   public KernelModuleWritePhase(String name) {

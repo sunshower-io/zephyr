@@ -78,7 +78,7 @@ public class SunshowerKernelTest {
   }
 
   @Test
-  @RepeatedTest(1000)
+  @RepeatedTest(10)
   void ensureKernelLoadingIsIdempotent() throws InterruptedException {
     kernel.start();
     kernel.stop();
