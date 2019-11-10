@@ -9,8 +9,10 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.ToString;
 
 @Getter
+@ToString
 @AllArgsConstructor
 public class ModuleDescriptor {
 

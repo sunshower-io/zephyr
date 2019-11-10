@@ -4,6 +4,8 @@ import static java.lang.String.format;
 
 import io.sunshower.gyre.Pair;
 import io.sunshower.gyre.Scope;
+import io.sunshower.kernel.Lifecycle;
+import io.sunshower.kernel.Module;
 import io.sunshower.kernel.concurrency.*;
 import io.sunshower.kernel.core.actions.*;
 import io.sunshower.kernel.core.lifecycle.KernelModuleListReadPhase;
@@ -12,6 +14,9 @@ import io.sunshower.kernel.log.Logging;
 import io.sunshower.kernel.module.ModuleInstallationGroup;
 import io.sunshower.kernel.module.ModuleInstallationStatusGroup;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.inject.Inject;
@@ -41,6 +46,13 @@ public class DefaultModuleManager implements ModuleManager {
     val context = Scope.root();
     context.set("SunshowerKernel", kernel);
     context.set(ModuleDownloadPhase.TARGET_DIRECTORY, kernel.getFileSystem().getPath("downloads"));
+
+    context.set(
+        ModuleInstallationCompletionPhase.INSTALLED_PLUGINS, new HashSet<java.lang.Module>());
+    context.set(
+        ModuleInstallationCompletionPhase.INSTALLED_KERNEL_MODULES,
+        new HashSet<java.lang.Module>());
+
     val procBuilder = Tasks.newProcess("module:install").withContext(context);
     val taskBuilder =
         procBuilder
@@ -58,6 +70,23 @@ public class DefaultModuleManager implements ModuleManager {
     return dependencyGraph;
   }
 
+  @Override
+  public ModuleClasspathManager getModuleLoader() {
+    check();
+    return kernel.getModuleClasspathManager();
+  }
+
+  @Override
+  public List<Module> getModules(Lifecycle.State resolved) {
+    val results = new ArrayList<Module>();
+    for (val module : dependencyGraph) {
+      if (module.getLifecycle().getState() == resolved) {
+        results.add(module);
+      }
+    }
+    return results;
+  }
+
   private void addIntermediates(
       TaskBuilder taskBuilder,
       ModuleInstallationGroup group,
@@ -68,6 +97,12 @@ public class DefaultModuleManager implements ModuleManager {
     val writeModuleList = "module:kernel:write:list";
     val writeTask = new WriteKernelModuleListPhase(writeModuleList);
     taskBuilder.register(writeTask);
+
+    val writePluginDescriptorName = "module:kernel:install:plugins";
+    val writePluginDescriptorPhase = new WritePluginDescriptorPhase(writePluginDescriptorName);
+    taskBuilder.register(writePluginDescriptorPhase);
+    taskBuilder.task(writePluginDescriptorName).dependsOn(writeModuleList);
+
     val requests = group.getModules();
 
     for (val request : requests) {

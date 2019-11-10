@@ -2,8 +2,10 @@ package io.sunshower.kernel.core;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import io.sunshower.kernel.Lifecycle;
 import io.sunshower.kernel.concurrency.ExecutorWorkerPool;
 import io.sunshower.kernel.concurrency.KernelScheduler;
+import io.sunshower.kernel.concurrency.Scheduler;
 import io.sunshower.kernel.dependencies.DefaultDependencyGraph;
 import io.sunshower.kernel.launch.KernelOptions;
 import io.sunshower.kernel.module.ModuleInstallationGroup;
@@ -17,6 +19,7 @@ import java.util.concurrent.Executors;
 import lombok.val;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
 @SuppressWarnings({
@@ -29,13 +32,14 @@ class DefaultModuleManagerTest {
 
   Kernel kernel;
   ModuleManager manager;
-  KernelScheduler<String> scheduler;
+  Scheduler<String> scheduler;
   private SunshowerKernelConfiguration cfg;
 
   @BeforeEach
   void setUp() {
-    manager = new DefaultModuleManager(new DefaultDependencyGraph());
-    scheduler = new KernelScheduler<>(new ExecutorWorkerPool(Executors.newFixedThreadPool(2)));
+    //    manager = new DefaultModuleManager(new DefaultDependencyGraph());
+    //    scheduler = new KernelScheduler<>(new
+    // ExecutorWorkerPool(Executors.newFixedThreadPool(2)));
 
     val options = new KernelOptions();
     val tempfile = configureFiles();
@@ -49,7 +53,9 @@ class DefaultModuleManagerTest {
                 new SunshowerKernelInjectionModule(options, ClassLoader.getSystemClassLoader()))
             .build();
     kernel = cfg.kernel();
+    manager = kernel.getModuleManager();
     manager.initialize(kernel);
+    scheduler = kernel.getScheduler();
     kernel.start();
   }
 
@@ -125,6 +131,9 @@ class DefaultModuleManagerTest {
 
     val prepped = manager.prepare(grp);
     scheduler.submit(prepped.getProcess()).get();
+
+    val resolved = manager.getModules(Lifecycle.State.Resolved);
+    assertEquals(resolved.size(), 2);
   }
 
   private File configureFiles() {

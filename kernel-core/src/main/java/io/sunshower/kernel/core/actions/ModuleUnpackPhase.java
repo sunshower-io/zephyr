@@ -53,6 +53,7 @@ public class ModuleUnpackPhase extends Task {
     val libraryFiles = new HashSet<Library>();
     FileSystem moduleFileSystem = context.get(ModuleTransferPhase.MODULE_FILE_SYSTEM);
 
+
     try {
       log.log(Level.INFO, "module.unpack.begin", assemblyFile);
       doExtract(libDirectories, assemblyFile, moduleFileSystem, libraryFiles, assembly);

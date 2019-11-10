@@ -19,12 +19,17 @@ public interface DependencyGraph extends Iterable<Module> {
 
   @Getter
   @AllArgsConstructor
-  class UnsatisfiedDependencySet {
+  final class UnsatisfiedDependencySet {
     final Coordinate source;
     final Set<Coordinate> dependencies;
 
     public boolean isSatisfied() {
       return dependencies.isEmpty();
+    }
+
+    @Override
+    public String toString() {
+      return source.toCanonicalForm() + " depends on " + dependencies;
     }
   }
 

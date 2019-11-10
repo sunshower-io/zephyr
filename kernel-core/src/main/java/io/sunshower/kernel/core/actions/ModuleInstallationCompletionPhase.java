@@ -27,7 +27,7 @@ public class ModuleInstallationCompletionPhase extends Task {
   }
 
   @Override
-  public TaskValue run(Scope context) {
+  public synchronized TaskValue run(Scope context) {
     URL url = context.get(ModuleDownloadPhase.DOWNLOAD_URL);
     Source source = new ModuleSource(getSource(url));
     ModuleDescriptor descriptor = context.get(ModuleScanPhase.MODULE_DESCRIPTOR);
@@ -52,9 +52,9 @@ public class ModuleInstallationCompletionPhase extends Task {
     module.setLifecycle(lifecycle);
 
     if (descriptor.getType() == Module.Type.Plugin) {
-      context.computeIfAbsent(INSTALLED_PLUGINS, new HashSet<>()).add(module);
+      context.<Set<Module>>get(INSTALLED_PLUGINS).add(module);
     } else {
-      context.computeIfAbsent(INSTALLED_KERNEL_MODULES, new HashSet<>()).add(module);
+      context.<Set<Module>>get(INSTALLED_KERNEL_MODULES).add(module);
     }
     return null;
   }

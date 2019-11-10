@@ -29,6 +29,7 @@ final class RootScope implements Scope {
     return (T) values.get(name);
   }
 
+
   @Override
   @SuppressWarnings("unchecked")
   public <T> T computeIfAbsent(String name, T value) {

@@ -91,6 +91,7 @@ public class TopologyAwareParallelScheduler<K> {
         }
         return null;
       } catch (Exception ex) {
+        ex.printStackTrace();
         if (log.isLoggable(Level.INFO)) {
           log.log(Level.INFO, "Error processing task " + task.getValue().getName(), ex);
         }

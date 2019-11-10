@@ -4,6 +4,7 @@ import static org.mockito.Mockito.*;
 
 import io.sunshower.gyre.Scope;
 import io.sunshower.kernel.concurrency.*;
+import io.sunshower.kernel.core.ModuleClasspathManager;
 import io.sunshower.kernel.core.ModuleManager;
 import io.sunshower.kernel.core.SunshowerKernel;
 import io.sunshower.kernel.core.lifecycle.KernelClassLoaderCreationPhase;
@@ -46,7 +47,10 @@ class KernelStartProcessTest {
 
     context = Scope.root();
     scheduler = new KernelScheduler<>(new ExecutorWorkerPool(Executors.newFixedThreadPool(2)));
-    kernel = spy(new SunshowerKernel(mock(ModuleManager.class), scheduler));
+    kernel =
+        spy(
+            new SunshowerKernel(
+                mock(ModuleClasspathManager.class), mock(ModuleManager.class), scheduler));
     context.set("SunshowerKernel", kernel);
   }
 

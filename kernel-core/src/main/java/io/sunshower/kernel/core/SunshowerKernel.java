@@ -17,8 +17,11 @@ import lombok.val;
 @SuppressWarnings({"PMD.AvoidUsingVolatile", "PMD.DoNotUseThreads"})
 public class SunshowerKernel implements Kernel {
 
+  private final Scheduler<String> scheduler;
   /** class fields */
   @Setter private static KernelOptions kernelOptions;
+
+  private final ModuleClasspathManager moduleClasspathManager;
 
   /** Instance fields */
   private volatile ClassLoader classLoader;
@@ -30,8 +33,13 @@ public class SunshowerKernel implements Kernel {
   private final KernelLifecycle lifecycle;
 
   @Inject
-  public SunshowerKernel(ModuleManager moduleManager, Scheduler<String> scheduler) {
+  public SunshowerKernel(
+      ModuleClasspathManager moduleClasspathManager,
+      ModuleManager moduleManager,
+      Scheduler<String> scheduler) {
+    this.scheduler = scheduler;
     this.moduleManager = moduleManager;
+    this.moduleClasspathManager = moduleClasspathManager;
     this.lifecycle = new DefaultKernelLifecycle(this, scheduler);
   }
 
@@ -76,6 +84,16 @@ public class SunshowerKernel implements Kernel {
   @SneakyThrows
   public void stop() {
     lifecycle.stop().get();
+  }
+
+  @Override
+  public ModuleClasspathManager getModuleClasspathManager() {
+    return moduleClasspathManager;
+  }
+
+  @Override
+  public Scheduler<String> getScheduler() {
+    return scheduler;
   }
 
   @SuppressWarnings("PMD.UnusedPrivateMethod")

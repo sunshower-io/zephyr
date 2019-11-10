@@ -61,17 +61,14 @@ public class SunshowerKernelInjectionModule {
   @Provides
   @Singleton
   public Kernel sunshowerKernel(SunshowerKernel kernel, ModuleManager moduleManager) {
-
     moduleManager.initialize(kernel);
     return kernel;
   }
 
   @Provides
   @Singleton
-  public ModuleManager pluginManager(
-      ModuleClasspathManager classpathManager, DependencyGraph dependencyGraph) {
+  public ModuleManager pluginManager(DependencyGraph dependencyGraph) {
     return new DefaultModuleManager(dependencyGraph);
-    //    return new DefaultModuleManager(context, classpathManager, dependencyGraph);
   }
 
   @Provides

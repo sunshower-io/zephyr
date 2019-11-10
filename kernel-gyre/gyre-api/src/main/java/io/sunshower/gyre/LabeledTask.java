@@ -66,10 +66,13 @@ final class LabeledTask<E, V> implements Task<E, V> {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public <E> E computeIfAbsent(String scannedPlugins, E o) {
-      synchronized (values) {
-        return (E) values.computeIfAbsent(scannedPlugins, e -> o);
+    public synchronized <E> E computeIfAbsent(String name, E o) {
+      val c = get(name);
+      if (c == null) {
+        values.put(name, o);
+        return o;
+      } else {
+        return (E) c;
       }
     }
   }

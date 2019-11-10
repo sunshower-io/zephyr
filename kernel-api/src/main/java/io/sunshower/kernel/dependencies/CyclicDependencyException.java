@@ -2,6 +2,7 @@ package io.sunshower.kernel.dependencies;
 
 import io.sunshower.gyre.Component;
 import io.sunshower.gyre.DirectedGraph;
+import io.sunshower.kernel.Coordinate;
 import io.sunshower.kernel.Module;
 import io.sunshower.kernel.PluginException;
 import lombok.Getter;
@@ -11,7 +12,7 @@ import java.util.Set;
 
 public class CyclicDependencyException extends PluginException {
 
-  @Getter private final Set<Component<DirectedGraph.Edge<String>, Module>> components;
+  @Getter private final Set<Component<DirectedGraph.Edge<Coordinate>, Coordinate>> components;
 
   public CyclicDependencyException() {
     components = new HashSet<>();
@@ -38,7 +39,7 @@ public class CyclicDependencyException extends PluginException {
     components = new HashSet<>();
   }
 
-  public void addComponent(Component<DirectedGraph.Edge<String>, Module> component) {
+  public void addComponent(Component<DirectedGraph.Edge<Coordinate>, Coordinate> component) {
     components.add(component);
   }
 }
