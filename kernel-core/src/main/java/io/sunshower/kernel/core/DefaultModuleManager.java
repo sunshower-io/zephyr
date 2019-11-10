@@ -8,6 +8,7 @@ import io.sunshower.kernel.concurrency.*;
 import io.sunshower.kernel.core.actions.ModuleDownloadPhase;
 import io.sunshower.kernel.core.actions.ModuleScanPhase;
 import io.sunshower.kernel.core.actions.ModuleTransferPhase;
+import io.sunshower.kernel.core.actions.ModuleUnpackPhase;
 import io.sunshower.kernel.core.lifecycle.KernelModuleListReadPhase;
 import io.sunshower.kernel.dependencies.DependencyGraph;
 import io.sunshower.kernel.log.Logging;
@@ -88,6 +89,15 @@ public class DefaultModuleManager implements ModuleManager {
       val transferTask = new ModuleTransferPhase(transferModuleName);
       taskBuilder.register(transferTask);
       taskBuilder.task(transferModuleName).dependsOn(moduleName);
+
+      /**
+       * unpack modules
+       */
+
+      val unpackModuleName = format("module:unpack:%s", location);
+      val unpackTask = new ModuleUnpackPhase(unpackModuleName);
+      taskBuilder.register(unpackTask);
+      taskBuilder.task(unpackModuleName).dependsOn(transferModuleName);
     }
     status.setProcess(taskBuilder.create());
   }
