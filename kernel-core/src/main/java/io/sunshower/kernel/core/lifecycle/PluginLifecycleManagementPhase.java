@@ -1,6 +1,6 @@
 package io.sunshower.kernel.core.lifecycle;
 
-import io.sunshower.kernel.concurrency.Context;
+import io.sunshower.gyre.Scope;
 import io.sunshower.kernel.concurrency.Task;
 
 public class PluginLifecycleManagementPhase extends Task {
@@ -9,7 +9,7 @@ public class PluginLifecycleManagementPhase extends Task {
   }
 
   @Override
-  public TaskValue run(Context context, io.sunshower.gyre.Task.TaskScope scope) {
+  public TaskValue run(Scope scope) {
     return null;
   }
 }

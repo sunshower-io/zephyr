@@ -1,7 +1,7 @@
 package io.sunshower.kernel.core.lifecycle;
 
+import io.sunshower.gyre.Scope;
 import io.sunshower.kernel.classloading.KernelClassloader;
-import io.sunshower.kernel.concurrency.Context;
 import io.sunshower.kernel.concurrency.Task;
 import io.sunshower.kernel.concurrency.TaskException;
 import io.sunshower.kernel.concurrency.TaskStatus;
@@ -26,11 +26,9 @@ public class KernelClassLoaderCreationPhase extends Task {
   }
 
   @Override
-  public TaskValue run(Context context, io.sunshower.gyre.Task.TaskScope scope) {
-    //    List<KernelModuleEntry> entries =
-    // context.get(KernelModuleListReadPhase.INSTALLED_MODULE_LIST);
-    List<KernelModuleEntry> entries = context.pop();
-    val kernel = context.get(SunshowerKernel.class);
+  public TaskValue run(Scope scope) {
+    List<KernelModuleEntry> entries = scope.get(KernelModuleListReadPhase.INSTALLED_MODULE_LIST);
+    val kernel = scope.<SunshowerKernel>get("SunshowerKernel");
 
     try {
       URL[] url = readUrls(entries);

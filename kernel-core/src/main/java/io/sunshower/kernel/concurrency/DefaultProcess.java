@@ -12,11 +12,11 @@ public class DefaultProcess<T> implements Process<T> {
   final String name;
   final boolean coalesce;
   final boolean parallel;
-  final Context context;
+  final Scope context;
   final TaskGraph<T> graph;
 
   public DefaultProcess(
-      String name, boolean coalesce, boolean parallel, Context context, TaskGraph<T> graph) {
+      String name, boolean coalesce, boolean parallel, Scope context, TaskGraph<T> graph) {
     this.name = name;
     this.coalesce = coalesce;
     this.parallel = parallel;
@@ -40,7 +40,7 @@ public class DefaultProcess<T> implements Process<T> {
   }
 
   @Override
-  public Context getContext() {
+  public Scope getContext() {
     return context;
   }
 

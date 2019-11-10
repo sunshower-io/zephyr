@@ -1,6 +1,7 @@
 package io.sunshower.kernel.concurrency;
 
 import io.sunshower.gyre.Pair;
+import io.sunshower.gyre.Scope;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.AllArgsConstructor;
@@ -24,7 +25,7 @@ public abstract class Task {
     return parameters;
   }
 
-  public abstract TaskValue run(Context context, io.sunshower.gyre.Task.TaskScope scope);
+  public abstract TaskValue run(Scope scope);
 
   @AllArgsConstructor
   public static final class TaskValue {

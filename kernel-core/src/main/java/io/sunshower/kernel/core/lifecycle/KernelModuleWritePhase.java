@@ -1,6 +1,6 @@
 package io.sunshower.kernel.core.lifecycle;
 
-import io.sunshower.kernel.concurrency.Context;
+import io.sunshower.gyre.Scope;
 import io.sunshower.kernel.concurrency.Task;
 import io.sunshower.kernel.concurrency.TaskException;
 import io.sunshower.kernel.concurrency.TaskStatus;
@@ -16,13 +16,13 @@ public class KernelModuleWritePhase extends Task {
   }
 
   @Override
-  public TaskValue run(Context context, io.sunshower.gyre.Task.TaskScope scope) {
-    val fs = context.get(Kernel.class).getFileSystem();
+  public TaskValue run(Scope scope) {
+    val fs = scope.<Kernel>get("SunshowerKernel").getFileSystem();
     if (fs == null) {
       throw new TaskException(TaskStatus.UNRECOVERABLE);
     }
 
-    List<KernelModuleEntry> entries = context.get(KernelModuleListReadPhase.INSTALLED_MODULE_LIST);
+    List<KernelModuleEntry> entries = scope.get(KernelModuleListReadPhase.INSTALLED_MODULE_LIST);
     if (entries == null) {
       throw new TaskException(TaskStatus.UNRECOVERABLE);
     }

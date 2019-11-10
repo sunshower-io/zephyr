@@ -15,6 +15,6 @@ public final class KernelScheduler<K> implements Scheduler<K> {
 
   @Override
   public TaskTracker<K> submit(Process<K> process) {
-    return scheduler.submit(process, ReductionScope.newRoot(process.getContext()));
+    return scheduler.submit(process, process.getContext());
   }
 }

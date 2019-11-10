@@ -1,6 +1,6 @@
 package io.sunshower.kernel.core.actions;
 
-import io.sunshower.kernel.concurrency.Context;
+import io.sunshower.gyre.Scope;
 import io.sunshower.kernel.concurrency.Task;
 import io.sunshower.kernel.concurrency.TaskException;
 import io.sunshower.kernel.concurrency.TaskStatus;
@@ -45,24 +45,24 @@ public class ModuleTransferPhase extends Task {
   }
 
   @SuppressWarnings("PMD.PreserveStackTrace")
-  public TaskValue run(Context context, io.sunshower.gyre.Task.TaskScope scope) {
-    val fs = createFilesystem(context);
-    context.set(MODULE_FILE_SYSTEM, fs);
+  public TaskValue run(Scope scope) {
+    val fs = createFilesystem(scope);
+    scope.set(MODULE_FILE_SYSTEM, fs);
 
     val assembly = fs.getPath("module.droplet").toFile();
-    File file = context.get(ModuleDownloadPhase.DOWNLOADED_FILE);
+    File file = scope.get(ModuleDownloadPhase.DOWNLOADED_FILE);
     val parent = assembly.getParentFile();
     if (!assembly.exists()) {
       if (!(parent.exists() || parent.mkdirs())) {
         log.log(Level.WARNING, "transfer.file.makedirectory", parent);
       }
     }
-    context.set(MODULE_DIRECTORY, parent);
+    scope.set(MODULE_DIRECTORY, parent);
 
     log.log(Level.INFO, "transfer.file.beginning", new Object[] {file, assembly});
     try {
       Files.copy(file.toPath(), assembly.toPath(), StandardCopyOption.REPLACE_EXISTING);
-      context.set(MODULE_ASSEMBLY_FILE, assembly);
+      scope.set(MODULE_ASSEMBLY_FILE, assembly);
       log.log(Level.INFO, "transfer.file.complete", new Object[] {file, assembly});
     } catch (IOException ex) {
       val message =
@@ -75,8 +75,8 @@ public class ModuleTransferPhase extends Task {
     return null;
   }
 
-  private FileSystem createFilesystem(Context context) {
-    ModuleDescriptor descriptor = context.get(ModuleScanPhase.MODULE_DESCRIPTOR);
+  private FileSystem createFilesystem(Scope scope) {
+    ModuleDescriptor descriptor = scope.get(ModuleScanPhase.MODULE_DESCRIPTOR);
     val coordinate = descriptor.getCoordinate();
     val uri =
         String.format(

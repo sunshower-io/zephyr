@@ -1,6 +1,6 @@
 package io.sunshower.kernel.core.lifecycle;
 
-import io.sunshower.kernel.concurrency.Context;
+import io.sunshower.gyre.Scope;
 import io.sunshower.kernel.concurrency.Task;
 import io.sunshower.kernel.concurrency.TaskException;
 import io.sunshower.kernel.concurrency.TaskStatus;
@@ -23,11 +23,11 @@ public class KernelFilesystemCreatePhase extends Task {
   }
 
   @Override
-  public TaskValue run(Context context, io.sunshower.gyre.Task.TaskScope scope) {
+  public TaskValue run(Scope context) {
     try {
       log.log(Level.INFO, "kernel.lifecycle.filesystem.init");
 
-      val kernel = context.get(SunshowerKernel.class);
+      val kernel = context.<SunshowerKernel>get("SunshowerKernel");
       val fs = FileSystems.newFileSystem(URI.create(FILE_SYSTEM_ROOT), Collections.emptyMap());
       kernel.setFileSystem(fs);
       log.log(Level.INFO, "kernel.lifecycle.filesystem.created", fs.getRootDirectories());

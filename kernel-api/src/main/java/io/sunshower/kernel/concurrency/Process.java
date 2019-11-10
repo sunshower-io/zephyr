@@ -3,6 +3,7 @@ package io.sunshower.kernel.concurrency;
 import io.sunshower.gyre.DirectedGraph;
 import io.sunshower.gyre.Graph;
 import io.sunshower.gyre.Schedule;
+import io.sunshower.gyre.Scope;
 
 public interface Process<E> extends Schedule<DirectedGraph.Edge<E>, Task> {
 
@@ -13,7 +14,7 @@ public interface Process<E> extends Schedule<DirectedGraph.Edge<E>, Task> {
   boolean isParallel();
 
   /** @return the context for this computation */
-  Context getContext();
+  Scope getContext();
 
   Graph<DirectedGraph.Edge<E>, Task> getExecutionGraph();
 }

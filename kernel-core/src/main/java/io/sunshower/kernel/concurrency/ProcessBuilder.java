@@ -1,5 +1,6 @@
 package io.sunshower.kernel.concurrency;
 
+import io.sunshower.gyre.Scope;
 import io.sunshower.kernel.misc.SuppressFBWarnings;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,7 +14,7 @@ public class ProcessBuilder {
   boolean parallel;
 
   boolean coalesce;
-  Context context;
+  Scope context;
 
   /** Immutable state */
   final String name;
@@ -37,7 +38,7 @@ public class ProcessBuilder {
     return this;
   }
 
-  public ProcessBuilder withContext(Context ctx) {
+  public ProcessBuilder withContext(Scope ctx) {
     this.context = ctx;
     return this;
   }

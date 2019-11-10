@@ -6,6 +6,8 @@ import io.sunshower.gyre.DirectedGraph;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
+
+import io.sunshower.gyre.Scope;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -16,15 +18,14 @@ import org.junit.jupiter.api.Test;
 })
 class TopologyAwareParallelSchedulerTest {
 
-  private Context context;
-  private ReductionScope scope;
+  private Scope scope;
   private TaskGraph<String> graph;
   private TopologyAwareParallelScheduler<String> scheduler;
 
   @BeforeEach
   void setUp() {
     graph = new TaskGraph<>();
-    scope = ReductionScope.newRoot(context = ReductionScope.newContext());
+    scope = Scope.root();
     scheduler =
         new TopologyAwareParallelScheduler<>(
             new ExecutorWorkerPool(Executors.newFixedThreadPool(1)));
@@ -37,15 +38,15 @@ class TopologyAwareParallelSchedulerTest {
     graph.connect(
         new Task("a") {
           @Override
-          public TaskValue run(Context context, io.sunshower.gyre.Task.TaskScope scope) {
-            assertEquals(context.get("test"), "hello world!", "message should be correct");
+          public TaskValue run(Scope scope) {
+            assertEquals(scope.get("test"), "hello world!", "message should be correct");
             return null;
           }
         },
         new Task("b") {
           @Override
-          public TaskValue run(Context context, io.sunshower.gyre.Task.TaskScope scope) {
-            context.set("test", "hello world!");
+          public TaskValue run(Scope scope) {
+            scope.set("test", "hello world!");
             return null;
           }
         },
@@ -66,7 +67,7 @@ class TopologyAwareParallelSchedulerTest {
     g.connect(
         new Task("a") {
           @Override
-          public Task.TaskValue run(Context c, io.sunshower.gyre.Task.TaskScope scope) {
+          public Task.TaskValue run(Scope scope) {
             results.add(name);
             return null;
           }
@@ -74,20 +75,20 @@ class TopologyAwareParallelSchedulerTest {
         new Task("b") {
 
           @Override
-          public Task.TaskValue run(Context c, io.sunshower.gyre.Task.TaskScope scope) {
+          public Task.TaskValue run(Scope scope) {
             results.add(name);
             return null;
           }
         },
         DirectedGraph.incoming("a dependsOn b"));
     var process = scheduleFrom(g);
-    var result = scheduler.submit(process, ReductionScope.newRoot(context));
+    var result = scheduler.submit(process, Scope.root());
     result.get();
     assertEquals(results.get(0), "b", "be must be first");
     assertEquals(results.get(1), "a", "must be second");
   }
 
   private Process<String> scheduleFrom(TaskGraph<String> graph) {
-    return new DefaultProcess<>("test", false, false, ReductionScope.newContext(), graph);
+    return new DefaultProcess<String>("test", false, false, Scope.root(), graph);
   }
 }

@@ -2,7 +2,7 @@ package io.sunshower.kernel.core.actions;
 
 import io.sunshower.common.io.Files;
 import io.sunshower.common.io.MonitorableChannels;
-import io.sunshower.kernel.concurrency.Context;
+import io.sunshower.gyre.Scope;
 import io.sunshower.kernel.concurrency.Task;
 import io.sunshower.kernel.concurrency.TaskException;
 import io.sunshower.kernel.concurrency.TaskStatus;
@@ -41,10 +41,10 @@ public class ModuleDownloadPhase extends Task implements ChannelTransferListener
   }
 
   @Override
-  public Task.TaskValue run(Context context, io.sunshower.gyre.Task.TaskScope scope) {
+  public Task.TaskValue run(Scope scope) {
     URL downloadUrl = (URL) parameters().get(DOWNLOAD_URL);
-    Path moduleDirectory = context.get(TARGET_DIRECTORY);
-    downloadModule(downloadUrl, moduleDirectory, context);
+    Path moduleDirectory = scope.get(TARGET_DIRECTORY);
+    downloadModule(downloadUrl, moduleDirectory, scope);
     return null;
   }
 
@@ -67,7 +67,7 @@ public class ModuleDownloadPhase extends Task implements ChannelTransferListener
     final double progress;
   }
 
-  private void downloadModule(URL downloadUrl, Path moduleDirectory, Context context) {
+  private void downloadModule(URL downloadUrl, Path moduleDirectory, Scope context) {
     val targetDirectory = getTargetDirectory(moduleDirectory, context);
     val targetFile = new File(targetDirectory, Files.getFileName(downloadUrl));
     this.targetFile.set(targetFile);
@@ -75,7 +75,7 @@ public class ModuleDownloadPhase extends Task implements ChannelTransferListener
     doTransfer(downloadUrl, targetFile, context);
   }
 
-  private File getTargetDirectory(Path moduleDirectory, Context context) {
+  private File getTargetDirectory(Path moduleDirectory, Scope context) {
     val targetDirectory = moduleDirectory.toFile();
     if (!targetDirectory.exists()) {
       log.log(Level.INFO, "module.download.targetdir.creating", targetDirectory);
@@ -85,7 +85,7 @@ public class ModuleDownloadPhase extends Task implements ChannelTransferListener
   }
 
   @SuppressWarnings("PMD.UnusedPrivateMethod")
-  private void doTransfer(URL downloadUrl, File targetFile, Context context) {
+  private void doTransfer(URL downloadUrl, File targetFile, Scope context) {
     try {
       val transfer = MonitorableChannels.transfer(downloadUrl, targetFile);
       transfer.addListener(this);

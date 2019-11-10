@@ -1,10 +1,10 @@
 package io.sunshower.kernel.core.lifecycle;
 
-import io.sunshower.kernel.concurrency.Context;
+import io.sunshower.gyre.Scope;
 import io.sunshower.kernel.concurrency.Task;
 import io.sunshower.kernel.concurrency.TaskException;
 import io.sunshower.kernel.concurrency.TaskStatus;
-import io.sunshower.kernel.core.Kernel;
+import io.sunshower.kernel.core.SunshowerKernel;
 import io.sunshower.kernel.module.KernelModuleEntry;
 import io.sunshower.kernel.module.ModuleListParser;
 import lombok.val;
@@ -18,15 +18,14 @@ public class KernelModuleListReadPhase extends Task {
   }
 
   @Override
-  public TaskValue run(Context context, io.sunshower.gyre.Task.TaskScope scope) {
-    val fs = context.get(Kernel.class).getFileSystem();
+  public TaskValue run(Scope scope) {
+    val fs = scope.<SunshowerKernel>get("SunshowerKernel").getFileSystem();
 
     if (fs == null) {
       throw new TaskException(TaskStatus.UNRECOVERABLE);
     }
     val entries = ModuleListParser.read(fs, KernelModuleEntry.MODULE_LIST);
-    context.push(entries);
-//    context.set(INSTALLED_MODULE_LIST, entries);
+    scope.set(INSTALLED_MODULE_LIST, entries);
     return null;
   }
 }

@@ -1,6 +1,6 @@
 package io.sunshower.kernel.core.actions;
 
-import io.sunshower.kernel.concurrency.Context;
+import io.sunshower.gyre.Scope;
 import io.sunshower.kernel.concurrency.Task;
 import io.sunshower.kernel.concurrency.TaskException;
 import io.sunshower.kernel.concurrency.TaskStatus;
@@ -37,8 +37,8 @@ public class ModuleScanPhase extends Task {
     super(name);
   }
 
-  private ModuleDescriptor scan(File downloaded, Context context) {
-    val scanners = context.get(Kernel.class).locateServices(ModuleScanner.class);
+  private ModuleDescriptor scan(File downloaded, Scope context) {
+    val scanners = context.<Kernel>get("SunshowerKernel").locateServices(ModuleScanner.class);
     URL url = (URL) parameters().get(ModuleDownloadPhase.DOWNLOAD_URL);
     if (scanners.isEmpty()) {
       // todo: add error message
@@ -54,7 +54,7 @@ public class ModuleScanPhase extends Task {
   }
 
   @Override
-  public TaskValue run(Context context, io.sunshower.gyre.Task.TaskScope scope) {
+  public TaskValue run(Scope context) {
     File downloaded = context.get(ModuleDownloadPhase.DOWNLOADED_FILE);
     context.set(ModuleScanPhase.MODULE_DESCRIPTOR, scan(downloaded, context));
     return null;

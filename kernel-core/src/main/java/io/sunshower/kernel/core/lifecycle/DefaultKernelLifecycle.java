@@ -1,5 +1,6 @@
 package io.sunshower.kernel.core.lifecycle;
 
+import io.sunshower.gyre.Scope;
 import io.sunshower.kernel.concurrency.*;
 import io.sunshower.kernel.concurrency.Process;
 import io.sunshower.kernel.core.Kernel;
@@ -45,7 +46,7 @@ public class DefaultKernelLifecycle implements KernelLifecycle {
   static final class LifecycleProcessHolder {
 
     static final Process<String> stopInstance(Kernel kernel) {
-      val scope = ReductionScope.newContext();
+      val scope = Scope.root();
       scope.set("SunshowerKernel", kernel);
       return Tasks.newProcess("kernel:stop")
           .withContext(scope)
@@ -57,7 +58,7 @@ public class DefaultKernelLifecycle implements KernelLifecycle {
     }
 
     static final Process<String> startInstance(Kernel kernel) {
-      val scope = ReductionScope.newContext();
+      val scope = Scope.root();
       scope.set("SunshowerKernel", kernel);
       return Tasks.newProcess("kernel:start:filesystem")
           .withContext(scope)

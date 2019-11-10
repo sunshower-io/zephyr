@@ -3,6 +3,7 @@ package io.sunshower.kernel.core;
 import static java.lang.String.format;
 
 import io.sunshower.gyre.Pair;
+import io.sunshower.gyre.Scope;
 import io.sunshower.kernel.concurrency.*;
 import io.sunshower.kernel.core.actions.ModuleDownloadPhase;
 import io.sunshower.kernel.core.actions.ModuleScanPhase;
@@ -39,7 +40,7 @@ public class DefaultModuleManager implements ModuleManager {
   @Override
   public ModuleInstallationStatusGroup prepare(ModuleInstallationGroup group) {
     check();
-    val context = ReductionScope.newContext();
+    val context = Scope.root();
     context.set("SunshowerKernel", kernel);
     context.set(ModuleDownloadPhase.TARGET_DIRECTORY, kernel.getFileSystem().getPath("downloads"));
     val procBuilder = Tasks.newProcess("module:install").withContext(context);
@@ -58,7 +59,7 @@ public class DefaultModuleManager implements ModuleManager {
       TaskBuilder taskBuilder,
       ModuleInstallationGroup group,
       ModuleInstallationStatusGroup status,
-      Context context) {
+      Scope context) {
 
     val requests = group.getModules();
 

@@ -2,6 +2,8 @@ package io.sunshower.kernel.concurrency;
 
 import io.sunshower.gyre.DirectedGraph;
 import java.util.NoSuchElementException;
+
+import io.sunshower.gyre.Scope;
 import lombok.val;
 
 @SuppressWarnings("PMD.AvoidFieldNameMatchingMethodName")
@@ -36,11 +38,11 @@ public class TaskBuilder {
         }
       }
     }
-    Context context;
+    Scope context;
     if (processBuilder.context != null) {
       context = processBuilder.context;
     } else {
-      context = ReductionScope.newContext();
+      context = Scope.root();
     }
     return new DefaultProcess<>(
         processBuilder.name, processBuilder.coalesce, processBuilder.parallel, context, graph);

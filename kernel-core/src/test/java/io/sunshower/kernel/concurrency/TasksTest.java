@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import io.sunshower.gyre.DirectedGraph;
 import io.sunshower.gyre.ParallelScheduler;
+import io.sunshower.gyre.Scope;
 import io.sunshower.kernel.core.lifecycle.KernelClassLoaderCreationPhase;
 import io.sunshower.kernel.core.lifecycle.KernelFilesystemCreatePhase;
 import io.sunshower.kernel.core.lifecycle.KernelModuleListReadPhase;
@@ -17,21 +18,19 @@ import org.junit.jupiter.api.Test;
 })
 class TasksTest {
 
-  ReductionScope scope;
-  Context context;
+  private Scope context;
   private ParallelScheduler<DirectedGraph.Edge<String>, Task> scheduler;
 
   @BeforeEach
   void setUp() {
-    context = ReductionScope.newContext();
-    scope = ReductionScope.newRoot(context);
+    context = Scope.root();
     scheduler = new ParallelScheduler<>();
   }
 
   @Test
   void ensureProcessBuilderWithSimpleTaskProducesCorrectGraph() {
     val task = new T("a");
-    val process = Tasks.newProcess("a").withContext(scope).register(task).create();
+    val process = Tasks.newProcess("a").withContext(context).register(task).create();
     val graph = scheduler.apply(process.getExecutionGraph());
     assertEquals(graph.size(), 1);
     val t = graph.get(0).getTasks().get(0);
@@ -67,7 +66,7 @@ class TasksTest {
     }
 
     @Override
-    public TaskValue run(Context context, io.sunshower.gyre.Task.TaskScope scope) {
+    public TaskValue run(Scope scope) {
       return null;
     }
   }

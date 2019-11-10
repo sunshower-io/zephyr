@@ -2,8 +2,7 @@ package io.sunshower.gyre;
 
 import java.util.*;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import lombok.AllArgsConstructor;
+
 import lombok.val;
 
 public class ParallelScheduler<E, V> implements Transformation<E, V, Schedule<E, V>> {
@@ -97,56 +96,4 @@ public class ParallelScheduler<E, V> implements Transformation<E, V, Schedule<E,
     }
   }
 
-  @AllArgsConstructor
-  static final class LabeledTask<E, V> implements Task<E, V> {
-    final V value;
-    final Set<E> edges;
-    final Set<Task<E, V>> predecessors;
-
-    @Override
-    public V getValue() {
-      return value;
-    }
-
-    @Override
-    public TaskScope getScope() {
-      return null;
-    }
-
-    @Override
-    public Set<Task<E, V>> getPredecessors() {
-      return predecessors;
-    }
-
-    @Override
-    public Set<E> getEdges() {
-      return edges;
-    }
-  }
-
-  static final class MutableTaskSet<E, V> implements TaskSet<E, V> {
-    final List<Task<E, V>> tasks;
-
-    MutableTaskSet(List<Task<E, V>> tasks) {
-      this.tasks = tasks;
-    }
-
-    MutableTaskSet(Task<E, V> task) {
-      this(Collections.singletonList(task));
-    }
-
-    MutableTaskSet() {
-      tasks = new ArrayList<>();
-    }
-
-    @Override
-    public List<Task<E, V>> getTasks() {
-      return tasks;
-    }
-
-    @Override
-    public int size() {
-      return tasks.size();
-    }
-  }
 }

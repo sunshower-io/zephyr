@@ -1,6 +1,6 @@
 package io.sunshower.kernel.core.lifecycle;
 
-import io.sunshower.kernel.concurrency.Context;
+import io.sunshower.gyre.Scope;
 import io.sunshower.kernel.concurrency.Task;
 import io.sunshower.kernel.concurrency.TaskException;
 import io.sunshower.kernel.concurrency.TaskStatus;
@@ -12,9 +12,9 @@ public class UnloadKernelFilesystemPhase extends Task {
   }
 
   @Override
-  public TaskValue run(Context context, io.sunshower.gyre.Task.TaskScope scope) {
+  public TaskValue run(Scope scope) {
     try {
-      context.get(Kernel.class).getFileSystem().close();
+      scope.<Kernel>get("SunshowerKernel").getFileSystem().close();
     } catch (Exception ex) {
       throw new TaskException(ex, TaskStatus.UNRECOVERABLE);
     }
