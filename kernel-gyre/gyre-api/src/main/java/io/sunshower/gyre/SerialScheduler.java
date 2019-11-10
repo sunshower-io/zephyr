@@ -34,8 +34,7 @@ public class SerialScheduler<E, V> implements Transformation<E, V, Schedule<E, V
 
         val taskSet =
             new MutableTaskSet<E, V>(
-                new LabeledTask<>(
-                    el.snd, Collections.singleton(el.fst), Collections.emptySet()));
+                new LabeledTask<>(el.snd, Collections.singleton(el.fst), Collections.emptySet()));
         schedule.tasks.add(taskSet);
       }
     }

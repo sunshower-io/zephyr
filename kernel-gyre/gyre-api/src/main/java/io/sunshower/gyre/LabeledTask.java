@@ -1,15 +1,14 @@
 package io.sunshower.gyre;
 
-import lombok.val;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import lombok.val;
 
 final class LabeledTask<E, V> implements Task<E, V> {
-  final V               value;
-  final Set<E>          edges;
-  final Scope           scope;
+  final V value;
+  final Set<E> edges;
+  final Scope scope;
   final Set<Task<E, V>> predecessors;
 
   LabeledTask(V value, Set<E> edges, Set<Task<E, V>> predecessors) {

@@ -2,7 +2,6 @@ package io.sunshower.gyre;
 
 import java.util.*;
 import java.util.function.Predicate;
-
 import lombok.val;
 
 public class ParallelScheduler<E, V> implements Transformation<E, V, Schedule<E, V>> {
@@ -95,5 +94,4 @@ public class ParallelScheduler<E, V> implements Transformation<E, V, Schedule<E,
       return tasks.iterator();
     }
   }
-
 }

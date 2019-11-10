@@ -10,5 +10,4 @@ public interface Task<E, V> {
   Set<Task<E, V>> getPredecessors();
 
   Set<E> getEdges();
-
 }
