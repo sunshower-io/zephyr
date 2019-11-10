@@ -16,6 +16,12 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+@SuppressWarnings({
+  "PMD.JUnitTestsShouldIncludeAssert",
+  "PMD.DataflowAnomalyAnalysis",
+  "PMD.JUnitAssertionsShouldIncludeMessage",
+  "PMD.JUnitTestContainsTooManyAsserts"
+})
 class DefaultModuleManagerTest {
 
   Kernel kernel;
@@ -67,6 +73,6 @@ class DefaultModuleManagerTest {
     val grp = new ModuleInstallationGroup(req1, req2);
 
     val prepped = manager.prepare(grp);
-    val result = scheduler.submit(prepped.getProcess()).get();
+    scheduler.submit(prepped.getProcess()).get();
   }
 }

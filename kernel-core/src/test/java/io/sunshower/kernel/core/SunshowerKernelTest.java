@@ -17,7 +17,12 @@ import org.junit.jupiter.api.Test;
 
 @Log
 @SuppressFBWarnings
-@SuppressWarnings("PMD.JUnitTestContainsTooManyAsserts")
+@SuppressWarnings({
+  "PMD.JUnitTestsShouldIncludeAssert",
+  "PMD.DataflowAnomalyAnalysis",
+  "PMD.JUnitAssertionsShouldIncludeMessage",
+  "PMD.JUnitTestContainsTooManyAsserts"
+})
 public class SunshowerKernelTest {
 
   private Kernel kernel;

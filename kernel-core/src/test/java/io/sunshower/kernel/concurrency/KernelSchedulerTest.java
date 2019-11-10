@@ -10,7 +10,11 @@ import java.util.concurrent.Executors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SuppressWarnings({"PMD.DataFlowAnomalyAnalysis", "PMD.JUnitAssertionsShouldIncludeMessage"})
+@SuppressWarnings({
+  "PMD.DataflowAnomalyAnalysis",
+  "PMD.JUnitAssertionsShouldIncludeMessage",
+  "PMD.JUnitTestContainsTooManyAsserts"
+})
 class KernelSchedulerTest {
 
   private KernelScheduler<String> scheduler;
