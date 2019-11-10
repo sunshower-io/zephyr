@@ -20,7 +20,6 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import lombok.val;
 
 @SuppressWarnings("PMD.UnusedPrivateMethod")
@@ -46,7 +45,7 @@ public class ModuleUnpackPhase extends Task {
   @Override
   public TaskValue run(Scope context) {
     Set<String> libDirectories = context.get(LIBRARY_DIRECTORIES);
-    if(libDirectories == null) {
+    if (libDirectories == null) {
       libDirectories = Set.of("WEB-INF/lib/");
     }
     File assemblyFile = context.get(ModuleTransferPhase.MODULE_ASSEMBLY_FILE);

@@ -1,5 +1,7 @@
 package io.sunshower.kernel.core;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import io.sunshower.kernel.concurrency.ExecutorWorkerPool;
 import io.sunshower.kernel.concurrency.KernelScheduler;
 import io.sunshower.kernel.dependencies.DefaultDependencyGraph;
@@ -8,19 +10,14 @@ import io.sunshower.kernel.module.ModuleInstallationGroup;
 import io.sunshower.kernel.module.ModuleInstallationRequest;
 import io.sunshower.kernel.module.ModuleLifecycle;
 import io.sunshower.test.common.Tests;
-
-import java.lang.reflect.InvocationTargetException;
+import java.io.File;
 import java.net.MalformedURLException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import lombok.val;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.fail;
 
 @SuppressWarnings({
   "PMD.JUnitTestsShouldIncludeAssert",
@@ -41,7 +38,9 @@ class DefaultModuleManagerTest {
     scheduler = new KernelScheduler<>(new ExecutorWorkerPool(Executors.newFixedThreadPool(2)));
 
     val options = new KernelOptions();
-    options.setHomeDirectory(Tests.createTemp("sunshower-kernel-tests"));
+    val tempfile = configureFiles();
+    options.setHomeDirectory(tempfile);
+
     SunshowerKernel.setKernelOptions(options);
 
     cfg =
@@ -62,15 +61,17 @@ class DefaultModuleManagerTest {
   @Test
   void ensureSavingKernelModuleWorks() throws Exception {
 
-    try {
-      Class.forName(
-          "io.sunshower.kernel.ext.scanner.YamlPluginDescriptorScanner",
-          true,
-          kernel.getClassLoader());
-      fail("should not have been able to create a class");
-    } catch (Exception ex) {
+    assertThrows(
+        ClassNotFoundException.class,
+        () -> {
+          Class.forName(
+              "io.sunshower.kernel.ext.scanner.YamlPluginDescriptorScanner",
+              true,
+              kernel.getClassLoader());
+          fail("should not have been able to create a class");
+        },
+        "must not find class");
 
-    }
     val module =
         Tests.relativeToProjectBuild("kernel-modules:sunshower-yaml-reader", "war", "libs");
 
@@ -83,15 +84,16 @@ class DefaultModuleManagerTest {
     val prepped = manager.prepare(grp);
     scheduler.submit(prepped.getProcess()).get();
 
-    try {
-      Class.forName(
+    assertThrows(
+        ClassNotFoundException.class,
+        () -> {
+          Class.forName(
               "io.sunshower.kernel.ext.scanner.YamlPluginDescriptorScanner",
               true,
               kernel.getClassLoader());
-      fail("should not have been able to create a class");
-    } catch (Exception ex) {
+        },
+        "still must not be able to find class");
 
-    }
     kernel.stop();
     kernel.start();
     val cl =
@@ -123,5 +125,11 @@ class DefaultModuleManagerTest {
 
     val prepped = manager.prepare(grp);
     scheduler.submit(prepped.getProcess()).get();
+  }
+
+  private File configureFiles() {
+
+    val tempfile = Tests.createTemp();
+    return tempfile;
   }
 }

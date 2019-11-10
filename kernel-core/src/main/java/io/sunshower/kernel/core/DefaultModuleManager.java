@@ -59,15 +59,11 @@ public class DefaultModuleManager implements ModuleManager {
       ModuleInstallationStatusGroup status,
       Scope context) {
 
-    /**
-     * synchronization point
-     */
+    /** synchronization point */
     val writeModuleList = "module:kernel:write:list";
     val writeTask = new WriteKernelModuleListPhase(writeModuleList);
     taskBuilder.register(writeTask);
     val requests = group.getModules();
-
-
 
     for (val request : requests) {
 
@@ -95,28 +91,19 @@ public class DefaultModuleManager implements ModuleManager {
       taskBuilder.register(transferTask);
       taskBuilder.task(transferModuleName).dependsOn(moduleName);
 
-      /**
-       * unpack modules
-       */
-
+      /** unpack modules */
       val unpackModuleName = format("module:unpack:%s", location);
       val unpackTask = new ModuleUnpackPhase(unpackModuleName);
       taskBuilder.register(unpackTask);
       taskBuilder.task(unpackModuleName).dependsOn(transferModuleName);
 
-      /**
-       * create and install module
-       */
-
+      /** create and install module */
       val installModuleName = format("module:install:%s", location);
       val installTask = new ModuleInstallationCompletionPhase(installModuleName);
       taskBuilder.register(installTask);
       taskBuilder.task(installModuleName).dependsOn(unpackModuleName);
 
-      /**
-       * Write kernel list
-       */
-
+      /** Write kernel list */
       taskBuilder.task(writeModuleList).dependsOn(installModuleName);
     }
     status.setProcess(taskBuilder.create());

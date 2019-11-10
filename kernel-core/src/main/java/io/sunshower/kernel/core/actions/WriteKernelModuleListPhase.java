@@ -6,14 +6,10 @@ import io.sunshower.kernel.Module;
 import io.sunshower.kernel.concurrency.Task;
 import io.sunshower.kernel.core.Kernel;
 import io.sunshower.kernel.core.KernelException;
-import io.sunshower.kernel.core.ModuleDescriptor;
 import io.sunshower.kernel.log.Logging;
 import io.sunshower.kernel.misc.SuppressFBWarnings;
 import io.sunshower.kernel.module.KernelModuleEntry;
-import lombok.val;
-
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.file.Files;
@@ -25,6 +21,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import lombok.val;
 
 public class WriteKernelModuleListPhase extends Task {
 
@@ -51,6 +48,7 @@ public class WriteKernelModuleListPhase extends Task {
   }
 
   @SuppressFBWarnings
+  @SuppressWarnings({"PMD.AvoidInstantiatingObjectsInLoops", "PMD.UnusedPrivateMethod"})
   private void writeModule(Path file, Collection<Module> modules) {
     try (val outputStream =
         new BufferedWriter(
@@ -77,6 +75,7 @@ public class WriteKernelModuleListPhase extends Task {
     }
   }
 
+  @SuppressWarnings({"PMD.UnusedPrivateMethod"})
   private List<String> libraryFiles(Module module, Collection<Library> libraries) {
     List<String> result = new ArrayList<>(libraries.size());
     for (val library : libraries) {
@@ -85,13 +84,4 @@ public class WriteKernelModuleListPhase extends Task {
     result.add(module.getAssembly().getFile().getAbsolutePath());
     return result;
   }
-
-  //    List<Module> module = scope.get(ModuleInstallationCompletionPhase.INSTALLED_MODULE);
-  //    if (module.getType() == Module.Type.KernelModule) {
-  //      log.log(Level.INFO, "module.type.kernel.begin", module.getCoordinate());
-  //      //      val fileSystem = FileSystems.getFileSystem(URI.create("droplet://kernel"));
-  //      //      val path = fileSystem.getPath(KernelModuleEntry.MODULE_LIST);
-  //      //      //      context.getKernel().scheduleTask(new ModuleEntryWrite(path, module));
-  //    } else {
-  //      log.log(Level.INFO, "module.type.plugin", module.getCoordinate());
 }

@@ -6,9 +6,8 @@ import io.sunshower.kernel.Module;
 import io.sunshower.kernel.concurrency.Task;
 import io.sunshower.kernel.core.DefaultModule;
 import io.sunshower.kernel.core.ModuleDescriptor;
-import io.sunshower.kernel.module.ModuleLifecycle;
 import io.sunshower.kernel.core.ModuleSource;
-
+import io.sunshower.kernel.module.ModuleLifecycle;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
