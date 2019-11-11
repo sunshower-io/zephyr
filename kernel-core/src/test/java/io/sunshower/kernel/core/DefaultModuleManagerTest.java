@@ -3,18 +3,13 @@ package io.sunshower.kernel.core;
 import static org.junit.jupiter.api.Assertions.*;
 
 import io.sunshower.kernel.Lifecycle;
-import io.sunshower.kernel.concurrency.ExecutorWorkerPool;
-import io.sunshower.kernel.concurrency.KernelScheduler;
 import io.sunshower.kernel.concurrency.Scheduler;
-import io.sunshower.kernel.dependencies.DefaultDependencyGraph;
 import io.sunshower.kernel.launch.KernelOptions;
 import io.sunshower.kernel.module.ModuleInstallationGroup;
 import io.sunshower.kernel.module.ModuleInstallationRequest;
-import io.sunshower.kernel.module.ModuleInstallationStatusGroup;
 import io.sunshower.kernel.module.ModuleLifecycle;
 import io.sunshower.test.common.Tests;
 import java.io.File;
-import java.net.MalformedURLException;
 import java.util.concurrent.ExecutionException;
 import lombok.val;
 import org.junit.jupiter.api.AfterEach;
