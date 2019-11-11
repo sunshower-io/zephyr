@@ -139,6 +139,14 @@ class DefaultModuleManagerTest {
   }
 
   @Test
+  void ensureStartingAllPluginsWorks() throws ExecutionException, InterruptedException {
+
+    val grp = new ModuleInstallationGroup(req2, req1);
+    val prepped = manager.prepare(grp);
+    prepped.commit().toCompletableFuture().get();
+  }
+
+  @Test
   void ensureInstallingSingleModuleResultsInModuleClasspathBeingConfiguredCorrectly()
       throws Exception {
     val grp = new ModuleInstallationGroup(req1);

@@ -22,16 +22,17 @@ public class PluginStartTask extends Task {
   }
 
   @Override
-  public TaskValue run(Scope scope) {
-    System.out.println("Starting...");
+  public synchronized TaskValue run(Scope scope) {
     val module = manager.getModule(coordinate);
     val currentState = module.getLifecycle().getState();
     if (!currentState.isAtLeast(Lifecycle.State.Active)) {
       val loader = module.getModuleClasspath().resolveServiceLoader(PluginActivator.class);
       for (val activator : loader) {
         activator.start(kernel);
+        break;
       }
     }
+    module.getLifecycle().setState(Lifecycle.State.Active);
     return null;
   }
 }

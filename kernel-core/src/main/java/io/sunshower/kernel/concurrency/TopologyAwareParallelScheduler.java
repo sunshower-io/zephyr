@@ -51,7 +51,6 @@ public class TopologyAwareParallelScheduler<K> {
 
     @Override
     public void run() {
-      System.out.println("starting");
       for (val taskSet : process.getTasks()) {
 
         val latch = new NotifyingLatch<K>(this, taskSet.size());
@@ -63,7 +62,6 @@ public class TopologyAwareParallelScheduler<K> {
         } catch (InterruptedException e) {
         }
       }
-      System.out.println("complete");
       complete(null);
     }
   }
