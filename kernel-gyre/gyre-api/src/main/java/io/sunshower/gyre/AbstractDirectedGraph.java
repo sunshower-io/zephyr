@@ -62,6 +62,11 @@ public class AbstractDirectedGraph<E, V> implements DirectedGraph<E, V> {
   }
 
   @Override
+  public Graph<Edge<E>, V> createNew() {
+    return new AbstractDirectedGraph<>();
+  }
+
+  @Override
   public int edgeCount() {
     int count = 0;
     for (val neighborList : adjacencies.values()) {

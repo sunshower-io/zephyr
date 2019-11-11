@@ -4,23 +4,18 @@ import io.sunshower.kernel.concurrency.Process;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+
+import io.sunshower.kernel.concurrency.Scheduler;
+import io.sunshower.kernel.concurrency.TaskTracker;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.val;
 
-public class ModuleInstallationStatusGroup {
-  final List<ModuleInstallationStatus> statuses;
-  @Getter @Setter private Process<String> process;
+public interface ModuleInstallationStatusGroup {
 
-  public ModuleInstallationStatusGroup() {
-    this.process = process;
-    this.statuses = new ArrayList<>();
-  }
+  CompletionStage<String> commit();
 
-  public List<ModuleInstallationStatus> getInstallationStatuses() {
-    return Collections.unmodifiableList(statuses);
-  }
-
-  public void addStatus(ModuleInstallationStatus status) {
-    statuses.add(status);
-  }
+  Process<String> getProcess();
 }

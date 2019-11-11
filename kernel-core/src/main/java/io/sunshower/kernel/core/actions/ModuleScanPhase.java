@@ -15,6 +15,8 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
+
+import io.sunshower.kernel.module.ModuleInstallationRequest;
 import lombok.val;
 
 /**
@@ -51,7 +53,10 @@ public class ModuleScanPhase extends Task {
     val descriptor =
         scanners.stream().map(t -> t.scan(downloaded, url)).flatMap(Optional::stream).findAny();
     if (descriptor.isPresent()) {
-      return descriptor.get();
+      val request = (ModuleInstallationRequest) parameters().get(ModuleInstallationRequest.class);
+      val result = descriptor.get();
+      request.setCoordinate(result.getCoordinate());
+      return result;
     } else {
       throw new TaskException(TaskStatus.UNRECOVERABLE);
     }

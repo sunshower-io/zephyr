@@ -1,6 +1,7 @@
 package io.sunshower.kernel.dependencies;
 
 import io.sunshower.gyre.DirectedGraph;
+import io.sunshower.gyre.Graph;
 import io.sunshower.gyre.Partition;
 import io.sunshower.kernel.Coordinate;
 import io.sunshower.kernel.Module;
@@ -14,6 +15,8 @@ import lombok.Getter;
  * concurrent environments
  */
 public interface DependencyGraph extends Iterable<Module> {
+
+  Graph<DirectedGraph.Edge<Coordinate>, Coordinate> getGraph();
 
   Set<UnsatisfiedDependencySet> add(Module a);
 

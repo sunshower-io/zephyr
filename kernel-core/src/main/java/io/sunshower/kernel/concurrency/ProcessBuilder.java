@@ -61,4 +61,10 @@ public class ProcessBuilder {
     dependencies.computeIfAbsent(source.name, c -> new ArrayList<>()).add(target);
     return this;
   }
+
+  public TaskBuilder task() {
+    return new TaskBuilder(this);
+
+
+  }
 }

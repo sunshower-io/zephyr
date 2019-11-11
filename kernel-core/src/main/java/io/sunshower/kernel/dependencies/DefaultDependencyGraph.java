@@ -28,6 +28,11 @@ public final class DefaultDependencyGraph implements DependencyGraph {
   }
 
   @Override
+  public Graph<DirectedGraph.Edge<Coordinate>, Coordinate> getGraph() {
+    return dependencyGraph;
+  }
+
+  @Override
   public Set<UnsatisfiedDependencySet> add(Module a) {
     return addAll(Collections.singleton(a));
   }

@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.function.Predicate;
 
 public interface Graph<E, V> extends Cloneable {
+  Graph<E, V> createNew();
 
   int edgeCount();
 

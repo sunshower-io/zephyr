@@ -64,9 +64,8 @@ class DefaultModuleManagerTest {
     req1.setLocation(plugin1.toURI().toURL());
 
     req2 = new ModuleInstallationRequest();
-    req2.setLifecycleActions(ModuleLifecycle.Actions.Install);
+    req2.setLifecycleActions(ModuleLifecycle.Actions.Activate);
     req2.setLocation(plugin2.toURI().toURL());
-
   }
 
   @AfterEach
@@ -130,6 +129,13 @@ class DefaultModuleManagerTest {
 
     val resolved = manager.getModules(Lifecycle.State.Resolved);
     assertEquals(resolved.size(), 2);
+  }
+
+  @Test
+  void ensureStartingPlugin1Works() throws ExecutionException, InterruptedException {
+    val grp = new ModuleInstallationGroup(req1);
+    val prepped = manager.prepare(grp);
+    prepped.commit().toCompletableFuture().get();
   }
 
   @Test

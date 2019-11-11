@@ -21,6 +21,12 @@ public class TaskBuilder {
     processBuilder.doRegister(current);
   }
 
+  public TaskBuilder(ProcessBuilder processBuilder) {
+    this.processBuilder = processBuilder;
+    this.name = null;
+    this.task = null;
+  }
+
   public Process<String> create() {
     val graph = new TaskGraph<String>();
 

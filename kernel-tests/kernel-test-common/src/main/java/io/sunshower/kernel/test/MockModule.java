@@ -8,6 +8,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.ServiceLoader;
 import java.util.Set;
+
+import io.sunshower.kernel.core.ModuleClasspath;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
@@ -19,6 +21,11 @@ public class MockModule implements Module {
 
   public void addDependency(Dependency dependency) {
     dependencies.add(dependency);
+  }
+
+  @Override
+  public ModuleClasspath getModuleClasspath() {
+    return null;
   }
 
   @Override
