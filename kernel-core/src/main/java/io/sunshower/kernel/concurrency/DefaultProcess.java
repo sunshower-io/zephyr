@@ -8,7 +8,7 @@ import java.util.List;
 import lombok.val;
 
 /** @param <T> */
-@SuppressWarnings("PMD.AvoidFieldNameMatchingMethodName")
+@SuppressWarnings({"PMD.AvoidFieldNameMatchingMethodName", "PMD.AvoidUsingVolatile"})
 public class DefaultProcess<T> implements Process<T> {
   final String name;
   final boolean coalesce;
@@ -30,11 +30,6 @@ public class DefaultProcess<T> implements Process<T> {
   @Override
   public String toString() {
     return format("Process(name=%s, coalesce paths=%b, parallel=%b)", name, coalesce, parallel);
-  }
-
-  @Override
-  public <U> Process<U> compose(Process<U> u) {
-    return null;
   }
 
   @Override

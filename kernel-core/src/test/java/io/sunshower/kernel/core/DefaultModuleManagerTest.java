@@ -9,9 +9,6 @@ import io.sunshower.kernel.module.*;
 import io.sunshower.test.common.Tests;
 import java.io.File;
 import java.util.concurrent.ExecutionException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import lombok.SneakyThrows;
 import lombok.val;
 import org.junit.jupiter.api.AfterEach;
@@ -25,9 +22,6 @@ import org.junit.jupiter.api.Test;
   "PMD.JUnitTestContainsTooManyAsserts"
 })
 class DefaultModuleManagerTest {
-  static {
-    Logger.getLogger(DefaultModuleInstallationStatusGroup.class.getName()).setLevel(Level.FINEST);
-  }
 
   Kernel kernel;
   ModuleManager manager;
@@ -141,11 +135,13 @@ class DefaultModuleManagerTest {
     val grp = new ModuleInstallationGroup(req1);
     val prepped = manager.prepare(grp);
     prepped.commit().toCompletableFuture().get();
-    assertEquals(manager.getModules(Lifecycle.State.Resolved).size(), 1, "must be 2 active plugins");
+    assertEquals(
+        manager.getModules(Lifecycle.State.Resolved).size(), 1, "must be 2 active plugins");
   }
 
   @Test
-  void ensureIsntallingPluginsResultsInPluginsPlacedInResolvedState() throws ExecutionException, InterruptedException {
+  void ensureIsntallingPluginsResultsInPluginsPlacedInResolvedState()
+      throws ExecutionException, InterruptedException {
 
     val grp = new ModuleInstallationGroup(req2, req1);
     val prepped = manager.prepare(grp);
@@ -179,8 +175,7 @@ class DefaultModuleManagerTest {
     prepped.commit().toCompletableFuture().get();
     start("plugin-2");
     assertEquals(
-            manager.getModules(ModuleLifecycle.State.Active).size(), 2, "must be two started modules");
-
+        manager.getModules(ModuleLifecycle.State.Active).size(), 2, "must be two started modules");
   }
 
   @Test
@@ -202,7 +197,9 @@ class DefaultModuleManagerTest {
 
     start("plugin-1");
     val p2 =
-        manager.getModules(Lifecycle.State.Active).stream()
+        manager
+            .getModules(Lifecycle.State.Active)
+            .stream()
             .filter(t -> t.getCoordinate().getName().contains("plugin-1"))
             .findFirst()
             .get();
@@ -222,7 +219,9 @@ class DefaultModuleManagerTest {
     val prepped = manager.prepare(grp);
     prepped.commit().toCompletableFuture().get();
     val p2 =
-        manager.getModules(Lifecycle.State.Resolved).stream()
+        manager
+            .getModules(Lifecycle.State.Resolved)
+            .stream()
             .filter(t -> t.getCoordinate().getName().contains("plugin-2"))
             .findFirst()
             .get();
@@ -274,7 +273,9 @@ class DefaultModuleManagerTest {
     scheduler.submit(prepped.getProcess()).get();
 
     val module =
-        manager.getModules(Lifecycle.State.Resolved).stream()
+        manager
+            .getModules(Lifecycle.State.Resolved)
+            .stream()
             .filter(t -> t.getCoordinate().getName().equals("test-plugin-2"))
             .findAny()
             .get();
@@ -289,11 +290,6 @@ class DefaultModuleManagerTest {
   }
 
   @SneakyThrows
-  private void stop(String s) {
-    request(s, ModuleLifecycle.Actions.Stop);
-  }
-
-  @SneakyThrows
   private void start(String s) {
     request(s, ModuleLifecycle.Actions.Activate);
   }
@@ -302,7 +298,9 @@ class DefaultModuleManagerTest {
   private void request(String pluginName, ModuleLifecycle.Actions action) {
 
     val plugin =
-        manager.getModules().stream()
+        manager
+            .getModules()
+            .stream()
             .filter(t -> t.getCoordinate().getName().contains(pluginName))
             .findFirst()
             .get();

@@ -1,8 +1,7 @@
 package io.sunshower.kernel.module;
 
-import java.net.URL;
-
 import io.sunshower.kernel.Coordinate;
+import java.net.URL;
 import lombok.Setter;
 
 @Setter

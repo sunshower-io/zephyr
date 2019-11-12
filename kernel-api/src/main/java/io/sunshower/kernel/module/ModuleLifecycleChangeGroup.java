@@ -1,9 +1,8 @@
 package io.sunshower.kernel.module;
 
-import lombok.val;
-
 import java.util.ArrayList;
 import java.util.List;
+import lombok.val;
 
 public class ModuleLifecycleChangeGroup implements ModuleRequestGroup {
   private List<ModuleLifecycleChangeRequest> requests;

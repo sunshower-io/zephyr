@@ -1,9 +1,8 @@
 package io.sunshower.gyre;
 
-import lombok.val;
-
 import java.util.Stack;
 import java.util.function.Predicate;
+import lombok.val;
 
 public class SubgraphTransformation<E, V> implements Transformation<E, V, Graph<E, V>> {
 
@@ -27,7 +26,7 @@ public class SubgraphTransformation<E, V> implements Transformation<E, V, Graph<
     while (!stack.isEmpty()) {
       val current = stack.pop();
       val neighbors = graph.neighbors(current.snd, edgeFilter);
-      for(val neighbor : neighbors) {
+      for (val neighbor : neighbors) {
         newGraph.connect(current.snd, neighbor.snd, neighbor.fst);
         stack.push(neighbor);
       }

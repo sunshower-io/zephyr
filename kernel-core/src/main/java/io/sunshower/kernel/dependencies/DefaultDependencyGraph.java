@@ -12,7 +12,7 @@ import lombok.val;
   "PMD.AvoidInstantiatingObjectsInLoops",
   "PMD.UnusedPrivateMethod"
 })
-public final class DefaultDependencyGraph implements DependencyGraph {
+public final class DefaultDependencyGraph implements DependencyGraph, Cloneable {
 
   final Map<Coordinate, Module> modules;
   final Graph<DirectedGraph.Edge<Coordinate>, Coordinate> dependencyGraph;
@@ -165,7 +165,8 @@ public final class DefaultDependencyGraph implements DependencyGraph {
   }
 
   @Override
-  public DependencyGraph clone() {
+  @SuppressWarnings({"PMD.ProperCloneImplementation", "CloneMethodReturnTypeMustMatchClassName"})
+  public DefaultDependencyGraph clone() {
     return new DefaultDependencyGraph(this);
   }
 

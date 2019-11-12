@@ -10,16 +10,17 @@ import io.sunshower.kernel.concurrency.TaskBuilder;
 import io.sunshower.kernel.concurrency.Tasks;
 import io.sunshower.kernel.core.actions.plugin.PluginStartTask;
 import io.sunshower.kernel.core.actions.plugin.PluginStopTask;
-import io.sunshower.kernel.module.ModuleLifecycleChangeGroup;
-import io.sunshower.kernel.module.ModuleLifecycleChangeRequest;
-import io.sunshower.kernel.module.ModuleLifecycleStatusGroup;
-import io.sunshower.kernel.module.ModuleRequest;
-import lombok.val;
-
+import io.sunshower.kernel.module.*;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CompletionStage;
+import lombok.val;
 
+@SuppressWarnings({
+  "PMD.UnusedPrivateMethod",
+  "PMD.DataflowAnomalyAnalysis",
+  "PMD.AvoidInstantiatingObjectsInLoops"
+})
 final class DefaultModuleLifecycleStatusChangeGroup implements ModuleLifecycleStatusGroup {
 
   private final Kernel kernel;
@@ -48,23 +49,21 @@ final class DefaultModuleLifecycleStatusChangeGroup implements ModuleLifecycleSt
 
     for (val task : request.getRequests()) {
       val actions = task.getLifecycleActions();
-      switch (actions) {
-        case Stop:
-          {
-            addStopAction(task, tasks);
-            continue;
-          }
-        case Activate:
-          addStartAction(task, tasks);
+      if (actions == ModuleLifecycle.Actions.Stop) {
+        addStopAction(task, tasks);
+      } else if (actions == ModuleLifecycle.Actions.Activate) {
+        addStartAction(task, tasks);
       }
     }
     return tasks.create();
   }
 
+  @Override
   public CompletionStage<Process<String>> commit() {
     return kernel.getScheduler().submit(process);
   }
 
+  @Override
   public Process<String> getProcess() {
     return process;
   }

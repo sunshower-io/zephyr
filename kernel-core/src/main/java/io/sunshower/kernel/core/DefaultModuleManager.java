@@ -7,15 +7,13 @@ import io.sunshower.kernel.dependencies.DependencyGraph;
 import io.sunshower.kernel.log.Logging;
 import io.sunshower.kernel.module.ModuleInstallationGroup;
 import io.sunshower.kernel.module.ModuleInstallationStatusGroup;
-
+import io.sunshower.kernel.module.ModuleLifecycleChangeGroup;
+import io.sunshower.kernel.module.ModuleLifecycleStatusGroup;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.inject.Inject;
-
-import io.sunshower.kernel.module.ModuleLifecycleChangeGroup;
-import io.sunshower.kernel.module.ModuleLifecycleStatusGroup;
 import lombok.val;
 
 @SuppressWarnings({
@@ -44,7 +42,7 @@ public class DefaultModuleManager implements ModuleManager {
   @Override
   public ModuleInstallationStatusGroup prepare(ModuleInstallationGroup group) {
     check();
-    return new DefaultModuleInstallationStatusGroup(group, dependencyGraph, this, kernel);
+    return new DefaultModuleInstallationStatusGroup(group, kernel);
   }
 
   @Override

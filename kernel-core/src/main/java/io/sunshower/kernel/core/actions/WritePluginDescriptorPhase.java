@@ -10,13 +10,13 @@ import io.sunshower.kernel.dependencies.DependencyGraph;
 import io.sunshower.kernel.dependencies.UnresolvedDependencyException;
 import io.sunshower.kernel.log.Logging;
 import io.sunshower.kernel.memento.core.PluginCaretaker;
-import lombok.val;
-
 import java.nio.file.FileSystem;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import lombok.val;
 
+@SuppressWarnings({"PMD.UnusedPrivateMethod", "PMD.UnusedFormalParameter"})
 public class WritePluginDescriptorPhase extends Task {
   static final Logger log = Logging.get(WritePluginDescriptorPhase.class);
 

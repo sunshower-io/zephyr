@@ -2,7 +2,6 @@ package io.sunshower.kernel.core;
 
 import io.sunshower.gyre.Scope;
 import io.sunshower.kernel.concurrency.Task;
-
 import java.util.UUID;
 
 public class JoinPoint extends Task {

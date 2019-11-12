@@ -1,11 +1,9 @@
 package io.sunshower.kernel.dependencies;
 
 import io.sunshower.kernel.PluginException;
+import java.util.Set;
 import lombok.Getter;
 import lombok.val;
-
-import java.util.HashSet;
-import java.util.Set;
 
 public class UnresolvedDependencyException extends PluginException {
 

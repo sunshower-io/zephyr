@@ -1,8 +1,7 @@
 package io.sunshower.gyre;
 
-import lombok.val;
-
 import java.util.ArrayList;
+import lombok.val;
 
 public class GraphWriter<E, V> {
 
@@ -22,11 +21,7 @@ public class GraphWriter<E, V> {
   }
 
   private void doWrite(
-      V root,
-      Graph<E, V> graph,
-      StringBuilder result,
-      StringBuilder indent,
-      boolean last) {
+      V root, Graph<E, V> graph, StringBuilder result, StringBuilder indent, boolean last) {
     val neighbors = graph.getDependents(root, EdgeFilters.acceptAll());
     val niter = neighbors.iterator();
     for (int i = 0; i < neighbors.size(); i++) {

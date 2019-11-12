@@ -1,4 +1,3 @@
 package io.sunshower.kernel.memento;
 
-public interface Caretaker<T> {
-}
+public interface Caretaker<T> {}

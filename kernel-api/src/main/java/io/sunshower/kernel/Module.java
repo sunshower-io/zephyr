@@ -1,12 +1,11 @@
 package io.sunshower.kernel;
 
+import io.sunshower.PluginActivator;
+import io.sunshower.kernel.core.ModuleClasspath;
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
 import java.util.ServiceLoader;
 import java.util.Set;
-
-import io.sunshower.PluginActivator;
-import io.sunshower.kernel.core.ModuleClasspath;
 import lombok.NonNull;
 import lombok.val;
 

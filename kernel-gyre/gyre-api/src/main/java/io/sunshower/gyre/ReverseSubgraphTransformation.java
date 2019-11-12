@@ -1,9 +1,8 @@
 package io.sunshower.gyre;
 
-import lombok.val;
-
 import java.util.Stack;
 import java.util.function.Predicate;
+import lombok.val;
 
 public class ReverseSubgraphTransformation<E, V> implements Transformation<E, V, Graph<E, V>> {
   final V root;

@@ -1,13 +1,13 @@
 package io.sunshower.kernel.concurrency;
 
+import static java.lang.String.format;
+
 import io.sunshower.gyre.Pair;
 import io.sunshower.gyre.Scope;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.val;
-
-import static java.lang.String.format;
 
 public abstract class Task {
 
@@ -34,7 +34,6 @@ public abstract class Task {
     final Object value;
     final String name;
   }
-
 
   public String toString() {
     return format("Task[%s]", name);

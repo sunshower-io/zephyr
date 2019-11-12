@@ -1,29 +1,32 @@
 package io.sunshower.kernel.core.lifecycle;
 
+import static io.sunshower.kernel.core.lifecycle.DefaultKernelLifecycle.LifecycleProcessHolder.stopInstance;
+import static io.sunshower.kernel.core.lifecycle.DefaultKernelLifecycle.LifecycleProcessHolder.stopPlugins;
+
 import io.sunshower.gyre.Scope;
-import io.sunshower.kernel.Lifecycle;
 import io.sunshower.kernel.concurrency.*;
 import io.sunshower.kernel.concurrency.Process;
 import io.sunshower.kernel.core.Kernel;
 import io.sunshower.kernel.core.KernelLifecycle;
 import io.sunshower.kernel.core.SunshowerKernel;
 import io.sunshower.kernel.misc.SuppressFBWarnings;
-import javax.inject.Inject;
-
 import io.sunshower.kernel.module.ModuleLifecycle;
 import io.sunshower.kernel.module.ModuleLifecycleChangeGroup;
 import io.sunshower.kernel.module.ModuleLifecycleChangeRequest;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.atomic.AtomicReference;
+import javax.inject.Inject;
 import lombok.val;
 
-import java.util.concurrent.CompletionStage;
-
-import static io.sunshower.kernel.core.lifecycle.DefaultKernelLifecycle.LifecycleProcessHolder.stopInstance;
-import static io.sunshower.kernel.core.lifecycle.DefaultKernelLifecycle.LifecycleProcessHolder.stopPlugins;
-
 @SuppressFBWarnings
-@SuppressWarnings("PMD.UnusedPrivateField")
+@SuppressWarnings({
+  "PMD.UnusedPrivateField",
+  "PMD.DataflowAnomalyAnalysis",
+  "PMD.AvoidInstantiatingObjectsInLoops"
+})
 public class DefaultKernelLifecycle implements KernelLifecycle {
 
+  private final AtomicReference<State> state;
   private SunshowerKernel kernel;
   private Scheduler<String> scheduler;
 
@@ -31,11 +34,12 @@ public class DefaultKernelLifecycle implements KernelLifecycle {
   public DefaultKernelLifecycle(SunshowerKernel kernel, Scheduler<String> scheduler) {
     this.kernel = kernel;
     this.scheduler = scheduler;
+    this.state = new AtomicReference<>(State.Stopped);
   }
 
   @Override
   public State getState() {
-    return null;
+    return state.get();
   }
 
   @Override
@@ -43,18 +47,30 @@ public class DefaultKernelLifecycle implements KernelLifecycle {
     return scheduler.submit(stopPlugins(kernel)).thenCompose(this::doStop);
   }
 
-  private TaskTracker<String> doStop(Process<String> taskSets) {
-    return scheduler.submit(stopInstance(kernel));
-  }
-
   @Override
   public CompletionStage<Process<String>> start() {
-    return scheduler.submit(LifecycleProcessHolder.startInstance(kernel));
+    this.state.set(State.Starting);
+    val a = scheduler.submit(LifecycleProcessHolder.startInstance(kernel));
+    a.thenRun(() -> this.state.set(State.Running));
+    return a;
   }
 
   @Override
   public CompletionStage<Process<String>> setState(State state) {
+    if (state == State.Running) {
+      return start();
+    } else if (state == State.Stopped) {
+      return stop();
+    }
     return null;
+  }
+
+  @SuppressWarnings("PMD.UnusedFormalParameter")
+  private TaskTracker<String> doStop(Process<String> taskSets) {
+    this.state.set(State.Stopping);
+    val r = scheduler.submit(stopInstance(kernel));
+    r.thenRun(() -> this.state.set(State.Stopped));
+    return r;
   }
 
   static final class LifecycleProcessHolder {

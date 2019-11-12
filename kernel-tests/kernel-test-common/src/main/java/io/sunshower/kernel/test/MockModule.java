@@ -3,14 +3,13 @@ package io.sunshower.kernel.test;
 import io.sunshower.PluginActivator;
 import io.sunshower.kernel.*;
 import io.sunshower.kernel.Module;
+import io.sunshower.kernel.core.ModuleClasspath;
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ServiceLoader;
 import java.util.Set;
-
-import io.sunshower.kernel.core.ModuleClasspath;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
@@ -18,7 +17,6 @@ public class MockModule implements Module {
 
   final Coordinate coordinate;
   final List<Dependency> dependencies;
-
 
   public void addDependency(Dependency dependency) {
     dependencies.add(dependency);

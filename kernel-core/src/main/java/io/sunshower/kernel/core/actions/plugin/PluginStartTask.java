@@ -28,19 +28,22 @@ public class PluginStartTask extends Task {
    * lifecycle events dispatched by the PluginContext
    */
   @Override
-  public synchronized TaskValue run(Scope scope) {
-    val module = manager.getModule(coordinate);
-    val currentState = module.getLifecycle().getState();
-    if (!currentState.isAtLeast(Lifecycle.State.Active)) { // // TODO: 11/11/19 handle failed
-      module.getLifecycle().setState(Lifecycle.State.Starting);
-      val loader = module.getModuleClasspath().resolveServiceLoader(PluginActivator.class);
-      for (val activator : loader) {
-        activator.start(kernel);
-        ((DefaultModule) module).setActivator(activator);
-        break;
+  @SuppressWarnings("PMD.AvoidBranchingStatementAsLastInLoop")
+  public TaskValue run(Scope scope) {
+    synchronized (this) {
+      val module = manager.getModule(coordinate);
+      val currentState = module.getLifecycle().getState();
+      if (!currentState.isAtLeast(Lifecycle.State.Active)) { // // TODO: 11/11/19 handle failed
+        module.getLifecycle().setState(Lifecycle.State.Starting);
+        val loader = module.getModuleClasspath().resolveServiceLoader(PluginActivator.class);
+        for (val activator : loader) {
+          activator.start(kernel);
+          ((DefaultModule) module).setActivator(activator);
+          break;
+        }
+        module.getLifecycle().setState(Lifecycle.State.Active);
       }
-      module.getLifecycle().setState(Lifecycle.State.Active);
+      return null;
     }
-    return null;
   }
 }

@@ -5,15 +5,12 @@ import io.sunshower.kernel.Module;
 import io.sunshower.kernel.ModuleException;
 import io.sunshower.kernel.UnsatisfiedDependencyException;
 import io.sunshower.kernel.dependencies.DependencyGraph;
-
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 import lombok.val;
-import org.jboss.modules.DependencySpec;
 import org.jboss.modules.ModuleLoadException;
 import org.jboss.modules.ModuleLoader;
 import org.jboss.modules.ModuleNotFoundException;
@@ -46,11 +43,9 @@ public final class KernelModuleLoader extends ModuleLoader
     val id = coordinate.toCanonicalForm();
     val loader = moduleLoaders.get(id);
     if (loader != null) {
-      System.out.println(coordinate);
       loader.unload(coordinate);
       moduleLoaders.remove(id);
     }
-
   }
 
   @Override
@@ -111,7 +106,6 @@ public final class KernelModuleLoader extends ModuleLoader
         return result;
       }
       return false;
-
     }
 
     @Override

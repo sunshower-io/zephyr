@@ -1,4 +1,3 @@
 package io.sunshower;
 
-public interface PluginContext {
-}
+public interface PluginContext {}

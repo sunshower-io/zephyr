@@ -5,7 +5,7 @@ import io.sunshower.gyre.Scope;
 import java.util.NoSuchElementException;
 import lombok.val;
 
-@SuppressWarnings("PMD.AvoidFieldNameMatchingMethodName")
+@SuppressWarnings({"PMD.AvoidFieldNameMatchingMethodName", "PMD.NullAssignment"})
 public class TaskBuilder {
 
   final String name;

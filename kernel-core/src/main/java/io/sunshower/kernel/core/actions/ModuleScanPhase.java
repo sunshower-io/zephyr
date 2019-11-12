@@ -9,14 +9,13 @@ import io.sunshower.kernel.core.Kernel;
 import io.sunshower.kernel.core.ModuleDescriptor;
 import io.sunshower.kernel.core.ModuleScanner;
 import io.sunshower.kernel.log.Logging;
+import io.sunshower.kernel.module.ModuleInstallationRequest;
 import java.io.File;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
-
-import io.sunshower.kernel.module.ModuleInstallationRequest;
 import lombok.val;
 
 /**

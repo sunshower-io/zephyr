@@ -83,5 +83,4 @@ public interface DependencyGraph extends Iterable<Module> {
   Partition<DirectedGraph.Edge<Coordinate>, Coordinate> computeCycles();
 
   DependencyGraph clone();
-
 }

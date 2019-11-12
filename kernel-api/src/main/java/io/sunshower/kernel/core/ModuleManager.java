@@ -8,7 +8,6 @@ import io.sunshower.kernel.module.ModuleInstallationGroup;
 import io.sunshower.kernel.module.ModuleInstallationStatusGroup;
 import io.sunshower.kernel.module.ModuleLifecycleChangeGroup;
 import io.sunshower.kernel.module.ModuleLifecycleStatusGroup;
-
 import java.util.List;
 
 public interface ModuleManager extends KernelMember {
@@ -22,6 +21,7 @@ public interface ModuleManager extends KernelMember {
   DependencyGraph getDependencyGraph();
 
   ModuleClasspathManager getModuleLoader();
+
   List<Module> getModules();
 
   List<Module> getModules(Lifecycle.State resolved);

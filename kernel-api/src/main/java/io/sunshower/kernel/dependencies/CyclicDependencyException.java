@@ -3,12 +3,10 @@ package io.sunshower.kernel.dependencies;
 import io.sunshower.gyre.Component;
 import io.sunshower.gyre.DirectedGraph;
 import io.sunshower.kernel.Coordinate;
-import io.sunshower.kernel.Module;
 import io.sunshower.kernel.PluginException;
-import lombok.Getter;
-
 import java.util.HashSet;
 import java.util.Set;
+import lombok.Getter;
 
 public class CyclicDependencyException extends PluginException {
 

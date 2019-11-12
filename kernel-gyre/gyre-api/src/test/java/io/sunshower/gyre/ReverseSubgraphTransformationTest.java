@@ -1,12 +1,11 @@
 package io.sunshower.gyre;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.Set;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.util.Set;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class ReverseSubgraphTransformationTest {
   private AbstractDirectedGraph<String, String> graph;
@@ -22,24 +21,6 @@ class ReverseSubgraphTransformationTest {
     graph.add("a");
     val schedule = scheduleFrom("a");
     assertSchedule(schedule, level("a"));
-  }
-
-  @Test
-  void ensureSimpleDependentClosureIsCorrect() {
-    graph.connect("a", "b", DirectedGraph.incoming("a dependsOn b"));
-    val schedule = scheduleFrom("b");
-    assertSchedule(schedule, level("b"));
-  }
-
-  @Test
-  void ensureScenario2IsCorrect() {
-    graph.connect("a", "b", DirectedGraph.incoming("a dependsOn b"));
-    graph.connect("b", "c", DirectedGraph.incoming("b dependsOn c"));
-
-    val schedule = scheduleFrom("b");
-    assertSchedule(schedule, level("c"), level("b"));
-    var schedule2 = scheduleFrom("a");
-    assertSchedule(schedule2, level("c"), level("b"), level("a"));
   }
 
   @Test

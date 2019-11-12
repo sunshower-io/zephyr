@@ -1,53 +1,39 @@
 package io.sunshower.kernel.core;
 
+import static java.lang.String.format;
+
 import io.sunshower.gyre.*;
-import io.sunshower.kernel.Coordinate;
 import io.sunshower.kernel.Module;
 import io.sunshower.kernel.concurrency.Process;
 import io.sunshower.kernel.concurrency.TaskBuilder;
 import io.sunshower.kernel.concurrency.Tasks;
 import io.sunshower.kernel.core.actions.*;
-import io.sunshower.kernel.core.actions.plugin.PluginStartTask;
 import io.sunshower.kernel.core.lifecycle.KernelModuleListReadPhase;
-import io.sunshower.kernel.dependencies.DependencyGraph;
 import io.sunshower.kernel.log.Logging;
 import io.sunshower.kernel.module.ModuleInstallationGroup;
 import io.sunshower.kernel.module.ModuleInstallationRequest;
 import io.sunshower.kernel.module.ModuleInstallationStatusGroup;
 import io.sunshower.kernel.module.ModuleRequest;
-import lombok.val;
-
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
+import lombok.val;
 
-import static java.lang.String.format;
-
+@SuppressWarnings({"PMD.UnusedPrivateMethod", "PMD.AvoidInstantiatingObjectsInLoops"})
 final class DefaultModuleInstallationStatusGroup implements ModuleInstallationStatusGroup {
 
   static final Logger log = Logging.get(DefaultModuleInstallationStatusGroup.class);
 
   final Kernel kernel;
   private final Process<String> process;
-  private final ModuleManager moduleManager;
-  private final DependencyGraph dependencyGraph;
   private final ModuleInstallationGroup installationGroup;
 
-  public DefaultModuleInstallationStatusGroup(
-      ModuleInstallationGroup toInstall,
-      DependencyGraph dependencyGraph,
-      ModuleManager manager,
-      Kernel kernel) {
+  public DefaultModuleInstallationStatusGroup(ModuleInstallationGroup toInstall, Kernel kernel) {
     this.kernel = kernel;
-    this.moduleManager = manager;
     this.installationGroup = toInstall;
-    this.dependencyGraph = dependencyGraph;
 
     val context = Scope.root();
     context.set("SunshowerKernel", kernel);
@@ -64,7 +50,7 @@ final class DefaultModuleInstallationStatusGroup implements ModuleInstallationSt
             .parallel()
             .coalesce()
             .register(new KernelModuleListReadPhase("module:list:read"));
-    addIntermediates(taskBuilder, toInstall, context);
+    addIntermediates(taskBuilder, toInstall);
     this.process = taskBuilder.create();
   }
 
@@ -90,8 +76,7 @@ final class DefaultModuleInstallationStatusGroup implements ModuleInstallationSt
     return new HashSet<>(installationGroup.getRequests());
   }
 
-  private void addIntermediates(
-      TaskBuilder taskBuilder, ModuleInstallationGroup group, Scope context) {
+  private void addIntermediates(TaskBuilder taskBuilder, ModuleInstallationGroup group) {
 
     /** synchronization point */
     val writeModuleList = "module:kernel:write:list";
