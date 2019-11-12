@@ -35,5 +35,6 @@ include(
         'kernel-tests:test-modules:test-module-1',
         'kernel-tests:test-modules:test-module-2',
         'kernel-tests:test-modules:test-module-3',
-        'kernel-tests:test-plugins:test-plugin-spring'
+        'kernel-tests:test-plugins:test-plugin-spring',
+        'kernel-tests:test-plugins:test-plugin-spring-dep'
 )

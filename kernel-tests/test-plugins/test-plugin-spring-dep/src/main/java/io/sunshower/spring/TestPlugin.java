@@ -18,7 +18,7 @@ public class TestPlugin implements PluginActivator {
 
   @Override
   public void stop(PluginContext context) {
-    System.out.println("Stopping plugin-spring");
+    System.out.println("Stopping plugin-spring-dep");
     this.context.stop();
   }
 }
