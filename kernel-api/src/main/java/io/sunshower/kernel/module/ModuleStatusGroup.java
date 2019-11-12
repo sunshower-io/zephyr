@@ -6,7 +6,7 @@ import java.util.Set;
 import java.util.concurrent.CompletionStage;
 
 public interface ModuleStatusGroup {
-  CompletionStage<String> commit();
+  CompletionStage<Process<String>> commit();
 
   Process<String> getProcess();
 

@@ -8,6 +8,7 @@ import io.sunshower.kernel.Coordinate;
 import io.sunshower.kernel.concurrency.Process;
 import io.sunshower.kernel.concurrency.TaskBuilder;
 import io.sunshower.kernel.concurrency.Tasks;
+import io.sunshower.kernel.core.actions.plugin.PluginStartTask;
 import io.sunshower.kernel.core.actions.plugin.PluginStopTask;
 import io.sunshower.kernel.module.ModuleLifecycleChangeGroup;
 import io.sunshower.kernel.module.ModuleLifecycleChangeRequest;
@@ -60,6 +61,19 @@ final class DefaultModuleLifecycleStatusChangeGroup implements ModuleLifecycleSt
     return tasks.create();
   }
 
+  public CompletionStage<Process<String>> commit() {
+    return kernel.getScheduler().submit(process);
+  }
+
+  public Process<String> getProcess() {
+    return process;
+  }
+
+  @Override
+  public Set<? extends ModuleRequest> getRequests() {
+    return new HashSet<>(request.getRequests());
+  }
+
   private void addStopAction(ModuleLifecycleChangeRequest task, TaskBuilder tasks) {
     val reachability =
         new ReverseSubgraphTransformation<DirectedGraph.Edge<Coordinate>, Coordinate>(
@@ -83,18 +97,26 @@ final class DefaultModuleLifecycleStatusChangeGroup implements ModuleLifecycleSt
     }
   }
 
-  private void addStartAction(ModuleLifecycleChangeRequest task, TaskBuilder tasks) {}
+  private void addStartAction(ModuleLifecycleChangeRequest task, TaskBuilder tasks) {
 
-  public CompletionStage<String> commit() {
-    return kernel.getScheduler().submit(process).thenApply(t -> "started");
-  }
+    val reachability =
+        new SubgraphTransformation<DirectedGraph.Edge<Coordinate>, Coordinate>(task.getCoordinate())
+            .apply(moduleManager.getDependencyGraph().getGraph());
+    val schedule =
+        new ParallelScheduler<DirectedGraph.Edge<Coordinate>, Coordinate>()
+            .apply(reachability)
+            .getTasks();
 
-  public Process<String> getProcess() {
-    return process;
-  }
-
-  @Override
-  public Set<? extends ModuleRequest> getRequests() {
-    return new HashSet<>(request.getRequests());
+    var pjp = JoinPoint.newJoinPoint();
+    for (int i = 0; i < schedule.size(); i++) {
+      tasks.register(pjp);
+      val taskSet = schedule.get(i);
+      for (val el : taskSet.getTasks()) {
+        val actualTask = new PluginStartTask(el.getValue(), moduleManager, kernel);
+        tasks.register(actualTask);
+        tasks.task(pjp.getName()).dependsOn(actualTask.getName());
+      }
+      pjp = JoinPoint.newJoinPoint();
+    }
   }
 }

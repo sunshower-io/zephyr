@@ -45,8 +45,12 @@ public final class KernelModuleLoader extends ModuleLoader
   public void uninstall(Coordinate coordinate) {
     val id = coordinate.toCanonicalForm();
     val loader = moduleLoaders.get(id);
-    loader.unload(coordinate);
-    moduleLoaders.remove(id);
+    if (loader != null) {
+      System.out.println(coordinate);
+      loader.unload(coordinate);
+      moduleLoaders.remove(id);
+    }
+
   }
 
   @Override
@@ -94,22 +98,20 @@ public final class KernelModuleLoader extends ModuleLoader
 
     boolean unload(Coordinate coordinate) throws ModuleLoadException {
       val id = coordinate.toCanonicalForm();
-//      val dependants = graph.getDependents(coordinate);
-//
-//      for (val dependant : dependants) {
-//        val typedDep = (DefaultModule) dependant;
-//        val actualModule = typedDep.getModuleClasspath();
-//        val actualModuleLoader = (UnloadableKernelModuleLoader) actualModule.getModuleLoader();
-//        actualModuleLoader.loader.uninstall(dependant.getCoordinate());
-//      }
-//
+      //parallel unloading can be hard to reason about, but one of the invariants
+      // is that the modules are always shut down in the correct order even if one has been shut down
+      // as part of the dependent graph of another
       val module = findLoadedModuleLocal(id);
-      val result = unloadModuleLocal(id, module);
-      refreshResourceLoaders(module);
-      setAndRelinkDependencies(module, Collections.emptyList());
-      relink(module);
 
-      return result;
+      if (module != null) {
+        val result = unloadModuleLocal(id, module);
+        refreshResourceLoaders(module);
+        setAndRelinkDependencies(module, Collections.emptyList());
+        relink(module);
+        return result;
+      }
+      return false;
+
     }
 
     @Override

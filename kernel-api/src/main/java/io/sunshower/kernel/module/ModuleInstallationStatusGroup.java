@@ -15,7 +15,7 @@ import lombok.val;
 
 public interface ModuleInstallationStatusGroup extends ModuleStatusGroup {
 
-  CompletionStage<String> commit();
+  CompletionStage<Process<String>> commit();
 
   Process<String> getProcess();
 }

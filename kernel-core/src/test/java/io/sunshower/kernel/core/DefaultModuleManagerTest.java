@@ -141,17 +141,17 @@ class DefaultModuleManagerTest {
     val grp = new ModuleInstallationGroup(req1);
     val prepped = manager.prepare(grp);
     prepped.commit().toCompletableFuture().get();
-    assertEquals(manager.getModules(Lifecycle.State.Active).size(), 1, "must be 2 active plugins");
+    assertEquals(manager.getModules(Lifecycle.State.Resolved).size(), 1, "must be 2 active plugins");
   }
 
   @Test
-  void ensureStartingAllPluginsWorks() throws ExecutionException, InterruptedException {
+  void ensureIsntallingPluginsResultsInPluginsPlacedInResolvedState() throws ExecutionException, InterruptedException {
 
     val grp = new ModuleInstallationGroup(req2, req1);
     val prepped = manager.prepare(grp);
     prepped.commit().toCompletableFuture().get();
-    val active = manager.getModules(Lifecycle.State.Active);
-    assertEquals(active.size(), 2, "must have 2 active plugins");
+    val active = manager.getModules(Lifecycle.State.Resolved);
+    assertEquals(active.size(), 2, "must have 2 resolved plugins");
   }
 
   @Test
@@ -159,7 +159,8 @@ class DefaultModuleManagerTest {
     val grp = new ModuleInstallationGroup(req1);
     val prepped = manager.prepare(grp);
     prepped.commit().toCompletableFuture().get();
-    val activeModule = manager.getModules(Lifecycle.State.Active).get(0);
+    val activeModule = manager.getModules(Lifecycle.State.Resolved).get(0);
+    start(activeModule.getCoordinate().getName());
 
     val req1action =
         new ModuleLifecycleChangeRequest(
@@ -172,12 +173,25 @@ class DefaultModuleManagerTest {
   }
 
   @Test
+  void ensureStartingDependentPluginStartsBothPlugins() throws Exception {
+    val grp = new ModuleInstallationGroup(req1, req2);
+    val prepped = manager.prepare(grp);
+    prepped.commit().toCompletableFuture().get();
+    start("plugin-2");
+    assertEquals(
+            manager.getModules(ModuleLifecycle.State.Active).size(), 2, "must be two started modules");
+
+  }
+
+  @Test
   void ensureStartingDependentPluginStartsDependency() throws Exception {
 
     val grp = new ModuleInstallationGroup(req1, req2);
     val prepped = manager.prepare(grp);
     prepped.commit().toCompletableFuture().get();
-    stop("plugin-1");
+    start("plugin-1");
+
+    assertEquals(manager.getModules(Lifecycle.State.Active).size(), 1, "modules are equivalent");
   }
 
   @Test
@@ -185,6 +199,8 @@ class DefaultModuleManagerTest {
     val grp = new ModuleInstallationGroup(req1, req2);
     val prepped = manager.prepare(grp);
     prepped.commit().toCompletableFuture().get();
+
+    start("plugin-1");
     val p2 =
         manager.getModules(Lifecycle.State.Active).stream()
             .filter(t -> t.getCoordinate().getName().contains("plugin-1"))
@@ -206,10 +222,11 @@ class DefaultModuleManagerTest {
     val prepped = manager.prepare(grp);
     prepped.commit().toCompletableFuture().get();
     val p2 =
-        manager.getModules(Lifecycle.State.Active).stream()
+        manager.getModules(Lifecycle.State.Resolved).stream()
             .filter(t -> t.getCoordinate().getName().contains("plugin-2"))
             .findFirst()
             .get();
+    start("plugin-2");
 
     val req1action =
         new ModuleLifecycleChangeRequest(p2.getCoordinate(), ModuleLifecycle.Actions.Stop);
@@ -285,7 +302,7 @@ class DefaultModuleManagerTest {
   private void request(String pluginName, ModuleLifecycle.Actions action) {
 
     val plugin =
-        manager.getModules(Lifecycle.State.Active).stream()
+        manager.getModules().stream()
             .filter(t -> t.getCoordinate().getName().contains(pluginName))
             .findFirst()
             .get();

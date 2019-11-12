@@ -75,9 +75,9 @@ final class DefaultModuleInstallationStatusGroup implements ModuleInstallationSt
   }
 
   @Override
-  public CompletionStage<String> commit() {
+  public CompletionStage<Process<String>> commit() {
     logProcess(process);
-    return kernel.getScheduler().submit(process).thenApply(this::start);
+    return kernel.getScheduler().submit(process);
   }
 
   @Override
@@ -88,50 +88,6 @@ final class DefaultModuleInstallationStatusGroup implements ModuleInstallationSt
   @Override
   public Set<ModuleRequest> getRequests() {
     return new HashSet<>(installationGroup.getRequests());
-  }
-
-  @SuppressWarnings("unchecked")
-  final <U> U start(Process<String> taskSets) {
-    val minimalGraph =
-        new TransitiveReduction<DirectedGraph.Edge<Coordinate>, Coordinate>()
-            .apply(dependencyGraph.getGraph());
-
-    val futures = new ArrayList<CompletionStage<Process<String>>>();
-    for (val toStart : installationGroup.getModules()) {
-      val coord = toStart.getCoordinate();
-      if (coord == null) {
-        throw new IllegalStateException("This cannot be called before the module is scanned");
-      }
-
-      val subgraphTransformation =
-          new SubgraphTransformation<DirectedGraph.Edge<Coordinate>, Coordinate>(coord);
-      val moduleSubgraph = subgraphTransformation.apply(minimalGraph);
-
-      val startSchedule =
-          new ParallelScheduler<DirectedGraph.Edge<Coordinate>, Coordinate>().apply(moduleSubgraph);
-
-      for (val schedule : startSchedule) {
-        val process = Tasks.newProcess("plugin:start");
-        val taskBuilder = process.parallel().coalesce().task();
-        for (val task : schedule.getTasks()) {
-          taskBuilder.register(new PluginStartTask(task.getValue(), moduleManager, kernel));
-        }
-        try {
-          futures.add(kernel.getScheduler().submit(taskBuilder.create()));
-        } catch (Exception ex) {
-
-        }
-      }
-    }
-
-    CompletableFuture<?>[] cfutures =
-        futures.stream()
-            .map(CompletionStage::toCompletableFuture)
-            .collect(Collectors.toList())
-            .toArray(new CompletableFuture<?>[0]);
-
-    CompletableFuture.allOf(cfutures).join();
-    return null;
   }
 
   private void addIntermediates(
