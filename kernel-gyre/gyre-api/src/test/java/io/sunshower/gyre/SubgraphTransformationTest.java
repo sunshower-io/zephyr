@@ -38,8 +38,6 @@ class SubgraphTransformationTest {
     assertTrue(result.containsVertex("c"));
     assertTrue(result.containsVertex("e"));
     assertTrue(result.containsVertex("f"));
-
-
   }
 
   @Test

@@ -2,6 +2,7 @@ package io.sunshower.gyre;
 
 import java.util.*;
 import java.util.function.Predicate;
+
 import lombok.val;
 
 public class AbstractDirectedGraph<E, V> implements DirectedGraph<E, V> {
@@ -94,8 +95,8 @@ public class AbstractDirectedGraph<E, V> implements DirectedGraph<E, V> {
       adjacencies.put(source, neighbors);
     }
 
-    val neighbor = new Adjacency<E, V>(source, target, edge.getLabel());
-    neighbor.directions = edge.getDirection().set(neighbor.directions);
+    val neighbor = new Adjacency<E, V>(source, target, edge != null ? (E) edge.getLabel() : null);
+    neighbor.directions = edge != null ? edge.getDirection().set(neighbor.directions) : 1;
     neighbors.add(neighbor);
     if (!adjacencies.containsKey(target)) {
       adjacencies.put(target, new HashSet<>());
@@ -460,5 +461,10 @@ public class AbstractDirectedGraph<E, V> implements DirectedGraph<E, V> {
     public String toString() {
       return String.format("E[%s:%s]", value, getDirection());
     }
+  }
+
+  @Override
+  public String toString() {
+    return new GraphWriter<Edge<E>, V>().write(this);
   }
 }

@@ -1,9 +1,6 @@
 package io.sunshower.kernel.concurrency;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 
 @SuppressWarnings("PMD.DoNotUseThreads")
 public class ExecutorWorkerPool implements WorkerPool {
@@ -12,7 +9,11 @@ public class ExecutorWorkerPool implements WorkerPool {
 
   public ExecutorWorkerPool(ExecutorService executorService) {
     this.executorService = executorService;
-    kernelExecutorService = Executors.newFixedThreadPool(1);
+    // this can't really rely on a single thread as the task graph will frequently block it, but we
+    // don't need that many of them
+    // this should probably be configurable
+    kernelExecutorService =
+        new ThreadPoolExecutor(0, 5, 60L, TimeUnit.SECONDS, new SynchronousQueue<>());
   }
 
   @Override

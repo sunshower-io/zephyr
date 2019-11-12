@@ -173,4 +173,9 @@ public final class DefaultDependencyGraph implements DependencyGraph {
   public Iterator<Module> iterator() {
     return modules.values().iterator();
   }
+
+  @Override
+  public String toString() {
+    return new GraphWriter<DirectedGraph.Edge<Coordinate>, Coordinate>().write(dependencyGraph);
+  }
 }

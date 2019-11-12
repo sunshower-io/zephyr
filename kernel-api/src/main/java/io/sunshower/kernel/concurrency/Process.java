@@ -7,6 +7,8 @@ import io.sunshower.gyre.Scope;
 
 public interface Process<E> extends Schedule<DirectedGraph.Edge<E>, Task> {
 
+  <U> Process<U> compose(Process<U> u);
+
   /** if true, remove redundant edges (may improve execution time) */
   boolean coalesce();
 

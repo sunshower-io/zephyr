@@ -55,7 +55,6 @@ class TasksTest {
             .dependsOn("kernel:lifecycle:module:list")
             .create();
     val s = scheduler.apply(process.getExecutionGraph());
-
     assertEquals(s.size(), 3, "must have 3 items");
   }
 

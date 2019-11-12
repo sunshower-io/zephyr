@@ -2,8 +2,7 @@ package io.sunshower.gyre;
 
 import static io.sunshower.gyre.DirectedGraph.incoming;
 import static java.lang.String.format;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,8 +35,18 @@ class ParallelSchedulerTest {
   }
 
   @Test
+  void ensureGraphPrintsCorrectly() {
+    graph.connect("a", "b", incoming("a -> b"));
+    graph.connect("b", "c", incoming("b -> c"));
+    graph.connect("b", "d", incoming("b -> d"));
+    val result = new GraphWriter<DirectedGraph.Edge<String>, String>().write(graph);
+    assertNotNull(result, "must have a result");
+  }
+
+  @Test
   void testPlan() {
     parse(toSchedule);
+    System.out.println(graph);
     val result = scheduler.apply(graph);
     assertEquals(result.size(), 4, "must have 4 elements");
   }

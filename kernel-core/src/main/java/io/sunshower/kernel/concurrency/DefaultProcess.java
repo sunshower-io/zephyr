@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import lombok.val;
 
+/** @param <T> */
 @SuppressWarnings("PMD.AvoidFieldNameMatchingMethodName")
 public class DefaultProcess<T> implements Process<T> {
   final String name;
@@ -14,6 +15,8 @@ public class DefaultProcess<T> implements Process<T> {
   final boolean parallel;
   final Scope context;
   final TaskGraph<T> graph;
+
+  private volatile Schedule<DirectedGraph.Edge<T>, Task> schedule;
 
   public DefaultProcess(
       String name, boolean coalesce, boolean parallel, Scope context, TaskGraph<T> graph) {
@@ -30,13 +33,18 @@ public class DefaultProcess<T> implements Process<T> {
   }
 
   @Override
+  public <U> Process<U> compose(Process<U> u) {
+    return null;
+  }
+
+  @Override
   public boolean coalesce() {
-    return false;
+    return coalesce;
   }
 
   @Override
   public boolean isParallel() {
-    return false;
+    return parallel;
   }
 
   @Override
@@ -51,27 +59,41 @@ public class DefaultProcess<T> implements Process<T> {
 
   @Override
   public List<TaskSet<DirectedGraph.Edge<T>, Task>> getTasks() {
-    val cycles = new StronglyConnectedComponents<DirectedGraph.Edge<T>, Task>();
-    val partition = cycles.apply(graph);
-    if (partition.isCyclic()) {
-      throw new IllegalStateException("Cycle detected");
+    var local = schedule;
+    if (local == null) {
+      synchronized (this) {
+        local = schedule;
+        if (local == null) {
+          val cycles = new StronglyConnectedComponents<DirectedGraph.Edge<T>, Task>();
+          val partition = cycles.apply(graph);
+          if (partition.isCyclic()) {
+            throw new IllegalStateException("Cycle detected");
+          }
+          schedule = local = new ParallelScheduler<DirectedGraph.Edge<T>, Task>().apply(graph);
+        }
+      }
     }
-
-    return new ParallelScheduler<DirectedGraph.Edge<T>, Task>().apply(graph).getTasks();
+    return local.getTasks();
   }
 
   @Override
   public int size() {
-    return 0;
+    return getTasks().size();
   }
 
   @Override
   public TaskSet<DirectedGraph.Edge<T>, Task> get(int i) {
-    return null;
+    return getTasks().get(i);
+  }
+
+  @Override
+  public Schedule<DirectedGraph.Edge<T>, Task> reverse() {
+    getTasks();
+    return schedule.reverse();
   }
 
   @Override
   public Iterator<TaskSet<DirectedGraph.Edge<T>, Task>> iterator() {
-    return null;
+    return getTasks().iterator();
   }
 }

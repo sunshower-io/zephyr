@@ -7,6 +7,8 @@ import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.val;
 
+import static java.lang.String.format;
+
 public abstract class Task {
 
   final String name;
@@ -31,6 +33,11 @@ public abstract class Task {
   public static final class TaskValue {
     final Object value;
     final String name;
+  }
+
+
+  public String toString() {
+    return format("Task[%s]", name);
   }
 }
 

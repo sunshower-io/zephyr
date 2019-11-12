@@ -5,11 +5,15 @@ import io.sunshower.kernel.Module;
 import io.sunshower.kernel.ModuleException;
 import io.sunshower.kernel.UnsatisfiedDependencyException;
 import io.sunshower.kernel.dependencies.DependencyGraph;
+
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 import lombok.val;
+import org.jboss.modules.DependencySpec;
 import org.jboss.modules.ModuleLoadException;
 import org.jboss.modules.ModuleLoader;
 import org.jboss.modules.ModuleNotFoundException;
@@ -90,18 +94,19 @@ public final class KernelModuleLoader extends ModuleLoader
 
     boolean unload(Coordinate coordinate) throws ModuleLoadException {
       val id = coordinate.toCanonicalForm();
-      val dependants = graph.getDependents(coordinate);
-
-      for (val dependant : dependants) {
-        val typedDep = (DefaultModule) dependant;
-        val actualModule = typedDep.getModuleClasspath();
-        val actualModuleLoader = (UnloadableKernelModuleLoader) actualModule.getModuleLoader();
-        actualModuleLoader.loader.uninstall(dependant.getCoordinate());
-      }
-
+//      val dependants = graph.getDependents(coordinate);
+//
+//      for (val dependant : dependants) {
+//        val typedDep = (DefaultModule) dependant;
+//        val actualModule = typedDep.getModuleClasspath();
+//        val actualModuleLoader = (UnloadableKernelModuleLoader) actualModule.getModuleLoader();
+//        actualModuleLoader.loader.uninstall(dependant.getCoordinate());
+//      }
+//
       val module = findLoadedModuleLocal(id);
       val result = unloadModuleLocal(id, module);
       refreshResourceLoaders(module);
+      setAndRelinkDependencies(module, Collections.emptyList());
       relink(module);
 
       return result;

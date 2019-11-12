@@ -13,6 +13,9 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.inject.Inject;
+
+import io.sunshower.kernel.module.ModuleLifecycleChangeGroup;
+import io.sunshower.kernel.module.ModuleLifecycleStatusGroup;
 import lombok.val;
 
 @SuppressWarnings({
@@ -45,6 +48,12 @@ public class DefaultModuleManager implements ModuleManager {
   }
 
   @Override
+  public ModuleLifecycleStatusGroup prepare(ModuleLifecycleChangeGroup group) {
+    check();
+    return new DefaultModuleLifecycleStatusChangeGroup(kernel, this, group);
+  }
+
+  @Override
   public DependencyGraph getDependencyGraph() {
     return dependencyGraph;
   }
@@ -53,6 +62,15 @@ public class DefaultModuleManager implements ModuleManager {
   public ModuleClasspathManager getModuleLoader() {
     check();
     return kernel.getModuleClasspathManager();
+  }
+
+  @Override
+  public List<Module> getModules() {
+    val results = new ArrayList<Module>();
+    for (val module : dependencyGraph) {
+      results.add(module);
+    }
+    return results;
   }
 
   @Override

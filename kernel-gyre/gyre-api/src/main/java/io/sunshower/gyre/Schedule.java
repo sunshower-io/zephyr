@@ -8,4 +8,10 @@ public interface Schedule<E, V> extends Iterable<TaskSet<E, V>> {
   int size();
 
   TaskSet<E, V> get(int i);
+
+  /**
+   *
+   * @return the reverse of this parallel schedule
+   */
+  Schedule<E, V> reverse();
 }

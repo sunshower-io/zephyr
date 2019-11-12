@@ -5,12 +5,14 @@ import static org.junit.jupiter.api.Assertions.*;
 import io.sunshower.kernel.Lifecycle;
 import io.sunshower.kernel.concurrency.Scheduler;
 import io.sunshower.kernel.launch.KernelOptions;
-import io.sunshower.kernel.module.ModuleInstallationGroup;
-import io.sunshower.kernel.module.ModuleInstallationRequest;
-import io.sunshower.kernel.module.ModuleLifecycle;
+import io.sunshower.kernel.module.*;
 import io.sunshower.test.common.Tests;
 import java.io.File;
 import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import lombok.SneakyThrows;
 import lombok.val;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,6 +25,9 @@ import org.junit.jupiter.api.Test;
   "PMD.JUnitTestContainsTooManyAsserts"
 })
 class DefaultModuleManagerTest {
+  static {
+    Logger.getLogger(DefaultModuleInstallationStatusGroup.class.getName()).setLevel(Level.FINEST);
+  }
 
   Kernel kernel;
   ModuleManager manager;
@@ -136,6 +141,7 @@ class DefaultModuleManagerTest {
     val grp = new ModuleInstallationGroup(req1);
     val prepped = manager.prepare(grp);
     prepped.commit().toCompletableFuture().get();
+    assertEquals(manager.getModules(Lifecycle.State.Active).size(), 1, "must be 2 active plugins");
   }
 
   @Test
@@ -144,6 +150,74 @@ class DefaultModuleManagerTest {
     val grp = new ModuleInstallationGroup(req2, req1);
     val prepped = manager.prepare(grp);
     prepped.commit().toCompletableFuture().get();
+    val active = manager.getModules(Lifecycle.State.Active);
+    assertEquals(active.size(), 2, "must have 2 active plugins");
+  }
+
+  @Test
+  void ensureStartingAndStoppingPluginsWorks() throws Exception {
+    val grp = new ModuleInstallationGroup(req1);
+    val prepped = manager.prepare(grp);
+    prepped.commit().toCompletableFuture().get();
+    val activeModule = manager.getModules(Lifecycle.State.Active).get(0);
+
+    val req1action =
+        new ModuleLifecycleChangeRequest(
+            activeModule.getCoordinate(), ModuleLifecycle.Actions.Stop);
+    val lgrp = new ModuleLifecycleChangeGroup(req1action);
+    manager.prepare(lgrp).commit().toCompletableFuture().get();
+
+    assertEquals(
+        manager.getModules(ModuleLifecycle.State.Resolved).size(), 1, "must be one stopped module");
+  }
+
+  @Test
+  void ensureStartingDependentPluginStartsDependency() throws Exception {
+
+    val grp = new ModuleInstallationGroup(req1, req2);
+    val prepped = manager.prepare(grp);
+    prepped.commit().toCompletableFuture().get();
+    stop("plugin-1");
+  }
+
+  @Test
+  void ensureStartingAndStoppingInitiatorModuleWorks() throws Exception {
+    val grp = new ModuleInstallationGroup(req1, req2);
+    val prepped = manager.prepare(grp);
+    prepped.commit().toCompletableFuture().get();
+    val p2 =
+        manager.getModules(Lifecycle.State.Active).stream()
+            .filter(t -> t.getCoordinate().getName().contains("plugin-1"))
+            .findFirst()
+            .get();
+
+    val req1action =
+        new ModuleLifecycleChangeRequest(p2.getCoordinate(), ModuleLifecycle.Actions.Stop);
+    val lgrp = new ModuleLifecycleChangeGroup(req1action);
+    manager.prepare(lgrp).commit().toCompletableFuture().get();
+
+    assertEquals(manager.getModules(Lifecycle.State.Active).size(), 0);
+    assertEquals(manager.getModules(Lifecycle.State.Resolved).size(), 2);
+  }
+
+  @Test
+  void ensureStartingAndStoppingMultipleModulesWorks() throws Exception {
+    val grp = new ModuleInstallationGroup(req1, req2);
+    val prepped = manager.prepare(grp);
+    prepped.commit().toCompletableFuture().get();
+    val p2 =
+        manager.getModules(Lifecycle.State.Active).stream()
+            .filter(t -> t.getCoordinate().getName().contains("plugin-2"))
+            .findFirst()
+            .get();
+
+    val req1action =
+        new ModuleLifecycleChangeRequest(p2.getCoordinate(), ModuleLifecycle.Actions.Stop);
+    val lgrp = new ModuleLifecycleChangeGroup(req1action);
+    manager.prepare(lgrp).commit().toCompletableFuture().get();
+
+    assertEquals(manager.getModules(Lifecycle.State.Active).size(), 1);
+    assertEquals(manager.getModules(Lifecycle.State.Resolved).size(), 1);
   }
 
   @Test
@@ -195,5 +269,29 @@ class DefaultModuleManagerTest {
   private File configureFiles() {
     val tempfile = Tests.createTemp();
     return tempfile;
+  }
+
+  @SneakyThrows
+  private void stop(String s) {
+    request(s, ModuleLifecycle.Actions.Stop);
+  }
+
+  @SneakyThrows
+  private void start(String s) {
+    request(s, ModuleLifecycle.Actions.Activate);
+  }
+
+  @SneakyThrows
+  private void request(String pluginName, ModuleLifecycle.Actions action) {
+
+    val plugin =
+        manager.getModules(Lifecycle.State.Active).stream()
+            .filter(t -> t.getCoordinate().getName().contains(pluginName))
+            .findFirst()
+            .get();
+
+    val lifecycleRequest = new ModuleLifecycleChangeRequest(plugin.getCoordinate(), action);
+    val grp = new ModuleLifecycleChangeGroup(lifecycleRequest);
+    manager.prepare(grp).commit().toCompletableFuture().get();
   }
 }

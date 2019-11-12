@@ -10,22 +10,28 @@ import io.sunshower.kernel.core.actions.*;
 import io.sunshower.kernel.core.actions.plugin.PluginStartTask;
 import io.sunshower.kernel.core.lifecycle.KernelModuleListReadPhase;
 import io.sunshower.kernel.dependencies.DependencyGraph;
+import io.sunshower.kernel.log.Logging;
 import io.sunshower.kernel.module.ModuleInstallationGroup;
 import io.sunshower.kernel.module.ModuleInstallationRequest;
 import io.sunshower.kernel.module.ModuleInstallationStatusGroup;
+import io.sunshower.kernel.module.ModuleRequest;
 import lombok.val;
 
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
-import java.util.concurrent.CountDownLatch;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 
 final class DefaultModuleInstallationStatusGroup implements ModuleInstallationStatusGroup {
+
+  static final Logger log = Logging.get(DefaultModuleInstallationStatusGroup.class);
 
   final Kernel kernel;
   private final Process<String> process;
@@ -62,8 +68,15 @@ final class DefaultModuleInstallationStatusGroup implements ModuleInstallationSt
     this.process = taskBuilder.create();
   }
 
+  private void logProcess(Process<String> process) {
+    if (log.isLoggable(Level.FINEST)) {
+      log.log(Level.FINEST, "status.primary.installation.process", process.getExecutionGraph());
+    }
+  }
+
   @Override
   public CompletionStage<String> commit() {
+    logProcess(process);
     return kernel.getScheduler().submit(process).thenApply(this::start);
   }
 
@@ -72,6 +85,12 @@ final class DefaultModuleInstallationStatusGroup implements ModuleInstallationSt
     return process;
   }
 
+  @Override
+  public Set<ModuleRequest> getRequests() {
+    return new HashSet<>(installationGroup.getRequests());
+  }
+
+  @SuppressWarnings("unchecked")
   final <U> U start(Process<String> taskSets) {
     val minimalGraph =
         new TransitiveReduction<DirectedGraph.Edge<Coordinate>, Coordinate>()
@@ -81,7 +100,7 @@ final class DefaultModuleInstallationStatusGroup implements ModuleInstallationSt
     for (val toStart : installationGroup.getModules()) {
       val coord = toStart.getCoordinate();
       if (coord == null) {
-        throw new IllegalStateException("Nope");
+        throw new IllegalStateException("This cannot be called before the module is scanned");
       }
 
       val subgraphTransformation =
@@ -100,11 +119,19 @@ final class DefaultModuleInstallationStatusGroup implements ModuleInstallationSt
         try {
           futures.add(kernel.getScheduler().submit(taskBuilder.create()));
         } catch (Exception ex) {
-          ex.printStackTrace();
+
         }
       }
     }
-    return (U) CompletableFuture.allOf(futures.toArray(new CompletableFuture<?>[0]));
+
+    CompletableFuture<?>[] cfutures =
+        futures.stream()
+            .map(CompletionStage::toCompletableFuture)
+            .collect(Collectors.toList())
+            .toArray(new CompletableFuture<?>[0]);
+
+    CompletableFuture.allOf(cfutures).join();
+    return null;
   }
 
   private void addIntermediates(

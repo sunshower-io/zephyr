@@ -71,7 +71,7 @@ public class SunshowerKernel implements Kernel {
   @Override
   @SneakyThrows
   public void start() {
-    lifecycle.start().get();
+    lifecycle.start().toCompletableFuture().get();
   }
 
   @Override
@@ -83,7 +83,7 @@ public class SunshowerKernel implements Kernel {
   @Override
   @SneakyThrows
   public void stop() {
-    lifecycle.stop().get();
+    lifecycle.stop().toCompletableFuture().get();
   }
 
   @Override

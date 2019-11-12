@@ -1,5 +1,6 @@
 package io.sunshower.kernel.test;
 
+import io.sunshower.PluginActivator;
 import io.sunshower.kernel.*;
 import io.sunshower.kernel.Module;
 import java.nio.file.FileSystem;
@@ -60,6 +61,11 @@ public class MockModule implements Module {
 
   @Override
   public Lifecycle getLifecycle() {
+    return null;
+  }
+
+  @Override
+  public PluginActivator getActivator() {
     return null;
   }
 

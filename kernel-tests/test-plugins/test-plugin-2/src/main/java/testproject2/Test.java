@@ -16,5 +16,7 @@ public class Test implements PluginActivator {
   }
 
   @Override
-  public void stop(PluginContext context) {}
+  public void stop(PluginContext context) {
+    System.out.println("plugin2 stopping...");
+  }
 }

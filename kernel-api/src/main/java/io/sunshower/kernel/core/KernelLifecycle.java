@@ -1,6 +1,9 @@
 package io.sunshower.kernel.core;
 
+import io.sunshower.kernel.concurrency.Process;
 import io.sunshower.kernel.concurrency.TaskTracker;
+
+import java.util.concurrent.CompletionStage;
 
 public interface KernelLifecycle {
 
@@ -20,9 +23,9 @@ public interface KernelLifecycle {
 
   State getState();
 
-  TaskTracker<String> stop();
+  CompletionStage<Process<String>> stop();
 
-  TaskTracker<String> start();
+  CompletionStage<Process<String>> start();
 
-  TaskTracker<String> setState(State state);
+  CompletionStage<Process<String>> setState(State state);
 }

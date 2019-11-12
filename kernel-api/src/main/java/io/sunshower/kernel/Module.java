@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import java.util.ServiceLoader;
 import java.util.Set;
 
+import io.sunshower.PluginActivator;
 import io.sunshower.kernel.core.ModuleClasspath;
 import lombok.NonNull;
 import lombok.val;
@@ -47,6 +48,8 @@ public interface Module extends Comparable<Module> {
   Source getSource();
 
   Lifecycle getLifecycle();
+
+  PluginActivator getActivator();
 
   Coordinate getCoordinate();
 

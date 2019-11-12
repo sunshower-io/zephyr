@@ -6,13 +6,16 @@ import lombok.Getter;
 import lombok.NonNull;
 
 public class ModuleLifecycle implements Lifecycle {
-  private State state;
+  private volatile State state;
   private final Module module;
 
   public enum Actions {
-    Install,
-    Resolve(Install),
-    Activate(Install, Resolve);
+    // move to Resolved
+    Stop,
+    Delete(Stop), // remove
+    Install, // move to resolved
+    Resolve(Install), // move to resolved
+    Activate(Install, Resolve); // move to active
 
     @Getter final Actions[] predecessors;
 

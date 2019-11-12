@@ -13,7 +13,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
 
-public interface ModuleInstallationStatusGroup {
+public interface ModuleInstallationStatusGroup extends ModuleStatusGroup {
 
   CompletionStage<String> commit();
 

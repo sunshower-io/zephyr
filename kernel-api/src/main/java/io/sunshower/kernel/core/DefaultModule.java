@@ -1,5 +1,6 @@
 package io.sunshower.kernel.core;
 
+import io.sunshower.PluginActivator;
 import io.sunshower.kernel.*;
 import io.sunshower.kernel.Module;
 import io.sunshower.kernel.misc.SuppressFBWarnings;
@@ -14,16 +15,19 @@ import lombok.val;
 
 public class DefaultModule implements Module, Comparable<Module> {
 
-  @Getter private final int order;
   /**
    * mutable state . These can't be final because either the module isn't resolved or there is a
    * mutual dependency
    */
   @Setter private ModuleLoader moduleLoader;
 
-  @Setter private ModuleClasspath moduleClasspath;
+  @Setter @Getter private PluginActivator activator;
 
   @Getter @Setter private Lifecycle lifecycle;
+  @Setter private ModuleClasspath moduleClasspath;
+
+  /** immutable state */
+  @Getter private final int order;
 
   @Getter private final Type type;
 
@@ -33,7 +37,6 @@ public class DefaultModule implements Module, Comparable<Module> {
   @Getter private final Coordinate coordinate;
   @Getter private final FileSystem fileSystem;
 
-  // must be unmodifiable upon construction
   @Getter private final Set<Library> libraries;
   @Getter private final Set<Dependency> dependencies;
 

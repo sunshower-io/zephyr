@@ -1,6 +1,7 @@
 package io.sunshower.kernel.core.lifecycle;
 
 import io.sunshower.gyre.Scope;
+import io.sunshower.kernel.Lifecycle;
 import io.sunshower.kernel.concurrency.*;
 import io.sunshower.kernel.concurrency.Process;
 import io.sunshower.kernel.core.Kernel;
@@ -8,7 +9,16 @@ import io.sunshower.kernel.core.KernelLifecycle;
 import io.sunshower.kernel.core.SunshowerKernel;
 import io.sunshower.kernel.misc.SuppressFBWarnings;
 import javax.inject.Inject;
+
+import io.sunshower.kernel.module.ModuleLifecycle;
+import io.sunshower.kernel.module.ModuleLifecycleChangeGroup;
+import io.sunshower.kernel.module.ModuleLifecycleChangeRequest;
 import lombok.val;
+
+import java.util.concurrent.CompletionStage;
+
+import static io.sunshower.kernel.core.lifecycle.DefaultKernelLifecycle.LifecycleProcessHolder.stopInstance;
+import static io.sunshower.kernel.core.lifecycle.DefaultKernelLifecycle.LifecycleProcessHolder.stopPlugins;
 
 @SuppressFBWarnings
 @SuppressWarnings("PMD.UnusedPrivateField")
@@ -29,17 +39,21 @@ public class DefaultKernelLifecycle implements KernelLifecycle {
   }
 
   @Override
-  public TaskTracker<String> stop() {
-    return scheduler.submit(LifecycleProcessHolder.stopInstance(kernel));
+  public CompletionStage<Process<String>> stop() {
+    return scheduler.submit(stopPlugins(kernel)).thenCompose(this::doStop);
+  }
+
+  private TaskTracker<String> doStop(Process<String> taskSets) {
+    return scheduler.submit(stopInstance(kernel));
   }
 
   @Override
-  public TaskTracker<String> start() {
+  public CompletionStage<Process<String>> start() {
     return scheduler.submit(LifecycleProcessHolder.startInstance(kernel));
   }
 
   @Override
-  public TaskTracker<String> setState(State state) {
+  public CompletionStage<Process<String>> setState(State state) {
     return null;
   }
 
@@ -70,6 +84,21 @@ public class DefaultKernelLifecycle implements KernelLifecycle {
           .task("kernel:lifecycle:classloader")
           .dependsOn("kernel:lifecycle:module:list")
           .create();
+    }
+
+    public static Process<String> stopPlugins(SunshowerKernel kernel) {
+
+      val running = kernel.getModuleManager().getModules();
+      val results = new ModuleLifecycleChangeRequest[running.size()];
+      int i = 0;
+      for (val r : running) {
+        results[i++] =
+            new ModuleLifecycleChangeRequest(r.getCoordinate(), ModuleLifecycle.Actions.Stop);
+      }
+      return kernel
+          .getModuleManager()
+          .prepare(new ModuleLifecycleChangeGroup(results))
+          .getProcess();
     }
   }
 }

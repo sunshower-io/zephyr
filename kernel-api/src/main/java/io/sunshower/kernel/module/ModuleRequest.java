@@ -1,3 +1,9 @@
 package io.sunshower.kernel.module;
 
-public interface ModuleRequest {}
+import io.sunshower.kernel.Coordinate;
+
+public interface ModuleRequest {
+  Coordinate getCoordinate();
+
+  ModuleLifecycle.Actions getLifecycleActions();
+}

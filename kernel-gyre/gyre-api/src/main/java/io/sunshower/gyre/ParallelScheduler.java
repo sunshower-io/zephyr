@@ -74,6 +74,10 @@ public class ParallelScheduler<E, V> implements Transformation<E, V, Schedule<E,
       tasks = new ArrayList<>();
     }
 
+    private MutableSchedule(List<TaskSet<E, V>> tasks) {
+      this.tasks = tasks;
+    }
+
     @Override
     public List<TaskSet<E, V>> getTasks() {
       return Collections.unmodifiableList(tasks);
@@ -87,6 +91,13 @@ public class ParallelScheduler<E, V> implements Transformation<E, V, Schedule<E,
     @Override
     public TaskSet<E, V> get(int i) {
       return tasks.get(i);
+    }
+
+    @Override
+    public Schedule<E, V> reverse() {
+      val result = new ArrayList<>(tasks);
+      Collections.reverse(result);
+      return new MutableSchedule<>(result);
     }
 
     @Override

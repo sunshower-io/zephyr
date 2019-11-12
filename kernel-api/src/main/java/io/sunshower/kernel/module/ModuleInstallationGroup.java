@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import lombok.Getter;
 
-public class ModuleInstallationGroup {
+public class ModuleInstallationGroup implements ModuleRequestGroup {
   @Getter final List<ModuleInstallationRequest> modules;
 
   public ModuleInstallationGroup(ModuleInstallationRequest... modules) {
@@ -18,5 +18,10 @@ public class ModuleInstallationGroup {
   public ModuleInstallationGroup add(ModuleInstallationRequest request) {
     modules.add(request);
     return this;
+  }
+
+  @Override
+  public List<ModuleInstallationRequest> getRequests() {
+    return modules;
   }
 }
