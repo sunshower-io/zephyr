@@ -29,10 +29,9 @@ public class KernelOptions extends AbstractValidatable<KernelOptions> {
   /** Specify the maximum number of threads the Sunshower Kernel may start */
   @Getter
   @CommandLine.Option(
-    names = {"-c", "--max-concurrency"},
-    defaultValue = "2",
-    type = Integer.class
-  )
+      names = {"-c", "--max-concurrency"},
+      defaultValue = "2",
+      type = Integer.class)
   private int concurrency = 8;
 
   /** if true, the Sunshower Kernel Launcher will start a shell */
@@ -40,6 +39,14 @@ public class KernelOptions extends AbstractValidatable<KernelOptions> {
   @Setter
   @CommandLine.Option(names = {"-i", "--interactive"})
   private boolean interactive;
+
+  /**
+   * If we're not interactive, just pass 'em through and let the kernel execute them
+   */
+  @Getter
+  @Setter
+  @CommandLine.Parameters(paramLabel = "arguments", index = "0..*")
+  private String[] parameters;
 
   public KernelOptions() {
     registerStep(KernelOptionsValidations.homeDirectory());

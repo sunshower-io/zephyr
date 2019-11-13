@@ -1,8 +1,17 @@
+plugins {
+    id 'net.nemerosa.versioning' version '2.8.2'
+}
+
 apply plugin: 'pmd'
 apply plugin: 'java'
+apply plugin: 'application'
 apply plugin: 'java-library'
 apply plugin: 'com.github.spotbugs'
+apply plugin: 'net.nemerosa.versioning'
 
+configurations {
+    bundle
+}
 dependencies {
 
     /**
@@ -14,10 +23,18 @@ dependencies {
     /**
      * Implementation Dependencies
      */
-    implementation project(':kernel-api')
-    implementation 'info.picocli:picocli'
-    implementation project(':kernel-gyre:gyre-api')
-    implementation project(':kernel-modules:kernel-lib')
+
+    [
+            'com.google.dagger:dagger',
+            project(':kernel-api'),
+            'info.picocli:picocli',
+            project(':kernel-gyre:gyre-api'),
+            project(':kernel-modules:kernel-lib')
+    ].each {
+        bundle it
+        implementation it
+    }
+
 
     /**
      * Test Dependencies
@@ -31,10 +48,6 @@ dependencies {
     testImplementation project(':kernel-tests:kernel-test-common')
 
 
-
-
-
-
     /**
      * Annotation Processors
      */
@@ -42,4 +55,26 @@ dependencies {
     annotationProcessor 'com.google.dagger:dagger-compiler'
 
 }
+jar {
+    manifest {
+        attributes(
+                'Kernel-Version': project.version,
+                'Built-By': System.properties['user.name'],
+                'Build-Timestamp': new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(new Date()),
+                'Build-Revision': versioning.info.commit,
+                'Created-By': "Gradle ${gradle.gradleVersion}",
+                'Build-Jdk':
+                        "${System.properties['java.version']} (${System.properties['java.vendor']} ${System.properties['java.vm.version']})"
+                ,
+                'Build-OS':
+                        "${System.properties['os.name']} ${System.properties['os.arch']} ${System.properties['os.version']}"
+        )
+    }
+}
+
+application {
+    mainClassName = 'io.sunshower.kernel.launch.KernelLauncher'
+}
+
+
 

@@ -38,6 +38,7 @@ public class LauncherInjectionConfiguration {
   @Provides
   @Singleton
   public KernelOptions kernelOptions() {
+    options.validate();
     return options;
   }
 

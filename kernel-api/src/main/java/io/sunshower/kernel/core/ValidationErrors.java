@@ -48,4 +48,8 @@ public class ValidationErrors {
   public void addAll(@NonNull ValidationErrors validate) {
     errors.addAll(validate.errors);
   }
+
+  public boolean isEmpty() {
+    return errors.isEmpty();
+  }
 }

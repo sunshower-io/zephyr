@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Kernel-Version: 2.0.0-SNAPSHOT
+Built-By: josiah
+Build-Timestamp: 2019-11-12T15:56:21.744-0700
+Build-Revision: c1be6c4a7d08ba72e10383630c482bf307d6d9b5
+Created-By: Gradle 5.6.2
+Build-Jdk: 11.0.1 (Oracle Corporation 11.0.1+13)
+Build-OS: Linux amd64 4.9.0-6-amd64

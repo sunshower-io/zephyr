@@ -30,7 +30,11 @@ public class ChainedValidationStep<T> implements ValidationStep<T> {
   public ValidationErrors validate(Validatable<T> validatable, T target) {
     ValidationErrors error = ValidationErrors.empty();
     for (var current = this; current != null; current = current.next) {
-      error.addAll(validate(current.action, validatable, target));
+
+      val a = validate(current.action, validatable, target);
+      if(a.isEmpty()) {
+        return a;
+      }
     }
     return error;
   }

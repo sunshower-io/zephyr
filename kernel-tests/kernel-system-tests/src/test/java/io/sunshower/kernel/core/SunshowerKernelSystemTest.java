@@ -17,6 +17,10 @@ public class SunshowerKernelSystemTest {
 
   @Test
   void ensureReloadingWorks() {
-    kernel.reload();
+    kernel.start();
+    kernel.stop();
   }
+
+
+
 }

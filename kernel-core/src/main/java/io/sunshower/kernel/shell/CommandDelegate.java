@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.val;
 import picocli.CommandLine;
 
+import java.util.Comparator;
+
 @Getter
 @SuppressFBWarnings
 @CommandLine.Command
@@ -16,6 +18,7 @@ public class CommandDelegate {
   private String[] arguments;
 
   public boolean execute(CommandRegistry registry) {
+    checkHelp(registry);
     val cli = registry.getCommand(command);
     val commandLine = new CommandLine(cli);
     if (arguments == null || arguments.length == 0) {
@@ -24,5 +27,16 @@ public class CommandDelegate {
       commandLine.execute(arguments);
     }
     return true;
+  }
+
+  private void checkHelp(CommandRegistry registry) {
+    if (command != null && command.trim().toLowerCase().equals("help")) {
+      for (val command : registry.getCommands()) {
+        val help = new CommandLine.Help(command.snd);
+        System.out.println("Command: " + help.abbreviatedSynopsis());
+        val result = help.commandList();
+        System.out.println(result);
+      }
+    }
   }
 }

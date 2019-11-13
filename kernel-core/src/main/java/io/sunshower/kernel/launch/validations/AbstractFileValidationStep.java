@@ -2,9 +2,7 @@ package io.sunshower.kernel.launch.validations;
 
 import io.sunshower.common.io.FilePermissionChecker;
 import io.sunshower.kernel.ObjectCheckException;
-import io.sunshower.kernel.core.ValidationError;
-import io.sunshower.kernel.core.ValidationErrors;
-import io.sunshower.kernel.core.ValidationStep;
+import io.sunshower.kernel.core.*;
 import io.sunshower.kernel.launch.KernelOptions;
 import java.io.File;
 import java.util.logging.Level;
@@ -26,10 +24,16 @@ public abstract class AbstractFileValidationStep implements ValidationStep<Kerne
     this.source = source;
   }
 
+  protected AbstractFileValidationStep() {
+    this.keyName = "";
+    this.source = "";
+  }
+
   protected ValidationErrors doValidate(KernelOptions target, String property) {
     log.log(Level.FINE, "options.file.locating", new Object[] {keyName, source});
     if (property != null) {
       val file = new File(property).getAbsoluteFile();
+      checkParent(file);
       val checker =
           new FilePermissionChecker(
               FilePermissionChecker.Type.READ,
@@ -45,5 +49,13 @@ public abstract class AbstractFileValidationStep implements ValidationStep<Kerne
       }
     }
     return ValidationErrors.empty();
+  }
+
+  private void checkParent(File file) {
+    if (!file.exists()) {
+      if (!file.mkdirs()) {
+        throw new KernelException("Failed to create file: " + file);
+      }
+    }
   }
 }

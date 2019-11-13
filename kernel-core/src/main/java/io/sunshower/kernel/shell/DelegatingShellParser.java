@@ -1,14 +1,16 @@
 package io.sunshower.kernel.shell;
 
+import io.sunshower.gyre.Pair;
 import io.sunshower.kernel.launch.KernelOptions;
 import java.util.*;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
 import lombok.val;
 import picocli.CommandLine;
 
 public class DelegatingShellParser implements ShellParser {
 
-  static final Pattern lineSplitter = Pattern.compile("\\s+");
   private final ShellConsole console;
   private final CommandDelegate delegate;
   private final Map<String, Object> commands;
@@ -20,10 +22,16 @@ public class DelegatingShellParser implements ShellParser {
   }
 
   @Override
-  public boolean perform(KernelOptions options) {
-    val line = console.readLine();
-    val populated = CommandLine.populateCommand(delegate, lineSplitter.split(line));
+  public boolean perform(KernelOptions options, String[] rest) {
+    val populated = CommandLine.populateCommand(delegate, rest);
     return populated.execute(this);
+  }
+
+  @Override
+  public List<Pair<String, Object>> getCommands() {
+    return commands.entrySet().stream()
+        .map(t -> Pair.of(t.getKey(), t.getValue()))
+        .collect(Collectors.toList());
   }
 
   @Override

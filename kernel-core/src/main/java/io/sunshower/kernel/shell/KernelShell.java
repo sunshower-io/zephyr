@@ -3,19 +3,23 @@ package io.sunshower.kernel.shell;
 import io.sunshower.kernel.launch.KernelOptions;
 import lombok.AllArgsConstructor;
 
+import java.util.regex.Pattern;
+
 @AllArgsConstructor
 @SuppressWarnings("PMD.DataflowAnomalyAnalysis")
 public class KernelShell {
 
-  private final ShellParser parser;
-  private final ShellConsole console;
+  static final  Pattern       lineSplitter = Pattern.compile("\\s+");
+  private final ShellParser   parser;
+  private final ShellConsole  console;
   private final KernelOptions options;
 
   public void start() {
     boolean running = true;
+    String[] line = options.getParameters();
     while (running) {
       try {
-        parser.perform(options);
+        parser.perform(options, line);
       } catch (ShellExitException ex) {
         running = false;
       } catch (Exception ex) {
@@ -24,6 +28,7 @@ public class KernelShell {
       if (!options.isInteractive()) {
         return;
       }
+      line = lineSplitter.split(console.readLine());
     }
   }
 }
