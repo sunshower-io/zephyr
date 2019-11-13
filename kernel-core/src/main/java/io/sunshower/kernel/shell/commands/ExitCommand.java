@@ -2,6 +2,8 @@ package io.sunshower.kernel.shell.commands;
 
 import io.sunshower.kernel.misc.SuppressFBWarnings;
 import java.util.concurrent.Callable;
+
+import io.sunshower.kernel.shell.ShellExitException;
 import picocli.CommandLine;
 
 @SuppressFBWarnings
@@ -10,7 +12,6 @@ import picocli.CommandLine;
 public class ExitCommand implements Callable<Void> {
   @Override
   public Void call() throws Exception {
-    System.exit(0);
-    return null;
+    throw new ShellExitException();
   }
 }

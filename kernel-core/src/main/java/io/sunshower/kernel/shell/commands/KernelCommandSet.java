@@ -6,9 +6,8 @@ import picocli.CommandLine;
 
 @AllArgsConstructor
 @CommandLine.Command(
-  name = "kernel",
-  subcommands = {StartKernelCommand.class, KernelStopCommand.class}
-)
+    name = "kernel",
+    subcommands = {StartKernelCommand.class, KernelStopCommand.class, RestartCommand.class})
 public class KernelCommandSet {
   final LauncherContext context;
 }

@@ -1,5 +1,6 @@
 package io.sunshower.kernel.shell;
 
+import io.sunshower.kernel.launch.KernelLauncher;
 import io.sunshower.kernel.misc.SuppressFBWarnings;
 import lombok.Getter;
 import lombok.val;
@@ -20,12 +21,17 @@ public class CommandDelegate {
   public boolean execute(CommandRegistry registry) {
     checkHelp(registry);
     val cli = registry.getCommand(command);
-    val commandLine = new CommandLine(cli);
+    if (cli == null) {
+      return false;
+    }
+    val commandLine =
+        new CommandLine(cli).setExecutionExceptionHandler(KernelLauncher.getInstance());
     if (arguments == null || arguments.length == 0) {
       commandLine.execute();
     } else {
       commandLine.execute(arguments);
     }
+    arguments = null;
     return true;
   }
 

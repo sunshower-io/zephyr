@@ -32,7 +32,7 @@ public class KernelOptions extends AbstractValidatable<KernelOptions> {
       names = {"-c", "--max-concurrency"},
       defaultValue = "2",
       type = Integer.class)
-  private int concurrency = 8;
+  private Integer concurrency = 8;
 
   /** if true, the Sunshower Kernel Launcher will start a shell */
   @Getter

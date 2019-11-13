@@ -2,6 +2,7 @@ package io.sunshower.kernel.shell.commands;
 
 import io.sunshower.kernel.core.DaggerSunshowerKernelConfiguration;
 import io.sunshower.kernel.core.SunshowerKernelInjectionModule;
+import io.sunshower.kernel.launch.KernelLauncher;
 import io.sunshower.kernel.misc.SuppressFBWarnings;
 import java.util.concurrent.Callable;
 
@@ -28,6 +29,7 @@ public class StartKernelCommand implements Callable<Void> {
 
     kernel.start();
     ((KernelLauncherContext) kernelCommandSet.context).setKernel(kernel);
+    KernelLauncher.setKernel(kernel);
     return null;
   }
 }
