@@ -37,11 +37,11 @@ public class PluginInstallCommand implements Runnable {
       } catch (Exception ex) {
         System.out.println(ex.getMessage());
       }
-      try {
-        kernel.getModuleManager().prepare(installationRequest).commit().toCompletableFuture().get();
-      } catch (Exception e) {
-        System.out.println("Error installing plugins: " + e.getMessage());
-      }
+    }
+    try {
+      kernel.getModuleManager().prepare(installationRequest).commit().toCompletableFuture().get();
+    } catch (Exception e) {
+      System.out.println("Error installing plugins: " + e.getMessage());
     }
   }
 

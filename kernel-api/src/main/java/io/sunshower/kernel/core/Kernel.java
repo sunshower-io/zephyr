@@ -7,7 +7,6 @@ import java.util.List;
 
 public interface Kernel extends PluginContext {
 
-
   KernelLifecycle getLifecycle();
 
   ClassLoader getClassLoader();
