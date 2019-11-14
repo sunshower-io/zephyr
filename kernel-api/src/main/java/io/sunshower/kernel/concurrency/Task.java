@@ -7,12 +7,23 @@ import io.sunshower.gyre.Scope;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.val;
 
 public abstract class Task {
 
+  enum State {
+    Failed,
+    Warning,
+    Success
+  }
   final String name;
   final Parameters parameters;
+
+  @Setter
+  @Getter
+  private State state;
 
   protected Task(String name) {
     this.name = name;

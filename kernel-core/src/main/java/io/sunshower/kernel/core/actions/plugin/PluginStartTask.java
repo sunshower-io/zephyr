@@ -36,6 +36,7 @@ public class PluginStartTask extends Task {
       if (!currentState.isAtLeast(Lifecycle.State.Active)) { // // TODO: 11/11/19 handle failed
         module.getLifecycle().setState(Lifecycle.State.Starting);
         val loader = module.getModuleClasspath().resolveServiceLoader(PluginActivator.class);
+        manager.getModuleLoader().check(module);
         for (val activator : loader) {
           activator.start(kernel);
           ((DefaultModule) module).setActivator(activator);

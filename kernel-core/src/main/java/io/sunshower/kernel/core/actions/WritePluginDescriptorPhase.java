@@ -78,10 +78,27 @@ public class WritePluginDescriptorPhase extends Task {
     if (partition.isCyclic()) {
       val ex = new CyclicDependencyException();
       for (val cycle : partition.getElements()) {
-        if (partition.isCyclic()) {
+        if (cycle.isCyclic()) {
           ex.addComponent(cycle);
+          for (val el : cycle.getElements()) {
+            val coord = el.getSnd();
+            for (val plugin : installedPlugins) {
+              if (coord.equals(plugin.getCoordinate())) {
+                val fs = plugin.getFileSystem();
+                if (fs != null) {
+                  try {
+                    fs.close();
+                  } catch (Exception x) {
+                    // not much to do here
+                    ex.addSuppressed(x);
+                  }
+                }
+              }
+            }
+          }
         }
       }
+
       throw ex;
     }
     log.info("plugin.phase.nocycles");
@@ -96,6 +113,19 @@ public class WritePluginDescriptorPhase extends Task {
     for (val unresolvedDependency : results) {
 
       if (!unresolvedDependency.isSatisfied()) {
+        val plugin = unresolvedDependency.getSource();
+        for (val installedPlugin : installedPlugins) {
+          if (plugin.equals(installedPlugin.getCoordinate())) {
+            try {
+              val fs = installedPlugin.getFileSystem();
+              if (fs != null) {
+                fs.close();
+              }
+            } catch (Exception ex) {
+              log.log(Level.WARNING, "failed to close plugin filesystem {0}", plugin);
+            }
+          }
+        }
         unsatisfied.add(unresolvedDependency);
       }
     }

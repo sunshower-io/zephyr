@@ -11,4 +11,6 @@ public interface ModuleClasspathManager {
   void uninstall(@NonNull Coordinate coordinate);
 
   void uninstall(@NonNull Module module);
+
+  void check(Module module);
 }

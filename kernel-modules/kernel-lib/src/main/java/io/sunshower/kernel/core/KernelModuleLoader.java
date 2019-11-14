@@ -54,6 +54,15 @@ public final class KernelModuleLoader extends ModuleLoader
   }
 
   @Override
+  public void check(Module module) {
+    val coord = module.getCoordinate();
+    if(!moduleLoaders.containsKey(coord)) {
+      install(module);
+    }
+
+  }
+
+  @Override
   protected org.jboss.modules.Module preloadModule(final String name) throws ModuleLoadException {
 
     org.jboss.modules.Module result = loadModuleLocal(name);

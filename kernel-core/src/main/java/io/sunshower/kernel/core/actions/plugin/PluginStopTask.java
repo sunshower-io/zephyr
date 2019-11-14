@@ -39,17 +39,22 @@ public class PluginStopTask extends Task {
         }
       }
       if (currentState == Lifecycle.State.Active) { // // TODO: 11/11/19 handle Failed
-        module.getLifecycle().setState(Lifecycle.State.Stopping);
-        module.getActivator().stop(kernel);
-        kernel.getModuleClasspathManager().uninstall(module);
-        ((DefaultModule) module).setActivator(null);
         try {
-          module.getFileSystem().close();
-        } catch (IOException ex) {
-          module.getLifecycle().setState(Lifecycle.State.Failed);
-          throw new PluginException(ex);
+          module.getLifecycle().setState(Lifecycle.State.Stopping);
+          module.getActivator().stop(kernel);
+          kernel.getModuleClasspathManager().uninstall(module);
+          ((DefaultModule) module).setActivator(null);
+          try {
+            module.getFileSystem().close();
+          } catch (Exception ex) {
+            module.getLifecycle().setState(Lifecycle.State.Failed);
+            throw new PluginException(ex);
+          }
+        } finally {
+          if (module.getLifecycle().getState() != Lifecycle.State.Failed) {
+            module.getLifecycle().setState(Lifecycle.State.Resolved);
+          }
         }
-        module.getLifecycle().setState(Lifecycle.State.Resolved);
       }
 
       return null;

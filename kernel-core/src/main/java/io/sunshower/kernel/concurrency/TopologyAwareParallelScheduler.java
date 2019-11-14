@@ -4,6 +4,8 @@ import io.sunshower.gyre.DirectedGraph;
 import io.sunshower.gyre.Scope;
 import io.sunshower.kernel.log.Logging;
 import io.sunshower.kernel.misc.SuppressFBWarnings;
+
+import java.util.ArrayList;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -51,14 +53,25 @@ public class TopologyAwareParallelScheduler<K> {
 
     @Override
     public void run() {
+      outer:
       for (val taskSet : process.getTasks()) {
 
         val latch = new NotifyingLatch<K>(this, taskSet.size());
+        val results = new ArrayList<Task>();
         for (val task : taskSet.getTasks()) {
-          workerPool.submit(new NotifyingTask<>(task, latch, context));
+          val ntask = new NotifyingTask<>(task, latch, context);
+          workerPool.submit(ntask);
+          results.add(task.getValue());
         }
         try {
           latch.await();
+          for (val task : results) {
+            if (task.getState() == Task.State.Failed) {
+              log.log(Level.WARNING, "Task {} failed--not continuing ", task.getName());
+              break outer;
+            }
+          }
+
         } catch (InterruptedException e) {
         }
       }
@@ -88,6 +101,14 @@ public class TopologyAwareParallelScheduler<K> {
         val result = task.getValue().run(this);
         if (result != null) {
           return result.value;
+        }
+        return null;
+      } catch (TaskException ex) {
+
+        if (ex.getStatus() == TaskStatus.UNRECOVERABLE) {
+          task.getValue().setState(Task.State.Failed);
+        } else {
+          task.getValue().setState(Task.State.Warning);
         }
         return null;
       } catch (Exception ex) {
