@@ -2,8 +2,8 @@ package io.sunshower.kernel.launch;
 
 import dagger.Module;
 import dagger.Provides;
+import io.sunshower.kernel.core.Kernel;
 import io.sunshower.kernel.shell.*;
-
 import java.io.File;
 import java.util.ServiceLoader;
 import java.util.logging.*;
@@ -14,42 +14,30 @@ import lombok.val;
 @Module
 public class LauncherInjectionConfiguration {
 
-  private final KernelOptions options;
-
-  public LauncherInjectionConfiguration(@NonNull KernelOptions options) {
-    this.options = options;
-    configureLogging(options);
-  }
-
   @Provides
   @Singleton
-  public ShellConsole shellConsole() {
+  public ShellConsole shellConsole(KernelOptions options) {
     return ServiceLoader.load(ShellConsole.class).findFirst().get();
   }
 
   @Provides
   @Singleton
-  public ShellParser shellParser() {
-    return ServiceLoader.load(ShellParser.class).findFirst().get();
+  public ShellParser shellParser(Kernel kernel, KernelOptions options) {
+    return ServiceLoader.load(ShellParserFactory.class).findFirst().get().create(kernel, options);
   }
 
   @Provides
   @Singleton
-  public KernelShell shell(ShellParser parser, LauncherContext context, ShellConsole console) {
+  public KernelShell shell(ShellParser parser, KernelOptions options, ShellConsole console) {
     return new KernelShell(parser, console, options);
   }
 
   @Provides
   @Singleton
-  public KernelOptions kernelOptions() {
-    options.validate();
-    return options;
-  }
-
-  @Provides
-  @Singleton
-  public LauncherContext context(ShellParser registry, ShellConsole console) {
-    val ctx = new KernelLauncherContext(console, registry, options);
+  public LauncherContext context(
+      ShellParser registry, ShellConsole console, KernelOptions options, Kernel kernel) {
+    configureLogging(options);
+    val ctx = new KernelLauncherContext(kernel, console, registry, options);
     val loader = ServiceLoader.load(LauncherDecorator.class);
     val iter = loader.iterator();
     while (iter.hasNext()) {

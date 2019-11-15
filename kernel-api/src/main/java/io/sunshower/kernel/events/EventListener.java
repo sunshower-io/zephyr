@@ -1,5 +1,6 @@
 package io.sunshower.kernel.events;
 
-public interface EventListener<E, T> {
-  void onEvent(Event<E, T> event);
+public interface EventListener<T> {
+
+  void onEvent(EventType type, Event<T> event);
 }

@@ -18,12 +18,11 @@ public abstract class Task {
     Warning,
     Success
   }
+
   final String name;
   final Parameters parameters;
 
-  @Setter
-  @Getter
-  private State state;
+  @Setter @Getter private State state;
 
   protected Task(String name) {
     this.name = name;

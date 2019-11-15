@@ -27,12 +27,12 @@ public class ChainedValidationStep<T> implements ValidationStep<T> {
   }
 
   @Override
+  @SuppressWarnings("PMD.DataflowAnomalyAnalysis")
   public ValidationErrors validate(Validatable<T> validatable, T target) {
     ValidationErrors error = ValidationErrors.empty();
     for (var current = this; current != null; current = current.next) {
-
       val a = validate(current.action, validatable, target);
-      if(a.isEmpty()) {
+      if (a.isEmpty()) {
         return a;
       }
     }

@@ -16,7 +16,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import lombok.val;
 
-@SuppressWarnings({"PMD.UnusedPrivateMethod", "PMD.UnusedFormalParameter"})
+@SuppressWarnings({
+  "PMD.UnusedPrivateMethod",
+  "PMD.UnusedFormalParameter",
+  "PMD.DataflowAnomalyAnalysis"
+})
 public class WritePluginDescriptorPhase extends Task {
   static final Logger log = Logging.get(WritePluginDescriptorPhase.class);
 

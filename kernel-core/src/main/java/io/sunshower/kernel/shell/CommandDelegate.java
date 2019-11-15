@@ -2,11 +2,10 @@ package io.sunshower.kernel.shell;
 
 import io.sunshower.kernel.launch.KernelLauncher;
 import io.sunshower.kernel.misc.SuppressFBWarnings;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.val;
 import picocli.CommandLine;
-
-import java.util.Comparator;
 
 @Getter
 @SuppressFBWarnings
@@ -18,14 +17,16 @@ public class CommandDelegate {
   @CommandLine.Parameters(index = "1..*")
   private String[] arguments;
 
-  public boolean execute(CommandRegistry registry) {
+  public boolean execute(CommandRegistry registry, ShellModule module) {
     checkHelp(registry);
     val cli = registry.getCommand(command);
+    module.inject(cli);
     if (cli == null) {
       return false;
     }
     val commandLine =
-        new CommandLine(cli).setExecutionExceptionHandler(KernelLauncher.getInstance());
+        new CommandLine(cli, injectionFactory(module))
+            .setExecutionExceptionHandler(KernelLauncher.getInstance());
     if (arguments == null || arguments.length == 0) {
       commandLine.execute();
     } else {
@@ -33,6 +34,28 @@ public class CommandDelegate {
     }
     arguments = null;
     return true;
+  }
+
+  private CommandLine.IFactory injectionFactory(ShellModule module) {
+    return new InjectionFactory(module);
+  }
+
+  @AllArgsConstructor
+  static final class InjectionFactory implements CommandLine.IFactory {
+
+    final ShellModule module;
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <K> K create(Class<K> cls) throws Exception {
+      if (Command.class.isAssignableFrom(cls)) {
+        val cmd = (Command) cls.getConstructor().newInstance();
+        module.inject(cmd);
+        return (K) cmd;
+      } else {
+        return CommandLine.defaultFactory().create(cls);
+      }
+    }
   }
 
   private void checkHelp(CommandRegistry registry) {

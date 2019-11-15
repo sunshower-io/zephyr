@@ -43,10 +43,8 @@ public class SunshowerKernelTest {
     SunshowerKernel.setKernelOptions(options);
 
     cfg =
-        DaggerSunshowerKernelConfiguration.builder()
-            .sunshowerKernelInjectionModule(
-                new SunshowerKernelInjectionModule(options, ClassLoader.getSystemClassLoader()))
-            .build();
+        DaggerSunshowerKernelConfiguration.factory()
+            .create(options, ClassLoader.getSystemClassLoader());
     kernel = cfg.kernel();
   }
 

@@ -5,7 +5,6 @@ import io.sunshower.kernel.concurrency.Task;
 import io.sunshower.kernel.concurrency.TaskException;
 import io.sunshower.kernel.concurrency.TaskStatus;
 import io.sunshower.kernel.core.Kernel;
-
 import java.util.logging.Logger;
 
 public class UnloadKernelFilesystemPhase extends Task {

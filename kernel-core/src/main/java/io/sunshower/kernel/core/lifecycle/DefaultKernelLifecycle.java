@@ -7,8 +7,10 @@ import io.sunshower.gyre.Scope;
 import io.sunshower.kernel.concurrency.*;
 import io.sunshower.kernel.concurrency.Process;
 import io.sunshower.kernel.core.Kernel;
+import io.sunshower.kernel.core.KernelEventTypes;
 import io.sunshower.kernel.core.KernelLifecycle;
 import io.sunshower.kernel.core.SunshowerKernel;
+import io.sunshower.kernel.events.Events;
 import io.sunshower.kernel.misc.SuppressFBWarnings;
 import io.sunshower.kernel.module.ModuleLifecycle;
 import io.sunshower.kernel.module.ModuleLifecycleChangeGroup;
@@ -44,14 +46,21 @@ public class DefaultKernelLifecycle implements KernelLifecycle {
 
   @Override
   public CompletionStage<Process<String>> stop() {
+    kernel.dispatchEvent(KernelEventTypes.KERNEL_SHUTDOWN_INITIATED, Events.create(kernel));
     return scheduler.submit(stopPlugins(kernel)).thenCompose(this::doStop);
   }
 
   @Override
   public CompletionStage<Process<String>> start() {
+    val event = Events.create(kernel);
+    kernel.dispatchEvent(KernelEventTypes.KERNEL_START_INITIATED, event);
     this.state.set(State.Starting);
     val a = scheduler.submit(LifecycleProcessHolder.startInstance(kernel));
-    a.thenRun(() -> this.state.set(State.Running));
+    a.thenRun(
+        () -> {
+          this.state.set(State.Running);
+          kernel.dispatchEvent(KernelEventTypes.KERNEL_START_SUCCEEDED, event);
+        });
     return a;
   }
 
@@ -69,7 +78,11 @@ public class DefaultKernelLifecycle implements KernelLifecycle {
   private TaskTracker<String> doStop(Process<String> taskSets) {
     this.state.set(State.Stopping);
     val r = scheduler.submit(stopInstance(kernel));
-    r.thenRun(() -> this.state.set(State.Stopped));
+    r.thenRun(
+        () -> {
+          this.state.set(State.Stopped);
+          kernel.dispatchEvent(KernelEventTypes.KERNEL_SHUTDOWN_SUCCEEDED, Events.create(kernel));
+        });
     return r;
   }
 

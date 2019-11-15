@@ -1,13 +1,12 @@
 package io.sunshower.kernel.shell;
 
 import io.sunshower.gyre.Pair;
-
 import java.util.List;
 
 public interface CommandRegistry {
-  List<Pair<String, Object>> getCommands();
+  List<Pair<String, Command>> getCommands();
 
-  void register(String name, Object command);
+  void register(String name, Command command);
 
-  Object getCommand(String command);
+  Command getCommand(String command);
 }

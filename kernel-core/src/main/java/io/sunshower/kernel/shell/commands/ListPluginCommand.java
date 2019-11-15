@@ -1,21 +1,22 @@
 package io.sunshower.kernel.shell.commands;
 
 import io.sunshower.kernel.launch.KernelLauncher;
+import java.util.concurrent.Callable;
+
+import io.sunshower.kernel.shell.Command;
 import lombok.val;
 import picocli.CommandLine;
 
-import java.util.concurrent.Callable;
-
 @CommandLine.Command(name = "list")
-public class ListPluginCommand implements Callable<Void> {
+public class ListPluginCommand extends Command {
 
   @Override
-  public Void call() throws Exception {
+  protected int execute() {
     val kernel = KernelLauncher.getKernel();
     val cmd = KernelLauncher.getConsole();
     if (kernel == null) {
       cmd.format("Kernel is not running (have you called 'kernel start'?)");
-      return null;
+      return -1;
     }
     cmd.format("Installed Plugins:\n");
     val modules = kernel.getModuleManager().getModules();
@@ -25,6 +26,6 @@ public class ListPluginCommand implements Callable<Void> {
           module.getCoordinate().toCanonicalForm(), module.getLifecycle().getState());
     }
 
-    return null;
+    return 0;
   }
 }

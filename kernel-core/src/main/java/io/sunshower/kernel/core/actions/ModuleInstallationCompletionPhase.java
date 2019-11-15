@@ -26,6 +26,7 @@ public class ModuleInstallationCompletionPhase extends Task {
   }
 
   @Override
+  @SuppressWarnings({"PMD.CloseResource"})
   public TaskValue run(Scope context) {
     synchronized (this) {
       URL url = context.get(ModuleDownloadPhase.DOWNLOAD_URL);

@@ -1,9 +1,6 @@
 package io.sunshower.kernel.shell;
 
-import io.sunshower.kernel.core.Kernel;
-import io.sunshower.kernel.launch.KernelLauncher;
 import io.sunshower.kernel.launch.KernelOptions;
-
 import java.util.regex.Pattern;
 
 @SuppressWarnings("PMD.DataflowAnomalyAnalysis")
@@ -18,7 +15,6 @@ public class KernelShell {
     this.parser = parser;
     this.console = console;
     this.options = options;
-    KernelLauncher.setConsole(console);
   }
 
   public void start() {

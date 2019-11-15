@@ -5,12 +5,12 @@ import io.sunshower.kernel.module.ModuleLifecycle;
 import picocli.CommandLine;
 
 @CommandLine.Command(name = "start")
-public class StartPluginCommand extends PluginLifecycleCommand implements Runnable {
+public class StartPluginCommand extends PluginLifecycleCommand {
   @CommandLine.Parameters(index = "0..*")
   private String args[];
 
-  @Override
-  public void run() {
+  protected int execute() {
     apply(KernelLauncher.getKernel(), args, ModuleLifecycle.Actions.Activate);
+    return 0;
   }
 }

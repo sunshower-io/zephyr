@@ -2,8 +2,13 @@ package io.sunshower.kernel.shell;
 
 import java.io.PrintWriter;
 import java.io.Reader;
+import java.util.ResourceBundle;
 
 public interface ShellConsole {
+
+  // Reset
+
+  // Regular Colors
 
   void flush();
 
@@ -22,4 +27,9 @@ public interface ShellConsole {
   String readPassword(String fmt, Object... args);
 
   PrintWriter getPrintWriter();
+
+  ShellConsole writeln(String bundle, Color[] codes, Object... args);
+  ShellConsole writeln(ResourceBundle resourceBundle, String bundle, Color[] codes, Object... args);
+
+  ShellConsole write(ResourceBundle resourceBundle, String bundle, Color[] codes, Object... args);
 }

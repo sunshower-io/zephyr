@@ -1,23 +1,34 @@
 package io.sunshower.kernel.shell.commands;
 
-import java.util.concurrent.Callable;
-import lombok.val;
+import io.sunshower.kernel.core.KernelEventTypes;
+import io.sunshower.kernel.events.Event;
+import io.sunshower.kernel.events.EventType;
+import io.sunshower.kernel.shell.Color;
+import io.sunshower.kernel.shell.Command;
 import picocli.CommandLine;
 
 @SuppressWarnings("PMD.DoNotUseThreads")
 @CommandLine.Command(name = "stop")
-public class KernelStopCommand implements Callable<Void> {
+public class KernelStopCommand extends Command {
 
-  @CommandLine.ParentCommand private KernelCommandSet kernelCommandSet;
+  public KernelStopCommand() {
+    super(KernelEventTypes.KERNEL_SHUTDOWN_INITIATED, KernelEventTypes.KERNEL_SHUTDOWN_SUCCEEDED);
+  }
 
   @Override
-  public Void call() throws Exception {
-    val kernel = kernelCommandSet.context.getKernel();
-    if (kernel == null) {
-      kernelCommandSet.context.getConsole().printf("Kernel has not been started");
-    } else {
-      kernel.stop();
+  protected int execute() {
+    kernel.stop();
+    return 0;
+  }
+
+  @Override
+  public void onEvent(EventType type, Event<Object> event) {
+    if (type == KernelEventTypes.KERNEL_SHUTDOWN_INITIATED) {
+      console.writeln("Initiating kernel shutdown", Color.colors(Color.Green));
     }
-    return null;
+
+    if (type == KernelEventTypes.KERNEL_SHUTDOWN_SUCCEEDED) {
+      console.writeln("Kernel shutdown succeeded", Color.colors(Color.Green));
+    }
   }
 }

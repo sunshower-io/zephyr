@@ -3,18 +3,19 @@ package io.sunshower.kernel.shell;
 import io.sunshower.kernel.core.Kernel;
 import io.sunshower.kernel.launch.KernelOptions;
 import lombok.Getter;
-import lombok.Setter;
 
 public class KernelLauncherContext implements LauncherContext {
-  @Setter private Kernel kernel;
   @Getter final ShellConsole console;
   final CommandRegistry registry;
   final KernelOptions kernelOptions;
+  private final Kernel kernel;
 
   public KernelLauncherContext(
+      final Kernel kernel,
       final ShellConsole console,
       final CommandRegistry registry,
       final KernelOptions kernelOptions) {
+    this.kernel = kernel;
     this.console = console;
     this.registry = registry;
     this.kernelOptions = kernelOptions;

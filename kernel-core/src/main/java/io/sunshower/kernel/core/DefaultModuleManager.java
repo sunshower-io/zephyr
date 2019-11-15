@@ -4,6 +4,10 @@ import io.sunshower.kernel.Coordinate;
 import io.sunshower.kernel.Lifecycle;
 import io.sunshower.kernel.Module;
 import io.sunshower.kernel.dependencies.DependencyGraph;
+import io.sunshower.kernel.events.Event;
+import io.sunshower.kernel.events.EventListener;
+import io.sunshower.kernel.events.EventSource;
+import io.sunshower.kernel.events.EventType;
 import io.sunshower.kernel.log.Logging;
 import io.sunshower.kernel.module.ModuleInstallationGroup;
 import io.sunshower.kernel.module.ModuleInstallationStatusGroup;
@@ -14,6 +18,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.inject.Inject;
+
+import lombok.experimental.Delegate;
 import lombok.val;
 
 @SuppressWarnings({
@@ -22,11 +28,11 @@ import lombok.val;
   "PMD.UnusedFormalParameter",
   "PMD.AvoidInstantiatingObjectsInLoops"
 })
-public class DefaultModuleManager implements ModuleManager {
+public class DefaultModuleManager implements ModuleManager, EventSource {
 
   static final Logger log = Logging.get(DefaultModuleManager.class, "KernelMember");
 
-  private Kernel kernel;
+  @Delegate private Kernel kernel;
   final DependencyGraph dependencyGraph;
 
   @Inject

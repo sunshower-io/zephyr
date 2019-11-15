@@ -20,7 +20,4 @@ public class SunshowerKernelSystemTest {
     kernel.start();
     kernel.stop();
   }
-
-
-
 }

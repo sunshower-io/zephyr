@@ -5,9 +5,10 @@ import io.sunshower.kernel.core.ModuleCoordinate;
 import io.sunshower.kernel.module.ModuleLifecycle;
 import io.sunshower.kernel.module.ModuleLifecycleChangeGroup;
 import io.sunshower.kernel.module.ModuleLifecycleChangeRequest;
+import io.sunshower.kernel.shell.Command;
 import lombok.val;
 
-public class PluginLifecycleCommand {
+public class PluginLifecycleCommand extends Command {
 
   protected void apply(Kernel kernel, String[] plugins, ModuleLifecycle.Actions actions) {
     val tostart = new ModuleLifecycleChangeGroup();

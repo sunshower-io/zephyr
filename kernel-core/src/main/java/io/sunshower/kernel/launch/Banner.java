@@ -1,14 +1,14 @@
 package io.sunshower.kernel.launch;
 
-import lombok.val;
-
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.Scanner;
 import java.util.jar.Manifest;
+import lombok.val;
 
+@SuppressWarnings({"PMD.DataflowAnomalyAnalysis", "PMD.UseProperClassLoader"})
 public final class Banner {
 
   public Banner() {}

@@ -1,17 +1,19 @@
 package io.sunshower.kernel.launch;
 
+// import io.sunshower.kernel.core.DaggerSunshowerKernelConfiguration;
+import io.sunshower.kernel.core.DaggerSunshowerKernelConfiguration;
 import io.sunshower.kernel.core.Kernel;
 import io.sunshower.kernel.core.SunshowerKernel;
 import io.sunshower.kernel.shell.ShellConsole;
 import io.sunshower.kernel.shell.ShellExitException;
 import io.sunshower.kernel.shell.commands.RestartException;
-import lombok.val;
-import picocli.CommandLine;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.val;
+import picocli.CommandLine;
 
+@SuppressWarnings({"PMD.UseVarargs", "PMD.ArrayIsStoredDirectly", "PMD.DoNotCallSystemExit"})
 public class KernelLauncher implements CommandLine.IExecutionExceptionHandler {
 
   /** static stuff--figure out clean way to handle this */
@@ -45,7 +47,6 @@ public class KernelLauncher implements CommandLine.IExecutionExceptionHandler {
 
   public KernelLauncher(String[] args) {
     this.args = args;
-    instance = this;
     options = new KernelOptions();
   }
 
@@ -66,18 +67,24 @@ public class KernelLauncher implements CommandLine.IExecutionExceptionHandler {
 
     LauncherInjectionModule module = createModule(options);
     val shell = module.shell();
+    module.launcherContext();
     shell.start();
     System.exit(0);
   }
 
   public static void main(String[] args) throws IOException {
-    new KernelLauncher(args).run();
+    instance = new KernelLauncher(args);
+    instance.run();
   }
 
   static LauncherInjectionModule createModule(KernelOptions options) {
-    return DaggerLauncherInjectionModule.builder()
-        .launcherInjectionConfiguration(new LauncherInjectionConfiguration(options))
-        .build();
+    return DaggerLauncherInjectionModule.factory().create(options, createKernel(options));
+  }
+
+  private static Kernel createKernel(KernelOptions options) {
+    return DaggerSunshowerKernelConfiguration.factory()
+        .create(options, ClassLoader.getSystemClassLoader())
+        .kernel();
   }
 
   @Override

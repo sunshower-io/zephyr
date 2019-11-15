@@ -1,65 +1,57 @@
 package io.sunshower.kernel.events;
 
-import java.util.*;
-import lombok.NonNull;
 import lombok.val;
 
-public class AbstractEventSource<E, T> implements EventSource<E, T> {
+import java.util.*;
 
-  private final Class<? extends E> type;
-  private final Object lock = new Object();
+public class AbstractEventSource implements EventSource {
+  private final Map<BitSet, List<EventListener<?>>> listeners;
 
-  private final Map<E, List<EventListener<E, T>>> listeners;
-
-  protected AbstractEventSource(@NonNull Class<? extends E> type) {
-    this.type = type;
-    this.listeners = create(type);
+  protected AbstractEventSource() {
+    listeners = new HashMap<>(2);
   }
 
   @Override
-  public boolean handles(@NonNull Class type) {
-    return type.equals(this.type);
+  public <T> void addEventListener(EventListener<T> listener, EventType... types) {
+    synchronized (listeners) {
+      val bitset = new BitSet();
+      for (val type : types) {
+        bitset.set(type.getId());
+      }
+
+      List<EventListener<?>> results = listeners.get(bitset);
+      if (results == null) {
+        results = new ArrayList<>(1);
+        listeners.put(bitset, results);
+      }
+      results.add(listener);
+    }
   }
 
   @Override
-  public void dispatch(@NonNull Event<E, T> event) {
-    synchronized (lock) {
-      val type = event.getType();
-      val subset = listeners.get(type);
-      if (subset != null) {
-        for (val listener : subset) {
-          listener.onEvent(event);
+  public <T> void removeEventListener(EventListener<T> listener) {
+    synchronized (listeners) {
+      for (val e : listeners.values()) {
+        if (e.remove(listener)) {
+          break;
         }
       }
     }
   }
 
   @Override
-  public void removeListener(@NonNull E type, @NonNull EventListener<E, T> listener) {
-    synchronized (lock) {
-      val subset = listeners.get(type);
-      if (subset != null) {
-        subset.remove(listener);
-      }
-    }
-  }
-
-  @Override
   @SuppressWarnings("unchecked")
-  public void registerListener(@NonNull E type, @NonNull EventListener<E, T> listener) {
-    synchronized (lock) {
-      if (handles(type.getClass())) {
-        listeners.computeIfAbsent(type, k -> new ArrayList<>()).add(listener);
+  public <T> void dispatchEvent(EventType type, Event<T> event) {
+    synchronized (listeners) {
+      for (val listeners : listeners.entrySet()) {
+        val key = listeners.getKey();
+        if (key.get(type.getId())) {
+          val ls = listeners.getValue();
+          for (val listener : ls) {
+            listener.onEvent(type, (Event) event);
+          }
+        }
       }
-    }
-  }
-
-  @SuppressWarnings("unchecked")
-  protected Map<E, List<EventListener<E, T>>> create(Class<? extends E> type) {
-    if (Enum.class.isAssignableFrom(type)) {
-      return new EnumMap(type);
-    } else {
-      return new HashMap<>();
     }
   }
 }

@@ -8,6 +8,7 @@ plugins {
 }
 
 allprojects {
+
     apply plugin: "io.spring.dependency-management"
     apply plugin: "com.diffplug.gradle.spotless"
 

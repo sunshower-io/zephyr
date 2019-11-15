@@ -1,9 +1,8 @@
 package io.sunshower.kernel.launch;
 
 import io.sunshower.kernel.shell.ShellConsole;
-import lombok.experimental.Delegate;
-
 import java.util.ResourceBundle;
+import lombok.experimental.Delegate;
 
 public class LocalizableConsole implements ShellConsole, AutoCloseable {
   @Delegate private final ShellConsole delegate;

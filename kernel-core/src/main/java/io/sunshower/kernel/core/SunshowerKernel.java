@@ -3,6 +3,7 @@ package io.sunshower.kernel.core;
 import io.sunshower.kernel.classloading.KernelClassloader;
 import io.sunshower.kernel.concurrency.Scheduler;
 import io.sunshower.kernel.core.lifecycle.DefaultKernelLifecycle;
+import io.sunshower.kernel.events.AbstractEventSource;
 import io.sunshower.kernel.launch.KernelOptions;
 import java.nio.file.FileSystem;
 import java.util.ArrayList;
@@ -15,7 +16,7 @@ import lombok.SneakyThrows;
 import lombok.val;
 
 @SuppressWarnings({"PMD.AvoidUsingVolatile", "PMD.DoNotUseThreads"})
-public class SunshowerKernel implements Kernel {
+public class SunshowerKernel extends AbstractEventSource implements Kernel {
 
   private final Scheduler<String> scheduler;
   /** class fields */

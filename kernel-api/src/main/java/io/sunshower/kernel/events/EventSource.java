@@ -1,12 +1,10 @@
 package io.sunshower.kernel.events;
 
-public interface EventSource<E, T> {
+public interface EventSource {
 
-  boolean handles(Class type);
+  <T> void addEventListener(EventListener<T> listener, EventType... types);
 
-  void dispatch(Event<E, T> event);
+  <T> void removeEventListener(EventListener<T> listener);
 
-  void removeListener(E type, EventListener<E, T> listener);
-
-  void registerListener(E type, EventListener<E, T> listener);
+  <T> void dispatchEvent(EventType type, Event<T> event);
 }

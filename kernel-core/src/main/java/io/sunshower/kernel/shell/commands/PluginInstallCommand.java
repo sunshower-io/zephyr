@@ -3,27 +3,26 @@ package io.sunshower.kernel.shell.commands;
 import io.sunshower.kernel.launch.KernelLauncher;
 import io.sunshower.kernel.module.ModuleInstallationGroup;
 import io.sunshower.kernel.module.ModuleInstallationRequest;
-import lombok.val;
-import picocli.CommandLine;
-
+import io.sunshower.kernel.shell.Command;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
+import lombok.val;
+import picocli.CommandLine;
 
 @CommandLine.Command(name = "install")
 @SuppressWarnings("PMD.DoNotUseThreads")
-public class PluginInstallCommand implements Runnable {
+public class PluginInstallCommand extends Command {
 
   @CommandLine.Parameters(description = "urls")
   private String[] urls;
 
   @Override
-  public void run() {
-    val kernel = KernelLauncher.getKernel();
+  protected int execute() {
     if (kernel == null) {
       KernelLauncher.getConsole().format("Kernel has not been started");
-      return;
+      return 0;
     }
     System.out.println("Installing URLs: " + Arrays.toString(urls));
 
@@ -43,6 +42,7 @@ public class PluginInstallCommand implements Runnable {
     } catch (Exception e) {
       System.out.println("Error installing plugins: " + e.getMessage());
     }
+    return 0;
   }
 
   private URL getUrl(String url) throws MalformedURLException {

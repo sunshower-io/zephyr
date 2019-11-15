@@ -4,7 +4,6 @@ import io.sunshower.gyre.DirectedGraph;
 import io.sunshower.gyre.Scope;
 import io.sunshower.kernel.log.Logging;
 import io.sunshower.kernel.misc.SuppressFBWarnings;
-
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;

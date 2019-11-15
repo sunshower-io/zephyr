@@ -13,19 +13,9 @@ import java.util.ServiceLoader;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.inject.Singleton;
-import lombok.NonNull;
 
 @Module
 public class SunshowerKernelInjectionModule {
-
-  private final KernelOptions options;
-  private final ClassLoader classLoader;
-
-  public SunshowerKernelInjectionModule(
-      @NonNull final KernelOptions options, @NonNull final ClassLoader kernelClassLoader) {
-    this.options = options;
-    this.classLoader = kernelClassLoader;
-  }
 
   @Provides
   @Singleton
@@ -52,12 +42,6 @@ public class SunshowerKernelInjectionModule {
     return new DefaultDependencyGraph();
   }
 
-  @Singleton
-  @Provides
-  public KernelOptions kernelOptions() {
-    return options;
-  }
-
   @Provides
   @Singleton
   public Kernel sunshowerKernel(SunshowerKernel kernel, ModuleManager moduleManager) {
@@ -73,7 +57,8 @@ public class SunshowerKernelInjectionModule {
 
   @Provides
   @Singleton
-  public ModuleClasspathManager moduleClasspathManager(DependencyGraph graph) {
+  public ModuleClasspathManager moduleClasspathManager(
+      DependencyGraph graph, ClassLoader classLoader) {
     return ServiceLoader.load(ModuleClasspathManagerProvider.class, classLoader)
         .findFirst()
         .get()

@@ -1,35 +1,36 @@
 package io.sunshower.kernel.shell.commands;
 
-import io.sunshower.kernel.core.DaggerSunshowerKernelConfiguration;
-import io.sunshower.kernel.core.SunshowerKernelInjectionModule;
-import io.sunshower.kernel.launch.KernelLauncher;
+import io.sunshower.kernel.core.KernelEventTypes;
+import io.sunshower.kernel.events.Event;
+import io.sunshower.kernel.events.EventType;
 import io.sunshower.kernel.misc.SuppressFBWarnings;
-import java.util.concurrent.Callable;
-
-import io.sunshower.kernel.shell.KernelLauncherContext;
-import lombok.Setter;
-import lombok.val;
+import io.sunshower.kernel.shell.Color;
+import io.sunshower.kernel.shell.Command;
 import picocli.CommandLine;
+
+import static io.sunshower.kernel.shell.Color.colors;
 
 @SuppressWarnings("PMD.DoNotUseThreads")
 @SuppressFBWarnings
 @CommandLine.Command(name = "start")
-public class StartKernelCommand implements Callable<Void> {
-  @Setter @CommandLine.ParentCommand private KernelCommandSet kernelCommandSet;
+public final class StartKernelCommand extends Command {
+  public StartKernelCommand() {
+    super(KernelEventTypes.KERNEL_START_INITIATED, KernelEventTypes.KERNEL_START_SUCCEEDED);
+  }
 
   @Override
-  public Void call() throws Exception {
-    val kernel =
-        DaggerSunshowerKernelConfiguration.builder()
-            .sunshowerKernelInjectionModule(
-                new SunshowerKernelInjectionModule(
-                    kernelCommandSet.context.getOptions(), ClassLoader.getSystemClassLoader()))
-            .build()
-            .kernel();
+  public void onEvent(EventType type, Event event) {
+    if (type == KernelEventTypes.KERNEL_START_INITIATED) {
+      console.writeln("Kernel Starting...", colors(Color.Green));
+    }
+    if (type == KernelEventTypes.KERNEL_START_SUCCEEDED) {
+      console.writeln("Kernel Started Successfully", colors(Color.Green));
+    }
+  }
 
+  @Override
+  protected int execute() {
     kernel.start();
-    ((KernelLauncherContext) kernelCommandSet.context).setKernel(kernel);
-    KernelLauncher.setKernel(kernel);
-    return null;
+    return 0;
   }
 }
