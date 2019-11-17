@@ -4,9 +4,9 @@ import io.sunshower.gyre.Scope;
 import io.sunshower.kernel.*;
 import io.sunshower.kernel.Module;
 import io.sunshower.kernel.concurrency.Task;
-import io.sunshower.kernel.core.DefaultModule;
-import io.sunshower.kernel.core.ModuleDescriptor;
-import io.sunshower.kernel.core.ModuleSource;
+import io.sunshower.kernel.core.*;
+import io.sunshower.kernel.events.EventType;
+import io.sunshower.kernel.events.Events;
 import io.sunshower.kernel.module.ModuleLifecycle;
 import java.io.File;
 import java.net.URI;
@@ -29,6 +29,7 @@ public class ModuleInstallationCompletionPhase extends Task {
   @SuppressWarnings({"PMD.CloseResource"})
   public TaskValue run(Scope context) {
     synchronized (this) {
+      Kernel kernel = context.<Kernel>get("SunshowerKernel");
       URL url = context.get(ModuleDownloadPhase.DOWNLOAD_URL);
       Source source = new ModuleSource(getSource(url));
       ModuleDescriptor descriptor = context.get(ModuleScanPhase.MODULE_DESCRIPTOR);
@@ -54,6 +55,7 @@ public class ModuleInstallationCompletionPhase extends Task {
 
       if (descriptor.getType() == Module.Type.Plugin) {
         context.<Set<Module>>get(INSTALLED_PLUGINS).add(module);
+        kernel.dispatchEvent(PluginEvents.PLUGIN_INSTALLATION_COMPLETE, Events.create(module));
       } else {
         context.<Set<Module>>get(INSTALLED_KERNEL_MODULES).add(module);
       }

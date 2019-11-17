@@ -6,15 +6,12 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-
 class KernelLauncherTest {
 
   public static void main(String[] args) throws IOException {}
 
   @Test
-  void testLauncher() throws IOException {
-
-    val temp = Tests.createTemp();
-    KernelLauncher.main(new String[] {"-h", temp.getAbsolutePath(), "-i"});
+  void ensureLauncherWorksWithNoArguments() throws IOException {
+    KernelLauncher.main(new String[0]);
   }
 }

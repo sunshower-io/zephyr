@@ -84,18 +84,22 @@ public class DelegatingShellConsole implements ShellConsole {
     return this;
   }
 
-  @Override
-  public ShellConsole write(
-      ResourceBundle resourceBundle, String bundle, Color[] codes, Object... args) {
-    val string = resourceBundle.getString("bundle");
-    val message = MessageFormat.format(string, args);
+  public static String color (
+      String bundle, Color[] codes, Object... args) {
+    val message = MessageFormat.format(bundle, args);
     val builder = new StringBuilder();
     for (val color : codes) {
       builder.append(color);
     }
     builder.append(message);
     builder.append(Color.Reset);
-    System.out.print(builder);
+    return builder.toString();
+  }
+
+  @Override
+  public ShellConsole write(
+      ResourceBundle resourceBundle, String bundle, Color[] codes, Object... args) {
+    printf(resourceBundle.getString(bundle), bundle, codes, args);
     return this;
   }
 }

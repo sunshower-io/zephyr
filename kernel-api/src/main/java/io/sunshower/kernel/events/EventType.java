@@ -1,5 +1,24 @@
 package io.sunshower.kernel.events;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 public interface EventType {
-    int getId();
+
+  default int getId() {
+    return instance.id();
+  }
+
+  Generator instance = new Generator();
+
+  final class Generator {
+    final AtomicInteger counter;
+
+    Generator() {
+      counter = new AtomicInteger();
+    }
+
+    final int id() {
+      return counter.getAndIncrement();
+    }
+  }
 }

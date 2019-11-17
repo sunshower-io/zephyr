@@ -8,6 +8,8 @@ import io.sunshower.kernel.core.*;
 import io.sunshower.kernel.dependencies.CyclicDependencyException;
 import io.sunshower.kernel.dependencies.DependencyGraph;
 import io.sunshower.kernel.dependencies.UnresolvedDependencyException;
+import io.sunshower.kernel.events.EventType;
+import io.sunshower.kernel.events.Events;
 import io.sunshower.kernel.log.Logging;
 import io.sunshower.kernel.memento.core.PluginCaretaker;
 import java.nio.file.FileSystem;
@@ -41,6 +43,7 @@ public class WritePluginDescriptorPhase extends Task {
     log.log(Level.INFO, "plugin.phase.writingplugins", installedPlugins.size());
 
     val kernel = scope.<SunshowerKernel>get("SunshowerKernel");
+
     //    ServiceLoader<PluginCaretaker> caretakers =
     //        ServiceLoader.load(PluginCaretaker.class, kernel.getClassLoader());
     //
@@ -62,6 +65,8 @@ public class WritePluginDescriptorPhase extends Task {
     resolvePlugins(moduleManager, installedPlugins);
 
     saveAll(kernel.getFileSystem(), moduleManager, actualCaretaker, installedPlugins);
+    kernel.dispatchEvent(
+        PluginEvents.PLUGIN_SET_INSTALLATION_COMPLETE, Events.create(installedPlugins));
 
     return null;
   }

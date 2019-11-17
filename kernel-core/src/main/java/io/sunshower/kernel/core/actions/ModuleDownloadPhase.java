@@ -6,6 +6,9 @@ import io.sunshower.gyre.Scope;
 import io.sunshower.kernel.concurrency.Task;
 import io.sunshower.kernel.concurrency.TaskException;
 import io.sunshower.kernel.concurrency.TaskStatus;
+import io.sunshower.kernel.core.Kernel;
+import io.sunshower.kernel.core.PluginEvents;
+import io.sunshower.kernel.events.Events;
 import io.sunshower.kernel.io.ChannelTransferListener;
 import io.sunshower.kernel.log.Logging;
 import java.io.File;
@@ -43,6 +46,9 @@ public class ModuleDownloadPhase extends Task implements ChannelTransferListener
   @Override
   public Task.TaskValue run(Scope scope) {
     URL downloadUrl = (URL) parameters().get(DOWNLOAD_URL);
+    scope
+        .<Kernel>get("SunshowerKernel")
+        .dispatchEvent(PluginEvents.PLUGIN_INSTALLATION_INITIATED, Events.create(downloadUrl));
     scope.set(DOWNLOAD_URL, downloadUrl);
     Path moduleDirectory = scope.get(TARGET_DIRECTORY);
     downloadModule(downloadUrl, moduleDirectory, scope);

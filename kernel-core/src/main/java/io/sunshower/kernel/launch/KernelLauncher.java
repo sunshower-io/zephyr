@@ -100,24 +100,9 @@ public class KernelLauncher implements CommandLine.IExecutionExceptionHandler {
       } else {
         kernel.stop();
         kernel = null;
-        instance = null;
-        List<String> args = new ArrayList<>();
-        if (options.getHomeDirectory() != null) {
-          args.add("-h ");
-          args.add(options.getHomeDirectory().getAbsolutePath());
-        }
-        if (options.getConcurrency() != null) {
-          args.add("-c ");
-          args.add(String.valueOf(options.getConcurrency()));
-        }
-        if (options.isInteractive()) {
-          args.add("-i ");
-        }
-        System.gc();
-        new KernelLauncher(args.toArray(new String[0])).run();
+        main(args);
       }
     }
-
     return 0;
   }
 }

@@ -6,7 +6,12 @@ import java.net.URL;
 import java.text.MessageFormat;
 import java.util.Scanner;
 import java.util.jar.Manifest;
+
+import io.sunshower.kernel.shell.Color;
+import io.sunshower.kernel.shell.ShellConsole;
 import lombok.val;
+
+import static io.sunshower.kernel.shell.DelegatingShellConsole.color;
 
 @SuppressWarnings({"PMD.DataflowAnomalyAnalysis", "PMD.UseProperClassLoader"})
 public final class Banner {
@@ -20,7 +25,7 @@ public final class Banner {
     }
 
     String result = load(url);
-    out.println(result);
+    out.println(color(result, Color.colors(Color.BlueBold)));
   }
 
   String load(URL url) throws IOException {

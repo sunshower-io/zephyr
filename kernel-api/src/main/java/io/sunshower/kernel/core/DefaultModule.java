@@ -61,26 +61,6 @@ public class DefaultModule implements Module, Comparable<Module> {
     this.moduleDirectory = moduleDirectory;
   }
 
-  public DefaultModule(
-      Type type,
-      Source source,
-      Assembly assembly,
-      Path moduleDirectory,
-      Coordinate coordinate,
-      FileSystem fileSystem,
-      Set<Library> libraries,
-      Set<Dependency> dependencies) {
-    this(
-        10,
-        type,
-        source,
-        assembly,
-        moduleDirectory,
-        coordinate,
-        fileSystem,
-        libraries,
-        dependencies);
-  }
 
   @SneakyThrows
   public ModuleClasspath getModuleClasspath() {

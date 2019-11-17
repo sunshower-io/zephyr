@@ -9,6 +9,7 @@ import io.sunshower.kernel.concurrency.TaskBuilder;
 import io.sunshower.kernel.concurrency.Tasks;
 import io.sunshower.kernel.core.actions.*;
 import io.sunshower.kernel.core.lifecycle.KernelModuleListReadPhase;
+import io.sunshower.kernel.events.Events;
 import io.sunshower.kernel.log.Logging;
 import io.sunshower.kernel.module.ModuleInstallationGroup;
 import io.sunshower.kernel.module.ModuleInstallationRequest;
@@ -63,6 +64,7 @@ final class DefaultModuleInstallationStatusGroup implements ModuleInstallationSt
   @Override
   public CompletionStage<Process<String>> commit() {
     logProcess(process);
+    kernel.dispatchEvent(PluginEvents.PLUGIN_SET_INSTALLATION_INITIATED, Events.create(this));
     return kernel.getScheduler().submit(process);
   }
 

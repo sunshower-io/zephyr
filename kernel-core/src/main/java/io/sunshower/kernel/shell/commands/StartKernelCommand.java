@@ -3,6 +3,7 @@ package io.sunshower.kernel.shell.commands;
 import io.sunshower.kernel.core.KernelEventTypes;
 import io.sunshower.kernel.events.Event;
 import io.sunshower.kernel.events.EventType;
+import io.sunshower.kernel.launch.KernelLauncher;
 import io.sunshower.kernel.misc.SuppressFBWarnings;
 import io.sunshower.kernel.shell.Color;
 import io.sunshower.kernel.shell.Command;
@@ -31,6 +32,7 @@ public final class StartKernelCommand extends Command {
   @Override
   protected int execute() {
     kernel.start();
+    KernelLauncher.setKernel(kernel);
     return 0;
   }
 }

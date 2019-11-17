@@ -1,13 +1,16 @@
 package io.sunshower.kernel.shell;
 
 import io.sunshower.kernel.core.Kernel;
+import io.sunshower.kernel.core.PluginEvents;
 import io.sunshower.kernel.events.Event;
 import io.sunshower.kernel.events.EventListener;
 import io.sunshower.kernel.events.EventType;
 import io.sunshower.kernel.launch.KernelOptions;
 import javax.inject.Inject;
 import lombok.ToString;
+import lombok.val;
 
+import java.util.EnumSet;
 import java.util.concurrent.Callable;
 
 @ToString
@@ -29,6 +32,15 @@ public abstract class Command implements Callable<Integer>, EventListener<Object
 
   protected Command() {
     this(EMPTY_ARRAY);
+  }
+
+  @SuppressWarnings("unchecked")
+  public Command(Class enumType) {
+    if (!Enum.class.isAssignableFrom(enumType)) {
+      throw new IllegalStateException("Can't use this constructor with a non-enum type");
+    }
+    EnumSet results = EnumSet.allOf((Class<Enum>) enumType);
+    eventTypes = (EventType[]) results.toArray(new EventType[0]);
   }
 
   protected EventType[] getEvents() {
