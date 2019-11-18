@@ -2,10 +2,10 @@ package io.sunshower.kernel.ext.scanner;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import io.zephyr.kernel.Module;
-import io.zephyr.kernel.core.ModuleScanner;
 import io.sunshower.kernel.core.SemanticVersion;
 import io.sunshower.test.common.Tests;
+import io.zephyr.kernel.Module;
+import io.zephyr.kernel.core.ModuleScanner;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;

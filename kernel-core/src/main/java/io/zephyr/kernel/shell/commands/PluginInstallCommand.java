@@ -11,12 +11,16 @@ import io.zephyr.kernel.shell.Command;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
-
 import lombok.val;
 import picocli.CommandLine;
 
 @CommandLine.Command(name = "install")
-@SuppressWarnings("PMD.DoNotUseThreads")
+@SuppressWarnings({
+  "PMD.DoNotUseThreads",
+  "PMD.SystemPrintln",
+  "PMD.AvoidInstantiatingObjectsInLoops",
+  "PMD.UnusedPrivateMethod"
+})
 public class PluginInstallCommand extends Command {
 
   @CommandLine.Parameters(description = "urls")
@@ -82,7 +86,7 @@ public class PluginInstallCommand extends Command {
   }
 
   private URL getUrl(String url) throws MalformedURLException {
-    if (url.startsWith(".") || url.startsWith("/")) {
+    if (url.charAt(0) == '.' || url.charAt(0) == '/') {
       return new File(url).getAbsoluteFile().toURI().toURL();
     }
     return new URL(url);

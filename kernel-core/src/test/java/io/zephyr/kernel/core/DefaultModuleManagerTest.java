@@ -2,14 +2,13 @@ package io.zephyr.kernel.core;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import io.sunshower.test.common.Tests;
 import io.zephyr.kernel.Lifecycle;
 import io.zephyr.kernel.concurrency.Scheduler;
 import io.zephyr.kernel.launch.KernelOptions;
-import io.sunshower.test.common.Tests;
+import io.zephyr.kernel.module.*;
 import java.io.File;
 import java.util.concurrent.ExecutionException;
-
-import io.zephyr.kernel.module.*;
 import lombok.SneakyThrows;
 import lombok.val;
 import org.junit.jupiter.api.AfterEach;
@@ -25,13 +24,13 @@ import org.junit.jupiter.api.Test;
 })
 class DefaultModuleManagerTest {
 
-  Kernel                       kernel;
-  ModuleManager                manager;
-  Scheduler<String>            scheduler;
+  Kernel kernel;
+  ModuleManager manager;
+  Scheduler<String> scheduler;
   SunshowerKernelConfiguration cfg;
 
-  File                      plugin1;
-  File                      plugin2;
+  File plugin1;
+  File plugin2;
   ModuleInstallationRequest req2;
   ModuleInstallationRequest req1;
 

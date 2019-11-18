@@ -9,6 +9,7 @@ public class StartPluginCommand extends PluginLifecycleCommand {
   @CommandLine.Parameters(index = "0..*")
   private String args[];
 
+  @Override
   protected int execute() {
     apply(KernelLauncher.getKernel(), args, ModuleLifecycle.Actions.Activate);
     return 0;

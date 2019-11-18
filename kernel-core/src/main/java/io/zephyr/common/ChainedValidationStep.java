@@ -6,6 +6,7 @@ import io.zephyr.kernel.core.ValidationStep;
 import lombok.val;
 
 public class ChainedValidationStep<T> implements ValidationStep<T> {
+  private static final long serialVersionUID = 7306271686501249492L;
   private ChainedValidationStep<T> last;
   private ChainedValidationStep<T> next;
   private final ValidationStep<T> action;

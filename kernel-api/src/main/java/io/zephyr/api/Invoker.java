@@ -24,8 +24,6 @@ public interface Invoker {
    */
   Result invoke(String commandName, Parameters parameters);
 
-  /**
-   * @return the history for this invoker
-   */
+  /** @return the history for this invoker */
   History getHistory();
 }

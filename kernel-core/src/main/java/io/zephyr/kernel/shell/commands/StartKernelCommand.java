@@ -1,5 +1,7 @@
 package io.zephyr.kernel.shell.commands;
 
+import static io.zephyr.kernel.shell.Color.colors;
+
 import io.zephyr.kernel.core.KernelEventTypes;
 import io.zephyr.kernel.events.Event;
 import io.zephyr.kernel.events.EventType;
@@ -8,8 +10,6 @@ import io.zephyr.kernel.misc.SuppressFBWarnings;
 import io.zephyr.kernel.shell.Color;
 import io.zephyr.kernel.shell.Command;
 import picocli.CommandLine;
-
-import static io.zephyr.kernel.shell.Color.colors;
 
 @SuppressWarnings("PMD.DoNotUseThreads")
 @SuppressFBWarnings

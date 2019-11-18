@@ -6,8 +6,8 @@ import lombok.Getter;
 import lombok.NonNull;
 
 public class ModuleLifecycle implements Lifecycle {
-  private volatile State  state;
-  private final    Module module;
+  private volatile State state;
+  private final Module module;
 
   public enum Actions {
     // move to Resolved

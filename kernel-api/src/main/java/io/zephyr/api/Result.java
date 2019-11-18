@@ -1,4 +1,3 @@
 package io.zephyr.api;
 
-public class Result {
-}
+public class Result {}

@@ -1,12 +1,16 @@
 package io.zephyr.kernel.launch;
 
 import io.zephyr.kernel.core.AbstractValidatable;
+import io.zephyr.kernel.misc.SuppressFBWarnings;
 import java.io.File;
 import lombok.Getter;
 import lombok.Setter;
 import picocli.CommandLine;
 
+@SuppressFBWarnings
 public class KernelOptions extends AbstractValidatable<KernelOptions> {
+
+  private static final long serialVersionUID = -4797996962045876401L;
 
   public static class SystemProperties {
     public static final String SUNSHOWER_HOME = "sunshower.home";
@@ -25,7 +29,7 @@ public class KernelOptions extends AbstractValidatable<KernelOptions> {
   @Getter
   @Setter
   @CommandLine.Option(names = {"-s", "--server"})
-  private boolean server = false;
+  private boolean server;
 
   /**
    * Specify the home directory for Sunshower.io. Sunshower data is stored here. For clustered
@@ -40,9 +44,10 @@ public class KernelOptions extends AbstractValidatable<KernelOptions> {
   /** Specify the maximum number of threads the Sunshower Kernel may start */
   @Getter
   @CommandLine.Option(
-      names = {"-c", "--max-concurrency"},
-      defaultValue = "2",
-      type = Integer.class)
+    names = {"-c", "--max-concurrency"},
+    defaultValue = "2",
+    type = Integer.class
+  )
   private Integer concurrency = 8;
 
   /** if true, the Sunshower Kernel Launcher will start a shell */

@@ -1,7 +1,7 @@
 package io.zephyr.kernel.core.actions.plugin;
 
-import io.zephyr.PluginActivator;
 import io.sunshower.gyre.Scope;
+import io.zephyr.PluginActivator;
 import io.zephyr.kernel.Coordinate;
 import io.zephyr.kernel.Lifecycle;
 import io.zephyr.kernel.concurrency.Task;

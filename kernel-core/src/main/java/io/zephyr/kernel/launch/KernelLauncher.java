@@ -3,15 +3,14 @@ package io.zephyr.kernel.launch;
 import io.zephyr.kernel.core.DaggerSunshowerKernelConfiguration;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.core.SunshowerKernel;
+import io.zephyr.kernel.misc.SuppressFBWarnings;
 import io.zephyr.kernel.shell.ShellConsole;
-import io.zephyr.kernel.shell.ShellExitException;
-import io.zephyr.kernel.shell.commands.RestartException;
 import java.io.IOException;
 import java.rmi.registry.LocateRegistry;
-
 import lombok.val;
 import picocli.CommandLine;
 
+@SuppressFBWarnings
 @SuppressWarnings({"PMD.UseVarargs", "PMD.ArrayIsStoredDirectly", "PMD.DoNotCallSystemExit"})
 public class KernelLauncher implements CommandLine.IExecutionExceptionHandler {
 
@@ -58,16 +57,13 @@ public class KernelLauncher implements CommandLine.IExecutionExceptionHandler {
   }
 
   void run() throws IOException {
-    if (remote()) {
-
-    } else {
-      runLocal();
-    }
+    runLocal();
   }
 
+  @SuppressWarnings("PMD.UnusedPrivateMethod")
   private boolean remote() {
     try {
-      val registry = LocateRegistry.getRegistry(options.getPort());
+      //      val registry = LocateRegistry.getRegistry(options.getPort());
       return true;
     } catch (Exception ex) {
       return false;
@@ -107,19 +103,19 @@ public class KernelLauncher implements CommandLine.IExecutionExceptionHandler {
   @Override
   public int handleExecutionException(
       Exception ex, CommandLine commandLine, CommandLine.ParseResult parseResult) throws Exception {
-    if (ex instanceof ShellExitException) {
-      System.out.println("Goodbye!");
-      System.exit(0);
-    }
-    if (ex instanceof RestartException) {
-      if (kernel == null) {
-        System.out.println("Kernel is not running");
-      } else {
-        kernel.stop();
-        kernel = null;
-        main(args);
-      }
-    }
+    //    if (ex instanceof ShellExitException) {
+    ////      System.out.println("Goodbye!");
+    //      System.exit(0);
+    //    }
+    //    if (ex instanceof RestartException) {
+    //      if (kernel == null) {
+    ////        System.out.println("Kernel is not running");
+    //      } else {
+    //        kernel.stop();
+    //        kernel = null;
+    //        main(args);
+    //      }
+    //    }
     return 0;
   }
 }

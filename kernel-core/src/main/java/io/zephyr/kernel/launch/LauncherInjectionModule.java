@@ -5,7 +5,6 @@ import dagger.Component;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.shell.KernelShell;
 import io.zephyr.kernel.shell.LauncherContext;
-
 import javax.inject.Singleton;
 
 @Singleton

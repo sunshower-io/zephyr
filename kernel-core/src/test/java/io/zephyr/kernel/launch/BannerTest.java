@@ -2,16 +2,16 @@ package io.zephyr.kernel.launch;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import io.zephyr.kernel.misc.SuppressFBWarnings;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
-
-import io.zephyr.kernel.launch.Banner;
-import io.zephyr.kernel.launch.KernelLauncher;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+@SuppressFBWarnings
+@SuppressWarnings("PMD.UseProperClassLoader")
 class BannerTest {
 
   Banner banner;

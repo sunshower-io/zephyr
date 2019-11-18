@@ -5,10 +5,10 @@ import io.zephyr.kernel.launch.KernelOptions;
 import lombok.Getter;
 
 public class KernelLauncherContext implements LauncherContext {
-  @Getter final ShellConsole    console;
-  final         CommandRegistry registry;
-  final         KernelOptions   kernelOptions;
-  private final Kernel          kernel;
+  @Getter final ShellConsole console;
+  final CommandRegistry registry;
+  final KernelOptions kernelOptions;
+  private final Kernel kernel;
 
   public KernelLauncherContext(
       final Kernel kernel,

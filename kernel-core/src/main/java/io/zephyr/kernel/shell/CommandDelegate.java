@@ -17,8 +17,8 @@ public class CommandDelegate {
   @CommandLine.Parameters(index = "1..*")
   private String[] arguments;
 
+  @SuppressWarnings("PMD.NullAssignment")
   public boolean execute(CommandRegistry registry, ShellModule module) {
-    checkHelp(registry);
     val cli = registry.getCommand(command);
     module.inject(cli);
     if (cli == null) {
@@ -54,17 +54,6 @@ public class CommandDelegate {
         return (K) cmd;
       } else {
         return CommandLine.defaultFactory().create(cls);
-      }
-    }
-  }
-
-  private void checkHelp(CommandRegistry registry) {
-    if (command != null && command.trim().toLowerCase().equals("help")) {
-      for (val command : registry.getCommands()) {
-        val help = new CommandLine.Help(command.snd);
-        System.out.println("Command: " + help.abbreviatedSynopsis());
-        val result = help.commandList();
-        System.out.println(result);
       }
     }
   }

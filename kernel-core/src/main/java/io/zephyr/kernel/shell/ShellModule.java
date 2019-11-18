@@ -4,7 +4,6 @@ import dagger.BindsInstance;
 import dagger.Component;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.launch.KernelOptions;
-
 import javax.inject.Singleton;
 
 @Singleton

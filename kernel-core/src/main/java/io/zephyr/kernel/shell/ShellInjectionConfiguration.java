@@ -6,5 +6,4 @@ import dagger.Module;
 public class ShellInjectionConfiguration {
 
   public ShellInjectionConfiguration() {}
-
 }

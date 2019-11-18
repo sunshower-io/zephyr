@@ -29,6 +29,7 @@ public interface ShellConsole {
   PrintWriter getPrintWriter();
 
   ShellConsole writeln(String bundle, Color[] codes, Object... args);
+
   ShellConsole writeln(ResourceBundle resourceBundle, String bundle, Color[] codes, Object... args);
 
   ShellConsole write(ResourceBundle resourceBundle, String bundle, Color[] codes, Object... args);

@@ -1,12 +1,11 @@
 package io.zephyr.kernel.shell;
 
 import io.sunshower.gyre.Pair;
-import lombok.NonNull;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import lombok.NonNull;
 
 public class DefaultCommandRegistry implements CommandRegistry {
 
@@ -18,7 +17,9 @@ public class DefaultCommandRegistry implements CommandRegistry {
 
   @Override
   public List<Pair<String, Command>> getCommands() {
-    return commands.entrySet().stream()
+    return commands
+        .entrySet()
+        .stream()
         .map(t -> Pair.of(t.getKey(), t.getValue()))
         .collect(Collectors.toList());
   }

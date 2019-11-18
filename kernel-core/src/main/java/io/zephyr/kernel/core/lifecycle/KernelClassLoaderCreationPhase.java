@@ -14,7 +14,6 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import lombok.val;
 
 @SuppressFBWarnings
@@ -29,7 +28,7 @@ public class KernelClassLoaderCreationPhase extends Task {
   @Override
   public TaskValue run(Scope scope) {
     List<KernelModuleEntry> entries = scope.get(KernelModuleListReadPhase.INSTALLED_MODULE_LIST);
-    val                     kernel  = scope.<SunshowerKernel>get("SunshowerKernel");
+    val kernel = scope.<SunshowerKernel>get("SunshowerKernel");
 
     try {
       URL[] url = readUrls(entries);

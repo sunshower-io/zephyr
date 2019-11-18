@@ -19,7 +19,7 @@ public class ProcessBuilder {
   /** Immutable state */
   final String name;
 
-  final Map<String, Task>       tasks;
+  final Map<String, Task> tasks;
   final Map<String, List<Task>> dependencies;
   /** mutable state */
   public ProcessBuilder(String name) {

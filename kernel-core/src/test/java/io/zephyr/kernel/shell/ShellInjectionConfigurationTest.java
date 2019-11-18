@@ -5,8 +5,6 @@ import static org.mockito.Mockito.mock;
 
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.launch.KernelOptions;
-import io.zephyr.kernel.shell.Command;
-import io.zephyr.kernel.shell.ShellConsole;
 import lombok.ToString;
 import lombok.val;
 import org.junit.jupiter.api.Test;
@@ -18,7 +16,6 @@ class ShellInjectionConfigurationTest {
     DaggerShellModule.factory()
         .create(mock(Kernel.class), new KernelOptions(), mock(ShellConsole.class))
         .inject(ctcm);
-    System.out.println(ctcm);
     assertNotNull(ctcm.kernel, "console must be injected");
   }
 
@@ -28,7 +25,6 @@ class ShellInjectionConfigurationTest {
     DaggerShellModule.factory()
         .create(mock(Kernel.class), new KernelOptions(), mock(ShellConsole.class))
         .inject(ctcm);
-    System.out.println(ctcm);
     assertNotNull(ctcm.console, "console must be injected");
   }
 

@@ -5,8 +5,6 @@ import static org.mockito.Mockito.mock;
 
 import java.nio.file.FileSystem;
 import java.util.Arrays;
-
-import io.zephyr.kernel.fs.FileSystemRegistry;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

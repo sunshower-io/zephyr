@@ -1,10 +1,10 @@
 package io.sunshower.kernel.ext.scanner;
 
 import com.esotericsoftware.yamlbeans.YamlReader;
+import io.sunshower.kernel.core.ModuleCoordinate;
 import io.zephyr.kernel.Dependency;
 import io.zephyr.kernel.InvalidPluginDescriptorException;
 import io.zephyr.kernel.Module;
-import io.sunshower.kernel.core.ModuleCoordinate;
 import io.zephyr.kernel.core.ModuleDescriptor;
 import io.zephyr.kernel.core.ModuleScanner;
 import java.io.File;

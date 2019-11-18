@@ -8,10 +8,12 @@ import lombok.val;
 
 public class OptionsValidationStep extends AbstractFileValidationStep {
 
+  private static final long serialVersionUID = -108177900627841768L;
+
   @Override
   public ValidationErrors validate(Validatable<KernelOptions> validatable, KernelOptions target) {
     val f = target.getHomeDirectory();
-    if(f == null) {
+    if (f == null) {
       return ValidationErrors.of(new ValidationError());
     }
     return doValidate(target, f.getAbsolutePath());

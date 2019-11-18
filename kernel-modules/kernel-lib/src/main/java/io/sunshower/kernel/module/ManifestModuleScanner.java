@@ -1,11 +1,11 @@
 package io.sunshower.kernel.module;
 
+import io.sunshower.kernel.core.ModuleCoordinate;
+import io.sunshower.kernel.core.SemanticVersion;
 import io.zephyr.kernel.Dependency;
 import io.zephyr.kernel.Module;
-import io.sunshower.kernel.core.ModuleCoordinate;
 import io.zephyr.kernel.core.ModuleDescriptor;
 import io.zephyr.kernel.core.ModuleScanner;
-import io.sunshower.kernel.core.SemanticVersion;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;

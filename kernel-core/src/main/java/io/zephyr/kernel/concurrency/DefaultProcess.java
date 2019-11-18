@@ -5,7 +5,6 @@ import static java.lang.String.format;
 import io.sunshower.gyre.*;
 import java.util.Iterator;
 import java.util.List;
-
 import lombok.val;
 
 /** @param <T> */
@@ -60,12 +59,17 @@ public class DefaultProcess<T> implements Process<T> {
       synchronized (this) {
         local = schedule;
         if (local == null) {
-          val cycles = new StronglyConnectedComponents<DirectedGraph.Edge<T>, io.zephyr.kernel.concurrency.Task>();
+          val cycles =
+              new StronglyConnectedComponents<
+                  DirectedGraph.Edge<T>, io.zephyr.kernel.concurrency.Task>();
           val partition = cycles.apply(graph);
           if (partition.isCyclic()) {
             throw new IllegalStateException("Cycle detected");
           }
-          schedule = local = new ParallelScheduler<DirectedGraph.Edge<T>, io.zephyr.kernel.concurrency.Task>().apply(graph);
+          schedule =
+              local =
+                  new ParallelScheduler<DirectedGraph.Edge<T>, io.zephyr.kernel.concurrency.Task>()
+                      .apply(graph);
         }
       }
     }

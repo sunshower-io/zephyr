@@ -2,7 +2,6 @@ package io.zephyr.kernel.command;
 
 import io.zephyr.api.Command;
 import io.zephyr.api.CommandRegistry;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

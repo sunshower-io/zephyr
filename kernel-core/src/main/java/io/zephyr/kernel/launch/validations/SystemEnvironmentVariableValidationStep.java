@@ -3,7 +3,6 @@ package io.zephyr.kernel.launch.validations;
 import io.zephyr.kernel.core.Validatable;
 import io.zephyr.kernel.core.ValidationErrors;
 import io.zephyr.kernel.launch.KernelOptions;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -17,6 +16,7 @@ public class SystemEnvironmentVariableValidationStep extends AbstractFileValidat
       Logger.getLogger("SunshowerKernel", "i18n.io.sunshower.kernel.launch.KernelOptions");
 
   static final String SOURCE = "ENVIRONMENT";
+  private static final long serialVersionUID = -3724455691891591998L;
 
   final Map<String, String> environment;
 

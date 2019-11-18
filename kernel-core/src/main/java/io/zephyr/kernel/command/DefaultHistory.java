@@ -2,11 +2,10 @@ package io.zephyr.kernel.command;
 
 import io.zephyr.api.Command;
 import io.zephyr.api.History;
-import lombok.val;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import lombok.val;
 
 public class DefaultHistory implements History {
 

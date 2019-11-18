@@ -7,9 +7,6 @@ import io.sunshower.gyre.Scope;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
-
-import io.zephyr.kernel.concurrency.*;
-import io.zephyr.kernel.concurrency.Process;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -20,8 +17,8 @@ import org.junit.jupiter.api.Test;
 })
 class TopologyAwareParallelSchedulerTest {
 
-  private Scope                                  scope;
-  private TaskGraph<String>                      graph;
+  private Scope scope;
+  private TaskGraph<String> graph;
   private TopologyAwareParallelScheduler<String> scheduler;
 
   @BeforeEach

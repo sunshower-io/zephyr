@@ -3,7 +3,6 @@ package io.zephyr.kernel.shell;
 import static io.zephyr.kernel.shell.Color.colors;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import io.zephyr.kernel.shell.Color;
 import org.junit.jupiter.api.Test;
 
 class ShellConsoleTest {

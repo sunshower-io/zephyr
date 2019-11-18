@@ -3,16 +3,15 @@ package io.zephyr.kernel.concurrency;
 import io.sunshower.gyre.DirectedGraph;
 import io.sunshower.gyre.Scope;
 import java.util.NoSuchElementException;
-
 import lombok.val;
 
 @SuppressWarnings({"PMD.AvoidFieldNameMatchingMethodName", "PMD.NullAssignment"})
 public class TaskBuilder {
 
-  final   String         name;
-  final   Task           task;
-  private Task           current;
-  final   ProcessBuilder processBuilder;
+  final String name;
+  final Task task;
+  private Task current;
+  final ProcessBuilder processBuilder;
 
   public TaskBuilder(String name, Task task, ProcessBuilder processBuilder) {
     this.name = name;

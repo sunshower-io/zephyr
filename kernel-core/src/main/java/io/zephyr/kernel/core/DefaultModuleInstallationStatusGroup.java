@@ -28,8 +28,8 @@ final class DefaultModuleInstallationStatusGroup implements ModuleInstallationSt
 
   static final Logger log = Logging.get(DefaultModuleInstallationStatusGroup.class);
 
-  final         Kernel                  kernel;
-  private final Process<String>         process;
+  final Kernel kernel;
+  private final Process<String> process;
   private final ModuleInstallationGroup installationGroup;
 
   public DefaultModuleInstallationStatusGroup(ModuleInstallationGroup toInstall, Kernel kernel) {

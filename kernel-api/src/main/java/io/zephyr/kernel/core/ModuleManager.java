@@ -8,7 +8,6 @@ import io.zephyr.kernel.module.ModuleInstallationGroup;
 import io.zephyr.kernel.module.ModuleInstallationStatusGroup;
 import io.zephyr.kernel.module.ModuleLifecycleChangeGroup;
 import io.zephyr.kernel.module.ModuleLifecycleStatusGroup;
-
 import java.util.List;
 
 public interface ModuleManager extends KernelMember {

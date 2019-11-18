@@ -1,7 +1,6 @@
 package io.zephyr.kernel.core;
 
 import io.zephyr.kernel.concurrency.Process;
-
 import java.util.concurrent.CompletionStage;
 
 public interface KernelLifecycle {

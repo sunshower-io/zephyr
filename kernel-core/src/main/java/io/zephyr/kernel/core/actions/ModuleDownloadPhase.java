@@ -1,8 +1,8 @@
 package io.zephyr.kernel.core.actions;
 
+import io.sunshower.gyre.Scope;
 import io.zephyr.common.io.Files;
 import io.zephyr.common.io.MonitorableChannels;
-import io.sunshower.gyre.Scope;
 import io.zephyr.kernel.concurrency.Task;
 import io.zephyr.kernel.concurrency.TaskException;
 import io.zephyr.kernel.concurrency.TaskStatus;

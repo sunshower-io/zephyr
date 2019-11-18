@@ -31,13 +31,13 @@ public class DefaultModule implements Module, Comparable<Module> {
 
   @Getter private final Type type;
 
-  @Getter private final Source     source;
-  @Getter private final Assembly   assembly;
-  @Getter private final Path       moduleDirectory;
+  @Getter private final Source source;
+  @Getter private final Assembly assembly;
+  @Getter private final Path moduleDirectory;
   @Getter private final Coordinate coordinate;
   @Getter private final FileSystem fileSystem;
 
-  @Getter private final Set<Library>    libraries;
+  @Getter private final Set<Library> libraries;
   @Getter private final Set<Dependency> dependencies;
 
   public DefaultModule(
@@ -60,7 +60,6 @@ public class DefaultModule implements Module, Comparable<Module> {
     this.dependencies = dependencies;
     this.moduleDirectory = moduleDirectory;
   }
-
 
   @SneakyThrows
   public ModuleClasspath getModuleClasspath() {

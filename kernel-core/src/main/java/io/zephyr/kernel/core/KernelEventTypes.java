@@ -9,9 +9,7 @@ public enum KernelEventTypes implements EventType {
   KERNEL_START_FAILED,
   KERNEL_START_SUCCEEDED,
 
-  /**
-   * shutdown events
-   */
+  /** shutdown events */
   KERNEL_SHUTDOWN_INITIATED,
   KERNEL_SHUTDOWN_SUCCEEDED,
 
@@ -20,8 +18,7 @@ public enum KernelEventTypes implements EventType {
   KERNEL_CLASSLOADER_CREATED,
   KERNEL_MODULE_LIST_READ;
 
-
-    @Override
+  @Override
   public int getId() {
     return ordinal();
   }

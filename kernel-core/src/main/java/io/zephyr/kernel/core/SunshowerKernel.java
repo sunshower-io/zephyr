@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
 import javax.inject.Inject;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -19,9 +18,9 @@ import lombok.val;
 @SuppressWarnings({"PMD.AvoidUsingVolatile", "PMD.DoNotUseThreads"})
 public class SunshowerKernel extends AbstractEventSource implements Kernel {
 
-  private final          Scheduler<String> scheduler;
+  private final Scheduler<String> scheduler;
   /** class fields */
-  @Setter private static KernelOptions     kernelOptions;
+  @Setter private static KernelOptions kernelOptions;
 
   private final ModuleClasspathManager moduleClasspathManager;
 
