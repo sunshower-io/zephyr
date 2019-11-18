@@ -1,10 +1,8 @@
 package io.zephyr.kernel.launch;
 
-// import io.sunshower.kernel.core.DaggerSunshowerKernelConfiguration;
-import io.sunshower.kernel.core.DaggerSunshowerKernelConfiguration;
+import io.zephyr.kernel.core.DaggerSunshowerKernelConfiguration;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.core.SunshowerKernel;
-import io.sunshower.kernel.server.ServerShellParser;
 import io.zephyr.kernel.shell.ShellConsole;
 import io.zephyr.kernel.shell.ShellExitException;
 import io.zephyr.kernel.shell.commands.RestartException;
@@ -70,8 +68,6 @@ public class KernelLauncher implements CommandLine.IExecutionExceptionHandler {
   private boolean remote() {
     try {
       val registry = LocateRegistry.getRegistry(options.getPort());
-      val remote = registry.lookup(ServerShellParser.NAME);
-      System.out.println("Sup");
       return true;
     } catch (Exception ex) {
       return false;

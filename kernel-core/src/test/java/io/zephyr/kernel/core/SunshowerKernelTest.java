@@ -3,11 +3,7 @@ package io.zephyr.kernel.core;
 import static io.sunshower.test.common.Tests.relativeToProjectBuild;
 import static org.junit.jupiter.api.Assertions.*;
 
-import io.sunshower.kernel.core.DaggerSunshowerKernelConfiguration;
-import io.zephyr.kernel.core.SunshowerKernel;
-import io.zephyr.kernel.core.SunshowerKernelConfiguration;
 import io.zephyr.kernel.launch.KernelOptions;
-import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.misc.SuppressFBWarnings;
 import io.sunshower.test.common.Tests;
 import java.io.File;

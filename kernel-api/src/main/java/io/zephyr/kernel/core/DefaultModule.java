@@ -1,7 +1,6 @@
 package io.zephyr.kernel.core;
 
 import io.zephyr.PluginActivator;
-import io.sunshower.kernel.*;
 import io.zephyr.kernel.*;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.misc.SuppressFBWarnings;

@@ -2,18 +2,13 @@ package io.zephyr.kernel.core;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import io.sunshower.kernel.core.DaggerSunshowerKernelConfiguration;
 import io.zephyr.kernel.Lifecycle;
 import io.zephyr.kernel.concurrency.Scheduler;
-import io.zephyr.kernel.core.SunshowerKernel;
-import io.zephyr.kernel.core.SunshowerKernelConfiguration;
 import io.zephyr.kernel.launch.KernelOptions;
 import io.sunshower.test.common.Tests;
 import java.io.File;
 import java.util.concurrent.ExecutionException;
 
-import io.zephyr.kernel.core.Kernel;
-import io.zephyr.kernel.core.ModuleManager;
 import io.zephyr.kernel.module.*;
 import lombok.SneakyThrows;
 import lombok.val;

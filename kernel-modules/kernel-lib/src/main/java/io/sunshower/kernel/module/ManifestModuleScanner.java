@@ -75,7 +75,7 @@ public final class ManifestModuleScanner implements ModuleScanner {
     return Collections.emptyList();
   }
 
-  List<Dependency> parseDependencies(String deps) {
+  public List<Dependency> parseDependencies(String deps) {
     // type@dependency
 
     val dependencyList = commaSeparated.split(deps);
@@ -88,7 +88,7 @@ public final class ManifestModuleScanner implements ModuleScanner {
     return results;
   }
 
-  void parseCoordinate(List<Dependency> results, String dependencyString) {
+  public void parseCoordinate(List<Dependency> results, String dependencyString) {
 
     val coordinateSegments = typeDelineator.split(dependencyString);
 
