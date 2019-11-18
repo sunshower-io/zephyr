@@ -16,7 +16,7 @@ import lombok.val;
 public abstract class AbstractFileValidationStep implements ValidationStep<KernelOptions> {
 
   protected static final Logger log =
-      Logger.getLogger("SunshowerKernel", "i18n.io.sunshower.kernel.launch.KernelOptions");
+      Logger.getLogger("SunshowerKernel", "i18n.io.zephyr.kernel.launch.KernelOptions");
   private static final long serialVersionUID = -3634337260413171690L;
 
   protected final String source;
