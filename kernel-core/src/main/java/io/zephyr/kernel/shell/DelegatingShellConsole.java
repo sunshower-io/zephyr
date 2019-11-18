@@ -10,6 +10,7 @@ import java.util.Scanner;
 import lombok.val;
 
 @SuppressFBWarnings
+@SuppressWarnings("PMD.SystemPrintln")
 public class DelegatingShellConsole implements ShellConsole {
 
   final Scanner scanner;
@@ -84,8 +85,7 @@ public class DelegatingShellConsole implements ShellConsole {
     return this;
   }
 
-  public static String color (
-      String bundle, Color[] codes, Object... args) {
+  public static String color(String bundle, Color[] codes, Object... args) {
     val message = MessageFormat.format(bundle, args);
     val builder = new StringBuilder();
     for (val color : codes) {

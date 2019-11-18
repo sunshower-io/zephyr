@@ -74,6 +74,7 @@ public enum Color {
 
   final String code;
 
+  @Override
   public final String toString() {
     return code;
   }

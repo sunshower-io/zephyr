@@ -9,9 +9,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
-
-import io.zephyr.kernel.module.KernelModuleEntry;
-import io.zephyr.kernel.module.ModuleListParser;
 import lombok.val;
 import org.junit.jupiter.api.Test;
 

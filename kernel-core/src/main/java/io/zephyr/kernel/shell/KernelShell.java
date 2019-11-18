@@ -1,7 +1,6 @@
 package io.zephyr.kernel.shell;
 
 import io.zephyr.kernel.launch.KernelOptions;
-
 import java.util.regex.Pattern;
 
 @SuppressWarnings("PMD.DataflowAnomalyAnalysis")

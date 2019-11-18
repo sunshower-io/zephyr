@@ -25,17 +25,17 @@ public class ModuleInstallationCompletionPhase extends Task {
   }
 
   @Override
-  @SuppressWarnings({"PMD.CloseResource"})
+  @SuppressWarnings({"PMD.CloseResource", "PMD.DataflowAnomalyAnalysis"})
   public TaskValue run(Scope context) {
     synchronized (this) {
-      Kernel           kernel          = context.<Kernel>get("SunshowerKernel");
-      URL              url             = context.get(ModuleDownloadPhase.DOWNLOAD_URL);
-      Source           source          = new ModuleSource(getSource(url));
-      ModuleDescriptor descriptor      = context.get(ModuleScanPhase.MODULE_DESCRIPTOR);
-      FileSystem       fileSystem      = context.get(ModuleTransferPhase.MODULE_FILE_SYSTEM);
-      File             moduleDirectory = context.get(ModuleTransferPhase.MODULE_DIRECTORY);
-      Assembly         assembly        = context.get(ModuleUnpackPhase.MODULE_ASSEMBLY);
-      Set<Library>     libraries       = context.get(ModuleUnpackPhase.INSTALLED_LIBRARIES);
+      final Kernel kernel = context.get("SunshowerKernel");
+      final URL url = context.get(ModuleDownloadPhase.DOWNLOAD_URL);
+      final Source source = new ModuleSource(getSource(url));
+      final ModuleDescriptor descriptor = context.get(ModuleScanPhase.MODULE_DESCRIPTOR);
+      final FileSystem fileSystem = context.get(ModuleTransferPhase.MODULE_FILE_SYSTEM);
+      final File moduleDirectory = context.get(ModuleTransferPhase.MODULE_DIRECTORY);
+      final Assembly assembly = context.get(ModuleUnpackPhase.MODULE_ASSEMBLY);
+      final Set<Library> libraries = context.get(ModuleUnpackPhase.INSTALLED_LIBRARIES);
 
       DefaultModule module =
           new DefaultModule(
@@ -63,7 +63,9 @@ public class ModuleInstallationCompletionPhase extends Task {
   }
 
   private Lifecycle createLifecycle(Module module) {
-    return new ModuleLifecycle(module);
+    val lifecycle = new ModuleLifecycle(module);
+    lifecycle.setState(Lifecycle.State.Installed);
+    return lifecycle;
   }
 
   @SuppressWarnings("PMD.PreserveStackTrace")

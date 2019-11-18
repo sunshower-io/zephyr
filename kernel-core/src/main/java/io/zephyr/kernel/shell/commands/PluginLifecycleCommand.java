@@ -1,13 +1,15 @@
 package io.zephyr.kernel.shell.commands;
 
 import io.zephyr.kernel.core.Kernel;
-import io.sunshower.kernel.core.ModuleCoordinate;
+import io.zephyr.kernel.core.ModuleCoordinate;
 import io.zephyr.kernel.module.ModuleLifecycle;
 import io.zephyr.kernel.module.ModuleLifecycleChangeGroup;
 import io.zephyr.kernel.module.ModuleLifecycleChangeRequest;
+import io.zephyr.kernel.shell.Color;
 import io.zephyr.kernel.shell.Command;
 import lombok.val;
 
+@SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
 public class PluginLifecycleCommand extends Command {
 
   protected void apply(Kernel kernel, String[] plugins, ModuleLifecycle.Actions actions) {
@@ -21,7 +23,7 @@ public class PluginLifecycleCommand extends Command {
     try {
       kernel.getModuleManager().prepare(tostart).commit().toCompletableFuture().get();
     } catch (Exception e) {
-      e.printStackTrace();
+      console.writeln("Error: %s", Color.colors(Color.Red), e.getMessage());
     }
   }
 }

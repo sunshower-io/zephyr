@@ -2,22 +2,22 @@ package io.zephyr.kernel.launch.validations;
 
 import io.zephyr.common.io.FilePermissionChecker;
 import io.zephyr.kernel.ObjectCheckException;
-import io.zephyr.kernel.launch.KernelOptions;
-import java.io.File;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import io.zephyr.kernel.core.KernelException;
 import io.zephyr.kernel.core.ValidationError;
 import io.zephyr.kernel.core.ValidationErrors;
 import io.zephyr.kernel.core.ValidationStep;
+import io.zephyr.kernel.launch.KernelOptions;
+import java.io.File;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import lombok.NonNull;
 import lombok.val;
 
 public abstract class AbstractFileValidationStep implements ValidationStep<KernelOptions> {
 
   protected static final Logger log =
-      Logger.getLogger("SunshowerKernel", "i18n.io.sunshower.kernel.launch.KernelOptions");
+      Logger.getLogger("SunshowerKernel", "i18n.io.zephyr.kernel.launch.KernelOptions");
+  private static final long serialVersionUID = -3634337260413171690L;
 
   protected final String source;
   protected final String keyName;
@@ -55,6 +55,7 @@ public abstract class AbstractFileValidationStep implements ValidationStep<Kerne
     return ValidationErrors.empty();
   }
 
+  @SuppressWarnings("PMD.UnusedPrivateMethod")
   private void checkParent(File file) {
     if (!file.exists()) {
       if (!file.mkdirs()) {

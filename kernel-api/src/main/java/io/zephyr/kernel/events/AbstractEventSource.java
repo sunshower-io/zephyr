@@ -1,8 +1,7 @@
 package io.zephyr.kernel.events;
 
-import lombok.val;
-
 import java.util.*;
+import lombok.val;
 
 public class AbstractEventSource implements EventSource {
   private final Map<BitSet, List<io.zephyr.kernel.events.EventListener<?>>> listeners;
@@ -12,7 +11,8 @@ public class AbstractEventSource implements EventSource {
   }
 
   @Override
-  public <T> void addEventListener(io.zephyr.kernel.events.EventListener<T> listener, EventType... types) {
+  public <T> void addEventListener(
+      io.zephyr.kernel.events.EventListener<T> listener, EventType... types) {
     synchronized (listeners) {
       val bitset = new BitSet();
       for (val type : types) {

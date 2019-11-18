@@ -10,6 +10,7 @@ import java.util.logging.Level;
 public class SystemPropertyFileValidationStep extends AbstractFileValidationStep {
 
   static final String SOURCE = "SystemProperties";
+  private static final long serialVersionUID = 1867557287065178312L;
 
   public SystemPropertyFileValidationStep(String propertyName) {
     super(propertyName, SOURCE);

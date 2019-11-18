@@ -5,11 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import io.sunshower.gyre.Scope;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
-
-import io.zephyr.kernel.concurrency.ExecutorWorkerPool;
-import io.zephyr.kernel.concurrency.KernelScheduler;
-import io.zephyr.kernel.concurrency.Task;
-import io.zephyr.kernel.concurrency.Tasks;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

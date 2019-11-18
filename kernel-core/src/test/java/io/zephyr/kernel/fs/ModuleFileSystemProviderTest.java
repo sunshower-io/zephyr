@@ -2,12 +2,11 @@ package io.zephyr.kernel.fs;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import io.sunshower.test.common.Tests;
 import io.zephyr.kernel.core.SunshowerKernel;
 import io.zephyr.kernel.launch.KernelOptions;
 import io.zephyr.kernel.misc.SuppressFBWarnings;
-import io.sunshower.test.common.Tests;
 import java.io.IOException;
-import java.io.Writer;
 import java.net.URI;
 import java.nio.file.*;
 import java.util.Collections;
@@ -40,7 +39,7 @@ class ModuleFileSystemProviderTest {
     val fs = FileSystems.getFileSystem(uri);
     try {
       assertTrue(
-              fs instanceof ModuleFileSystem, "Filesystem must be an instance of module filesystem");
+          fs instanceof ModuleFileSystem, "Filesystem must be an instance of module filesystem");
     } finally {
       fs.close();
     }
@@ -94,9 +93,9 @@ class ModuleFileSystemProviderTest {
     try {
       val file = fs.getPath("test.txt").toFile();
       assertTrue(file.createNewFile(), "must be able to create file");
-      Writer fos = Files.newBufferedWriter(file.toPath(), StandardOpenOption.WRITE);
-      fos.write(10);
-      fos.close();
+      try (val fos = Files.newBufferedWriter(file.toPath(), StandardOpenOption.WRITE)) {
+        fos.write(10);
+      }
     } finally {
       fs.close();
     }

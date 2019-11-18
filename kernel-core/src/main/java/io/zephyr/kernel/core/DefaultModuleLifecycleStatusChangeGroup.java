@@ -10,12 +10,10 @@ import io.zephyr.kernel.concurrency.TaskBuilder;
 import io.zephyr.kernel.concurrency.Tasks;
 import io.zephyr.kernel.core.actions.plugin.PluginStartTask;
 import io.zephyr.kernel.core.actions.plugin.PluginStopTask;
-
+import io.zephyr.kernel.module.*;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CompletionStage;
-
-import io.zephyr.kernel.module.*;
 import lombok.val;
 
 @SuppressWarnings({
@@ -25,9 +23,9 @@ import lombok.val;
 })
 final class DefaultModuleLifecycleStatusChangeGroup implements ModuleLifecycleStatusGroup {
 
-  private final Kernel                     kernel;
-  private final ModuleManager              moduleManager;
-  private final Process<String>            process;
+  private final Kernel kernel;
+  private final ModuleManager moduleManager;
+  private final Process<String> process;
   private final ModuleLifecycleChangeGroup request;
 
   /**

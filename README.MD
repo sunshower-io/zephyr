@@ -4,10 +4,18 @@ The Sunshower kernel is a flexible microkernel allowing developers to quickly de
 individual applications.
 
 
+
+
 ## Overview
 ## User Interface
 ## File System
 This is an overview of the Sunshower.io Kernel File System
+
+## Building
+
+To build Zephyr, install Maven 3+ and Gradle 5+ (we use 6).  Then run:
+
+`mvn clean install -f bom && gradle clean assemble build sA`--this will install all the dependencies and execute the tests 
 
 ### Structure
 The Kernel filesystem is structured as follows:

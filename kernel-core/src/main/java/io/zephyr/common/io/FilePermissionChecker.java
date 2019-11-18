@@ -13,7 +13,7 @@ import lombok.val;
 public class FilePermissionChecker {
 
   static final Logger log =
-      Logger.getLogger("FilePermissions", "i18n.io.sunshower.kernel.launch.FilePermissions");
+      Logger.getLogger("FilePermissions", "i18n.io.zephyr.kernel.launch.FilePermissions");
 
   private final List<Checker<File>> checkers;
 

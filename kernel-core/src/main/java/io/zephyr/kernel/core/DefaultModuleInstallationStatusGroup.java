@@ -7,7 +7,6 @@ import io.zephyr.kernel.Module;
 import io.zephyr.kernel.concurrency.Process;
 import io.zephyr.kernel.concurrency.TaskBuilder;
 import io.zephyr.kernel.concurrency.Tasks;
-import io.sunshower.kernel.core.actions.*;
 import io.zephyr.kernel.core.actions.*;
 import io.zephyr.kernel.core.lifecycle.KernelModuleListReadPhase;
 import io.zephyr.kernel.events.Events;
@@ -29,8 +28,8 @@ final class DefaultModuleInstallationStatusGroup implements ModuleInstallationSt
 
   static final Logger log = Logging.get(DefaultModuleInstallationStatusGroup.class);
 
-  final         Kernel                  kernel;
-  private final Process<String>         process;
+  final Kernel kernel;
+  private final Process<String> process;
   private final ModuleInstallationGroup installationGroup;
 
   public DefaultModuleInstallationStatusGroup(ModuleInstallationGroup toInstall, Kernel kernel) {

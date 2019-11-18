@@ -66,7 +66,7 @@ public class TopologyAwareParallelScheduler<K> {
           latch.await();
           for (val task : results) {
             if (task.getState() == Task.State.Failed) {
-              log.log(Level.WARNING, "Task {} failed--not continuing ", task.getName());
+              log.log(Level.WARNING, "Task {0} failed--not continuing ", task.getName());
               break outer;
             }
           }

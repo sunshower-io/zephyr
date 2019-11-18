@@ -31,8 +31,8 @@ import lombok.val;
 public class DefaultKernelLifecycle implements KernelLifecycle {
 
   private final AtomicReference<State> state;
-  private       SunshowerKernel        kernel;
-  private       Scheduler<String>      scheduler;
+  private SunshowerKernel kernel;
+  private Scheduler<String> scheduler;
 
   @Inject
   public DefaultKernelLifecycle(SunshowerKernel kernel, Scheduler<String> scheduler) {

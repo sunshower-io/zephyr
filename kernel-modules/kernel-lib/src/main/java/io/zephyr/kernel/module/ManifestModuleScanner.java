@@ -1,11 +1,11 @@
-package io.sunshower.kernel.module;
+package io.zephyr.kernel.module;
 
 import io.zephyr.kernel.Dependency;
 import io.zephyr.kernel.Module;
-import io.sunshower.kernel.core.ModuleCoordinate;
+import io.zephyr.kernel.core.ModuleCoordinate;
 import io.zephyr.kernel.core.ModuleDescriptor;
 import io.zephyr.kernel.core.ModuleScanner;
-import io.sunshower.kernel.core.SemanticVersion;
+import io.zephyr.kernel.core.SemanticVersion;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -75,7 +75,7 @@ public final class ManifestModuleScanner implements ModuleScanner {
     return Collections.emptyList();
   }
 
-  List<Dependency> parseDependencies(String deps) {
+  public List<Dependency> parseDependencies(String deps) {
     // type@dependency
 
     val dependencyList = commaSeparated.split(deps);
@@ -88,7 +88,7 @@ public final class ManifestModuleScanner implements ModuleScanner {
     return results;
   }
 
-  void parseCoordinate(List<Dependency> results, String dependencyString) {
+  public void parseCoordinate(List<Dependency> results, String dependencyString) {
 
     val coordinateSegments = typeDelineator.split(dependencyString);
 

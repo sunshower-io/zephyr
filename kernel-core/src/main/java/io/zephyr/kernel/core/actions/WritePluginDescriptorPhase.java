@@ -68,7 +68,7 @@ public class WritePluginDescriptorPhase extends Task {
 
     saveAll(kernel.getFileSystem(), moduleManager, actualCaretaker, installedPlugins);
     kernel.dispatchEvent(
-            PluginEvents.PLUGIN_SET_INSTALLATION_COMPLETE, Events.create(installedPlugins));
+        PluginEvents.PLUGIN_SET_INSTALLATION_COMPLETE, Events.create(installedPlugins));
 
     return null;
   }

@@ -6,7 +6,6 @@ import io.zephyr.kernel.Coordinate;
 import io.zephyr.kernel.PluginException;
 import java.util.HashSet;
 import java.util.Set;
-
 import lombok.Getter;
 
 public class CyclicDependencyException extends PluginException {

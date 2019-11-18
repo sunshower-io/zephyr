@@ -1,13 +1,10 @@
-package io.sunshower.kernel.core;
+package io.zephyr.kernel.core;
 
 import java.util.ServiceLoader;
-
-import io.zephyr.kernel.core.ModuleClasspath;
-import io.zephyr.kernel.core.ModuleLoader;
 import org.jboss.modules.Module;
 
 public class DefaultModuleClasspath implements ModuleClasspath {
-  final Module       module;
+  final Module module;
   final ModuleLoader moduleLoader;
 
   public DefaultModuleClasspath(Module module, ModuleLoader loader) {

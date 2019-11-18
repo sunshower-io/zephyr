@@ -3,6 +3,7 @@ package io.zephyr.kernel.lifecycle.processes;
 import static org.mockito.Mockito.*;
 
 import io.sunshower.gyre.Scope;
+import io.sunshower.test.common.Tests;
 import io.zephyr.kernel.concurrency.ExecutorWorkerPool;
 import io.zephyr.kernel.concurrency.KernelScheduler;
 import io.zephyr.kernel.concurrency.Scheduler;
@@ -15,7 +16,6 @@ import io.zephyr.kernel.core.lifecycle.KernelFilesystemCreatePhase;
 import io.zephyr.kernel.core.lifecycle.KernelModuleListReadPhase;
 import io.zephyr.kernel.launch.KernelOptions;
 import io.zephyr.kernel.misc.SuppressFBWarnings;
-import io.sunshower.test.common.Tests;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.FileSystems;
@@ -37,9 +37,9 @@ import org.junit.jupiter.api.Test;
 })
 class KernelStartProcessTest {
 
-  private Scope             context;
-  private SunshowerKernel   kernel;
-  private KernelOptions     kernelOptions;
+  private Scope context;
+  private SunshowerKernel kernel;
+  private KernelOptions kernelOptions;
   private Scheduler<String> scheduler;
 
   @BeforeEach

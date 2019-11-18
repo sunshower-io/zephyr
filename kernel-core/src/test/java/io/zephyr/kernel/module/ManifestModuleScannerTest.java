@@ -2,9 +2,8 @@ package io.zephyr.kernel.module;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import io.sunshower.kernel.module.ManifestModuleScanner;
 import io.zephyr.kernel.Dependency;
-import io.sunshower.kernel.core.SemanticVersion;
+import io.zephyr.kernel.core.SemanticVersion;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

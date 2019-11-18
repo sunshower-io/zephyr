@@ -3,19 +3,14 @@ package io.zephyr.kernel.core;
 import static io.sunshower.test.common.Tests.relativeToProjectBuild;
 import static org.junit.jupiter.api.Assertions.*;
 
-import io.sunshower.kernel.core.DaggerSunshowerKernelConfiguration;
-import io.zephyr.kernel.core.SunshowerKernel;
-import io.zephyr.kernel.core.SunshowerKernelConfiguration;
-import io.zephyr.kernel.launch.KernelOptions;
-import io.zephyr.kernel.core.Kernel;
-import io.zephyr.kernel.misc.SuppressFBWarnings;
 import io.sunshower.test.common.Tests;
+import io.zephyr.kernel.launch.KernelOptions;
+import io.zephyr.kernel.misc.SuppressFBWarnings;
+import io.zephyr.kernel.module.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.FileSystems;
-
-import io.zephyr.kernel.module.*;
 import lombok.SneakyThrows;
 import lombok.extern.java.Log;
 import lombok.val;
@@ -36,9 +31,9 @@ import org.junit.jupiter.api.Test;
 })
 public class SunshowerKernelTest {
 
-  private Kernel                       kernel;
-  private File                         yamlModule;
-  private File                         springPlugin;
+  private Kernel kernel;
+  private File yamlModule;
+  private File springPlugin;
   private SunshowerKernelConfiguration cfg;
 
   @BeforeEach

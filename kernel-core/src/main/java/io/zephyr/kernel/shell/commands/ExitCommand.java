@@ -6,7 +6,7 @@ import picocli.CommandLine;
 
 @SuppressFBWarnings
 @CommandLine.Command(name = "exit")
-@SuppressWarnings({"PMD.DoNotUseThreads", "PMD.DoNotCallSystemExit"})
+@SuppressWarnings({"PMD.DoNotUseThreads", "PMD.DoNotCallSystemExit", "PMD.SystemPrintln"})
 public class ExitCommand extends Command {
 
   @Override
@@ -14,6 +14,4 @@ public class ExitCommand extends Command {
     System.out.println("Exit");
     return 0;
   }
-
-
 }

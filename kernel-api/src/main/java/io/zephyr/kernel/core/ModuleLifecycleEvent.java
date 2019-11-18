@@ -8,6 +8,6 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class ModuleLifecycleEvent {
-  private final Module          source;
+  private final Module source;
   private final Lifecycle.State state;
 }

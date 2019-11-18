@@ -15,7 +15,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class MockModule implements Module {
 
-  final Coordinate       coordinate;
+  final Coordinate coordinate;
   final List<Dependency> dependencies;
 
   public void addDependency(Dependency dependency) {

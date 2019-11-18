@@ -2,7 +2,6 @@ package io.zephyr.kernel.dependencies;
 
 import io.zephyr.kernel.PluginException;
 import java.util.Set;
-
 import lombok.Getter;
 import lombok.val;
 

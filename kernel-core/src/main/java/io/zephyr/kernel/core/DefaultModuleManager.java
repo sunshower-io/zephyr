@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.inject.Inject;
-
 import lombok.experimental.Delegate;
 import lombok.val;
 
@@ -29,8 +28,8 @@ public class DefaultModuleManager implements ModuleManager, EventSource {
 
   static final Logger log = Logging.get(DefaultModuleManager.class, "KernelMember");
 
-  @Delegate private Kernel          kernel;
-  final             DependencyGraph dependencyGraph;
+  @Delegate private Kernel kernel;
+  final DependencyGraph dependencyGraph;
 
   @Inject
   public DefaultModuleManager(DependencyGraph graph) {

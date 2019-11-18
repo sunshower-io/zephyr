@@ -8,7 +8,6 @@ public class Events {
   public static <T> Event<T> create(T source) {
     return new DEvent<>(source);
   }
-
 }
 
 @Getter

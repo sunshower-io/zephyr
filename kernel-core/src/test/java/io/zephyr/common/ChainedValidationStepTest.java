@@ -4,7 +4,6 @@ import static io.zephyr.kernel.core.ValidationErrors.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import io.zephyr.common.ChainedValidationStep;
 import io.zephyr.kernel.core.Validatable;
 import io.zephyr.kernel.core.ValidationError;
 import lombok.val;

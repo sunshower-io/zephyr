@@ -2,7 +2,6 @@ package io.zephyr.kernel.core;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import io.sunshower.kernel.core.ModuleCoordinate;
 import io.zephyr.kernel.Coordinate;
 import java.util.HashSet;
 import lombok.val;

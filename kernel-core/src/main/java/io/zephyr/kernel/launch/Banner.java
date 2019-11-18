@@ -1,17 +1,18 @@
 package io.zephyr.kernel.launch;
 
+import static io.zephyr.kernel.shell.DelegatingShellConsole.color;
+
+import io.zephyr.kernel.misc.SuppressFBWarnings;
+import io.zephyr.kernel.shell.Color;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.Scanner;
 import java.util.jar.Manifest;
-
-import io.zephyr.kernel.shell.Color;
 import lombok.val;
 
-import static io.zephyr.kernel.shell.DelegatingShellConsole.color;
-
+@SuppressFBWarnings
 @SuppressWarnings({"PMD.DataflowAnomalyAnalysis", "PMD.UseProperClassLoader"})
 public final class Banner {
 

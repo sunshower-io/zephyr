@@ -1,7 +1,6 @@
 package io.zephyr.kernel.module;
 
 import io.zephyr.kernel.Coordinate;
-
 import java.util.List;
 
 public class ModuleInstallationStatus {

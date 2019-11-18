@@ -5,11 +5,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import io.sunshower.gyre.DirectedGraph;
 import io.sunshower.gyre.ParallelScheduler;
 import io.sunshower.gyre.Scope;
-import io.zephyr.kernel.concurrency.Tasks;
 import io.zephyr.kernel.core.lifecycle.KernelClassLoaderCreationPhase;
 import io.zephyr.kernel.core.lifecycle.KernelFilesystemCreatePhase;
 import io.zephyr.kernel.core.lifecycle.KernelModuleListReadPhase;
-import io.zephyr.kernel.concurrency.Task;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,7 +18,7 @@ import org.junit.jupiter.api.Test;
 })
 class TasksTest {
 
-  private Scope                                               context;
+  private Scope context;
   private ParallelScheduler<DirectedGraph.Edge<String>, Task> scheduler;
 
   @BeforeEach

@@ -3,7 +3,6 @@ package io.zephyr.kernel.shell;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.launch.KernelOptions;
 import java.util.*;
-
 import lombok.val;
 import picocli.CommandLine;
 

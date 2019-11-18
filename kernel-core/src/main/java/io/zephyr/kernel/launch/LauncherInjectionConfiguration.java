@@ -3,12 +3,11 @@ package io.zephyr.kernel.launch;
 import dagger.Module;
 import dagger.Provides;
 import io.zephyr.kernel.core.Kernel;
+import io.zephyr.kernel.shell.*;
 import java.io.File;
 import java.util.ServiceLoader;
 import java.util.logging.*;
 import javax.inject.Singleton;
-
-import io.zephyr.kernel.shell.*;
 import lombok.NonNull;
 import lombok.val;
 
