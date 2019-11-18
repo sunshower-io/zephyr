@@ -1,7 +1,5 @@
-package io.sunshower.kernel.core;
+package io.zephyr.kernel.core;
 
-import io.zephyr.kernel.core.ModuleClasspath;
-import io.zephyr.kernel.core.ModuleLoader;
 import java.util.ServiceLoader;
 import org.jboss.modules.Module;
 

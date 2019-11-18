@@ -1,12 +1,9 @@
-package io.sunshower.kernel.core;
+package io.zephyr.kernel.core;
 
 import io.zephyr.kernel.Coordinate;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.ModuleException;
 import io.zephyr.kernel.UnsatisfiedDependencyException;
-import io.zephyr.kernel.core.DefaultModule;
-import io.zephyr.kernel.core.ModuleClasspath;
-import io.zephyr.kernel.core.ModuleClasspathManager;
 import io.zephyr.kernel.dependencies.DependencyGraph;
 import java.util.Collections;
 import java.util.HashMap;
@@ -59,7 +56,7 @@ public final class KernelModuleLoader extends ModuleLoader
   @Override
   public void check(Module module) {
     val coord = module.getCoordinate();
-    if (!moduleLoaders.containsKey(coord)) {
+    if (!moduleLoaders.containsKey(coord.toCanonicalForm())) {
       install(module);
     }
   }

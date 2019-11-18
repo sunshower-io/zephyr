@@ -1,4 +1,4 @@
-package io.sunshower.kernel.core;
+package io.zephyr.kernel.core;
 
 import io.zephyr.kernel.Coordinate;
 import io.zephyr.kernel.Version;

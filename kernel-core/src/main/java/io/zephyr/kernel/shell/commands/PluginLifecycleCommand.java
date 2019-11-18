@@ -1,7 +1,7 @@
 package io.zephyr.kernel.shell.commands;
 
-import io.sunshower.kernel.core.ModuleCoordinate;
 import io.zephyr.kernel.core.Kernel;
+import io.zephyr.kernel.core.ModuleCoordinate;
 import io.zephyr.kernel.module.ModuleLifecycle;
 import io.zephyr.kernel.module.ModuleLifecycleChangeGroup;
 import io.zephyr.kernel.module.ModuleLifecycleChangeRequest;

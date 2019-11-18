@@ -2,10 +2,10 @@ package io.zephyr.kernel.dependencies;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import io.sunshower.kernel.core.ModuleCoordinate;
 import io.sunshower.kernel.test.MockModule;
 import io.zephyr.kernel.Dependency;
 import io.zephyr.kernel.Module;
+import io.zephyr.kernel.core.ModuleCoordinate;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 import lombok.val;

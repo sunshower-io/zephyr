@@ -1,4 +1,4 @@
-package io.sunshower.kernel.core;
+package io.zephyr.kernel.core;
 
 import java.util.Collections;
 import java.util.List;

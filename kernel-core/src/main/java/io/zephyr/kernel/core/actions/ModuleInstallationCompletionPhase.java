@@ -66,7 +66,6 @@ public class ModuleInstallationCompletionPhase extends Task {
     val lifecycle = new ModuleLifecycle(module);
     lifecycle.setState(Lifecycle.State.Installed);
     return lifecycle;
-
   }
 
   @SuppressWarnings("PMD.PreserveStackTrace")

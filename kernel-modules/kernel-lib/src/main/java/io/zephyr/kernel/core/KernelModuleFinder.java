@@ -1,4 +1,4 @@
-package io.sunshower.kernel.core;
+package io.zephyr.kernel.core;
 
 import io.zephyr.kernel.Library;
 import io.zephyr.kernel.Module;

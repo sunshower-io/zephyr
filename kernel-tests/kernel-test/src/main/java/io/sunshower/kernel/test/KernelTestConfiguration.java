@@ -1,6 +1,5 @@
 package io.sunshower.kernel.test;
 
-import io.sunshower.kernel.core.*;
 import io.sunshower.test.common.Tests;
 import io.zephyr.kernel.concurrency.ExecutorWorkerPool;
 import io.zephyr.kernel.concurrency.KernelScheduler;
