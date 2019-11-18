@@ -1,9 +1,9 @@
 package io.sunshower.kernel.test;
 
-import io.sunshower.PluginActivator;
-import io.sunshower.kernel.*;
-import io.sunshower.kernel.Module;
-import io.sunshower.kernel.core.ModuleClasspath;
+import io.zephyr.PluginActivator;
+import io.zephyr.kernel.*;
+import io.zephyr.kernel.Module;
+import io.zephyr.kernel.core.ModuleClasspath;
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
 import java.util.HashSet;
@@ -15,7 +15,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class MockModule implements Module {
 
-  final Coordinate coordinate;
+  final Coordinate       coordinate;
   final List<Dependency> dependencies;
 
   public void addDependency(Dependency dependency) {

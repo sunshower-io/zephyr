@@ -1,6 +1,6 @@
 package io.sunshower.kernel.core;
 
-import io.sunshower.kernel.Version;
+import io.zephyr.kernel.Version;
 import lombok.NonNull;
 
 public class SemanticVersion implements Version {

@@ -2,6 +2,7 @@ package io.sunshower.kernel;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import io.zephyr.kernel.Module;
 import org.junit.jupiter.api.Test;
 
 class ModuleTest {

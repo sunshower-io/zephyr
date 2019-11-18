@@ -1,8 +1,8 @@
 package io.sunshower.kernel.core;
 
-import io.sunshower.kernel.Library;
-import io.sunshower.kernel.Module;
-import io.sunshower.kernel.log.Logging;
+import io.zephyr.kernel.Library;
+import io.zephyr.kernel.Module;
+import io.zephyr.kernel.log.Logging;
 import java.io.File;
 import java.io.IOException;
 import java.util.Set;

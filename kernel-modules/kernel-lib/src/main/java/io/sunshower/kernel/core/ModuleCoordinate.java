@@ -1,7 +1,7 @@
 package io.sunshower.kernel.core;
 
-import io.sunshower.kernel.Coordinate;
-import io.sunshower.kernel.Version;
+import io.zephyr.kernel.Coordinate;
+import io.zephyr.kernel.Version;
 import java.util.regex.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

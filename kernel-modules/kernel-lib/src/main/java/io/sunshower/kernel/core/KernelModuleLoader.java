@@ -1,10 +1,13 @@
 package io.sunshower.kernel.core;
 
-import io.sunshower.kernel.Coordinate;
-import io.sunshower.kernel.Module;
-import io.sunshower.kernel.ModuleException;
-import io.sunshower.kernel.UnsatisfiedDependencyException;
-import io.sunshower.kernel.dependencies.DependencyGraph;
+import io.zephyr.kernel.Coordinate;
+import io.zephyr.kernel.Module;
+import io.zephyr.kernel.ModuleException;
+import io.zephyr.kernel.UnsatisfiedDependencyException;
+import io.zephyr.kernel.core.DefaultModule;
+import io.zephyr.kernel.core.ModuleClasspath;
+import io.zephyr.kernel.core.ModuleClasspathManager;
+import io.zephyr.kernel.dependencies.DependencyGraph;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,7 +21,7 @@ import org.jboss.modules.ModuleNotFoundException;
 /** this class is intentionally not thread-safe and must be protected by its owner */
 @SuppressWarnings("PMD.AvoidUsingVolatile")
 public final class KernelModuleLoader extends ModuleLoader
-    implements io.sunshower.kernel.core.ModuleLoader, ModuleClasspathManager {
+    implements io.zephyr.kernel.core.ModuleLoader, ModuleClasspathManager {
 
   private DependencyGraph graph;
   private final Map<String, UnloadableKernelModuleLoader> moduleLoaders;
@@ -90,7 +93,7 @@ public final class KernelModuleLoader extends ModuleLoader
   }
 
   final class UnloadableKernelModuleLoader extends ModuleLoader
-      implements io.sunshower.kernel.core.ModuleLoader {
+      implements io.zephyr.kernel.core.ModuleLoader {
 
     final KernelModuleLoader loader;
 

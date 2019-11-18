@@ -1,7 +1,7 @@
 package testproject2;
 
-import io.sunshower.PluginActivator;
-import io.sunshower.PluginContext;
+import io.zephyr.PluginActivator;
+import io.zephyr.PluginContext;
 import lombok.val;
 
 public class Test implements PluginActivator {

@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import io.sunshower.kernel.test.KernelTest;
 import javax.inject.Inject;
+
+import io.zephyr.kernel.core.Kernel;
 import org.junit.jupiter.api.Test;
 
 @KernelTest

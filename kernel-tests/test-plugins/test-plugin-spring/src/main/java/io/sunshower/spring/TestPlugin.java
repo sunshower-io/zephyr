@@ -1,7 +1,7 @@
 package io.sunshower.spring;
 
-import io.sunshower.PluginActivator;
-import io.sunshower.PluginContext;
+import io.zephyr.PluginActivator;
+import io.zephyr.PluginContext;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;

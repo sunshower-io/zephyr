@@ -2,8 +2,8 @@ package io.sunshower.kernel.ext.scanner;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import io.sunshower.kernel.Module;
-import io.sunshower.kernel.core.ModuleScanner;
+import io.zephyr.kernel.Module;
+import io.zephyr.kernel.core.ModuleScanner;
 import io.sunshower.kernel.core.SemanticVersion;
 import io.sunshower.test.common.Tests;
 import java.io.File;

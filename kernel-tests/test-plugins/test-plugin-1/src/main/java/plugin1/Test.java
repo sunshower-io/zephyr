@@ -1,7 +1,7 @@
 package plugin1;
 
-import io.sunshower.PluginActivator;
-import io.sunshower.PluginContext;
+import io.zephyr.PluginActivator;
+import io.zephyr.PluginContext;
 
 public class Test implements PluginActivator {
   @Override
