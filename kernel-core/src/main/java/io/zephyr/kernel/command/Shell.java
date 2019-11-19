@@ -5,11 +5,11 @@ import lombok.NonNull;
 import lombok.val;
 
 public abstract class Shell implements Invoker {
-
-  final DefaultHistory history;
-  final CommandContext context;
-  final CommandRegistry registry;
   protected final Console console;
+
+  private final DefaultHistory history;
+  private final CommandContext context;
+  private final CommandRegistry registry;
 
   protected Shell(
       @NonNull CommandRegistry registry,

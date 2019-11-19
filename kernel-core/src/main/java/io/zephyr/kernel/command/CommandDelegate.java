@@ -31,14 +31,14 @@ public class CommandDelegate {
     if (cli == null) {
       return false;
     }
-    val commandLine =
-        new CommandLine(cli, injectionFactory())
-            .setExecutionExceptionHandler(KernelLauncher.getInstance());
-    if (arguments == null || arguments.length == 0) {
-      commandLine.execute();
-    } else {
-      commandLine.execute(arguments);
-    }
+//    val commandLine =
+//        new CommandLine(cli, injectionFactory())
+//            .setExecutionExceptionHandler(KernelLauncher.getInstance());
+//    if (arguments == null || arguments.length == 0) {
+//      commandLine.execute();
+//    } else {
+//      commandLine.execute(arguments);
+//    }
     arguments = null;
     return true;
   }

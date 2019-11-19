@@ -3,8 +3,6 @@ package io.zephyr.api;
 public interface Invoker {
 
   /**
-   * this should generally block the main thread
-   *
    * @throws Exception
    */
   void start() throws Exception;
