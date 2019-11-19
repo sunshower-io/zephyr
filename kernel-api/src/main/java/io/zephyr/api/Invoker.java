@@ -26,4 +26,6 @@ public interface Invoker {
 
   /** @return the history for this invoker */
   History getHistory();
+
+  CommandRegistry getRegistry();
 }

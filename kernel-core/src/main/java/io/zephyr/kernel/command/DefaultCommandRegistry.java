@@ -2,6 +2,7 @@ package io.zephyr.kernel.command;
 
 import io.zephyr.api.Command;
 import io.zephyr.api.CommandRegistry;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,5 +24,15 @@ public class DefaultCommandRegistry implements CommandRegistry {
   @Override
   public Command register(Command command) {
     return commands.put(command.getName(), command);
+  }
+
+  @Override
+  public Command unregister(String name) {
+    return commands.remove(name);
+  }
+
+  @Override
+  public Command resolve(String name) {
+    return commands.get(name);
   }
 }

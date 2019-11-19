@@ -15,9 +15,9 @@ public class DefaultHistory implements History {
     commands = new ArrayList<>();
   }
 
-  public void add(Command command) {}
-
-  public void push(Command command) {}
+  public void add(Command command) {
+    commands.add(command);
+  }
 
   @Override
   public List<Command> clear() {

@@ -11,4 +11,8 @@ public interface CommandRegistry {
    * @return the command that is replaced (if any) by this command
    */
   Command register(Command command);
+
+  Command unregister(String name);
+
+  Command resolve(String name);
 }

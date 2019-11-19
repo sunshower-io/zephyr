@@ -4,5 +4,5 @@ public interface Command {
 
   String getName();
 
-  Result invoke(CommandContext context);
+  Result invoke(CommandContext context, Parameters parameters);
 }
