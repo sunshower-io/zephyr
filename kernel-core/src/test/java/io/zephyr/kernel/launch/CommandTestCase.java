@@ -1,6 +1,7 @@
 package io.zephyr.kernel.launch;
 
 import io.sunshower.test.common.Tests;
+import io.zephyr.kernel.Module;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.core.KernelLifecycle;
 import io.zephyr.kernel.core.SunshowerKernel;
@@ -8,6 +9,9 @@ import io.zephyr.kernel.misc.SuppressFBWarnings;
 import io.zephyr.kernel.server.Server;
 import java.net.URI;
 import java.nio.file.FileSystems;
+import java.util.Collection;
+import java.util.function.Predicate;
+
 import lombok.SneakyThrows;
 import lombok.val;
 import org.junit.jupiter.api.AfterEach;
@@ -65,6 +69,19 @@ public abstract class CommandTestCase {
     val kernel = launcher.getContext().getService(Kernel.class);
     while (kernel.getModuleManager().getModules().size() != count) {
       Thread.sleep(100);
+    }
+  }
+
+  @SneakyThrows
+  protected void waitForPluginState(Predicate<Collection<Module>> modules) {
+    waitForKernel();
+    val kernel = launcher.getContext().getService(Kernel.class);
+    for (; ; ) {
+      val actual = kernel.getModuleManager().getModules();
+      if (modules.test(actual)) {
+        return;
+      }
+      Thread.sleep(50);
     }
   }
 
