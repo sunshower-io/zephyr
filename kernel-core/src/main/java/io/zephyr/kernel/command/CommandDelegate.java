@@ -37,7 +37,7 @@ public class CommandDelegate implements Runnable {
   public void run() {
 
     val cli = registry.resolve(command);
-    if(cli == null) {
+    if (cli == null) {
       return;
     }
     val commandLine = new CommandLine(cli, injectionFactory());

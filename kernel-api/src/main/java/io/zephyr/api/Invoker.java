@@ -4,7 +4,6 @@ import java.rmi.Remote;
 
 public interface Invoker extends Remote {
 
-
   Console getConsole() throws Exception;
 
   /**

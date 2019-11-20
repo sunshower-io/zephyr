@@ -1,10 +1,11 @@
 package io.zephyr.kernel.command.commands.kernel;
 
+import static io.zephyr.kernel.core.KernelEventTypes.*;
+
 import io.zephyr.api.CommandContext;
 import io.zephyr.api.Console;
 import io.zephyr.api.Result;
 import io.zephyr.kernel.command.DefaultCommand;
-import io.zephyr.kernel.command.DefaultCommandContext;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.core.KernelEventTypes;
 import io.zephyr.kernel.core.KernelLifecycle;
@@ -14,8 +15,6 @@ import io.zephyr.kernel.events.EventType;
 import lombok.AllArgsConstructor;
 import lombok.val;
 import picocli.CommandLine;
-
-import static io.zephyr.kernel.core.KernelEventTypes.*;
 
 @CommandLine.Command(name = "stop")
 @SuppressWarnings("PMD.DataflowAnomalyAnalysis")

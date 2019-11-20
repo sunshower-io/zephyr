@@ -3,10 +3,9 @@ package io.zephyr.kernel.launch;
 import io.zephyr.api.Console;
 import io.zephyr.api.Invoker;
 import io.zephyr.api.Parameters;
+import java.util.Arrays;
 import lombok.val;
 import picocli.CommandLine;
-
-import java.util.Arrays;
 
 public class InteractiveShell {
   private final Console console;
