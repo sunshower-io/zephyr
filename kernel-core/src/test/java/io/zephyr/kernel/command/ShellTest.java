@@ -51,16 +51,6 @@ class ShellTest {
     assertTrue(shell.getHistory().getHistory().contains(c), "must contain command in history");
   }
 
-  @Test
-  void ensureStartingKernelWorks() throws Exception {
-
-    val is = new ByteArrayInputStream("kernel start\n".getBytes());
-    val os = new PrintStream(new ByteArrayOutputStream());
-    val shell = doCreate(is, os);
-
-    shell.start();
-  }
-
   private Shell doCreate() {
     return doCreate(System.in, System.out);
   }

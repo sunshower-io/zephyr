@@ -5,6 +5,7 @@ import io.zephyr.kernel.launch.KernelOptions;
 import io.zephyr.kernel.launch.RMI;
 import io.zephyr.kernel.log.Logging;
 import java.rmi.AlreadyBoundException;
+import java.rmi.NoSuchObjectException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -32,7 +33,7 @@ public class ZephyrServer implements Server {
     log.log(Level.INFO, "zephyr.server.starting", port);
     try {
       log.log(Level.INFO, "zephyr.server.invoker.binding");
-      val stub = UnicastRemoteObject.exportObject((Remote) invoker, port);
+      val stub = UnicastRemoteObject.exportObject(invoker, port);
       RMI.getRegistry(options).bind("ZephyrShell", stub);
       log.log(Level.INFO, "zephyr.server.invoker.bound");
       running = true;
@@ -64,11 +65,19 @@ public class ZephyrServer implements Server {
     try {
       for (val name : registry.list()) {
         log.log(Level.INFO, "zephyr.server.unregistering.service", name);
-        registry.unbind(name);
+        try {
+          registry.unbind(name);
+        } catch (NoSuchObjectException ex) {
+          log.log(Level.INFO, "failed to unregister service");
+        }
         log.log(Level.INFO, "zephyr.server.unregistered.service", name);
       }
     } finally {
-      UnicastRemoteObject.unexportObject(registry, true);
+      try {
+        UnicastRemoteObject.unexportObject(registry, true);
+      } catch (NoSuchObjectException ex) {
+        log.log(Level.INFO, "Server not running");
+      }
     }
   }
 

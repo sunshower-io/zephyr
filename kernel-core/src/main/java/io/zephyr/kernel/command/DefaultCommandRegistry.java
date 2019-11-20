@@ -2,12 +2,14 @@ package io.zephyr.kernel.command;
 
 import io.zephyr.api.Command;
 import io.zephyr.api.CommandRegistry;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class DefaultCommandRegistry implements CommandRegistry {
+public class DefaultCommandRegistry implements CommandRegistry, Serializable {
 
   private final Map<String, Command> commands;
 

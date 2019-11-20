@@ -4,16 +4,8 @@ import java.rmi.Remote;
 
 public interface Invoker extends Remote {
 
-  /** @throws Exception */
-  void start() throws Exception;
 
-  /**
-   * since the main thread is blocked by start(), this will need to be invoked by the invoker
-   * (separate thread)
-   *
-   * @throws Exception
-   */
-  void stop() throws Exception;
+  Console getConsole() throws Exception;
 
   /**
    * @param parameters the parameters supplied (may not be null, use Parameters.empty())

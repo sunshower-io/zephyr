@@ -52,6 +52,12 @@ class KernelLauncherTest {
     KernelLauncher.main(new String[] {"server", "stop"});
   }
 
+  @Test
+  void check() {
+    startServer();
+    KernelLauncher.main(new String[] {"-i"});
+  }
+
   private Server startServer() {
     doRun("-s");
     Server server;

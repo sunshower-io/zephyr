@@ -1,6 +1,7 @@
 package io.zephyr.api;
 
 import java.io.InputStream;
+import java.io.PrintStream;
 
 public interface Console {
 
@@ -13,4 +14,6 @@ public interface Console {
   InputStream getInputStream();
 
   void successln(String line, Object... args);
+
+  PrintStream getWriter();
 }
