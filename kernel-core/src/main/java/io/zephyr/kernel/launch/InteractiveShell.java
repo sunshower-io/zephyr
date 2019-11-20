@@ -3,11 +3,15 @@ package io.zephyr.kernel.launch;
 import io.zephyr.api.Console;
 import io.zephyr.api.Invoker;
 import io.zephyr.api.Parameters;
+import java.util.Arrays;
 import lombok.val;
 import picocli.CommandLine;
 
-import java.util.Arrays;
-
+@SuppressWarnings({
+  "PMD.DataflowAnomalyAnalysis",
+  "PMD.UnusedPrivateField",
+  "PMD.AvoidInstantiatingObjectsInLoops"
+})
 public class InteractiveShell {
   private final Console console;
   private final Invoker invoker;
@@ -48,7 +52,7 @@ public class InteractiveShell {
     }
   }
 
-  private boolean isHelp(String[] c) {
+  private boolean isHelp(String... c) {
     return doesEqual(c, "help");
   }
 
@@ -64,7 +68,7 @@ public class InteractiveShell {
     return false;
   }
 
-  private boolean isExit(String[] c) {
+  private boolean isExit(String... c) {
     return doesEqual(c, "quit") || doesEqual(c, "exit");
   }
 }

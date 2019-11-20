@@ -17,6 +17,7 @@ import picocli.CommandLine;
 
 @SuppressFBWarnings
 @SuppressWarnings({
+  "PMD.DataflowAnomalyAnalysis",
   "PMD.AvoidDuplicateLiterals",
   "PMD.JUnitTestsShouldIncludeAssert",
   "PMD.JUnitTestContainsTooManyAsserts",
@@ -65,6 +66,8 @@ class ShellTest {
   private Command createCommand() {
     @CommandLine.Command(name = "frapper")
     class C implements Command {
+      private static final long serialVersionUID = -5711260216340918001L;
+
       @Override
       public String getName() {
         return "frapper";

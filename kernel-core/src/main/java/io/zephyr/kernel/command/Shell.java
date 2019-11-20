@@ -25,6 +25,7 @@ public class Shell implements Invoker, Remote {
     this.delegate = new CommandDelegate(registry, history, context);
   }
 
+  @Override
   public Console getConsole() throws RemoteException {
     return console;
   }

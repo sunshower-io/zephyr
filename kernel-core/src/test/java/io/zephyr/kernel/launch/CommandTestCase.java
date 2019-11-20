@@ -6,6 +6,11 @@ import io.zephyr.kernel.server.Server;
 import lombok.SneakyThrows;
 import lombok.val;
 
+@SuppressWarnings({
+  "PMD.DoNotUseThreads",
+  "PMD.AvoidUsingVolatile",
+  "PMD.AbstractClassWithoutAbstractMethod"
+})
 public abstract class CommandTestCase {
 
   protected volatile KernelLauncher launcher;

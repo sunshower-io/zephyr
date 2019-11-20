@@ -5,15 +5,15 @@ import io.zephyr.api.Console;
 import io.zephyr.api.Invoker;
 import io.zephyr.api.Result;
 import io.zephyr.kernel.command.AbstractCommand;
-import lombok.val;
-import picocli.CommandLine;
-
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import lombok.val;
+import picocli.CommandLine;
 
 @CommandLine.Command(name = "history")
 public class HistoryCommand extends AbstractCommand {
   static final Logger log = Logger.getLogger(HistoryCommand.class.getName());
+  private static final long serialVersionUID = -4210026999188041130L;
 
   public HistoryCommand() {
     super("history");

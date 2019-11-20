@@ -2,7 +2,6 @@ package io.zephyr.kernel.command;
 
 import io.zephyr.api.Command;
 import io.zephyr.api.CommandRegistry;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,6 +10,7 @@ import java.util.Map;
 
 public class DefaultCommandRegistry implements CommandRegistry, Serializable {
 
+  private static final long serialVersionUID = 6629591592483320896L;
   private final Map<String, Command> commands;
 
   public DefaultCommandRegistry() {

@@ -79,7 +79,6 @@ public class ZephyrServer implements Server {
             UnicastRemoteObject.unexportObject((Remote) result, true);
           }
         } catch (NoSuchObjectException ex) {
-          ex.printStackTrace();
           log.log(Level.INFO, "failed to unregister service");
         }
         log.log(Level.INFO, "zephyr.server.unregistered.service", name);

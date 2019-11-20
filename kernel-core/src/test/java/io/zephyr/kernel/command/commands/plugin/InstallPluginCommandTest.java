@@ -1,16 +1,17 @@
 package io.zephyr.kernel.command.commands.plugin;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import io.sunshower.test.common.Tests;
 import io.zephyr.kernel.launch.CommandTestCase;
 import io.zephyr.kernel.launch.KernelLauncher;
+import java.io.File;
+import java.util.UUID;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
+@SuppressWarnings("PMD.AvoidDuplicateLiterals")
 class InstallPluginCommandTest extends CommandTestCase {
 
   File testPlugin1;
@@ -27,28 +28,40 @@ class InstallPluginCommandTest extends CommandTestCase {
 
   @Test
   void ensureInstallingPluginWorks() throws InterruptedException {
-    startServer();
-    KernelLauncher.main(
-        new String[] {"kernel", "start", "-h", Tests.createTemp().getAbsolutePath()});
-    waitForKernel();
-    runRemote("plugin", "install", testPlugin1.getAbsolutePath());
-    waitForPluginCount(1);
-    val kernel = getKernel();
-    assertEquals(
-        kernel.getModuleManager().getModules().size(), 1, "must have one plugin installed");
+    val server = startServer();
+    try {
+      KernelLauncher.main(
+          new String[] {"kernel", "start", "-h", Tests.createTemp().getAbsolutePath()});
+      waitForKernel();
+      runRemote("plugin", "install", testPlugin1.getAbsolutePath());
+      waitForPluginCount(1);
+      val kernel = getKernel();
+      assertEquals(
+          kernel.getModuleManager().getModules().size(), 1, "must have one plugin installed");
+    } finally {
+      KernelLauncher.main(new String[] {"kernel", "stop"});
+      server.stop();
+    }
   }
 
   @Test
   void ensureInstallingMultiplePluginsWorks() {
 
-    startServer();
-    KernelLauncher.main(
-        new String[] {"kernel", "start", "-h", Tests.createTemp().getAbsolutePath()});
-    waitForKernel();
-    runRemote("plugin", "install", testPlugin1.getAbsolutePath(), testPlugin2.getAbsolutePath());
-    waitForPluginCount(2);
-    val kernel = getKernel();
-    assertEquals(
-        kernel.getModuleManager().getModules().size(), 2, "must have two plugins installed");
+    val server = startServer();
+    try {
+      KernelLauncher.main(
+          new String[] {
+            "kernel", "start", "-h", Tests.createTemp("hello" + UUID.randomUUID()).getAbsolutePath()
+          });
+      waitForKernel();
+      runRemote("plugin", "install", testPlugin1.getAbsolutePath(), testPlugin2.getAbsolutePath());
+      waitForPluginCount(2);
+      val kernel = getKernel();
+      assertEquals(
+          kernel.getModuleManager().getModules().size(), 2, "must have two plugins installed");
+    } finally {
+      KernelLauncher.main(new String[] {"kernel", "stop"});
+      server.stop();
+    }
   }
 }

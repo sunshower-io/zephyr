@@ -56,6 +56,8 @@ class DefaultCommandRegistryTest {
 
   static class TCommand extends AbstractCommand {
 
+    private static final long serialVersionUID = 6792450710392777687L;
+
     protected TCommand(@NonNull String name) {
       super(name);
     }

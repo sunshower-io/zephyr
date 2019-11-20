@@ -23,6 +23,7 @@ import picocli.CommandLine;
 @SuppressWarnings("PMD.DataflowAnomalyAnalysis")
 public class KernelStartCommand extends DefaultCommand {
 
+  private static final long serialVersionUID = -8306551865402490711L;
   @CommandLine.Unmatched private String[] arguments;
 
   public KernelStartCommand() {

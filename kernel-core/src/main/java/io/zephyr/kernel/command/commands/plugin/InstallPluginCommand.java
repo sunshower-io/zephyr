@@ -1,5 +1,7 @@
 package io.zephyr.kernel.command.commands.plugin;
 
+import static io.zephyr.kernel.core.PluginEvents.*;
+
 import io.zephyr.api.CommandContext;
 import io.zephyr.api.Console;
 import io.zephyr.api.Result;
@@ -12,20 +14,19 @@ import io.zephyr.kernel.events.EventListener;
 import io.zephyr.kernel.events.EventType;
 import io.zephyr.kernel.module.ModuleInstallationGroup;
 import io.zephyr.kernel.module.ModuleInstallationRequest;
-import lombok.val;
-import picocli.CommandLine;
-
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.val;
+import picocli.CommandLine;
 
-import static io.zephyr.kernel.core.PluginEvents.*;
-
+@SuppressWarnings({"PMD.AvoidInstantiatingObjectsInLoops", "PMD.UnusedPrivateMethod"})
 @CommandLine.Command(name = "install")
 public class InstallPluginCommand extends AbstractCommand {
 
+  private static final long serialVersionUID = -8662903213651849534L;
   @CommandLine.Parameters private String[] urls;
 
   public InstallPluginCommand() {
@@ -87,7 +88,7 @@ public class InstallPluginCommand extends AbstractCommand {
   }
 
   private String normalize(String url, Console console) {
-    if (url.startsWith(".") || url.startsWith("/")) {
+    if (url.charAt(0) == '.' || url.charAt(0) == '/') {
       val result = new File(url).getAbsoluteFile().getAbsolutePath();
       val fileResult = String.format("file://%s", result);
       console.successln("Normalizing {0} -> {1}", url, fileResult);
@@ -103,6 +104,7 @@ public class InstallPluginCommand extends AbstractCommand {
     }
   }
 
+  @SuppressWarnings("PMD.SwitchStmtsShouldHaveDefault")
   static final class PluginInstallationListener implements EventListener<Object> {
     final Console console;
 

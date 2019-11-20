@@ -9,6 +9,8 @@ import picocli.CommandLine;
 @CommandLine.Command(name = "stop")
 public class StopServerCommand extends DefaultCommand {
 
+  private static final long serialVersionUID = -7901772560457432938L;
+
   public StopServerCommand() {
     super("stop");
   }

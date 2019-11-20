@@ -6,8 +6,6 @@ import io.zephyr.api.Invoker;
 import io.zephyr.api.Parameters;
 import io.zephyr.kernel.command.DaggerShellInjectionConfiguration;
 import io.zephyr.kernel.command.DefaultCommandContext;
-import io.zephyr.kernel.command.ShellInjectionConfiguration;
-import io.zephyr.kernel.command.ShellModule;
 import io.zephyr.kernel.misc.SuppressFBWarnings;
 import io.zephyr.kernel.server.DaggerServerInjectionConfiguration;
 import io.zephyr.kernel.server.Server;
