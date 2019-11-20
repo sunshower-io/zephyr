@@ -1,10 +1,16 @@
 package io.zephyr.kernel.launch;
 
+import io.sunshower.test.common.Tests;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.core.KernelLifecycle;
+import io.zephyr.kernel.core.SunshowerKernel;
+import io.zephyr.kernel.misc.SuppressFBWarnings;
 import io.zephyr.kernel.server.Server;
+import java.net.URI;
+import java.nio.file.FileSystems;
 import lombok.SneakyThrows;
 import lombok.val;
+import org.junit.jupiter.api.AfterEach;
 
 @SuppressWarnings({
   "PMD.DoNotUseThreads",
@@ -76,6 +82,21 @@ public abstract class CommandTestCase {
       if (lifecycle.getState() == KernelLifecycle.State.Running) {
         break;
       }
+    }
+  }
+
+  @AfterEach
+  @SuppressFBWarnings
+  @SuppressWarnings("PMD.EmptyCatchBlock")
+  protected void tearDown() {
+    try {
+      val options = new KernelOptions();
+      options.setHomeDirectory(Tests.createTemp());
+      SunshowerKernel.setKernelOptions(options);
+      val fs = FileSystems.getFileSystem(URI.create("droplet://kernel"));
+      fs.close();
+    } catch (Exception ex) {
+      // eh
     }
   }
 }

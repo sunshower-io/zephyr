@@ -4,13 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.sunshower.test.common.Tests;
-import io.zephyr.kernel.core.SunshowerKernel;
-import io.zephyr.kernel.misc.SuppressFBWarnings;
 import io.zephyr.kernel.server.Server;
-import java.net.URI;
-import java.nio.file.FileSystems;
-import lombok.val;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.RepeatedTest;
 
 @SuppressWarnings({
@@ -40,20 +34,5 @@ class KernelLauncherTest extends CommandTestCase {
 
     waitForKernel();
     KernelLauncher.main(new String[] {"server", "stop"});
-  }
-
-  @AfterEach
-  @SuppressFBWarnings
-  @SuppressWarnings("PMD.EmptyCatchBlock")
-  void tearDown() {
-    try {
-      val options = new KernelOptions();
-      options.setHomeDirectory(Tests.createTemp());
-      SunshowerKernel.setKernelOptions(options);
-      val fs = FileSystems.getFileSystem(URI.create("droplet://kernel"));
-      fs.close();
-    } catch (Exception ex) {
-      // eh
-    }
   }
 }
