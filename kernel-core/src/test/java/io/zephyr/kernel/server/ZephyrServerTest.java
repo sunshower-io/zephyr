@@ -14,6 +14,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 class ZephyrServerTest {
@@ -42,14 +43,18 @@ class ZephyrServerTest {
 
   @Test
   void startingServerWorks() throws Exception {
+    doStart();
+
+    Invoker localInvoker = (Invoker) LocateRegistry.getRegistry(9999).lookup("ZephyrShell");
+    localInvoker.invoke(Parameters.of("server", "stop"));
+    assertFalse(server.isRunning());
+  }
+
+  private void doStart() throws InterruptedException {
     val t1 = new Thread(() -> server.start());
     t1.start();
     while (!server.isRunning()) {
       Thread.sleep(100);
     }
-
-    Invoker localInvoker = (Invoker) LocateRegistry.getRegistry(9999).lookup("ZephyrShell");
-    localInvoker.invoke(Parameters.of("server", "stop"));
-    assertFalse(server.isRunning());
   }
 }
