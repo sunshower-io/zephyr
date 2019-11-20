@@ -29,7 +29,36 @@ class StartPluginCommandTest extends CommandTestCase {
   }
 
   @Test
-  void ensureListingPluginsWorks() throws InterruptedException {
+  void ensureStartingDependentPluginStartsBoth() throws InterruptedException {
+
+    val server = startServer();
+    try {
+      KernelLauncher.main(
+          new String[] {
+            "kernel", "start", "-h", Tests.createTemp("hello" + UUID.randomUUID()).getAbsolutePath()
+          });
+      waitForKernel();
+      runRemote("plugin", "install", testPlugin1.getAbsolutePath(), testPlugin2.getAbsolutePath());
+      waitForPluginCount(2);
+      val kernel = getKernel();
+      val module = moduleNamed("test-plugin-2");
+      runRemote("plugin", "start", module.getCoordinate().toCanonicalForm());
+      waitForPluginState(
+          t ->
+              t.stream().filter(u -> u.getLifecycle().getState() == Lifecycle.State.Active).count()
+                  == 2);
+
+      val running = kernel.getModuleManager().getModules(Lifecycle.State.Active);
+      assertEquals(running.size(), 2, "must have two running plugins");
+
+    } finally {
+      KernelLauncher.main(new String[] {"kernel", "stop"});
+      server.stop();
+    }
+  }
+
+  @Test
+  void ensureStartingPluginWorks() throws InterruptedException {
 
     val server = startServer();
     try {
