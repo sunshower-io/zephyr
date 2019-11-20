@@ -66,10 +66,10 @@ public class KernelLauncher {
     val registry = RMI.getRegistry(options);
     try {
       if (console == null) {
+        // this is a bit weird--we're instantiating a lot to get the console--nothing else
         val shellcfg =
             DaggerShellInjectionConfiguration.factory()
                 .create(ClassLoader.getSystemClassLoader(), context);
-
         val result = shellcfg.createShell();
         console = result.getConsole();
       }
@@ -79,11 +79,13 @@ public class KernelLauncher {
       log.log(Level.INFO, "Server isn't running");
     }
 
+    // context is only to be used by the local shell--remote shell is set in startServer()
     val shellcfg =
         DaggerShellInjectionConfiguration.factory()
             .create(ClassLoader.getSystemClassLoader(), context);
 
     val result = shellcfg.createShell();
+    context.register(Invoker.class, result);
     if (console == null) {
       try {
         console = result.getConsole();
@@ -110,6 +112,7 @@ public class KernelLauncher {
             .createShell();
     val server = DaggerServerInjectionConfiguration.factory().build(options, invoker).server();
     context.register(Server.class, server);
+    context.register(Invoker.class, invoker);
     server.start();
   }
 

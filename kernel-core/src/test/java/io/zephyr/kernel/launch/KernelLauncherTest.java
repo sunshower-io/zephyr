@@ -55,7 +55,8 @@ class KernelLauncherTest {
   @Test
   void check() {
     startServer();
-    KernelLauncher.main(new String[] {"-i"});
+    KernelLauncher.main(new String[]{"-i"});
+
   }
 
   private Server startServer() {

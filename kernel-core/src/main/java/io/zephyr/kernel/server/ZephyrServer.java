@@ -4,11 +4,12 @@ import io.zephyr.api.Invoker;
 import io.zephyr.kernel.launch.KernelOptions;
 import io.zephyr.kernel.launch.RMI;
 import io.zephyr.kernel.log.Logging;
-import java.rmi.AlreadyBoundException;
 import java.rmi.NoSuchObjectException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import lombok.val;
@@ -21,9 +22,12 @@ public class ZephyrServer implements Server {
   private final Invoker invoker;
   private final KernelOptions options;
 
+  private final Map<Object, Object> exported;
+
   public ZephyrServer(KernelOptions options, Invoker invoker) {
     this.options = options;
     this.invoker = invoker;
+    exported = new HashMap<>();
   }
 
   @Override
@@ -34,11 +38,12 @@ public class ZephyrServer implements Server {
     try {
       log.log(Level.INFO, "zephyr.server.invoker.binding");
       val stub = UnicastRemoteObject.exportObject(invoker, port);
-      RMI.getRegistry(options).bind("ZephyrShell", stub);
+      exported.put(stub, invoker);
+      RMI.getRegistry(options).rebind("ZephyrShell", stub);
       log.log(Level.INFO, "zephyr.server.invoker.bound");
       running = true;
       loop(port);
-    } catch (RemoteException | InterruptedException | AlreadyBoundException e) {
+    } catch (RemoteException | InterruptedException e) {
       log.log(Level.WARNING, "Encountered exception", e);
     }
   }
@@ -66,8 +71,15 @@ public class ZephyrServer implements Server {
       for (val name : registry.list()) {
         log.log(Level.INFO, "zephyr.server.unregistering.service", name);
         try {
+          val stub = registry.lookup(name);
           registry.unbind(name);
+
+          val result = exported.get(stub);
+          if (result != null) {
+            UnicastRemoteObject.unexportObject((Remote) result, true);
+          }
         } catch (NoSuchObjectException ex) {
+          ex.printStackTrace();
           log.log(Level.INFO, "failed to unregister service");
         }
         log.log(Level.INFO, "zephyr.server.unregistered.service", name);
