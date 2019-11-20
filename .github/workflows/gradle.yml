@@ -14,6 +14,8 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 12
+    - name: PWD
+      run: pwd
     - name: Install Maven Dependencies
       run: mvn clean install -f ../../bom/
     - name: Build with Gradle
