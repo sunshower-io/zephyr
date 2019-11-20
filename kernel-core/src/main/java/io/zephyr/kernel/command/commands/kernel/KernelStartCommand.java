@@ -4,6 +4,7 @@ import io.zephyr.api.CommandContext;
 import io.zephyr.api.Console;
 import io.zephyr.api.Result;
 import io.zephyr.kernel.command.DefaultCommand;
+import io.zephyr.kernel.command.DefaultCommandContext;
 import io.zephyr.kernel.core.DaggerSunshowerKernelConfiguration;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.core.KernelEventTypes;
@@ -20,6 +21,9 @@ import static io.zephyr.kernel.core.KernelEventTypes.*;
 
 @CommandLine.Command(name = "start")
 public class KernelStartCommand extends DefaultCommand {
+
+  @CommandLine.Unmatched private String[] arguments;
+
   public KernelStartCommand() {
     super("start");
   }
@@ -28,6 +32,11 @@ public class KernelStartCommand extends DefaultCommand {
   public Result execute(CommandContext context) {
 
     val options = context.getService(KernelOptions.class);
+
+    if (!(arguments == null || arguments.length == 0)) {
+      CommandLine.populateCommand(options, arguments);
+      options.validate();
+    }
 
     Kernel kernel = context.getService(Kernel.class);
 
@@ -47,6 +56,7 @@ public class KernelStartCommand extends DefaultCommand {
         return Result.failure();
       }
       kernel.start();
+      ((DefaultCommandContext) context).register(Kernel.class, kernel);
     } finally {
       kernel.removeEventListener(listener);
     }

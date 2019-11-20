@@ -44,6 +44,10 @@ public class SunshowerKernel extends AbstractEventSource implements Kernel {
     this.lifecycle = new DefaultKernelLifecycle(this, scheduler);
   }
 
+  public static void setKernelOptions(KernelOptions options) {
+    kernelOptions = options;
+  }
+
   public static KernelOptions getKernelOptions() {
     if (kernelOptions == null) {
       throw new IllegalStateException("Error: KernelOptions are null--this is definitely a bug");

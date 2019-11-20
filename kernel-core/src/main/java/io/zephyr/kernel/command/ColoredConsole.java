@@ -56,6 +56,6 @@ public class ColoredConsole implements Console {
 
   @Override
   public void successln(String string, Object... args) {
-    writeln(string, Color.colors(Color.GreenBright), args);
+    writeln(string, Color.colors(Color.GreenBoldBright), args);
   }
 }

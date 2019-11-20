@@ -2,15 +2,15 @@ package io.zephyr.kernel.command;
 
 import io.zephyr.api.CommandContext;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class DefaultCommandContext implements CommandContext {
 
   final Map<Class<?>, Object> services;
 
   public DefaultCommandContext() {
-    services = new HashMap<>();
+    services = new ConcurrentHashMap<>();
   }
 
   @Override
@@ -18,7 +18,6 @@ public class DefaultCommandContext implements CommandContext {
   public <T> T getService(Class<T> service) {
     return (T) services.get(service);
   }
-
 
   public <T> void register(Class<T> service, T value) {
     services.put(service, value);

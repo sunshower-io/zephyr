@@ -11,7 +11,6 @@ public class DefaultCommand extends AbstractCommand {
 
   @Override
   public Result execute(CommandContext context) {
-    System.out.println("Running  " + getName());
     return null;
   }
 }

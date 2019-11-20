@@ -44,7 +44,9 @@ public class SunshowerKernelInjectionModule {
 
   @Provides
   @Singleton
-  public Kernel sunshowerKernel(SunshowerKernel kernel, ModuleManager moduleManager) {
+  public Kernel sunshowerKernel(
+      SunshowerKernel kernel, ModuleManager moduleManager, KernelOptions options) {
+    SunshowerKernel.setKernelOptions(options);
     moduleManager.initialize(kernel);
     return kernel;
   }
