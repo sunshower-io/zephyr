@@ -25,21 +25,11 @@ public class LocalShell extends Shell {
       @NonNull CommandContext context,
       @NonNull Console console) {
     super(registry, context, console);
-    delegate = new CommandDelegate(registry);
+    delegate = new CommandDelegate(registry, (DefaultHistory) getHistory(), context);
   }
 
   @Override
   public void start() throws Exception {
-    running = true;
-    while (running) {
-      try {
-        val result = console.read();
-        System.out.println("got " + Arrays.toString(result));
-        CommandLine.populateCommand(delegate, result).execute();
-      } catch (Exception ex) {
-        console.errorln("Could not understand that command.  Run <help> for help");
-      }
-    }
   }
 
   @Override

@@ -3,13 +3,19 @@ package io.zephyr.kernel.command;
 import io.zephyr.api.*;
 import lombok.NonNull;
 import lombok.val;
+import picocli.CommandLine;
 
-public abstract class Shell implements Invoker {
-  protected final Console console;
+import java.rmi.Remote;
+import java.rmi.RemoteException;
 
-  private final DefaultHistory history;
-  private final CommandContext context;
-  private final CommandRegistry registry;
+public abstract class Shell implements Invoker, Remote {
+  protected final transient Console console;
+
+  private final transient DefaultHistory history;
+  private final transient CommandContext context;
+  private final transient CommandRegistry registry;
+
+  final CommandDelegate delegate;
 
   protected Shell(
       @NonNull CommandRegistry registry,
@@ -19,17 +25,22 @@ public abstract class Shell implements Invoker {
     this.registry = registry;
     this.context = context;
     this.history = new DefaultHistory();
+    this.delegate = new CommandDelegate(registry, history, context);
   }
 
   @Override
-  public Result invoke(String commandName, Parameters parameters) {
-    val command = registry.resolve(commandName);
-    if (command == null) {
-      throw new CommandNotFoundException(commandName);
-    }
+  public Result invoke(Parameters parameters) throws RemoteException {
 
-    history.add(command);
-    return command.invoke(context, parameters);
+    try {
+      val cli = new CommandLine(delegate).setUnmatchedArgumentsAllowed(true);
+      cli.execute(parameters.formals());
+
+      //      val a = CommandLine.populateCommand(delegate, parameters.formals());
+      //      a.execute(context);
+    } catch (Exception ex) {
+      ex.printStackTrace();
+    }
+    return null;
   }
 
   @Override

@@ -55,8 +55,9 @@ class DefaultCommandRegistryTest {
       super(name);
     }
 
+
     @Override
-    public Result invoke(CommandContext context, Parameters parameters) {
+    public Result execute(CommandContext context) {
       return null;
     }
   }

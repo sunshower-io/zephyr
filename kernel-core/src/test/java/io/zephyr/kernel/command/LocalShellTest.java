@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
+import java.rmi.RemoteException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
@@ -29,30 +30,30 @@ class LocalShellTest {
   }
 
   @Test
-  void ensureInvokingCommandWorks() {
+  void ensureInvokingCommandWorks() throws Exception {
     val c = mock(Command.class);
 
     given(c.getName()).willReturn("frapper");
     shell.getRegistry().register(c);
-    shell.invoke("frapper", Parameters.empty());
-    verify(c, times(1)).invoke(any(CommandContext.class), eq(Parameters.empty()));
+    shell.invoke(Parameters.of("frapper"));
+    verify(c, times(1)).execute(any(CommandContext.class));
   }
 
   @Test
-  void ensureInvokedCommandAppearsInCommandHistory() {
+  void ensureInvokedCommandAppearsInCommandHistory() throws RemoteException {
     val c = mock(Command.class);
 
     given(c.getName()).willReturn("frapper");
     shell.getRegistry().register(c);
-    shell.invoke("frapper", Parameters.empty());
+    shell.invoke(Parameters.of("frapper"));
     assertTrue(shell.getHistory().getHistory().contains(c), "must contain command in history");
   }
 
   @Test
-  void ensureStartKernelCommandWorks() {
+  void ensureStartKernelCommandWorks() throws RemoteException {
     val a = new StartKernelCommand();
     shell.getRegistry().register(a);
-    shell.invoke(StartKernelCommand.name, Parameters.empty());
+    shell.invoke(Parameters.of(StartKernelCommand.name));
     verify(context, times(1)).getKernel();
     verify(kernel, times(1)).start();
   }

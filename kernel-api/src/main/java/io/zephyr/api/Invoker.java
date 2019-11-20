@@ -1,10 +1,10 @@
 package io.zephyr.api;
 
-public interface Invoker {
+import java.rmi.Remote;
 
-  /**
-   * @throws Exception
-   */
+public interface Invoker extends Remote {
+
+  /** @throws Exception */
   void start() throws Exception;
 
   /**
@@ -16,14 +16,13 @@ public interface Invoker {
   void stop() throws Exception;
 
   /**
-   * @param commandName the name of the command to invoke
    * @param parameters the parameters supplied (may not be null, use Parameters.empty())
    * @return the invocation result
    */
-  Result invoke(String commandName, Parameters parameters);
+  Result invoke(Parameters parameters) throws Exception;
 
   /** @return the history for this invoker */
-  History getHistory();
+  History getHistory() throws Exception;
 
-  CommandRegistry getRegistry();
+  CommandRegistry getRegistry() throws Exception;
 }

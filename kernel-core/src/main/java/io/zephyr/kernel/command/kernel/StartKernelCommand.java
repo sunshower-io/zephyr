@@ -19,25 +19,29 @@ public class StartKernelCommand extends AbstractCommand implements EventListener
     super(name);
   }
 
-  @Override
-  public Result invoke(CommandContext context, Parameters parameters) {
-    val kernel = context.getKernel();
-    try {
-      kernel.addEventListener(
-          this,
-          KernelEventTypes.KERNEL_START_INITIATED,
-          KernelEventTypes.KERNEL_START_FAILED,
-          KernelEventTypes.KERNEL_START_SUCCEEDED);
-      kernel.start();
-    } finally {
-      kernel.removeEventListener(this);
-    }
-    return null;
-  }
+//  @Override
+//  public Result invoke(CommandContext context, Parameters parameters) {
+//    val kernel = context.getKernel();
+//    try {
+//      kernel.addEventListener(
+//          this,
+//          KernelEventTypes.KERNEL_START_INITIATED,
+//          KernelEventTypes.KERNEL_START_FAILED,
+//          KernelEventTypes.KERNEL_START_SUCCEEDED);
+//      kernel.start();
+//    } finally {
+//      kernel.removeEventListener(this);
+//    }
+//    return null;
+//  }
 
   @Override
   public void onEvent(EventType type, Event<Kernel> event) {
     System.out.println("Sup");
   }
 
+  @Override
+  public Result execute(CommandContext context) {
+    return null;
+  }
 }

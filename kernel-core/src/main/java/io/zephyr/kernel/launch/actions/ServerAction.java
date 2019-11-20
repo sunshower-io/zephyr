@@ -2,7 +2,9 @@ package io.zephyr.kernel.launch.actions;
 
 import io.zephyr.kernel.launch.KernelOptions;
 import io.zephyr.kernel.log.Logging;
-import io.zephyr.kernel.server.ServerInjectionConfiguration;
+import io.zephyr.kernel.server.DaggerServerInjectionConfiguration;
+import io.zephyr.kernel.server.Server;
+import lombok.val;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -19,7 +21,12 @@ public class ServerAction implements Runnable {
   @Override
   public void run() {
     log.log(Level.INFO, "server.action.starting", options.getPort());
+    val server = createServer();
+  }
 
-
+  private Server createServer() {
+//    val factory = DaggerServerInjectionConfiguration.factory().build();
+//    return factory.server();
+    return null;
   }
 }
