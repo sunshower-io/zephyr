@@ -14,4 +14,5 @@ jobs:
       with:
         java-version: 12
     - name: Build with Gradle
-      run: ./gradlew build
+      
+      run: echo $(pwd) && ./gradlew build
