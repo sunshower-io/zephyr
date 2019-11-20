@@ -15,7 +15,7 @@ jobs:
       with:
         java-version: 12
     - name: Install Maven Dependencies
-      run: mvn clean install -f ../../bom
+      run: mvn clean install -f ../../../bom
     - name: Build with Gradle
       uses: eskatos/gradle-command-action@v1
       with:
