@@ -20,8 +20,11 @@ public class ShellModule {
 
   @Provides
   @Singleton
-  public Console console(InputStream inputStream, PrintStream outputStream) {
-    return new ColoredConsole(inputStream, outputStream);
+  public Console console(
+      InputStream inputStream, PrintStream outputStream, CommandContext context) {
+    val result = new ColoredConsole(inputStream, outputStream);
+    ((DefaultCommandContext) context).register(Console.class, result);
+    return result;
   }
 
   @Provides

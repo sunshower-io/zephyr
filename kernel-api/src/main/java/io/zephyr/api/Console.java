@@ -11,4 +11,6 @@ public interface Console {
   String[] read();
 
   InputStream getInputStream();
+
+  void successln(String line, Object... args);
 }

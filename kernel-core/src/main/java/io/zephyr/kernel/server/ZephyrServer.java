@@ -49,6 +49,26 @@ public class ZephyrServer implements Server {
         invoker.wait();
       }
       log.info("zephyr.server.stopped");
+
+      try {
+        unregisterCommands();
+      } catch (Exception ex) {
+
+      }
+    }
+  }
+
+  private void unregisterCommands() throws Exception {
+    val registry = RMI.getRegistry(options);
+    log.log(Level.INFO, "zephyr.server.unregistering.services");
+    try {
+      for (val name : registry.list()) {
+        log.log(Level.INFO, "zephyr.server.unregistering.service", name);
+        registry.unbind(name);
+        log.log(Level.INFO, "zephyr.server.unregistered.service", name);
+      }
+    } finally {
+      UnicastRemoteObject.unexportObject(registry, true);
     }
   }
 

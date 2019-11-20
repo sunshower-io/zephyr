@@ -1,21 +1,24 @@
 package io.zephyr.kernel.server;
 
+import io.sunshower.test.common.Tests;
 import io.zephyr.api.CommandContext;
 import io.zephyr.api.Invoker;
 import io.zephyr.api.Parameters;
 import io.zephyr.kernel.command.DaggerShellInjectionConfiguration;
 import io.zephyr.kernel.command.DefaultCommandContext;
 import io.zephyr.kernel.launch.KernelOptions;
+import io.zephyr.kernel.launch.RMI;
 import lombok.val;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.ExportException;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
 
 class ZephyrServerTest {
 
@@ -27,11 +30,16 @@ class ZephyrServerTest {
   @BeforeEach
   void setUp() throws RemoteException {
 
-    LocateRegistry.createRegistry(9999);
+    try {
+      LocateRegistry.createRegistry(9999);
+    } catch (RemoteException ex) {
 
+    }
     options = new KernelOptions();
+    options.setHomeDirectory(Tests.createTemp());
     options.setPort(9999);
-    context = new DefaultCommandContext(null);
+    context = new DefaultCommandContext();
+    RMI.getRegistry(options);
 
     invoker =
         DaggerShellInjectionConfiguration.factory()
@@ -39,6 +47,14 @@ class ZephyrServerTest {
             .createShell();
     server = DaggerServerInjectionConfiguration.factory().build(options, invoker).server();
     context.register(Server.class, server);
+    context.register(KernelOptions.class, options);
+  }
+
+  @AfterEach
+  void tearDown() {
+    if (server.isRunning()) {
+      server.stop();
+    }
   }
 
   @Test
@@ -47,7 +63,14 @@ class ZephyrServerTest {
 
     Invoker localInvoker = (Invoker) LocateRegistry.getRegistry(9999).lookup("ZephyrShell");
     localInvoker.invoke(Parameters.of("server", "stop"));
-    assertFalse(server.isRunning());
+    assertFalse(server.isRunning(), "server must not be running after stop");
+  }
+
+  @Test
+  void ensureStartingKernelWorks() throws Exception {
+    doStart();
+    Invoker localInvoker = (Invoker) LocateRegistry.getRegistry(9999).lookup("ZephyrShell");
+    localInvoker.invoke(Parameters.of("kernel", "start"));
   }
 
   private void doStart() throws InterruptedException {

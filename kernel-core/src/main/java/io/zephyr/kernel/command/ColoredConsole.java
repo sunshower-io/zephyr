@@ -53,4 +53,9 @@ public class ColoredConsole implements Console {
   public InputStream getInputStream() {
     return in;
   }
+
+  @Override
+  public void successln(String string, Object... args) {
+    writeln(string, Color.colors(Color.GreenBright), args);
+  }
 }

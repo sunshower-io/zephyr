@@ -3,7 +3,6 @@ package io.zephyr.kernel.command;
 import io.zephyr.api.Command;
 import io.zephyr.api.CommandContext;
 import io.zephyr.api.Parameters;
-import io.zephyr.kernel.command.kernel.StartKernelCommand;
 import io.zephyr.kernel.core.Kernel;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,7 +24,7 @@ class LocalShellTest {
   @BeforeEach
   void setUp() {
     kernel = mock(Kernel.class);
-    context = spy(new DefaultCommandContext(kernel));
+    context = spy(new DefaultCommandContext());
     shell = doCreate();
   }
 
@@ -47,15 +46,6 @@ class LocalShellTest {
     shell.getRegistry().register(c);
     shell.invoke(Parameters.of("frapper"));
     assertTrue(shell.getHistory().getHistory().contains(c), "must contain command in history");
-  }
-
-  @Test
-  void ensureStartKernelCommandWorks() throws RemoteException {
-    val a = new StartKernelCommand();
-    shell.getRegistry().register(a);
-    shell.invoke(Parameters.of(StartKernelCommand.name));
-    verify(context, times(1)).getKernel();
-    verify(kernel, times(1)).start();
   }
 
   @Test
