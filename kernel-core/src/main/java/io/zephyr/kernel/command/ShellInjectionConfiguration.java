@@ -3,11 +3,9 @@ package io.zephyr.kernel.command;
 import dagger.BindsInstance;
 import dagger.Component;
 import io.zephyr.api.CommandContext;
-
-import javax.inject.Singleton;
 import java.io.InputStream;
 import java.io.PrintStream;
-import java.io.PrintWriter;
+import javax.inject.Singleton;
 
 @Singleton
 @Component(modules = ShellModule.class)

@@ -1,38 +1,42 @@
 package io.zephyr.kernel.command;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
 import io.zephyr.api.Command;
 import io.zephyr.api.CommandContext;
 import io.zephyr.api.Parameters;
-import io.zephyr.kernel.core.Kernel;
+import io.zephyr.api.Result;
+import io.zephyr.kernel.misc.SuppressFBWarnings;
+import java.io.*;
+import java.rmi.RemoteException;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import picocli.CommandLine;
 
-import java.io.*;
-import java.rmi.RemoteException;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
-
-class LocalShellTest {
+@SuppressFBWarnings
+@SuppressWarnings({
+  "PMD.AvoidDuplicateLiterals",
+  "PMD.JUnitTestsShouldIncludeAssert",
+  "PMD.JUnitTestContainsTooManyAsserts",
+  "PMD.JUnitAssertionsShouldIncludeMessage"
+})
+class ShellTest {
 
   private Shell shell;
-  private Kernel kernel;
   private CommandContext context;
 
   @BeforeEach
   void setUp() {
-    kernel = mock(Kernel.class);
     context = spy(new DefaultCommandContext());
     shell = doCreate();
   }
 
   @Test
   void ensureInvokingCommandWorks() throws Exception {
-    val c = mock(Command.class);
+    Command c = createCommand();
 
-    given(c.getName()).willReturn("frapper");
     shell.getRegistry().register(c);
     shell.invoke(Parameters.of("frapper"));
     verify(c, times(1)).execute(any(CommandContext.class));
@@ -40,9 +44,8 @@ class LocalShellTest {
 
   @Test
   void ensureInvokedCommandAppearsInCommandHistory() throws RemoteException {
-    val c = mock(Command.class);
+    val c = createCommand();
 
-    given(c.getName()).willReturn("frapper");
     shell.getRegistry().register(c);
     shell.invoke(Parameters.of("frapper"));
     assertTrue(shell.getHistory().getHistory().contains(c), "must contain command in history");
@@ -67,5 +70,21 @@ class LocalShellTest {
         DaggerShellInjectionConfiguration.factory()
             .create(ClassLoader.getSystemClassLoader(), context, inputStream, outputStream);
     return cfg.createShell();
+  }
+
+  private Command createCommand() {
+    @CommandLine.Command(name = "frapper")
+    class C implements Command {
+      @Override
+      public String getName() {
+        return "frapper";
+      }
+
+      @Override
+      public Result execute(CommandContext context) {
+        return null;
+      }
+    }
+    return spy(new C());
   }
 }

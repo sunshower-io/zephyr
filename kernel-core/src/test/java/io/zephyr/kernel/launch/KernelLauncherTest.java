@@ -1,5 +1,8 @@
 package io.zephyr.kernel.launch;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import io.sunshower.test.common.Tests;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.core.KernelLifecycle;
@@ -8,9 +11,15 @@ import lombok.val;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
+@SuppressWarnings({
+  "PMD.DoNotUseThreads",
+  "PMD.AvoidUsingVolatile",
+  "PMD.AvoidDuplicateLiterals",
+  "PMD.DataflowAnomalyAnalysis",
+  "PMD.JUnitTestsShouldIncludeAssert",
+  "PMD.JUnitTestContainsTooManyAsserts",
+  "PMD.JUnitAssertionsShouldIncludeMessage"
+})
 class KernelLauncherTest {
 
   volatile KernelLauncher launcher;
@@ -26,7 +35,7 @@ class KernelLauncherTest {
   @Test
   @RepeatedTest(5)
   void ensureStartingKernelWorks() throws InterruptedException {
-    Server server = startServer();
+    startServer();
     KernelLauncher.main(
         new String[] {"kernel", "start", "-h", Tests.createTemp().getAbsolutePath()});
 

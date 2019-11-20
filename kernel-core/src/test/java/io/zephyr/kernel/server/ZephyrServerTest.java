@@ -1,25 +1,27 @@
 package io.zephyr.kernel.server;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
 import io.sunshower.test.common.Tests;
-import io.zephyr.api.CommandContext;
 import io.zephyr.api.Invoker;
 import io.zephyr.api.Parameters;
 import io.zephyr.kernel.command.DaggerShellInjectionConfiguration;
 import io.zephyr.kernel.command.DefaultCommandContext;
 import io.zephyr.kernel.launch.KernelOptions;
 import io.zephyr.kernel.launch.RMI;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
 import lombok.val;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-import java.rmi.server.ExportException;
-
-import static org.junit.jupiter.api.Assertions.assertFalse;
-
+@SuppressWarnings({
+  "PMD.DoNotUseThreads",
+  "PMD.EmptyCatchBlock",
+  "PMD.JUnitTestsShouldIncludeAssert",
+  "PMD.JUnitTestContainsTooManyAsserts"
+})
 class ZephyrServerTest {
 
   private Server server;

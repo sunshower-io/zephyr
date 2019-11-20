@@ -4,7 +4,7 @@ import io.zephyr.api.Color;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-
+@SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
 class ColoredConsoleTest {
 
   private ColoredConsole console;

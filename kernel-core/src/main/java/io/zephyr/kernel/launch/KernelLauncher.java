@@ -8,15 +8,18 @@ import io.zephyr.kernel.command.DefaultCommandContext;
 import io.zephyr.kernel.misc.SuppressFBWarnings;
 import io.zephyr.kernel.server.DaggerServerInjectionConfiguration;
 import io.zephyr.kernel.server.Server;
-import lombok.val;
-import picocli.CommandLine;
-
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import lombok.val;
+import picocli.CommandLine;
 
 @SuppressFBWarnings
 @SuppressWarnings({"PMD.UseVarargs", "PMD.ArrayIsStoredDirectly", "PMD.DoNotCallSystemExit"})
 public class KernelLauncher {
+
+  static final Logger log = Logger.getLogger(KernelLauncher.class.getName());
 
   final String[] arguments;
   final KernelOptions options;
@@ -46,10 +49,11 @@ public class KernelLauncher {
       val shell = (Invoker) registry.lookup("ZephyrShell");
       shell.invoke(Parameters.of(arguments));
     } catch (Exception e) {
-      e.printStackTrace();
+      log.log(Level.WARNING, "Encountered exception while trying to run command", e.getMessage());
     }
   }
 
+  @SuppressWarnings("PMD.SystemPrintln")
   private void startServer() {
     try {
       LocateRegistry.createRegistry(options.getPort());

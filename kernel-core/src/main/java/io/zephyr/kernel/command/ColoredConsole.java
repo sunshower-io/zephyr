@@ -2,13 +2,14 @@ package io.zephyr.kernel.command;
 
 import io.zephyr.api.Color;
 import io.zephyr.api.Console;
-import lombok.val;
-
+import io.zephyr.kernel.misc.SuppressFBWarnings;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.Scanner;
 import java.util.regex.Pattern;
+import lombok.val;
 
 public class ColoredConsole implements Console {
 
@@ -21,7 +22,7 @@ public class ColoredConsole implements Console {
   public ColoredConsole(InputStream in, PrintStream out) {
     this.in = in;
     this.out = out;
-    this.scanner = new Scanner(in);
+    this.scanner = new Scanner(in, StandardCharsets.UTF_8);
   }
 
   public ColoredConsole() {
@@ -36,7 +37,7 @@ public class ColoredConsole implements Console {
     }
     sbuilder.append(MessageFormat.format(line, args));
     sbuilder.append(Color.Reset);
-    System.out.println(sbuilder.toString());
+    out.println(sbuilder.toString());
   }
 
   @Override
@@ -45,6 +46,7 @@ public class ColoredConsole implements Console {
   }
 
   @Override
+  @SuppressFBWarnings
   public String[] read() {
     return pattern.split(scanner.nextLine());
   }

@@ -4,15 +4,15 @@ import io.zephyr.api.Invoker;
 import io.zephyr.kernel.launch.KernelOptions;
 import io.zephyr.kernel.launch.RMI;
 import io.zephyr.kernel.log.Logging;
-import lombok.val;
-
 import java.rmi.AlreadyBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import lombok.val;
 
+@SuppressWarnings({"PMD.UnusedPrivateMethod", "PMD.AvoidUsingVolatile"})
 public class ZephyrServer implements Server {
 
   static final Logger log = Logging.get(ZephyrServer.class);
@@ -38,7 +38,7 @@ public class ZephyrServer implements Server {
       running = true;
       loop(port);
     } catch (RemoteException | InterruptedException | AlreadyBoundException e) {
-      e.printStackTrace();
+      log.log(Level.WARNING, "Encountered exception", e);
     }
   }
 
@@ -53,7 +53,7 @@ public class ZephyrServer implements Server {
       try {
         unregisterCommands();
       } catch (Exception ex) {
-
+        log.log(Level.WARNING, "Encountered exception", ex);
       }
     }
   }
@@ -82,7 +82,7 @@ public class ZephyrServer implements Server {
     synchronized (invoker) {
       log.info("zephyr.server.stopping");
       running = false;
-      invoker.notify();
+      invoker.notifyAll();
     }
   }
 }

@@ -5,7 +5,6 @@ import dagger.Provides;
 import io.zephyr.api.Invoker;
 import io.zephyr.kernel.launch.KernelOptions;
 
-
 @Module
 public class ServerModule {
 

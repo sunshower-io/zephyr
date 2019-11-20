@@ -12,6 +12,7 @@ import picocli.CommandLine;
 @Getter
 @SuppressFBWarnings
 @CommandLine.Command
+@SuppressWarnings({"PMD.UnusedPrivateMethod", "PMD.DoNotUseThreads"})
 public class CommandDelegate implements Runnable {
   @CommandLine.Parameters(index = "0")
   private String command;
@@ -22,6 +23,8 @@ public class CommandDelegate implements Runnable {
   private final CommandContext context;
   private final CommandRegistry registry;
 
+  static final String[] EMPTY_ARRAY = new String[0];
+
   public CommandDelegate(
       final CommandRegistry registry, final DefaultHistory history, final CommandContext context) {
     this.history = history;
@@ -29,18 +32,23 @@ public class CommandDelegate implements Runnable {
     this.context = context;
   }
 
-  @SuppressWarnings("PMD.NullAssignment")
+  @Override
+  @SuppressWarnings({"PMD.NullAssignment"})
   public void run() {
 
     val cli = registry.resolve(command);
     val commandLine = new CommandLine(cli, injectionFactory());
+
+    if (arguments == null || arguments.length == 0) {
+      arguments = EMPTY_ARRAY;
+    }
+
     val toRun = commandLine.parseArgs(arguments);
     val actualCommand = locateActualCommand(toRun);
     history.add(actualCommand);
     try {
       actualCommand.execute(context);
     } catch (Exception e) {
-      e.printStackTrace();
       commandLine.usage(System.out);
     }
     arguments = null;

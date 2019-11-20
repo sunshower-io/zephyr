@@ -1,5 +1,7 @@
 package io.zephyr.kernel.command.commands.kernel;
 
+import static io.zephyr.kernel.core.KernelEventTypes.*;
+
 import io.zephyr.api.CommandContext;
 import io.zephyr.api.Console;
 import io.zephyr.api.Result;
@@ -17,9 +19,8 @@ import lombok.AllArgsConstructor;
 import lombok.val;
 import picocli.CommandLine;
 
-import static io.zephyr.kernel.core.KernelEventTypes.*;
-
 @CommandLine.Command(name = "start")
+@SuppressWarnings("PMD.DataflowAnomalyAnalysis")
 public class KernelStartCommand extends DefaultCommand {
 
   @CommandLine.Unmatched private String[] arguments;
@@ -80,6 +81,9 @@ public class KernelStartCommand extends DefaultCommand {
           break;
         case KERNEL_START_SUCCEEDED:
           console.successln("Successfully started Zephyr Kernel");
+          break;
+        default:
+          return;
       }
     }
   }
