@@ -19,5 +19,5 @@ jobs:
     - name: Build with Gradle
       uses: eskatos/gradle-command-action@v1
       with:
+        gradle-version: 6
         arguments: build
-        wrapper-directory: ../../
