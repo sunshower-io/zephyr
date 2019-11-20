@@ -16,7 +16,8 @@ jobs:
         java-version: 12
     - name: Install Maven Dependencies
       uses: LucaFeger/action-maven-cli@1.1.0
-      args: clean install -f ../../bom
+      with:
+        arguments: clean install -f ../../bom
     - name: Build with Gradle
       uses: eskatos/gradle-command-action@v1
       with:
