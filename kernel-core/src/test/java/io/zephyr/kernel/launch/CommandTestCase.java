@@ -11,7 +11,6 @@ import java.net.URI;
 import java.nio.file.FileSystems;
 import java.util.Collection;
 import java.util.function.Predicate;
-
 import lombok.SneakyThrows;
 import lombok.val;
 import org.junit.jupiter.api.AfterEach;
@@ -19,6 +18,7 @@ import org.junit.jupiter.api.AfterEach;
 @SuppressWarnings({
   "PMD.DoNotUseThreads",
   "PMD.AvoidUsingVolatile",
+  "PMD.DataflowAnomalyAnalysis",
   "PMD.AbstractClassWithoutAbstractMethod"
 })
 public abstract class CommandTestCase {

@@ -11,6 +11,8 @@ import picocli.CommandLine;
 
 @CommandLine.Command(name = "list")
 public class ListPluginCommand extends AbstractCommand {
+  private static final long serialVersionUID = -7604400606672779606L;
+
   public ListPluginCommand() {
     super("list");
   }

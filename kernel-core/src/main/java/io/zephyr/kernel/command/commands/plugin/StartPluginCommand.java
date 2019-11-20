@@ -14,8 +14,10 @@ import lombok.val;
 import picocli.CommandLine;
 
 @CommandLine.Command(name = StartPluginCommand.name)
+@SuppressWarnings({"PMD.AvoidInstantiatingObjectsInLoops", "PMD.DataflowAnomalyAnalysis"})
 public class StartPluginCommand extends AbstractCommand {
   static final String name = "start";
+  private static final long serialVersionUID = -7036457295462146170L;
 
   @CommandLine.Parameters String[] plugins;
 
@@ -35,6 +37,7 @@ public class StartPluginCommand extends AbstractCommand {
 
     if (plugins == null || plugins.length == 0) {
       console.errorln("No plugins requested for stopping");
+      return Result.failure();
     }
 
     val request = new ModuleLifecycleChangeGroup();
