@@ -15,4 +15,5 @@ jobs:
         java-version: 12
     - name: Build with Gradle
       run: gradlew build
-      with: ../../
+      with:
+        wrapper-directory: ../../
