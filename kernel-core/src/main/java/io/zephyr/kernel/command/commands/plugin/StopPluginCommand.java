@@ -5,19 +5,19 @@ import io.zephyr.api.Result;
 import io.zephyr.kernel.module.ModuleLifecycle;
 import picocli.CommandLine;
 
-@CommandLine.Command(name = StartPluginCommand.name)
-public class StartPluginCommand extends PluginLifecycleCommand {
-  static final String name = "start";
-  private static final long serialVersionUID = -7036457295462146170L;
+@CommandLine.Command(name = StopPluginCommand.name)
+public class StopPluginCommand extends PluginLifecycleCommand {
+  static final String name = "stop";
+  private static final long serialVersionUID = -1720281697624323485L;
 
   @CommandLine.Parameters String[] plugins;
 
-  public StartPluginCommand() {
+  public StopPluginCommand() {
     super(name);
   }
 
   @Override
   public Result execute(CommandContext context) {
-    return execute(context, ModuleLifecycle.Actions.Activate, plugins);
+    return execute(context, ModuleLifecycle.Actions.Stop, plugins);
   }
 }

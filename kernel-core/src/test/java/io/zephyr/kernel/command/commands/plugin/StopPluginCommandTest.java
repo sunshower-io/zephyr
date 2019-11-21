@@ -1,6 +1,6 @@
 package io.zephyr.kernel.command.commands.plugin;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.sunshower.test.common.Tests;
 import io.zephyr.kernel.Lifecycle;
@@ -15,7 +15,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")
-class StartPluginCommandTest extends CommandTestCase {
+public class StopPluginCommandTest extends CommandTestCase {
 
   File testPlugin1;
   File testPlugin2;
@@ -42,15 +42,25 @@ class StartPluginCommandTest extends CommandTestCase {
       runRemote("plugin", "install", testPlugin1.getAbsolutePath(), testPlugin2.getAbsolutePath());
       waitForPluginCount(2);
       val kernel = getKernel();
-      val module = moduleNamed("test-plugin-2");
+      var module = moduleNamed("test-plugin-2");
       runRemote("plugin", "start", module.getCoordinate().toCanonicalForm());
       waitForPluginState(
           t ->
               t.stream().filter(u -> u.getLifecycle().getState() == Lifecycle.State.Active).count()
                   == 2);
 
-      val running = kernel.getModuleManager().getModules(Lifecycle.State.Active);
-      assertEquals(running.size(), 2, "must have two running plugins");
+      module = moduleNamed("test-plugin-1");
+      runRemote("plugin", "stop", module.getCoordinate().toCanonicalForm());
+
+      waitForPluginState(
+          t ->
+              t.stream()
+                      .filter(u -> u.getLifecycle().getState() == Lifecycle.State.Resolved)
+                      .count()
+                  == 2);
+
+      val running = kernel.getModuleManager().getModules(Lifecycle.State.Resolved);
+      assertEquals(running.size(), 2, "must have two resolved plugins");
 
     } finally {
       KernelLauncher.main(new String[] {"kernel", "stop"});
