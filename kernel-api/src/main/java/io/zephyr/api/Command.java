@@ -1,8 +1,10 @@
 package io.zephyr.api;
 
-public interface Command {
+import java.io.Serializable;
+
+public interface Command extends Serializable {
 
   String getName();
 
-  Result invoke(CommandContext context);
+  Result execute(CommandContext context);
 }

@@ -14,7 +14,7 @@ allprojects {
 
     dependencyManagement {
         imports {
-            mavenBom "io.sunshower.kernel:bom-imported:$project.version"
+            mavenBom "io.zephyr:bom-imported:$project.version"
         }
     }
 

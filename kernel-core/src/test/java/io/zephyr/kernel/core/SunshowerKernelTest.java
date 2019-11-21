@@ -83,7 +83,6 @@ public class SunshowerKernelTest {
     assertNotNull(kernel.getClassLoader(), "kernel filesystem must now be set");
   }
 
-  @Test
   @RepeatedTest(10)
   void ensureKernelLoadingIsIdempotent() throws InterruptedException {
     kernel.start();

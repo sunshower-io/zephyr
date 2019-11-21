@@ -1,121 +1,125 @@
 package io.zephyr.kernel.launch;
 
-import io.zephyr.kernel.core.DaggerSunshowerKernelConfiguration;
-import io.zephyr.kernel.core.Kernel;
-import io.zephyr.kernel.core.SunshowerKernel;
+import io.zephyr.api.CommandContext;
+import io.zephyr.api.Console;
+import io.zephyr.api.Invoker;
+import io.zephyr.api.Parameters;
+import io.zephyr.kernel.command.DaggerShellInjectionConfiguration;
+import io.zephyr.kernel.command.DefaultCommandContext;
 import io.zephyr.kernel.misc.SuppressFBWarnings;
-import io.zephyr.kernel.shell.ShellConsole;
-import java.io.IOException;
+import io.zephyr.kernel.server.DaggerServerInjectionConfiguration;
+import io.zephyr.kernel.server.Server;
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import lombok.val;
 import picocli.CommandLine;
 
 @SuppressFBWarnings
 @SuppressWarnings({"PMD.UseVarargs", "PMD.ArrayIsStoredDirectly", "PMD.DoNotCallSystemExit"})
-public class KernelLauncher implements CommandLine.IExecutionExceptionHandler {
+public class KernelLauncher {
 
-  /** static stuff--figure out clean way to handle this */
-  static Kernel kernel;
+  static final Logger log = Logger.getLogger(KernelLauncher.class.getName());
+  private Console console;
 
-  static ShellConsole console;
-  static KernelLauncher instance;
+  final String[] arguments;
+  final KernelOptions options;
+  final DefaultCommandContext context;
 
-  final String[] args;
-
-  private final KernelOptions options;
-
-  public static KernelLauncher getInstance() {
-    return instance;
+  KernelLauncher(final KernelOptions options, final String[] arguments) {
+    this.options = options;
+    this.arguments = arguments;
+    this.context = new DefaultCommandContext();
   }
 
-  public static Kernel getKernel() {
-    if (kernel == null) {
-      throw new IllegalStateException("Kernel is null");
+  public CommandContext getContext() {
+    return context;
+  }
+
+  void run() {
+    if (options.isServer()) {
+      startServer();
+    } else if (options.isInteractive()) {
+      runInteractive();
+    } else {
+      runCommand();
     }
-    return kernel;
   }
 
-  public static void setKernel(Kernel kernel) {
-    KernelLauncher.kernel = kernel;
+  private void runInteractive() {
+    context.register(KernelOptions.class, options);
+    new InteractiveShell(getInvoker(), options, console).start();
   }
 
-  public static void setConsole(ShellConsole console) {
-    KernelLauncher.console = console;
-  }
-
-  public KernelLauncher(String[] args) {
-    this.args = args;
-    options = new KernelOptions();
-  }
-
-  public static ShellConsole getConsole() {
-    return console;
-  }
-
-  public static LocalizableConsole getConsole(Class<?> type) {
-    return new LocalizableConsole(console, type);
-  }
-
-  void run() throws IOException {
-    runLocal();
-  }
-
-  @SuppressWarnings("PMD.UnusedPrivateMethod")
-  private boolean remote() {
+  private void runCommand() {
     try {
-      //      val registry = LocateRegistry.getRegistry(options.getPort());
-      return true;
-    } catch (Exception ex) {
-      return false;
+      getInvoker().invoke(Parameters.of(arguments));
+    } catch (Exception e) {
+      log.log(Level.WARNING, "Encountered exception while trying to run command", e.getMessage());
     }
   }
 
-  private void runLocal() throws IOException {
-    new Banner().print(System.out);
-    val cli = new CommandLine(options).setExecutionExceptionHandler(this);
-    cli.parseArgs(args);
-    options.validate();
-    LocateRegistry.createRegistry(options.getPort());
-    SunshowerKernel.setKernelOptions(options);
+  Invoker getInvoker() {
+    val registry = RMI.getRegistry(options);
+    try {
+      if (console == null) {
+        // this is a bit weird--we're instantiating a lot to get the console--nothing else
+        val shellcfg =
+            DaggerShellInjectionConfiguration.factory()
+                .create(ClassLoader.getSystemClassLoader(), context);
+        val result = shellcfg.createShell();
+        console = result.getConsole();
+      }
 
-    LauncherInjectionModule module = createModule(options);
-    val shell = module.shell();
-    module.launcherContext();
-    shell.start();
-    System.exit(0);
+      return (Invoker) registry.lookup("ZephyrShell");
+    } catch (Exception e) {
+      log.log(Level.INFO, "Server isn't running");
+    }
+
+    // context is only to be used by the local shell--remote shell is set in startServer()
+    val shellcfg =
+        DaggerShellInjectionConfiguration.factory()
+            .create(ClassLoader.getSystemClassLoader(), context);
+
+    val result = shellcfg.createShell();
+    context.register(Invoker.class, result);
+    if (console == null) {
+      try {
+        console = result.getConsole();
+      } catch (Exception ex) {
+        log.log(Level.WARNING, "Failed to create console", ex.getMessage());
+      }
+    }
+    return result;
   }
 
-  public static void main(String[] args) throws IOException {
-    instance = new KernelLauncher(args);
-    instance.run();
+  @SuppressWarnings("PMD.SystemPrintln")
+  private void startServer() {
+    try {
+      LocateRegistry.createRegistry(options.getPort());
+    } catch (RemoteException ex) {
+      System.out.println("Server is already running on port " + options.getPort());
+    }
+
+    context.register(KernelOptions.class, options);
+
+    val invoker =
+        DaggerShellInjectionConfiguration.factory()
+            .create(ClassLoader.getSystemClassLoader(), context)
+            .createShell();
+    val server = DaggerServerInjectionConfiguration.factory().build(options, invoker).server();
+    context.register(Server.class, server);
+    context.register(Invoker.class, invoker);
+    server.start();
   }
 
-  static LauncherInjectionModule createModule(KernelOptions options) {
-    return DaggerLauncherInjectionModule.factory().create(options, createKernel(options));
+  static KernelLauncher prepare(String[] args) {
+    val options = CommandLine.populateSpec(KernelOptions.class, args);
+    return new KernelLauncher(options, args);
   }
 
-  private static Kernel createKernel(KernelOptions options) {
-    return DaggerSunshowerKernelConfiguration.factory()
-        .create(options, ClassLoader.getSystemClassLoader())
-        .kernel();
-  }
-
-  @Override
-  public int handleExecutionException(
-      Exception ex, CommandLine commandLine, CommandLine.ParseResult parseResult) throws Exception {
-    //    if (ex instanceof ShellExitException) {
-    ////      System.out.println("Goodbye!");
-    //      System.exit(0);
-    //    }
-    //    if (ex instanceof RestartException) {
-    //      if (kernel == null) {
-    ////        System.out.println("Kernel is not running");
-    //      } else {
-    //        kernel.stop();
-    //        kernel = null;
-    //        main(args);
-    //      }
-    //    }
-    return 0;
+  public static void main(String[] args) {
+    prepare(args).run();
   }
 }

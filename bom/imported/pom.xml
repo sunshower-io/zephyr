@@ -1,11 +1,11 @@
 <project>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>io.sunshower.kernel</groupId>
+    <groupId>io.zephyr</groupId>
     <artifactId>bom-imported</artifactId>
     <packaging>pom</packaging>
     <parent>
-        <groupId>io.sunshower.kernel</groupId>
-        <artifactId>kernel-bom</artifactId>
+        <groupId>io.zephyr</groupId>
+        <artifactId>zephyr-bom</artifactId>
         <relativePath>../pom.xml</relativePath>
         <version>2.0.0-SNAPSHOT</version>
     </parent>

@@ -1,9 +1,6 @@
 package io.zephyr.kernel.launch;
 
-import static io.zephyr.kernel.shell.DelegatingShellConsole.color;
-
 import io.zephyr.kernel.misc.SuppressFBWarnings;
-import io.zephyr.kernel.shell.Color;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URL;
@@ -25,7 +22,7 @@ public final class Banner {
     }
 
     String result = load(url);
-    out.println(color(result, Color.colors(Color.BlueBold)));
+    out.println(result);
   }
 
   String load(URL url) throws IOException {

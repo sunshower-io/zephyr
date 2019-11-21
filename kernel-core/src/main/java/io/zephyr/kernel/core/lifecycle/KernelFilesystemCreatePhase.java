@@ -32,6 +32,7 @@ public class KernelFilesystemCreatePhase extends Task {
       kernel.setFileSystem(fs);
       log.log(Level.INFO, "kernel.lifecycle.filesystem.created", fs.getRootDirectories());
     } catch (Exception ex) {
+      log.log(Level.WARNING, "reason", ex);
       throw new TaskException(ex, TaskStatus.UNRECOVERABLE);
     }
     return null;

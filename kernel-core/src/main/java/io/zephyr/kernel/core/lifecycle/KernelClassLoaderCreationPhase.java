@@ -46,6 +46,7 @@ public class KernelClassLoaderCreationPhase extends Task {
     final Set<URL> urls = new HashSet<>();
 
     for (val entry : entries) {
+
       for (val libFile : entry.getLibraryFiles()) {
         val f = new File(libFile);
         urls.add(f.toURI().toURL());
