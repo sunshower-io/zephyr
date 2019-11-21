@@ -83,7 +83,6 @@ public class SunshowerKernelTest {
     assertNotNull(kernel.getClassLoader(), "kernel filesystem must now be set");
   }
 
-  @Test
   @RepeatedTest(10)
   void ensureKernelLoadingIsIdempotent() throws InterruptedException {
     kernel.start();
@@ -155,10 +154,7 @@ public class SunshowerKernelTest {
   private void request(String pluginName, ModuleLifecycle.Actions action) {
 
     val plugin =
-        kernel
-            .getModuleManager()
-            .getModules()
-            .stream()
+        kernel.getModuleManager().getModules().stream()
             .filter(t -> t.getCoordinate().getName().equals(pluginName))
             .findFirst()
             .get();
