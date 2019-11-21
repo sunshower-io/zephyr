@@ -9,7 +9,9 @@ import io.zephyr.kernel.misc.SuppressFBWarnings;
 import io.zephyr.kernel.server.Server;
 import java.net.URI;
 import java.nio.file.FileSystems;
+import java.time.Duration;
 import java.util.Collection;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import lombok.SneakyThrows;
 import lombok.val;
@@ -85,12 +87,18 @@ public abstract class CommandTestCase {
     }
   }
 
-  protected void waitForKernelState(KernelLifecycle.State state) {
+  protected void waitForKernelState(KernelLifecycle.State state, Duration duration) {
     if (launcher == null) {
       throw new IllegalStateException("You must call doRun() first");
     }
+    long now = System.currentTimeMillis();
+    long then = now + duration.toMillis();
 
     for (; ; ) {
+      if (now > then) {
+        break;
+      }
+      now = System.currentTimeMillis();
       val kernel = launcher.getContext().getService(Kernel.class);
       if (kernel == null) {
         continue;
@@ -100,6 +108,10 @@ public abstract class CommandTestCase {
         break;
       }
     }
+  }
+
+  protected void waitForKernelState(KernelLifecycle.State state) {
+    waitForKernelState(state, Duration.ofSeconds(10));
   }
 
   protected void waitForKernel() {

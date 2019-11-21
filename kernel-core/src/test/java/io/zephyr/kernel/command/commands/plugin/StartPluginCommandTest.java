@@ -9,8 +9,11 @@ import io.zephyr.kernel.core.KernelLifecycle;
 import io.zephyr.kernel.launch.CommandTestCase;
 import io.zephyr.kernel.launch.KernelLauncher;
 import java.io.File;
+import java.time.Duration;
 import java.util.NoSuchElementException;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
