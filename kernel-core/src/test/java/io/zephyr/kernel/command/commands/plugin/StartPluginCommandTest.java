@@ -13,7 +13,6 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
 @SuppressWarnings({"PMD.AvoidDuplicateLiterals", "PMD.JUnitAssertionsShouldIncludeMessage"})
@@ -31,7 +30,7 @@ class StartPluginCommandTest extends CommandTestCase {
         Tests.relativeToProjectBuild("kernel-tests:test-plugins:test-plugin-2", "war", "libs");
   }
 
-  @RepeatedTest(5)
+  @Test
   void ensureInstallingAndStartingSpringWorksAfterKernelRestart() throws InterruptedException {
     val yamlplugin =
         Tests.relativeToProjectBuild("kernel-modules:sunshower-yaml-reader", "war", "libs");

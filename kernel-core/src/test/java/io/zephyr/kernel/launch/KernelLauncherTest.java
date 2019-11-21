@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.sunshower.test.common.Tests;
 import io.zephyr.kernel.server.Server;
-import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.Test;
 
 @SuppressWarnings({
   "PMD.DoNotUseThreads",
@@ -18,7 +18,7 @@ import org.junit.jupiter.api.RepeatedTest;
 })
 class KernelLauncherTest extends CommandTestCase {
 
-  @RepeatedTest(5)
+  @Test
   void ensureStartingServerWorks() {
     Server server = startServer();
     assertTrue(server.isRunning(), "server must be running");
@@ -26,7 +26,7 @@ class KernelLauncherTest extends CommandTestCase {
     assertFalse(server.isRunning(), "server must not be running");
   }
 
-  @RepeatedTest(5)
+  @Test
   void ensureStartingKernelWorks() throws InterruptedException {
     startServer();
     KernelLauncher.main(
