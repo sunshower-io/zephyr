@@ -15,7 +15,7 @@ import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-@SuppressWarnings("PMD.AvoidDuplicateLiterals")
+@SuppressWarnings({"PMD.AvoidDuplicateLiterals", "PMD.JUnitAssertionsShouldIncludeMessage"})
 class StartPluginCommandTest extends CommandTestCase {
 
   File testPlugin1;
@@ -80,6 +80,11 @@ class StartPluginCommandTest extends CommandTestCase {
           t ->
               t.stream().filter(u -> u.getLifecycle().getState() == Lifecycle.State.Active).count()
                   == 1);
+
+      assertEquals(
+          getKernel().getModuleManager().getModules(Lifecycle.State.Active).size(),
+          1,
+          "must have one active plugin");
     } finally {
       KernelLauncher.main(new String[] {"kernel", "stop"});
       server.stop();
