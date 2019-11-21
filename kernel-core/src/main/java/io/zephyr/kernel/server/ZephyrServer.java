@@ -5,7 +5,6 @@ import io.zephyr.kernel.launch.KernelOptions;
 import io.zephyr.kernel.launch.RMI;
 import io.zephyr.kernel.log.Logging;
 import java.rmi.NoSuchObjectException;
-import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
