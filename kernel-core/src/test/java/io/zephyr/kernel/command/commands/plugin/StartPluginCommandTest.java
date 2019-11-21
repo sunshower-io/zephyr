@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import io.sunshower.test.common.Tests;
 import io.zephyr.kernel.Lifecycle;
 import io.zephyr.kernel.Module;
+import io.zephyr.kernel.core.KernelLifecycle;
 import io.zephyr.kernel.launch.CommandTestCase;
 import io.zephyr.kernel.launch.KernelLauncher;
 import java.io.File;
@@ -27,6 +28,62 @@ class StartPluginCommandTest extends CommandTestCase {
         Tests.relativeToProjectBuild("kernel-tests:test-plugins:test-plugin-1", "war", "libs");
     testPlugin2 =
         Tests.relativeToProjectBuild("kernel-tests:test-plugins:test-plugin-2", "war", "libs");
+  }
+
+  @Test
+  void ensureInstallingAndStartingSpringWorksAfterKernelRestart() throws InterruptedException {
+    val yamlplugin =
+        Tests.relativeToProjectBuild("kernel-modules:sunshower-yaml-reader", "war", "libs");
+    val springplugin =
+        Tests.relativeToProjectBuild("kernel-tests:test-plugins:test-plugin-spring", "war", "libs");
+
+    val server = startServer();
+
+    try {
+      KernelLauncher.main(
+          new String[] {
+            "kernel",
+            "start",
+            "-h",
+            Tests.createTemp("test-2" + UUID.randomUUID()).getAbsolutePath()
+          });
+      waitForKernel();
+      runRemote(
+          "plugin",
+          "install",
+          testPlugin1.getAbsolutePath(),
+          testPlugin2.getAbsolutePath(),
+          yamlplugin.getAbsolutePath());
+
+      waitForPluginState(
+          t ->
+              t.stream()
+                      .filter(u -> u.getLifecycle().getState() == Lifecycle.State.Resolved)
+                      .count()
+                  == 2);
+      runRemote("kernel", "restart");
+      waitForKernelState(KernelLifecycle.State.Stopped);
+      waitForKernel();
+
+      runRemote("plugin", "install", springplugin.getAbsolutePath());
+      waitForPluginState(
+          t ->
+              t.stream()
+                      .filter(u -> u.getLifecycle().getState() == Lifecycle.State.Resolved)
+                      .count()
+                  == 3);
+
+      val module = moduleNamed("spring-plugin");
+      runRemote("plugin", "start", module.getCoordinate().toCanonicalForm());
+
+      waitForPluginState(
+          t ->
+              t.stream().filter(u -> u.getLifecycle().getState() == Lifecycle.State.Active).count()
+                  == 1);
+    } finally {
+      KernelLauncher.main(new String[] {"kernel", "stop"});
+      server.stop();
+    }
   }
 
   @Test

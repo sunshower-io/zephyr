@@ -85,7 +85,7 @@ public abstract class CommandTestCase {
     }
   }
 
-  protected void waitForKernel() {
+  protected void waitForKernelState(KernelLifecycle.State state) {
     if (launcher == null) {
       throw new IllegalStateException("You must call doRun() first");
     }
@@ -96,10 +96,14 @@ public abstract class CommandTestCase {
         continue;
       }
       val lifecycle = kernel.getLifecycle();
-      if (lifecycle.getState() == KernelLifecycle.State.Running) {
+      if (lifecycle.getState() == state) {
         break;
       }
     }
+  }
+
+  protected void waitForKernel() {
+    waitForKernelState(KernelLifecycle.State.Running);
   }
 
   @AfterEach
