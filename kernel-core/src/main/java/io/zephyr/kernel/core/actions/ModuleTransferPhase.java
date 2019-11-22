@@ -9,10 +9,7 @@ import io.zephyr.kernel.log.Logging;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.*;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.ResourceBundle;
@@ -75,7 +72,7 @@ public class ModuleTransferPhase extends Task {
     return null;
   }
 
-  private FileSystem createFilesystem(Scope scope) {
+  private synchronized FileSystem createFilesystem(Scope scope) {
     ModuleDescriptor descriptor = scope.get(ModuleScanPhase.MODULE_DESCRIPTOR);
     val coordinate = descriptor.getCoordinate();
     val uri =
@@ -85,7 +82,12 @@ public class ModuleTransferPhase extends Task {
     log.log(Level.INFO, "transfer.uri", uri);
 
     try {
-      val fs = FileSystems.newFileSystem(URI.create(uri), Collections.emptyMap());
+      FileSystem fs;
+      try {
+        fs = FileSystems.getFileSystem(URI.create(uri));
+      } catch (FileSystemNotFoundException ex) {
+        fs = FileSystems.newFileSystem(URI.create(uri), Collections.emptyMap());
+      }
 
       log.log(
           Level.INFO,

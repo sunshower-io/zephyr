@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
 import javax.inject.Inject;
+
+import io.zephyr.kernel.memento.Memento;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -111,5 +113,15 @@ public class SunshowerKernel extends AbstractEventSource implements Kernel {
 
   public void setClassLoader(KernelClassloader loader) {
     this.classLoader = loader;
+  }
+
+  @Override
+  public Memento<Kernel> save() {
+    return null;
+  }
+
+  @Override
+  public void restore(Memento<Kernel> memento) {
+
   }
 }
