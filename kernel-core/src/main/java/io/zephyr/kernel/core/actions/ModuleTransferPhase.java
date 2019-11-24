@@ -72,32 +72,35 @@ public class ModuleTransferPhase extends Task {
     return null;
   }
 
-  private synchronized FileSystem createFilesystem(Scope scope) {
-    ModuleDescriptor descriptor = scope.get(ModuleScanPhase.MODULE_DESCRIPTOR);
-    val coordinate = descriptor.getCoordinate();
-    val uri =
-        String.format(
-            "droplet://%s.%s?version=%s",
-            coordinate.getGroup(), coordinate.getName(), coordinate.getVersion());
-    log.log(Level.INFO, "transfer.uri", uri);
+  @SuppressWarnings("PMD.DataflowAnomalyAnalysis")
+  private FileSystem createFilesystem(Scope scope) {
+    synchronized (this) {
+      ModuleDescriptor descriptor = scope.get(ModuleScanPhase.MODULE_DESCRIPTOR);
+      val coordinate = descriptor.getCoordinate();
+      val uri =
+          String.format(
+              "droplet://%s.%s?version=%s",
+              coordinate.getGroup(), coordinate.getName(), coordinate.getVersion());
+      log.log(Level.INFO, "transfer.uri", uri);
 
-    try {
-      FileSystem fs;
       try {
-        fs = FileSystems.getFileSystem(URI.create(uri));
-      } catch (FileSystemNotFoundException ex) {
-        fs = FileSystems.newFileSystem(URI.create(uri), Collections.emptyMap());
-      }
+        FileSystem fs;
+        try {
+          fs = FileSystems.getFileSystem(URI.create(uri));
+        } catch (FileSystemNotFoundException ex) {
+          fs = FileSystems.newFileSystem(URI.create(uri), Collections.emptyMap());
+        }
 
-      log.log(
-          Level.INFO,
-          "transfer.uri.success",
-          new Object[] {uri, fs.getRootDirectories().iterator().next()});
-      return fs;
-    } catch (IOException ex) {
-      log.log(Level.WARNING, "transfer.uri.failure", ex.getMessage());
-      log.log(Level.FINE, "Error", ex);
-      throw new TaskException(ex, TaskStatus.UNRECOVERABLE);
+        log.log(
+            Level.INFO,
+            "transfer.uri.success",
+            new Object[] {uri, fs.getRootDirectories().iterator().next()});
+        return fs;
+      } catch (IOException ex) {
+        log.log(Level.WARNING, "transfer.uri.failure", ex.getMessage());
+        log.log(Level.FINE, "Error", ex);
+        throw new TaskException(ex, TaskStatus.UNRECOVERABLE);
+      }
     }
   }
 }

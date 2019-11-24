@@ -2,7 +2,6 @@ package io.sunshower.kernel.ext;
 
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.memento.Memento;
-
 import java.io.InputStream;
 import java.io.OutputStream;
 

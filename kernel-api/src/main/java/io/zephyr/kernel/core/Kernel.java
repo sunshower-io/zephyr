@@ -4,7 +4,6 @@ import io.zephyr.PluginContext;
 import io.zephyr.kernel.concurrency.Scheduler;
 import io.zephyr.kernel.events.EventSource;
 import io.zephyr.kernel.memento.Originator;
-
 import java.nio.file.FileSystem;
 import java.util.List;
 

@@ -5,25 +5,25 @@ import io.zephyr.kernel.Lifecycle;
 import io.zephyr.kernel.launch.CommandTestCase;
 import io.zephyr.kernel.launch.KernelLauncher;
 import io.zephyr.kernel.server.Server;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.RepeatedTest;
-import org.junit.jupiter.api.Test;
-
 import java.io.File;
-import java.net.URI;
-import java.nio.file.FileSystems;
 import java.util.UUID;
+import org.junit.jupiter.api.*;
 
 /**
  * I guess these tests should live by the module memento, but that introduces dependency weirdness
  */
+@SuppressWarnings({
+  "PMD.EmptyCatchBlock",
+  "PMD.AvoidDuplicateLiterals",
+  "PMD.JUnitTestsShouldIncludeAssert",
+  "PMD.JUnitAssertionsShouldIncludeMessage"
+})
 class DefaultModuleManagerMementoTest extends CommandTestCase {
 
   private File testPlugin1;
   private File testPlugin2;
   private File yamlplugin;
-  private File springplugin;
+  //  private File springplugin;
   private Server server;
 
   @BeforeEach
@@ -34,23 +34,16 @@ class DefaultModuleManagerMementoTest extends CommandTestCase {
     installPlugins();
   }
 
+  @Override
   @AfterEach
   protected void tearDown() {
     super.tearDown();
     KernelLauncher.main(new String[] {"kernel", "stop"});
     waitForKernelState(KernelLifecycle.State.Stopped);
     server.stop();
-    try {
-      FileSystems.getFileSystem(
-              URI.create("droplet://io.zephyr.sunshower-yaml-reader?version=1.0.0-SNAPSHOT"))
-          .close();
-    } catch (Exception ex) {
-
-    }
   }
 
   @Test
-  @RepeatedTest(10)
   void ensureInstallingAndStartingSpringWorksAfterKernelRestart() {}
 
   private void installPlugins() {
@@ -83,7 +76,8 @@ class DefaultModuleManagerMementoTest extends CommandTestCase {
         Tests.relativeToProjectBuild("kernel-tests:test-plugins:test-plugin-2", "war", "libs");
     yamlplugin =
         Tests.relativeToProjectBuild("kernel-modules:sunshower-yaml-reader", "war", "libs");
-    springplugin =
-        Tests.relativeToProjectBuild("kernel-tests:test-plugins:test-plugin-spring", "war", "libs");
+    //    springplugin =
+    //        Tests.relativeToProjectBuild("kernel-tests:test-plugins:test-plugin-spring", "war",
+    // "libs");
   }
 }

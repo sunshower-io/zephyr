@@ -5,13 +5,12 @@ import io.zephyr.kernel.concurrency.Scheduler;
 import io.zephyr.kernel.core.lifecycle.DefaultKernelLifecycle;
 import io.zephyr.kernel.events.AbstractEventSource;
 import io.zephyr.kernel.launch.KernelOptions;
+import io.zephyr.kernel.memento.Memento;
 import java.nio.file.FileSystem;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
 import javax.inject.Inject;
-
-import io.zephyr.kernel.memento.Memento;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -121,7 +120,5 @@ public class SunshowerKernel extends AbstractEventSource implements Kernel {
   }
 
   @Override
-  public void restore(Memento<Kernel> memento) {
-
-  }
+  public void restore(Memento<Kernel> memento) {}
 }

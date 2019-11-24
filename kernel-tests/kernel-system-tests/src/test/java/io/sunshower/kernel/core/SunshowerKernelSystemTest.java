@@ -2,14 +2,17 @@ package io.sunshower.kernel.core;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import io.sunshower.kernel.test.KernelTest;
+import io.sunshower.kernel.test.ZephyrTest;
 import io.zephyr.kernel.core.Kernel;
 import javax.inject.Inject;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@KernelTest
-public class SunshowerKernelSystemTest {
+@ZephyrTest
+class SunshowerKernelSystemTest {
   @Inject private Kernel kernel;
+
 
   @Test
   void ensureKernelIsInjected() {

@@ -13,11 +13,19 @@ import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import lombok.val;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
-@ContextConfiguration
+import javax.inject.Inject;
+
+@Configuration
 public class KernelTestConfiguration {
+
 
   @Bean
   public File kernelRootDirectory() {
