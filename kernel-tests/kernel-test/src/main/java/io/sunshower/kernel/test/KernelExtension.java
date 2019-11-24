@@ -4,6 +4,12 @@ import io.sunshower.test.common.Tests;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.module.ModuleInstallationGroup;
 import io.zephyr.kernel.module.ModuleInstallationRequest;
+import java.lang.reflect.Executable;
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.nio.file.FileSystems;
 import lombok.val;
 import org.junit.jupiter.api.extension.*;
 import org.springframework.beans.factory.annotation.ParameterResolutionDelegate;
@@ -12,11 +18,6 @@ import org.springframework.lang.Nullable;
 import org.springframework.test.context.TestContextManager;
 import org.springframework.test.context.support.TestConstructorUtils;
 import org.springframework.util.Assert;
-
-import java.lang.reflect.Executable;
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
-import java.net.MalformedURLException;
 
 public class KernelExtension
     implements BeforeAllCallback,
@@ -65,6 +66,13 @@ public class KernelExtension
     val ctx = ctxManager.getTestContext().getApplicationContext();
     val kernel = ctx.getBean(Kernel.class);
     kernel.stop();
+
+    try {
+      val fs = FileSystems.getFileSystem(URI.create("droplet://kernel"));
+      fs.close();
+    } catch (Exception ex) {
+      //meh
+    }
 
     try {
       ctxManager.afterTestClass();

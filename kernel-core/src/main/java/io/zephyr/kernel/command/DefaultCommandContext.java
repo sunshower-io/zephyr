@@ -1,10 +1,8 @@
 package io.zephyr.kernel.command;
 
 import io.zephyr.api.CommandContext;
-
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class DefaultCommandContext implements CommandContext {
 

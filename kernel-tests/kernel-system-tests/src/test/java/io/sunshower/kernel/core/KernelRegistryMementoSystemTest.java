@@ -1,16 +1,15 @@
 package io.sunshower.kernel.core;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import io.sunshower.kernel.test.Module;
 import io.sunshower.kernel.test.Modules;
 import io.sunshower.kernel.test.ZephyrTest;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.core.ModuleManager;
-import org.junit.jupiter.api.Test;
-
 import javax.inject.Inject;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import org.junit.jupiter.api.Test;
 
 @ZephyrTest
 @Modules({
@@ -36,5 +35,4 @@ class KernelRegistryMementoSystemTest {
   void ensureSinglePluginIsInstalledAtBoot() {
     assertEquals(moduleManager.getModules().size(), 1);
   }
-
 }
