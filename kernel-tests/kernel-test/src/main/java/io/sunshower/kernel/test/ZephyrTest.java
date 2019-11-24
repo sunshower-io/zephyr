@@ -17,5 +17,4 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @Target({ElementType.TYPE, ElementType.METHOD, ElementType.ANNOTATION_TYPE})
 public @interface ZephyrTest {
 
-  @RegisterExtension SpringExtension extension = new SpringExtension();
 }
