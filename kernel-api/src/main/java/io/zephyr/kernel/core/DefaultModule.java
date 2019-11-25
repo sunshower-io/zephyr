@@ -6,61 +6,169 @@ import io.zephyr.kernel.Module;
 import io.zephyr.kernel.memento.Memento;
 import io.zephyr.kernel.memento.Originator;
 import io.zephyr.kernel.misc.SuppressFBWarnings;
+import java.io.File;
+import java.net.URI;
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
+import java.util.HashSet;
 import java.util.ServiceLoader;
 import java.util.Set;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.val;
 
-public class DefaultModule implements Module, Comparable<Module>, Originator<Module> {
+public class DefaultModule implements Module, Comparable<Module>, Originator {
+  private int order;
+  private Type type;
 
-  /**
-   * mutable state . These can't be final because either the module isn't resolved or there is a
-   * mutual dependency
-   */
-  @Setter private ModuleLoader moduleLoader;
+  private Kernel kernel;
+  private Source source;
+  private Assembly assembly;
+  private Path moduleDirectory;
+  private Coordinate coordinate;
+  private FileSystem fileSystem;
+  private Lifecycle lifecycle;
 
-  @Setter @Getter private PluginActivator activator;
+  private ModuleLoader moduleLoader;
+  private PluginActivator activator;
+  private ModuleClasspath moduleClasspath;
 
-  @Getter @Setter private Lifecycle lifecycle;
-  @Setter private ModuleClasspath moduleClasspath;
-
-  /** immutable state */
-  @Getter private final int order;
-
-  @Getter private final Type type;
-
-  @Getter private final Source source;
-  @Getter private final Assembly assembly;
-  @Getter private final Path moduleDirectory;
-  @Getter private final Coordinate coordinate;
-  @Getter private final FileSystem fileSystem;
-
-  @Getter private final Set<Library> libraries;
-  @Getter private final Set<Dependency> dependencies;
+  private Set<Library> libraries;
+  private Set<Dependency> dependencies;
 
   public DefaultModule(
       int order,
       Type type,
       Source source,
+      Kernel kernel,
       Assembly assembly,
       Path moduleDirectory,
       Coordinate coordinate,
       FileSystem fileSystem,
       Set<Library> libraries,
       Set<Dependency> dependencies) {
-    this.order = order;
     this.type = type;
+    this.order = order;
     this.source = source;
+    this.kernel = kernel;
     this.assembly = assembly;
     this.libraries = libraries;
     this.coordinate = coordinate;
     this.fileSystem = fileSystem;
     this.dependencies = dependencies;
     this.moduleDirectory = moduleDirectory;
+  }
+
+  public DefaultModule() {}
+
+  public ModuleLoader getModuleLoader() {
+    return moduleLoader;
+  }
+
+  public void setModuleLoader(ModuleLoader moduleLoader) {
+    this.moduleLoader = moduleLoader;
+  }
+
+  @Override
+  public PluginActivator getActivator() {
+    return activator;
+  }
+
+  public void setActivator(PluginActivator activator) {
+    this.activator = activator;
+  }
+
+  @Override
+  public Lifecycle getLifecycle() {
+    return lifecycle;
+  }
+
+  public void setLifecycle(Lifecycle lifecycle) {
+    this.lifecycle = lifecycle;
+  }
+
+  public void setModuleClasspath(ModuleClasspath moduleClasspath) {
+    this.moduleClasspath = moduleClasspath;
+  }
+
+  @Override
+  public int getOrder() {
+    return order;
+  }
+
+  public void setOrder(int order) {
+    this.order = order;
+  }
+
+  @Override
+  public Type getType() {
+    return type;
+  }
+
+  public void setType(Type type) {
+    this.type = type;
+  }
+
+  @Override
+  public Source getSource() {
+    return source;
+  }
+
+  public void setSource(Source source) {
+    this.source = source;
+  }
+
+  @Override
+  public Assembly getAssembly() {
+    return assembly;
+  }
+
+  public void setAssembly(Assembly assembly) {
+    this.assembly = assembly;
+  }
+
+  @Override
+  public Path getModuleDirectory() {
+    return moduleDirectory;
+  }
+
+  public void setModuleDirectory(Path moduleDirectory) {
+    this.moduleDirectory = moduleDirectory;
+  }
+
+  @Override
+  public Coordinate getCoordinate() {
+    return coordinate;
+  }
+
+  public void setCoordinate(Coordinate coordinate) {
+    this.coordinate = coordinate;
+  }
+
+  @Override
+  public FileSystem getFileSystem() {
+    return fileSystem;
+  }
+
+  public void setFileSystem(FileSystem fileSystem) {
+    this.fileSystem = fileSystem;
+  }
+
+  @Override
+  public Set<Library> getLibraries() {
+    return libraries;
+  }
+
+  public void setLibraries(Set<Library> libraries) {
+    this.libraries = libraries;
+  }
+
+  @Override
+  public Set<Dependency> getDependencies() {
+    return dependencies;
+  }
+
+  public void setDependencies(Set<Dependency> dependencies) {
+    this.dependencies = dependencies;
   }
 
   @SneakyThrows
@@ -125,8 +233,8 @@ public class DefaultModule implements Module, Comparable<Module>, Originator<Mod
   }
 
   @Override
-  public Memento<Module> save() {
-    Memento<Module> result = loadMemento();
+  public Memento save() {
+    Memento result = loadMemento();
 
     if (result == null) {
       return null;
@@ -136,9 +244,22 @@ public class DefaultModule implements Module, Comparable<Module>, Originator<Mod
   }
 
   @Override
-  public void restore(Memento<Module> memento) {}
+  public void restore(Memento memento) {
+    this.order = memento.read("order", int.class);
+    this.type = Type.parse(memento.read("type", String.class));
+    this.source = new ModuleSource(URI.create(memento.read("source", String.class)));
 
-  private Memento<Module> save(Memento<Module> result) {
+    readCoordinate(memento);
+    readAssembly(memento);
+    readLibraries(memento);
+    readDependencies(memento);
+  }
+
+  private void readCoordinate(Memento memento) {
+    coordinate = memento.read("coordinate", Coordinate.class);
+  }
+
+  private Memento save(Memento result) {
 
     result.write("order", order);
     result.write("type", type);
@@ -151,46 +272,88 @@ public class DefaultModule implements Module, Comparable<Module>, Originator<Mod
     return result;
   }
 
-  private void writeDependencies(Memento<Module> result) {
-    val dependenciesMemento = result.child("dependencies", Dependency.class);
+  private void readAssembly(Memento memento) {
+    val assemblyMemento = memento.childNamed("assembly");
+    val file = assemblyMemento.read("file", String.class);
+    assembly = new Assembly(new File(file));
+    val pathMemento = assemblyMemento.childNamed("paths");
+    val paths = pathMemento.getChildren("path");
+
+    for (val path : paths) {
+      assembly.addSubpath(String.valueOf(path.getValue()));
+    }
+  }
+
+  private void writeAssembly(Memento result) {
+    val assemblyMemento = result.child("assembly");
+    assemblyMemento.write("file", assembly.getFile().getAbsolutePath());
+
+    val assemblySubpathsMemento = assemblyMemento.child("paths");
+    val subpaths = assembly.getSubpaths();
+    for (val path : subpaths) {
+      val pathMemento = assemblySubpathsMemento.child("path");
+      pathMemento.setValue(path);
+    }
+  }
+
+  private void writeDependencies(Memento result) {
+    val dependenciesMemento = result.child("dependencies");
     for (val dependency : dependencies) {
-      val dependencyMemento = result.child("dependency", Coordinate.class);
+      val dependencyMemento = result.child("dependency");
       dependenciesMemento.write("type", dependency.getType());
       writeCoordinate(dependencyMemento, dependency.getCoordinate());
     }
   }
 
-  private void writeCoordinate(Memento<?> result, Coordinate coordinate) {
-    val coordinateMemento = result.child("coordinate", Coordinate.class);
+  private void readDependencies(Memento memento) {
+    dependencies = new HashSet<>();
+    val dependenciesMemento = memento.childNamed("dependencies");
+    val depList = dependenciesMemento.getChildren("dependency");
+    for (val dep : depList) {
+      val depType = Dependency.Type.parse(dependenciesMemento.read("type", String.class));
+      val coordinate = dep.read("coordinate", Coordinate.class);
+      dependencies.add(new Dependency(depType, coordinate));
+    }
+  }
+
+  private void writeCoordinate(Memento result, Coordinate coordinate) {
+    val coordinateMemento = result.child("coordinate");
     coordinateMemento.write("group", coordinate.getGroup());
     coordinateMemento.write("name", coordinate.getName());
     coordinateMemento.write("version", coordinate.getVersion());
   }
 
-  private void writeAssembly(Memento<Module> result) {
-    val assemblyMemento = result.child("assembly", Assembly.class);
-    assemblyMemento.write("file", assembly.getFile().getAbsolutePath());
-
-    val assemblySubpathsMemento = assemblyMemento.child("paths", Set.class);
-    val subpaths = assembly.getSubpaths();
-    for (val path : subpaths) {
-      val pathMemento = assemblySubpathsMemento.child("path", Path.class);
-      pathMemento.setValue(path);
+  private void readLibraries(Memento memento) {
+    libraries = new HashSet<>();
+    val librariesMemento = memento.childNamed("libraries");
+    val children = librariesMemento.getChildren("library");
+    for (val library : children) {
+      libraries.add(new Library(new File(String.valueOf(library.getValue()))));
     }
   }
 
-  private void writeLibraries(Memento<Module> result) {
-    val librariesMemento = result.child("libraries", Library.class);
+  private void writeLibraries(Memento result) {
+    val librariesMemento = result.child("libraries");
     for (val library : libraries) {
-      val libraryMemento = librariesMemento.child("library", String.class);
+      val libraryMemento = librariesMemento.child("library");
       libraryMemento.setValue(library.getFile().getAbsolutePath());
     }
   }
 
   @SuppressWarnings({"unchecked", "rawtypes"})
-  private Memento<Module> loadMemento() {
-    val loader = resolveServiceLoader(Memento.class).iterator();
-    Memento<Module> result = null;
+  private Memento loadMemento() {
+    var loader = resolveServiceLoader(Memento.class).iterator();
+    Memento result = null;
+    while (loader.hasNext()) {
+      val next = loader.next();
+      result = next;
+      break;
+    }
+    if (result != null) {
+      return result;
+    }
+
+    loader = ServiceLoader.load(Memento.class, kernel.getClassLoader()).iterator();
     while (loader.hasNext()) {
       val next = loader.next();
       result = next;

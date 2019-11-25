@@ -2,13 +2,17 @@ package io.sunshower.yaml.state;
 
 import com.esotericsoftware.yamlbeans.YamlReader;
 import com.esotericsoftware.yamlbeans.YamlWriter;
+import io.zephyr.kernel.Coordinate;
+import io.zephyr.kernel.core.ModuleCoordinate;
+import io.zephyr.kernel.core.SemanticVersion;
 import io.zephyr.kernel.memento.Memento;
 import java.io.*;
 import java.util.*;
+import java.util.stream.Collectors;
 import lombok.val;
 
-@SuppressWarnings("PMD.BeanMembersShouldSerialize")
-public class YamlMemento<T> implements Memento<T> {
+@SuppressWarnings({"PMD.BeanMembersShouldSerialize", "PMD.DataflowAnomalyAnalysis"})
+public class YamlMemento implements Memento {
 
   /** eh. Yamlbeans requires public state. Whatevs. */
   public String name;
@@ -16,7 +20,7 @@ public class YamlMemento<T> implements Memento<T> {
   public Map<String, Object> values;
 
   public Object value;
-  public List<YamlMemento<?>> children;
+  public List<YamlMemento> children;
 
   public YamlMemento(String name) {
     this.name = name;
@@ -24,7 +28,10 @@ public class YamlMemento<T> implements Memento<T> {
     this.children = new ArrayList<>();
   }
 
-  public YamlMemento() {}
+  public YamlMemento() {
+    this.values = new HashMap<>();
+    this.children = new ArrayList<>();
+  }
 
   @Override
   public void write(String name, Object value) {
@@ -48,15 +55,36 @@ public class YamlMemento<T> implements Memento<T> {
 
   @Override
   @SuppressWarnings("unchecked")
-  public <U> Memento<U> child(String name, Class<U> type) {
-    val child = new YamlMemento<>(name);
+  public Memento child(String name) {
+    val child = new YamlMemento(name);
     children.add(child);
-    return (Memento<U>) child;
+    return child;
   }
 
   @Override
+  public Memento childNamed(String name) {
+    for (val child : children) {
+      if (name.equals(child.name)) {
+        return child;
+      }
+    }
+    throw new NoSuchElementException("No child named " + name);
+  }
+
+  @Override
+  @SuppressWarnings("unchecked")
   public <U> U read(String name, Class<U> value) {
+    if (Coordinate.class.isAssignableFrom(value)) {
+      return (U) readCoordinate();
+    }
     return (U) values.get(name);
+  }
+
+  private Coordinate readCoordinate() {
+    val group = read("group", String.class);
+    val name = read("name", String.class);
+    val version = read("version", String.class);
+    return new ModuleCoordinate(name, group, new SemanticVersion(version));
   }
 
   @Override
@@ -96,5 +124,10 @@ public class YamlMemento<T> implements Memento<T> {
     this.value = result.value;
     this.name = result.name;
     this.children = result.children;
+  }
+
+  @Override
+  public List<Memento> getChildren(String name) {
+    return children.stream().filter(t -> t.name.equals(name)).collect(Collectors.toList());
   }
 }

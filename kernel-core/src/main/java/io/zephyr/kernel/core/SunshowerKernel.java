@@ -115,10 +115,10 @@ public class SunshowerKernel extends AbstractEventSource implements Kernel {
   }
 
   @Override
-  public Memento<Kernel> save() {
+  public Memento save() {
     return null;
   }
 
   @Override
-  public void restore(Memento<Kernel> memento) {}
+  public void restore(Memento memento) {}
 }

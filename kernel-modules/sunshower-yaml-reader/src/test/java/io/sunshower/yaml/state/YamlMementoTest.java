@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 class YamlMementoTest {
 
   private File file;
-  private YamlMemento<Object> memento;
+  private YamlMemento memento;
 
   @BeforeEach
   void setUp() throws IOException {
@@ -23,7 +23,7 @@ class YamlMementoTest {
       file.getParentFile().mkdirs();
       file.createNewFile();
     }
-    memento = new YamlMemento<>("test");
+    memento = new YamlMemento("test");
   }
 
   @AfterEach
@@ -40,7 +40,7 @@ class YamlMementoTest {
       memento.write(output);
     }
 
-    memento = new YamlMemento<>("test");
+    memento = new YamlMemento("test");
 
     try (val input = new FileInputStream(file)) {
       memento.read(input);
@@ -52,9 +52,9 @@ class YamlMementoTest {
   void ensureWritingComplexMementoWorks() throws Exception {
     memento.write("hello", "world");
 
-    val child = memento.child("child1", String.class);
+    val child = memento.child("child1");
     child.write("another", "value");
-    val gchild = child.child("coolbeans", String.class);
+    val gchild = child.child("coolbeans");
     gchild.write("supbean", "nupbean");
 
     try (val output = new FileOutputStream(file)) {

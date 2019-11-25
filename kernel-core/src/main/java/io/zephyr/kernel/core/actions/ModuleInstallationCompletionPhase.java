@@ -42,6 +42,7 @@ public class ModuleInstallationCompletionPhase extends Task {
               descriptor.getOrder(),
               descriptor.getType(),
               source,
+              kernel,
               assembly,
               moduleDirectory.getAbsoluteFile().toPath(),
               descriptor.getCoordinate(),

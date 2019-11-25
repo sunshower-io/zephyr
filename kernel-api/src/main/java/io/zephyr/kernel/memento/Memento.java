@@ -3,8 +3,9 @@ package io.zephyr.kernel.memento;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
 
-public interface Memento<T> {
+public interface Memento {
 
   void write(String name, Object value);
 
@@ -14,7 +15,9 @@ public interface Memento<T> {
 
   void write(String name, String value);
 
-  <U> Memento<U> child(String name, Class<U> type);
+  Memento child(String name);
+
+  Memento childNamed(String name);
 
   <T> T read(String name, Class<T> value);
 
@@ -29,4 +32,6 @@ public interface Memento<T> {
   void write(OutputStream outputStream) throws Exception;
 
   void read(InputStream inputStream) throws Exception;
+
+  List<Memento> getChildren(String name);
 }

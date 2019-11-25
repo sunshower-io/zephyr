@@ -7,7 +7,7 @@ import io.zephyr.kernel.memento.Originator;
 import java.nio.file.FileSystem;
 import java.util.List;
 
-public interface Kernel extends PluginContext, EventSource, Originator<Kernel> {
+public interface Kernel extends PluginContext, EventSource, Originator {
 
   KernelLifecycle getLifecycle();
 

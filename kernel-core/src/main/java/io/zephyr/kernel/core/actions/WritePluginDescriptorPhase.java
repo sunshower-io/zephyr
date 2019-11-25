@@ -13,7 +13,6 @@ import io.zephyr.kernel.dependencies.DependencyGraph;
 import io.zephyr.kernel.dependencies.UnresolvedDependencyException;
 import io.zephyr.kernel.events.Events;
 import io.zephyr.kernel.log.Logging;
-import io.zephyr.kernel.memento.core.PluginCaretaker;
 import java.nio.file.FileSystem;
 import java.util.*;
 import java.util.logging.Level;
@@ -55,7 +54,6 @@ public class WritePluginDescriptorPhase extends Task {
     //      throw new TaskException(TaskStatus.UNRECOVERABLE);
     //    }
 
-    PluginCaretaker actualCaretaker = null;
     val moduleManager = kernel.getModuleManager();
 
     log.log(Level.INFO, "plugin.phase.resolvingplugins");
@@ -66,7 +64,7 @@ public class WritePluginDescriptorPhase extends Task {
     checkForCyclicDependencies(dependencyGraph, installedPlugins);
     resolvePlugins(moduleManager, installedPlugins);
 
-    saveAll(kernel.getFileSystem(), moduleManager, actualCaretaker, installedPlugins);
+    saveAll(kernel.getFileSystem(), moduleManager, installedPlugins);
     kernel.dispatchEvent(
         PluginEvents.PLUGIN_SET_INSTALLATION_COMPLETE, Events.create(installedPlugins));
 
@@ -148,8 +146,5 @@ public class WritePluginDescriptorPhase extends Task {
   }
 
   private void saveAll(
-      FileSystem fileSystem,
-      ModuleManager moduleManager,
-      PluginCaretaker actualCaretaker,
-      Set<Module> installedPlugins) {}
+      FileSystem fileSystem, ModuleManager moduleManager, Set<Module> installedPlugins) {}
 }
