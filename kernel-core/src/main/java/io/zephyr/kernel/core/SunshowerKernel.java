@@ -5,6 +5,7 @@ import io.zephyr.kernel.concurrency.Scheduler;
 import io.zephyr.kernel.core.lifecycle.DefaultKernelLifecycle;
 import io.zephyr.kernel.events.AbstractEventSource;
 import io.zephyr.kernel.launch.KernelOptions;
+import io.zephyr.kernel.memento.Memento;
 import java.nio.file.FileSystem;
 import java.util.ArrayList;
 import java.util.List;
@@ -112,4 +113,12 @@ public class SunshowerKernel extends AbstractEventSource implements Kernel {
   public void setClassLoader(KernelClassloader loader) {
     this.classLoader = loader;
   }
+
+  @Override
+  public Memento<Kernel> save() {
+    return null;
+  }
+
+  @Override
+  public void restore(Memento<Kernel> memento) {}
 }

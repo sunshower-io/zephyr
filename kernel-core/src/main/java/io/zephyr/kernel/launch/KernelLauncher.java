@@ -27,6 +27,8 @@ public class KernelLauncher {
   final KernelOptions options;
   final DefaultCommandContext context;
 
+  final Object lock = new Object();
+
   KernelLauncher(final KernelOptions options, final String[] arguments) {
     this.options = options;
     this.arguments = arguments;
@@ -38,12 +40,14 @@ public class KernelLauncher {
   }
 
   void run() {
-    if (options.isServer()) {
-      startServer();
-    } else if (options.isInteractive()) {
-      runInteractive();
-    } else {
-      runCommand();
+    synchronized (lock) {
+      if (options.isServer()) {
+        startServer();
+      } else if (options.isInteractive()) {
+        runInteractive();
+      } else {
+        runCommand();
+      }
     }
   }
 
@@ -61,37 +65,39 @@ public class KernelLauncher {
   }
 
   Invoker getInvoker() {
-    val registry = RMI.getRegistry(options);
-    try {
-      if (console == null) {
-        // this is a bit weird--we're instantiating a lot to get the console--nothing else
-        val shellcfg =
-            DaggerShellInjectionConfiguration.factory()
-                .create(ClassLoader.getSystemClassLoader(), context);
-        val result = shellcfg.createShell();
-        console = result.getConsole();
-      }
-
-      return (Invoker) registry.lookup("ZephyrShell");
-    } catch (Exception e) {
-      log.log(Level.INFO, "Server isn't running");
-    }
-
-    // context is only to be used by the local shell--remote shell is set in startServer()
-    val shellcfg =
-        DaggerShellInjectionConfiguration.factory()
-            .create(ClassLoader.getSystemClassLoader(), context);
-
-    val result = shellcfg.createShell();
-    context.register(Invoker.class, result);
-    if (console == null) {
+    synchronized (lock) {
+      val registry = RMI.getRegistry(options);
       try {
-        console = result.getConsole();
-      } catch (Exception ex) {
-        log.log(Level.WARNING, "Failed to create console", ex.getMessage());
+        if (console == null) {
+          // this is a bit weird--we're instantiating a lot to get the console--nothing else
+          val shellcfg =
+              DaggerShellInjectionConfiguration.factory()
+                  .create(ClassLoader.getSystemClassLoader(), context);
+          val result = shellcfg.createShell();
+          console = result.getConsole();
+        }
+
+        return (Invoker) registry.lookup("ZephyrShell");
+      } catch (Exception e) {
+        log.log(Level.INFO, "Server isn't running");
       }
+
+      // context is only to be used by the local shell--remote shell is set in startServer()
+      val shellcfg =
+          DaggerShellInjectionConfiguration.factory()
+              .create(ClassLoader.getSystemClassLoader(), context);
+
+      val result = shellcfg.createShell();
+      context.register(Invoker.class, result);
+      if (console == null) {
+        try {
+          console = result.getConsole();
+        } catch (Exception ex) {
+          log.log(Level.WARNING, "Failed to create console", ex.getMessage());
+        }
+      }
+      return result;
     }
-    return result;
   }
 
   @SuppressWarnings("PMD.SystemPrintln")

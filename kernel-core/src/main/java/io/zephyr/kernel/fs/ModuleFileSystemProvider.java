@@ -33,7 +33,7 @@ public class ModuleFileSystemProvider extends FileSystemProvider implements Clos
   public static final String VERSION = "version";
   public static final int QUERY_STRING_LENGTH = 2;
 
-  private static FileSystemRegistry registry;
+  private static final FileSystemRegistry registry;
 
   static {
     registry = new FileSystemRegistry();
@@ -57,20 +57,22 @@ public class ModuleFileSystemProvider extends FileSystemProvider implements Clos
 
   @Override
   public FileSystem newFileSystem(URI uri, Map<String, ?> env) throws IOException {
-    val host = uri.getHost();
-    if (host == null || host.isBlank()) {
-      throw new FileSystemException("Cannot create filesystem from null or blank host");
+    synchronized (registry) {
+      val host = uri.getHost();
+      if (host == null || host.isBlank()) {
+        throw new FileSystemException("Cannot create filesystem from null or blank host");
+      }
+      val segments = computeSegments(uri);
+      if (registry.contains(segments)) {
+        throw new FileSystemAlreadyExistsException(host);
+      }
+      val result = new ModuleFileSystem(segments, this, doCreateDirectory(Files.toPath(segments)));
+      registry.add(segments, result);
+      return result;
     }
-    val segments = computeSegments(uri);
-    if (registry.contains(segments)) {
-      throw new FileSystemAlreadyExistsException(host);
-    }
-    val result = new ModuleFileSystem(segments, this, doCreateDirectory(Files.toPath(segments)));
-    registry.add(segments, result);
-    return result;
   }
 
-  private String[] computeSegments(URI uri) throws FileSystemException {
+  private String[] computeSegments(URI uri) {
     if (uri.getQuery() == null) {
       return keyPattern.split(uri.getHost());
     } else {
@@ -82,15 +84,17 @@ public class ModuleFileSystemProvider extends FileSystemProvider implements Clos
 
   @Override
   public FileSystem getFileSystem(URI uri) {
-    val host = uri.getHost();
-    if (host == null) {
-      throw new FileSystemNotFoundException();
+    synchronized (registry) {
+      val host = computeSegments(uri);
+      if (host == null) {
+        throw new FileSystemNotFoundException();
+      }
+      val result = registry.get(host);
+      if (result == null) {
+        throw new FileSystemNotFoundException(Arrays.toString(host));
+      }
+      return result;
     }
-    val result = registry.get(host);
-    if (result == null) {
-      throw new FileSystemNotFoundException(host);
-    }
-    return result;
   }
 
   @Override
@@ -171,7 +175,9 @@ public class ModuleFileSystemProvider extends FileSystemProvider implements Clos
   }
 
   protected void closeFileSystem(ModuleFileSystem system) throws IOException {
-    registry.remove(system.key);
+    synchronized (registry) {
+      registry.remove(system.key);
+    }
   }
 
   @Override
@@ -185,29 +191,29 @@ public class ModuleFileSystemProvider extends FileSystemProvider implements Clos
     }
   }
 
-  private Collection<? extends String> parseVersion(URI uri) throws FileSystemException {
-    val query = uri.getQuery();
-    val parts = queryPattern.split(query);
-    if (parts.length != QUERY_STRING_LENGTH) {
-      throw new FileSystemException(
-          format(
-              "Failed to create filesystem.  Version '%s' isn't valid.  Expected 'version=<version>'",
-              query));
-    }
-    if (!VERSION.equals(parts[0])) {
-      throw new FileSystemException(
-          format(
-              "Failed to create filesystem.  Version '%s' isn't valid.  Expected 'version=<version>'",
-              query));
-    }
-    return Collections.singletonList(parts[1]);
-  }
-
   private File doCreateDirectory(Path toPath) throws FileSystemException {
     val result = fileSystemRoot.toPath().resolve(toPath).toAbsolutePath().toFile();
     if (!(result.exists() || result.mkdirs())) {
       throw new FileSystemException("Failed to create module directory: " + result);
     }
     return result;
+  }
+
+  private Collection<? extends String> parseVersion(URI uri) throws FileSystemNotFoundException {
+    val query = uri.getQuery();
+    val parts = queryPattern.split(query);
+    if (parts.length != QUERY_STRING_LENGTH) {
+      throw new FileSystemNotFoundException(
+          format(
+              "Failed to create filesystem.  Version '%s' isn't valid.  Expected 'version=<version>'",
+              query));
+    }
+    if (!VERSION.equals(parts[0])) {
+      throw new FileSystemNotFoundException(
+          format(
+              "Failed to create filesystem.  Version '%s' isn't valid.  Expected 'version=<version>'",
+              query));
+    }
+    return Collections.singletonList(parts[1]);
   }
 }

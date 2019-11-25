@@ -1,5 +1,8 @@
 package io.zephyr.kernel.memento;
 
 public interface Originator<T> {
-  Memento<T> getMemento();
+
+  Memento<T> save();
+
+  void restore(Memento<T> memento);
 }

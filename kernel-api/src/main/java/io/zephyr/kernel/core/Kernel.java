@@ -3,10 +3,11 @@ package io.zephyr.kernel.core;
 import io.zephyr.PluginContext;
 import io.zephyr.kernel.concurrency.Scheduler;
 import io.zephyr.kernel.events.EventSource;
+import io.zephyr.kernel.memento.Originator;
 import java.nio.file.FileSystem;
 import java.util.List;
 
-public interface Kernel extends PluginContext, EventSource {
+public interface Kernel extends PluginContext, EventSource, Originator<Kernel> {
 
   KernelLifecycle getLifecycle();
 

@@ -14,9 +14,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import lombok.val;
 import org.springframework.context.annotation.Bean;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.context.annotation.Configuration;
 
-@ContextConfiguration
+@Configuration
 public class KernelTestConfiguration {
 
   @Bean

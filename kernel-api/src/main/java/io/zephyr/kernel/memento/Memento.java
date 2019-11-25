@@ -1,3 +1,10 @@
 package io.zephyr.kernel.memento;
 
-public interface Memento<T> {}
+import java.io.InputStream;
+import java.io.OutputStream;
+
+public interface Memento<T> {
+  void read(InputStream inputStream);
+
+  void write(OutputStream outputStream);
+}
