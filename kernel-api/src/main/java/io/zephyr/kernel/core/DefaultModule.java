@@ -3,6 +3,8 @@ package io.zephyr.kernel.core;
 import io.zephyr.PluginActivator;
 import io.zephyr.kernel.*;
 import io.zephyr.kernel.Module;
+import io.zephyr.kernel.memento.Memento;
+import io.zephyr.kernel.memento.Originator;
 import io.zephyr.kernel.misc.SuppressFBWarnings;
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
@@ -13,7 +15,7 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.val;
 
-public class DefaultModule implements Module, Comparable<Module> {
+public class DefaultModule implements Module, Comparable<Module>, Originator<Module> {
 
   /**
    * mutable state . These can't be final because either the module isn't resolved or there is a
@@ -93,7 +95,7 @@ public class DefaultModule implements Module, Comparable<Module> {
 
   @Override
   public <S> ServiceLoader<S> resolveServiceLoader(Class<S> type) {
-    return moduleClasspath.resolveServiceLoader(type);
+    return getModuleClasspath().resolveServiceLoader(type);
   }
 
   @Override
@@ -120,5 +122,80 @@ public class DefaultModule implements Module, Comparable<Module> {
   @Override
   public int hashCode() {
     return coordinate.hashCode();
+  }
+
+  @Override
+  public Memento<Module> save() {
+    Memento<Module> result = loadMemento();
+
+    if (result == null) {
+      return null;
+    }
+
+    return save(result);
+  }
+
+  @Override
+  public void restore(Memento<Module> memento) {}
+
+  private Memento<Module> save(Memento<Module> result) {
+
+    result.write("order", order);
+    result.write("type", type);
+    result.write("source", source.getLocation());
+
+    writeCoordinate(result, coordinate);
+    writeAssembly(result);
+    writeLibraries(result);
+    writeDependencies(result);
+    return result;
+  }
+
+  private void writeDependencies(Memento<Module> result) {
+    val dependenciesMemento = result.child("dependencies", Dependency.class);
+    for (val dependency : dependencies) {
+      val dependencyMemento = result.child("dependency", Coordinate.class);
+      dependenciesMemento.write("type", dependency.getType());
+      writeCoordinate(dependencyMemento, dependency.getCoordinate());
+    }
+  }
+
+  private void writeCoordinate(Memento<?> result, Coordinate coordinate) {
+    val coordinateMemento = result.child("coordinate", Coordinate.class);
+    coordinateMemento.write("group", coordinate.getGroup());
+    coordinateMemento.write("name", coordinate.getName());
+    coordinateMemento.write("version", coordinate.getVersion());
+  }
+
+  private void writeAssembly(Memento<Module> result) {
+    val assemblyMemento = result.child("assembly", Assembly.class);
+    assemblyMemento.write("file", assembly.getFile().getAbsolutePath());
+
+    val assemblySubpathsMemento = assemblyMemento.child("paths", Set.class);
+    val subpaths = assembly.getSubpaths();
+    for (val path : subpaths) {
+      val pathMemento = assemblySubpathsMemento.child("path", Path.class);
+      pathMemento.setValue(path);
+    }
+  }
+
+  private void writeLibraries(Memento<Module> result) {
+    val librariesMemento = result.child("libraries", Library.class);
+    for (val library : libraries) {
+      val libraryMemento = librariesMemento.child("library", String.class);
+      libraryMemento.setValue(library.getFile().getAbsolutePath());
+    }
+  }
+
+  @SuppressWarnings({"unchecked", "rawtypes"})
+  private Memento<Module> loadMemento() {
+    val loader = resolveServiceLoader(Memento.class).iterator();
+    Memento<Module> result = null;
+    while (loader.hasNext()) {
+      val next = loader.next();
+      result = next;
+      break;
+    }
+    return result;
   }
 }
