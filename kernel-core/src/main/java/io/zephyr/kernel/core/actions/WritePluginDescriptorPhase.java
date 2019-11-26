@@ -1,6 +1,7 @@
 package io.zephyr.kernel.core.actions;
 
 import io.sunshower.gyre.Scope;
+import io.zephyr.common.io.Files;
 import io.zephyr.kernel.Lifecycle;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.concurrency.Task;
@@ -17,6 +18,8 @@ import java.nio.file.FileSystem;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import io.zephyr.kernel.memento.Memento;
 import lombok.val;
 
 @SuppressWarnings({
@@ -55,7 +58,7 @@ public class WritePluginDescriptorPhase extends Task {
     checkForCyclicDependencies(dependencyGraph, installedPlugins);
     resolvePlugins(moduleManager, installedPlugins);
 
-    saveAll(kernel.getFileSystem(), moduleManager, installedPlugins);
+    saveAll(kernel, installedPlugins);
     kernel.dispatchEvent(
         PluginEvents.PLUGIN_SET_INSTALLATION_COMPLETE, Events.create(installedPlugins));
 
@@ -136,6 +139,15 @@ public class WritePluginDescriptorPhase extends Task {
     }
   }
 
-  private void saveAll(
-      FileSystem fileSystem, ModuleManager moduleManager, Set<Module> installedPlugins) {}
+  private void saveAll(SunshowerKernel kernel, Set<Module> installedPlugins) {
+    for (val plugin : installedPlugins) {
+      val pfs = plugin.getFileSystem();
+      try {
+        val pmemento = plugin.save();
+        Files.tryWrite(pmemento.locate("plugin", pfs), pmemento);
+      } catch (Exception e) {
+        log.log(Level.WARNING, "failed to write descriptor", e);
+      }
+    }
+  }
 }

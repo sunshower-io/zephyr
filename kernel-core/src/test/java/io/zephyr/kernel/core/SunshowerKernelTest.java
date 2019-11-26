@@ -4,6 +4,7 @@ import static io.sunshower.test.common.Tests.relativeToProjectBuild;
 import static org.junit.jupiter.api.Assertions.*;
 
 import io.sunshower.test.common.Tests;
+import io.zephyr.kernel.Lifecycle;
 import io.zephyr.kernel.launch.KernelOptions;
 import io.zephyr.kernel.misc.SuppressFBWarnings;
 import io.zephyr.kernel.module.*;
@@ -90,6 +91,28 @@ public class SunshowerKernelTest {
   }
 
   @Test
+  void ensureInstallingAndStartingInvalidPluginFails() {
+
+    kernel.start();
+    yamlModule = relativeToProjectBuild("kernel-modules:sunshower-yaml-reader", "war", "libs");
+    install(yamlModule);
+    kernel.stop();
+    kernel.start();
+
+    springPlugin =
+        relativeToProjectBuild("kernel-tests:test-plugins:test-plugin-spring", "war", "libs");
+
+    install(springPlugin);
+
+    springPlugin =
+        relativeToProjectBuild("kernel-tests:test-plugins:test-plugin-spring-error", "war", "libs");
+    install(springPlugin);
+    start("spring-plugin-error");
+    val failed = kernel.getModuleManager().getModules(Lifecycle.State.Failed);
+    assertEquals(failed.size(), 1, "must have one failed plugin");
+  }
+
+  @Test
   void ensureInstallingDependentPluginWorks() throws InterruptedException {
 
     kernel.start();
@@ -154,10 +177,7 @@ public class SunshowerKernelTest {
   private void request(String pluginName, ModuleLifecycle.Actions action) {
 
     val plugin =
-        kernel
-            .getModuleManager()
-            .getModules()
-            .stream()
+        kernel.getModuleManager().getModules().stream()
             .filter(t -> t.getCoordinate().getName().equals(pluginName))
             .findFirst()
             .get();

@@ -14,6 +14,9 @@ public class JoinPoint extends Task {
     return null;
   }
 
+  public static Task newJoinPoint(String name) {
+    return new JoinPoint(name);
+  }
   public static Task newJoinPoint() {
     return new JoinPoint(UUID.randomUUID().toString());
   }

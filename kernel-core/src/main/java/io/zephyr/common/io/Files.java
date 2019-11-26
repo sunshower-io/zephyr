@@ -1,10 +1,13 @@
 package io.zephyr.common.io;
 
+import io.zephyr.kernel.memento.Memento;
 import io.zephyr.kernel.misc.SuppressFBWarnings;
 import java.io.*;
 import java.net.URL;
 import java.nio.file.AccessDeniedException;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+
 import lombok.NonNull;
 import lombok.val;
 
@@ -74,5 +77,46 @@ public class Files {
       return name.substring(sepidx + 1);
     }
     return name;
+  }
+
+  public static Path doCheck(Path path) throws IOException {
+    val file = path.toFile().getAbsoluteFile();
+    if (!file.exists()) {
+      val parent = file.getParentFile();
+      if (!parent.exists()) {
+        if (!parent.mkdirs()) {
+          throw new IllegalStateException("Error: could not create " + parent.getAbsolutePath());
+        }
+      }
+      if (!file.createNewFile()) {
+        throw new IllegalStateException(
+            "Error: could not create file at " + file.getAbsolutePath());
+      }
+    }
+    io.zephyr.common.io.Files.check(
+        file,
+        FilePermissionChecker.Type.DELETE,
+        FilePermissionChecker.Type.WRITE,
+        FilePermissionChecker.Type.READ);
+    return file.toPath();
+  }
+
+  /**
+   * this doesn't really belong here, but whatevs
+   *
+   * @param path
+   * @param memento
+   * @throws Exception
+   */
+  public static void tryWrite(Path path, Memento memento) throws Exception {
+    try (val output =
+        java.nio.file.Files.newOutputStream(
+            doCheck(path),
+            StandardOpenOption.WRITE,
+            StandardOpenOption.DSYNC,
+            StandardOpenOption.TRUNCATE_EXISTING)) {
+      memento.write(output);
+      output.flush();
+    }
   }
 }

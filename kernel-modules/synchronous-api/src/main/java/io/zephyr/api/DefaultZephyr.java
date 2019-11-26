@@ -3,9 +3,7 @@ package io.zephyr.api;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.core.ModuleCoordinate;
-import io.zephyr.kernel.module.ModuleLifecycle;
-import io.zephyr.kernel.module.ModuleLifecycleChangeGroup;
-import io.zephyr.kernel.module.ModuleLifecycleChangeRequest;
+import io.zephyr.kernel.module.*;
 import lombok.val;
 
 import java.net.URL;
@@ -29,6 +27,22 @@ public class DefaultZephyr implements Zephyr {
   public void install(Collection<URL> urls) {}
 
   @Override
+  public void install(URL... urls) {
+
+    val installationGroup = new ModuleInstallationGroup();
+    for (val url : urls) {
+      val request = new ModuleInstallationRequest();
+      request.setLocation(url);
+      installationGroup.add(request);
+    }
+    try {
+      kernel.getModuleManager().prepare(installationGroup).commit().toCompletableFuture().get();
+    } catch (Exception ex) {
+      ex.printStackTrace();
+    }
+  }
+
+  @Override
   public void start(Collection<String> pluginCoords) {
     try {
       changeLifecycle(pluginCoords, ModuleLifecycle.Actions.Activate);
@@ -49,6 +63,26 @@ public class DefaultZephyr implements Zephyr {
   @Override
   public void start(String... pluginCoords) {
     start(Arrays.asList(pluginCoords));
+  }
+
+  @Override
+  public void shutdown() {
+    try {
+      kernel.persistState().toCompletableFuture().get();
+      kernel.stop();
+    } catch (Exception ex) {
+      throw new RuntimeException(ex); // // TODO: 11/25/19 create a better exception
+    }
+  }
+
+  @Override
+  public void startup() {
+    try {
+      kernel.start();
+      kernel.restoreState().toCompletableFuture().get();
+    } catch (Exception ex) {
+      throw new RuntimeException(ex); // // TODO: 11/25/19 create a better exception
+    }
   }
 
   private void changeLifecycle(Collection<String> pluginCoords, ModuleLifecycle.Actions action)

@@ -42,18 +42,28 @@ public class KernelExtension
     kernel.start();
 
     var modules = (ModuleInstallationGroup) getStore(context).get(Module.Type.KernelModule);
-    doInstall(kernel, modules);
+    doInstall(kernel, modules, false);
     modules = (ModuleInstallationGroup) getStore(context).get(Module.Type.Plugin);
-    doInstall(kernel, modules);
+    doInstall(kernel, modules, true);
   }
 
-  private void doInstall(Kernel kernel, ModuleInstallationGroup modules)
-      throws InterruptedException, java.util.concurrent.ExecutionException {
+  private void doInstall(Kernel kernel, ModuleInstallationGroup modules, boolean restoreState) throws Exception {
     if (modules != null) {
       val prepped = kernel.getModuleManager().prepare(modules);
       prepped.commit().toCompletableFuture().get();
+
+      if(restoreState) {
+        kernel.persistState().toCompletableFuture().get();
+      }
+
+
       kernel.stop();
+
+
       kernel.start();
+      if(restoreState) {
+        kernel.restoreState().toCompletableFuture().get();
+      }
     }
   }
 
@@ -71,7 +81,7 @@ public class KernelExtension
       val fs = FileSystems.getFileSystem(URI.create("droplet://kernel"));
       fs.close();
     } catch (Exception ex) {
-      //meh
+      // meh
     }
 
     try {

@@ -38,8 +38,14 @@ public class PluginStartTask extends Task {
         val loader = module.getModuleClasspath().resolveServiceLoader(PluginActivator.class);
         manager.getModuleLoader().check(module);
         for (val activator : loader) {
-          activator.start(kernel);
-          ((DefaultModule) module).setActivator(activator);
+          try {
+            activator.start(kernel);
+            ((DefaultModule) module).setActivator(activator);
+          } catch (Exception | LinkageError ex) {
+            ex.printStackTrace();
+            module.getLifecycle().setState(Lifecycle.State.Failed);
+            return null;
+          }
           break;
         }
         module.getLifecycle().setState(Lifecycle.State.Active);

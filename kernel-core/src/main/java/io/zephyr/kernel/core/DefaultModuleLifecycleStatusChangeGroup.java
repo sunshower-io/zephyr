@@ -1,17 +1,17 @@
 package io.zephyr.kernel.core;
 
-import io.sunshower.gyre.DirectedGraph;
-import io.sunshower.gyre.ParallelScheduler;
-import io.sunshower.gyre.ReverseSubgraphTransformation;
-import io.sunshower.gyre.SubgraphTransformation;
+import io.sunshower.gyre.*;
 import io.zephyr.kernel.Coordinate;
+import io.zephyr.kernel.concurrency.*;
 import io.zephyr.kernel.concurrency.Process;
-import io.zephyr.kernel.concurrency.TaskBuilder;
-import io.zephyr.kernel.concurrency.Tasks;
+import io.zephyr.kernel.concurrency.Task;
 import io.zephyr.kernel.core.actions.plugin.PluginStartTask;
 import io.zephyr.kernel.core.actions.plugin.PluginStopTask;
 import io.zephyr.kernel.module.*;
+
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletionStage;
 import lombok.val;
@@ -45,17 +45,20 @@ final class DefaultModuleLifecycleStatusChangeGroup implements ModuleLifecycleSt
 
   private Process<String> createProcess(ModuleLifecycleChangeGroup request) {
 
-    val tasks = Tasks.newProcess("module:lifecycle:change").coalesce().parallel().task();
+    //    val tasks = Tasks.newProcess("module:lifecycle:change").coalesce().parallel().task();
+    //    val
+    val taskGraph = new TaskGraph<String>();
+    val tasks = new HashMap<Coordinate, Task>();
 
     for (val task : request.getRequests()) {
       val actions = task.getLifecycleActions();
       if (actions == ModuleLifecycle.Actions.Stop) {
-        addStopAction(task, tasks);
+        addStopAction(task, taskGraph, tasks);
       } else if (actions == ModuleLifecycle.Actions.Activate) {
-        addStartAction(task, tasks);
+        addStartAction(task, taskGraph, tasks);
       }
     }
-    return tasks.create();
+    return new DefaultProcess<>("module:lifecycle:change", false, true, Scope.root(), taskGraph);
   }
 
   @Override
@@ -73,7 +76,8 @@ final class DefaultModuleLifecycleStatusChangeGroup implements ModuleLifecycleSt
     return new HashSet<>(request.getRequests());
   }
 
-  private void addStopAction(ModuleLifecycleChangeRequest task, TaskBuilder tasks) {
+  private void addStopAction(
+      ModuleLifecycleChangeRequest task, TaskGraph<String> tasks, Map<Coordinate, Task> existing) {
     val reachability =
         new ReverseSubgraphTransformation<DirectedGraph.Edge<Coordinate>, Coordinate>(
                 task.getCoordinate())
@@ -83,20 +87,36 @@ final class DefaultModuleLifecycleStatusChangeGroup implements ModuleLifecycleSt
             .apply(reachability)
             .getTasks();
 
-    var pjp = JoinPoint.newJoinPoint();
-    for (int i = 0; i < schedule.size(); i++) {
-      tasks.register(pjp);
-      val taskSet = schedule.get(i);
-      for (val el : taskSet.getTasks()) {
-        val actualTask = new PluginStopTask(el.getValue(), moduleManager, kernel);
-        tasks.register(actualTask);
-        tasks.task(pjp.getName()).dependsOn(actualTask.getName());
+    Task source;
+    if (!existing.containsKey(task.getCoordinate())) {
+      source = new PluginStopTask(task.getCoordinate(), moduleManager, kernel);
+      tasks.add(source);
+      existing.put(task.getCoordinate(), source);
+    } else {
+      source = existing.get(task.getCoordinate());
+    }
+
+    for (val group : schedule) {
+      for (val taskSet : group.getTasks()) {
+        final Task actualTask;
+        if (!existing.containsKey(taskSet.getValue())) {
+          actualTask = new PluginStopTask(taskSet.getValue(), moduleManager, kernel);
+          tasks.add(actualTask);
+          existing.put(taskSet.getValue(), actualTask);
+        } else {
+          actualTask = existing.get(taskSet.getValue());
+        }
+
+        if (!(taskSet.getValue().equals(task.getCoordinate())
+            || tasks.containsEdge(source, actualTask))) {
+          tasks.connect(source, actualTask, DirectedGraph.incoming("depends-on"));
+        }
       }
-      pjp = JoinPoint.newJoinPoint();
     }
   }
 
-  private void addStartAction(ModuleLifecycleChangeRequest task, TaskBuilder tasks) {
+  private void addStartAction(
+      ModuleLifecycleChangeRequest task, TaskGraph<String> tasks, Map<Coordinate, Task> existing) {
 
     val reachability =
         new SubgraphTransformation<DirectedGraph.Edge<Coordinate>, Coordinate>(task.getCoordinate())
@@ -106,16 +126,31 @@ final class DefaultModuleLifecycleStatusChangeGroup implements ModuleLifecycleSt
             .apply(reachability)
             .getTasks();
 
-    var pjp = JoinPoint.newJoinPoint();
-    for (int i = 0; i < schedule.size(); i++) {
-      tasks.register(pjp);
-      val taskSet = schedule.get(i);
-      for (val el : taskSet.getTasks()) {
-        val actualTask = new PluginStartTask(el.getValue(), moduleManager, kernel);
-        tasks.register(actualTask);
-        tasks.task(pjp.getName()).dependsOn(actualTask.getName());
+    Task source;
+    if (!existing.containsKey(task.getCoordinate())) {
+      source = new PluginStartTask(task.getCoordinate(), moduleManager, kernel);
+      tasks.add(source);
+      existing.put(task.getCoordinate(), source);
+    } else {
+      source = existing.get(task.getCoordinate());
+    }
+
+    for (val group : schedule) {
+      for (val taskSet : group.getTasks()) {
+        final Task actualTask;
+        if (!existing.containsKey(taskSet.getValue())) {
+          actualTask = new PluginStartTask(taskSet.getValue(), moduleManager, kernel);
+          tasks.add(actualTask);
+          existing.put(taskSet.getValue(), actualTask);
+        } else {
+          actualTask = existing.get(taskSet.getValue());
+        }
+
+        if (!(taskSet.getValue().equals(task.getCoordinate())
+            || tasks.containsEdge(source, actualTask))) {
+          tasks.connect(source, actualTask, DirectedGraph.incoming("depends-on"));
+        }
       }
-      pjp = JoinPoint.newJoinPoint();
     }
   }
 }

@@ -3,6 +3,7 @@ package io.sunshower.kernel.core;
 import io.sunshower.kernel.test.Module;
 import io.sunshower.kernel.test.Modules;
 import io.sunshower.kernel.test.ZephyrTest;
+import io.sunshower.test.common.Tests;
 import io.zephyr.api.Zephyr;
 import io.zephyr.kernel.Lifecycle;
 import io.zephyr.kernel.core.Kernel;
@@ -36,24 +37,43 @@ class KernelRegistryMementoSystemTest {
   }
 
   @Test
+  void ensureComplexScenarioWithDependenciesWorks() throws Exception {
+    val pluginDep =
+        Tests.relativeToProjectBuild(
+            "kernel-tests:test-plugins:test-plugin-spring-dep", "war", "libs");
+    zephyr.install(pluginDep.toURI().toURL());
+    zephyr.start(
+        "io.sunshower.spring:spring-plugin:1.0.0", "io.sunshower.spring:spring-plugin-dep:1.0.0");
+
+    assertEquals(
+        moduleManager.getModules(Lifecycle.State.Active).size(), 2, "must have 2 active modules");
+
+    zephyr.shutdown();
+
+    assertEquals(
+        moduleManager.getModules(Lifecycle.State.Active).size(),
+        0,
+        "must have zero active modules");
+    zephyr.startup();
+    System.out.println(moduleManager.getModules(Lifecycle.State.Active));
+    assertEquals(
+        2, moduleManager.getModules(Lifecycle.State.Active).size(), "must have 2 active modules");
+  }
+
+  @Test
   void ensurePluginIsRestartedWhenKernelIsRestarted() throws Exception {
     zephyr.start("io.sunshower.spring:spring-plugin:1.0.0");
     assertEquals(
-        kernel.getModuleManager().getModules(Lifecycle.State.Active).size(),
-        1,
-        "must have one active plugin");
+        moduleManager.getModules(Lifecycle.State.Active).size(), 1, "must have one active plugin");
 
-    kernel.persistState();
+    kernel.persistState().toCompletableFuture().get();
     kernel.stop();
     assertTrue(
-        kernel.getModuleManager().getModules(Lifecycle.State.Active).isEmpty(),
-        "kernel was stopped jfc");
+        moduleManager.getModules(Lifecycle.State.Active).isEmpty(), "kernel was stopped jfc");
     kernel.start();
-    kernel.restoreState();
+    kernel.restoreState().toCompletableFuture().get();
     assertEquals(
-        kernel.getModuleManager().getModules(Lifecycle.State.Active).size(),
-        1,
-        "kernel was started jfc");
+        moduleManager.getModules(Lifecycle.State.Active).size(), 1, "kernel was started jfc");
   }
 
   @Test

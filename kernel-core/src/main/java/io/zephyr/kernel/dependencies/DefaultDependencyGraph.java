@@ -122,6 +122,7 @@ public final class DefaultDependencyGraph implements DependencyGraph, Cloneable 
   public void remove(Module module) {
     val coord = module.getCoordinate();
     dependencyGraph.remove(coord);
+    modules.remove(coord);
   }
 
   @Override

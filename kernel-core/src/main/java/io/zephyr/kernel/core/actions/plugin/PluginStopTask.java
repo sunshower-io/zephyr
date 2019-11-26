@@ -42,6 +42,7 @@ public class PluginStopTask extends Task {
         try {
           module.getLifecycle().setState(Lifecycle.State.Stopping);
           module.getActivator().stop(kernel);
+          kernel.getModuleManager().getDependencyGraph().remove(module);
           kernel.getModuleClasspathManager().uninstall(module);
           ((DefaultModule) module).setActivator(null);
           try {

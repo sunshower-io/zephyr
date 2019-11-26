@@ -48,6 +48,21 @@ public abstract class Task {
   public String toString() {
     return format("Task[%s]", name);
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof Task)) return false;
+
+    Task task = (Task) o;
+
+    return name.equals(task.name);
+  }
+
+  @Override
+  public int hashCode() {
+    return name.hashCode();
+  }
 }
 
 final class TParams implements Parameters {

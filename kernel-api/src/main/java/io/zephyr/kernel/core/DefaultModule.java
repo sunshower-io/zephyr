@@ -240,13 +240,13 @@ public class DefaultModule implements Module, Comparable<Module>, Originator {
 
   @Override
   public Memento save() {
-    val memento = Memento.load(kernel.getClassLoader(), getClassLoader());
+    val memento = Memento.load(kernel.getClassLoader());
     return save(memento);
   }
 
   @Override
   public void restore(Memento memento) {
-    this.order = memento.read("order", int.class);
+    this.order = Integer.parseInt(memento.read("order", String.class));
     this.type = Type.parse(memento.read("type", String.class));
     this.source = new ModuleSource(URI.create(memento.read("source", String.class)));
 
@@ -265,7 +265,6 @@ public class DefaultModule implements Module, Comparable<Module>, Originator {
     result.write("order", order);
     result.write("type", type);
     result.write("source", source.getLocation());
-
     writeCoordinate(result, coordinate);
     writeAssembly(result);
     writeLibraries(result);
@@ -300,8 +299,8 @@ public class DefaultModule implements Module, Comparable<Module>, Originator {
   private void writeDependencies(Memento result) {
     val dependenciesMemento = result.child("dependencies");
     for (val dependency : dependencies) {
-      val dependencyMemento = result.child("dependency");
-      dependenciesMemento.write("type", dependency.getType());
+      val dependencyMemento = dependenciesMemento.child("dependency");
+      dependencyMemento.write("type", dependency.getType());
       writeCoordinate(dependencyMemento, dependency.getCoordinate());
     }
   }
@@ -311,7 +310,7 @@ public class DefaultModule implements Module, Comparable<Module>, Originator {
     val dependenciesMemento = memento.childNamed("dependencies");
     val depList = dependenciesMemento.getChildren("dependency");
     for (val dep : depList) {
-      val depType = Dependency.Type.parse(dependenciesMemento.read("type", String.class));
+      val depType = Dependency.Type.parse(dep.read("type", String.class));
       val coordinate = dep.read("coordinate", Coordinate.class);
       dependencies.add(new Dependency(depType, coordinate));
     }
@@ -332,5 +331,10 @@ public class DefaultModule implements Module, Comparable<Module>, Originator {
       val libraryMemento = librariesMemento.child("library");
       libraryMemento.setValue(library.getFile().getAbsolutePath());
     }
+  }
+
+  @Override
+  public String toString() {
+    return "Module{" + getCoordinate() + "}";
   }
 }

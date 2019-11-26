@@ -13,6 +13,7 @@ public class TestPlugin implements PluginActivator {
 
   @Override
   public void start(PluginContext context) {
+    System.out.println("plugin-spring starting");
     this.context = SpringApplication.run(TestPlugin.class);
   }
 

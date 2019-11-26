@@ -56,6 +56,7 @@ public class ModuleInstallationCompletionPhase extends Task {
       if (descriptor.getType() == Module.Type.Plugin) {
         context.<Set<Module>>get(INSTALLED_PLUGINS).add(module);
         kernel.dispatchEvent(PluginEvents.PLUGIN_INSTALLATION_COMPLETE, Events.create(module));
+
       } else {
         context.<Set<Module>>get(INSTALLED_KERNEL_MODULES).add(module);
       }

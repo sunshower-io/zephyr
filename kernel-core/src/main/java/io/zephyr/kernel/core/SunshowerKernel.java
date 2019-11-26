@@ -1,6 +1,7 @@
 package io.zephyr.kernel.core;
 
 import io.zephyr.common.io.FilePermissionChecker;
+import io.zephyr.common.io.Files;
 import io.zephyr.kernel.Coordinate;
 import io.zephyr.kernel.Lifecycle;
 import io.zephyr.kernel.Module;
@@ -33,6 +34,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.val;
+
+import static io.zephyr.common.io.Files.doCheck;
 
 @SuppressWarnings({"PMD.AvoidUsingVolatile", "PMD.DoNotUseThreads"})
 public class SunshowerKernel extends AbstractEventSource implements Kernel {
@@ -179,6 +182,7 @@ public class SunshowerKernel extends AbstractEventSource implements Kernel {
             .register(new WritePluginDescriptorPhase("kernel:module:descriptors:load"))
             .create();
     process.getContext().set(ModuleInstallationCompletionPhase.INSTALLED_PLUGINS, modules);
+    process.getContext().set("SunshowerKernel", this);
     try {
       scheduler.submit(process).toCompletableFuture().get();
       return requestStart(modules, stateMap).thenAccept(t -> {});
@@ -210,8 +214,14 @@ public class SunshowerKernel extends AbstractEventSource implements Kernel {
       val coordinate = pluginMemento.read("coordinate", Coordinate.class);
       val filesystem = hydrateFilesystem(coordinate);
       val plugin = new DefaultModule();
+
+      val lifecycle = new ModuleLifecycle(plugin);
+      lifecycle.setState(Lifecycle.State.Installed);
+      plugin.setLifecycle(lifecycle);
+
       plugin.setCoordinate(coordinate);
       plugin.setKernel(this);
+      plugin.setFileSystem(filesystem);
 
       hydratePlugin(pluginMementoProvider, plugin, filesystem);
       modules.add(plugin);
@@ -220,6 +230,7 @@ public class SunshowerKernel extends AbstractEventSource implements Kernel {
       throw new RuntimeException(ex);
       // todo: handle fs create failed
     } catch (Exception ex) {
+      ex.printStackTrace();
       throw new RuntimeException(ex);
       // todo: handle plugin hydration failed
     }
@@ -247,41 +258,9 @@ public class SunshowerKernel extends AbstractEventSource implements Kernel {
   @Override
   public CompletionStage<Void> persistState() throws Exception {
     val memento = save();
-    val file = doCheck(memento.locate("kernel", getFileSystem()));
-    try (val output =
-        Files.newOutputStream(
-            file,
-            StandardOpenOption.WRITE,
-            StandardOpenOption.DSYNC,
-            StandardOpenOption.TRUNCATE_EXISTING)) {
-      memento.write(output);
-      output.flush();
-    }
-
+    val file = memento.locate("kernel", getFileSystem());
+    Files.tryWrite(file, memento);
     return CompletableFuture.completedFuture(null);
-  }
-
-  private Path doCheck(Path path) throws IOException {
-    val file = path.toFile().getAbsoluteFile();
-    if (!file.exists()) {
-      val parent = file.getParentFile();
-      if (!parent.exists()) {
-        if (!parent.mkdirs()) {
-          throw new IllegalStateException(
-              "Error: could not create kernel home at " + parent.getAbsolutePath());
-        }
-      }
-      if (!file.createNewFile()) {
-        throw new IllegalStateException(
-            "Error: could not create kernel state file at " + file.getAbsolutePath());
-      }
-    }
-    io.zephyr.common.io.Files.check(
-        file,
-        FilePermissionChecker.Type.DELETE,
-        FilePermissionChecker.Type.WRITE,
-        FilePermissionChecker.Type.READ);
-    return file.toPath();
   }
 
   @Override
