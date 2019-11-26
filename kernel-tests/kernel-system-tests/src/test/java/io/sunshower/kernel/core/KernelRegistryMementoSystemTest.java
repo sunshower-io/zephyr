@@ -1,5 +1,6 @@
 package io.sunshower.kernel.core;
 
+import io.sunshower.kernel.test.Clean;
 import io.sunshower.kernel.test.Module;
 import io.sunshower.kernel.test.Modules;
 import io.sunshower.kernel.test.ZephyrTest;
@@ -12,7 +13,6 @@ import java.nio.file.Files;
 import javax.inject.Inject;
 import lombok.val;
 import org.junit.jupiter.api.Test;
-import org.springframework.test.annotation.DirtiesContext;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
   @Module(project = "kernel-tests:test-plugins:test-plugin-spring"),
   @Module(project = "kernel-modules:sunshower-yaml-reader", type = Module.Type.KernelModule)
 })
+@Clean(value = Clean.Mode.Before, context = Clean.Context.Method)
 class KernelRegistryMementoSystemTest {
 
   @Inject private Kernel kernel;
@@ -62,6 +63,7 @@ class KernelRegistryMementoSystemTest {
   }
 
   @Test
+  @Clean(mode = Clean.Mode.After)
   void ensurePluginIsRestartedWhenKernelIsRestarted() throws Exception {
     zephyr.start("io.sunshower.spring:spring-plugin:1.0.0");
     assertEquals(

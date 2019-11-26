@@ -4,6 +4,7 @@ import io.zephyr.kernel.Lifecycle;
 import io.zephyr.kernel.Module;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.val;
 
 public class ModuleLifecycle implements Lifecycle {
   private volatile State state;
@@ -16,6 +17,18 @@ public class ModuleLifecycle implements Lifecycle {
     Install, // move to resolved
     Resolve(Install), // move to resolved
     Activate(Install, Resolve); // move to active
+
+    public boolean isAtLeast(Actions actions) {
+      if (actions == this) {
+        return true;
+      }
+      for (val predecessor : predecessors) {
+        if (predecessor == actions) {
+          return true;
+        }
+      }
+      return false;
+    }
 
     @Getter final Actions[] predecessors;
 

@@ -5,6 +5,7 @@ import io.zephyr.kernel.Coordinate;
 import io.zephyr.kernel.concurrency.*;
 import io.zephyr.kernel.concurrency.Process;
 import io.zephyr.kernel.concurrency.Task;
+import io.zephyr.kernel.core.actions.plugin.PluginRemoveTask;
 import io.zephyr.kernel.core.actions.plugin.PluginStartTask;
 import io.zephyr.kernel.core.actions.plugin.PluginStopTask;
 import io.zephyr.kernel.module.*;
@@ -47,12 +48,20 @@ final class DefaultModuleLifecycleStatusChangeGroup implements ModuleLifecycleSt
 
     for (val task : request.getRequests()) {
       val actions = task.getLifecycleActions();
-      if (actions == ModuleLifecycle.Actions.Stop) {
+      if (actions.isAtLeast(ModuleLifecycle.Actions.Stop)) {
         addStopAction(task, taskGraph, tasks);
       } else if (actions == ModuleLifecycle.Actions.Activate) {
         addStartAction(task, taskGraph, tasks);
       }
+      if (actions.isAtLeast(ModuleLifecycle.Actions.Delete)) {
+        for (val stopTask : tasks.entrySet()) {
+          val removeTask =
+              new PluginRemoveTask("plugin:remove:" + stopTask.getKey().toCanonicalForm(), kernel);
+          taskGraph.connect(removeTask, stopTask.getValue(), DirectedGraph.incoming("remove"));
+        }
+      }
     }
+    System.out.println(taskGraph);
     return new DefaultProcess<>("module:lifecycle:change", true, true, Scope.root(), taskGraph);
   }
 

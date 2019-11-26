@@ -42,7 +42,6 @@ public class PluginStartTask extends Task {
             activator.start(kernel);
             ((DefaultModule) module).setActivator(activator);
           } catch (Exception | LinkageError ex) {
-            ex.printStackTrace();
             module.getLifecycle().setState(Lifecycle.State.Failed);
             return null;
           }

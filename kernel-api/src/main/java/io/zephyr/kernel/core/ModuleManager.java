@@ -12,6 +12,7 @@ import java.util.List;
 
 public interface ModuleManager extends KernelMember {
 
+
   Module getModule(Coordinate coordinate);
 
   ModuleInstallationStatusGroup prepare(ModuleInstallationGroup group);

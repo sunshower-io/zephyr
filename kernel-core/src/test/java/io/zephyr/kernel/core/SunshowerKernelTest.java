@@ -91,6 +91,24 @@ public class SunshowerKernelTest {
   }
 
   @Test
+  void ensureRemovingPluginWorks() {
+    kernel.start();
+    yamlModule = relativeToProjectBuild("kernel-modules:sunshower-yaml-reader", "war", "libs");
+    install(yamlModule);
+    kernel.stop();
+
+    kernel.start();
+    springPlugin =
+        relativeToProjectBuild("kernel-tests:test-plugins:test-plugin-spring", "war", "libs");
+    install(springPlugin);
+    assertEquals(kernel.getModuleManager().getModules().size(), 1, "must have one plugin");
+
+    remove("spring-plugin");
+
+    assertTrue(kernel.getModuleManager().getModules().isEmpty(), "must have no plugins");
+  }
+
+  @Test
   void ensureInstallingAndStartingInvalidPluginFails() {
 
     kernel.start();
@@ -154,6 +172,10 @@ public class SunshowerKernelTest {
   private void stop(String s) {
 
     request(s, ModuleLifecycle.Actions.Stop);
+  }
+
+  private void remove(String name) {
+    request(name, ModuleLifecycle.Actions.Delete);
   }
 
   @SneakyThrows

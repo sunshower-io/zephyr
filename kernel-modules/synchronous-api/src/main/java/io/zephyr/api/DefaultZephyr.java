@@ -1,5 +1,6 @@
 package io.zephyr.api;
 
+import io.zephyr.kernel.Coordinate;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.core.ModuleCoordinate;
@@ -9,7 +10,10 @@ import lombok.val;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 public class DefaultZephyr implements Zephyr {
   /** The module that this zephyr instance is called from */
@@ -58,6 +62,40 @@ public class DefaultZephyr implements Zephyr {
     } catch (Exception ex) {
       ex.printStackTrace();
     }
+  }
+
+  @Override
+  public void remove(Collection<String> pluginCoords) {
+    try {
+      changeLifecycle(pluginCoords, ModuleLifecycle.Actions.Delete);
+    } catch (Exception ex) {
+      ex.printStackTrace();
+    }
+  }
+
+  @Override
+  public List<Module> getPlugins() {
+    return Collections.unmodifiableList(kernel.getModuleManager().getModules());
+  }
+
+  @Override
+  public List<Module> getPlugins(ModuleLifecycle.State state) {
+    return Collections.unmodifiableList(kernel.getModuleManager().getModules(state));
+  }
+
+  @Override
+  public List<Coordinate> getPluginCoordinates() {
+    return getPlugins().stream().map(Module::getCoordinate).collect(Collectors.toList());
+  }
+
+  @Override
+  public List<Coordinate> getPluginCoordinates(ModuleLifecycle.State state) {
+    return getPlugins(state).stream().map(Module::getCoordinate).collect(Collectors.toList());
+  }
+
+  @Override
+  public void remove(String... pluginCoords) {
+    remove(Arrays.asList(pluginCoords));
   }
 
   @Override

@@ -26,6 +26,7 @@ import lombok.val;
 })
 public class DefaultModuleManager implements ModuleManager, EventSource {
 
+
   static final Logger log = Logging.get(DefaultModuleManager.class, "KernelMember");
 
   @Delegate private Kernel kernel;
@@ -35,6 +36,7 @@ public class DefaultModuleManager implements ModuleManager, EventSource {
   public DefaultModuleManager(DependencyGraph graph) {
     this.dependencyGraph = graph;
   }
+
 
   @Override
   public Module getModule(Coordinate coordinate) {
