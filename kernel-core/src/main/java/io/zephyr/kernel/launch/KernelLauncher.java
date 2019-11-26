@@ -40,6 +40,7 @@ public class KernelLauncher {
   }
 
   void run() {
+    options.validate();
     synchronized (lock) {
       if (options.isServer()) {
         startServer();
@@ -52,6 +53,11 @@ public class KernelLauncher {
   }
 
   private void runInteractive() {
+    try {
+      new Banner(console).print();
+    } catch (Exception ex) {
+      log.warning("Can't print banner");
+    }
     context.register(KernelOptions.class, options);
     new InteractiveShell(getInvoker(), options, console).start();
   }

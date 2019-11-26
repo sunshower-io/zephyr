@@ -2,6 +2,7 @@ package io.zephyr.kernel.launch;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import io.zephyr.kernel.command.ColoredConsole;
 import io.zephyr.kernel.misc.SuppressFBWarnings;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -18,7 +19,7 @@ class BannerTest {
 
   @BeforeEach
   void setUp() {
-    banner = new Banner();
+    banner = new Banner(new ColoredConsole());
   }
 
   @Test

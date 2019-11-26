@@ -73,7 +73,7 @@ jar {
 }
 
 application {
-    mainClassName = 'io.sunshower.kernel.launch.KernelLauncher'
+    mainClassName = 'io.zephyr.kernel.launch.KernelLauncher'
 }
 
 

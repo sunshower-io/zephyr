@@ -13,6 +13,8 @@ public class KernelOptionsValidations {
 
     result.add(new SystemPropertyFileValidationStep("sunshower.home"));
     result.add(new SystemEnvironmentVariableValidationStep("SUNSHOWER_HOME"));
+    result.add(new SystemPropertyFileValidationStep("user.home"));
+    result.add(new SystemPropertyFileValidationStep("user.dir"));
 
     return result;
   }

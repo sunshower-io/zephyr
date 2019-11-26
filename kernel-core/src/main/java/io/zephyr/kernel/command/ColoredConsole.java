@@ -40,6 +40,7 @@ public class ColoredConsole implements Console {
     out.println(sbuilder.toString());
   }
 
+
   @Override
   public void errorln(String line, Object... args) {
     writeln(line, Color.colors(Color.Red), args);
