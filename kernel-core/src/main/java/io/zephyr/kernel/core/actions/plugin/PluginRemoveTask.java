@@ -34,9 +34,11 @@ public class PluginRemoveTask extends Task {
   @SuppressWarnings("PMD.DataflowAnomalyAnalysis")
   public TaskValue run(Scope scope) {
     synchronized (this) {
+      final Coordinate coordinate = scope.get(MODULE_COORDINATE);
+      val module = kernel.getModuleManager().getModule(coordinate);
+      val moduleName = coordinate.getName();
+      log.log(Level.INFO, "plugin.remove.starting", new Object[] {moduleName});
       try {
-        final Coordinate coordinate = scope.get(MODULE_COORDINATE);
-        val module = kernel.getModuleManager().getModule(coordinate);
         val fs = Plugins.getFileSystem(coordinate);
         val visitor = new DeleteVisitor();
         for (val path : fs.getSnd().getRootDirectories()) {
@@ -45,10 +47,11 @@ public class PluginRemoveTask extends Task {
         kernel.getModuleManager().getDependencyGraph().remove(module);
         kernel.getModuleClasspathManager().uninstall(module);
       } catch (IOException ex) {
-        log.log(Level.WARNING, "plugin.remove.failed", new Object[] {ex.getMessage()});
+        log.log(Level.WARNING, "plugin.remove.failed", new Object[] {moduleName, ex.getMessage()});
         log.log(Level.FINE, "Error", ex);
         throw new TaskException(ex, TaskStatus.UNRECOVERABLE);
       }
+      log.log(Level.INFO, "plugin.remove.succeeded", new Object[] {moduleName});
       return null;
     }
   }
