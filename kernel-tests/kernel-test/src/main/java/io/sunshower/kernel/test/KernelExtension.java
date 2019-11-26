@@ -1,6 +1,8 @@
 package io.sunshower.kernel.test;
 
 import io.sunshower.test.common.Tests;
+import io.zephyr.api.Zephyr;
+import io.zephyr.kernel.Coordinate;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.module.ModuleInstallationGroup;
 import io.zephyr.kernel.module.ModuleInstallationRequest;
@@ -10,6 +12,7 @@ import java.lang.reflect.Parameter;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.nio.file.FileSystems;
+import java.util.stream.Collectors;
 import lombok.val;
 import org.junit.jupiter.api.extension.*;
 import org.springframework.beans.factory.annotation.ParameterResolutionDelegate;
@@ -34,6 +37,7 @@ public class KernelExtension
 
   @Override
   public void beforeAll(ExtensionContext context) throws Exception {
+
     val ctxManager = getTestContextManager(context);
     ctxManager.beforeTestClass();
 
@@ -41,19 +45,14 @@ public class KernelExtension
     val kernel = ctx.getBean(Kernel.class);
     kernel.start();
 
-    var modules = (ModuleInstallationGroup) getStore(context).get(Module.Type.KernelModule);
-    doInstall(kernel, modules);
-    modules = (ModuleInstallationGroup) getStore(context).get(Module.Type.Plugin);
-    doInstall(kernel, modules);
-  }
+    val clean = context.getRequiredTestClass().getAnnotation(Clean.class);
 
-  private void doInstall(Kernel kernel, ModuleInstallationGroup modules)
-      throws InterruptedException, java.util.concurrent.ExecutionException {
-    if (modules != null) {
-      val prepped = kernel.getModuleManager().prepare(modules);
-      prepped.commit().toCompletableFuture().get();
-      kernel.stop();
-      kernel.start();
+    if (clean != null
+        && mode(clean) == Clean.Mode.Before
+        && clean.context() == Clean.Context.Class) {
+      doClean(kernel, context, ctx, clean.value());
+    } else {
+      applyDeclaredTestState(context, kernel);
     }
   }
 
@@ -61,17 +60,25 @@ public class KernelExtension
   public void afterAll(ExtensionContext context) throws Exception {
 
     val ctxManager = getTestContextManager(context);
-    ctxManager.beforeTestClass();
+    ctxManager.afterTestClass();
 
     val ctx = ctxManager.getTestContext().getApplicationContext();
     val kernel = ctx.getBean(Kernel.class);
+    val clean = context.getRequiredTestClass().getAnnotation(Clean.class);
+
+    if (clean != null
+        && mode(clean) == Clean.Mode.After
+        && clean.context() == Clean.Context.Class) {
+      doClean(kernel, context, ctx, clean.value());
+    }
+
     kernel.stop();
 
     try {
       val fs = FileSystems.getFileSystem(URI.create("droplet://kernel"));
       fs.close();
     } catch (Exception ex) {
-      //meh
+      // meh
     }
 
     try {
@@ -93,9 +100,13 @@ public class KernelExtension
 
   @Override
   public void beforeEach(ExtensionContext context) throws Exception {
-    Object testInstance = context.getRequiredTestInstance();
-    Method testMethod = context.getRequiredTestMethod();
-    getTestContextManager(context).beforeTestMethod(testInstance, testMethod);
+    try {
+      Object testInstance = context.getRequiredTestInstance();
+      Method testMethod = context.getRequiredTestMethod();
+      getTestContextManager(context).beforeTestMethod(testInstance, testMethod);
+    } finally {
+      doCleanMethod(context, Clean.Mode.Before);
+    }
   }
 
   @Override
@@ -115,10 +126,14 @@ public class KernelExtension
 
   @Override
   public void afterEach(ExtensionContext context) throws Exception {
-    Object testInstance = context.getRequiredTestInstance();
-    Method testMethod = context.getRequiredTestMethod();
-    Throwable testException = context.getExecutionException().orElse(null);
-    getTestContextManager(context).afterTestMethod(testInstance, testMethod, testException);
+    try {
+      Object testInstance = context.getRequiredTestInstance();
+      Method testMethod = context.getRequiredTestMethod();
+      Throwable testException = context.getExecutionException().orElse(null);
+      getTestContextManager(context).afterTestMethod(testInstance, testMethod, testException);
+    } finally {
+      doCleanMethod(context, Clean.Mode.After);
+    }
   }
 
   @Override
@@ -193,5 +208,81 @@ public class KernelExtension
         kernelModules.add(req);
       }
     }
+  }
+
+  private void applyDeclaredTestState(ExtensionContext context, Kernel kernel) throws Exception {
+    var modules = (ModuleInstallationGroup) getStore(context).get(Module.Type.KernelModule);
+    doInstall(kernel, modules, false);
+    modules = (ModuleInstallationGroup) getStore(context).get(Module.Type.Plugin);
+    doInstall(kernel, modules, true);
+  }
+
+  private void doClean(
+      Kernel kernel, ExtensionContext context, ApplicationContext ctx, Clean.Mode value)
+      throws Exception {
+    val zephyr = ctx.getBean(Zephyr.class);
+    val coords =
+        zephyr
+            .getPluginCoordinates()
+            .stream()
+            .map(Coordinate::toCanonicalForm)
+            .collect(Collectors.toSet());
+    zephyr.remove(coords);
+    kernel.persistState().toCompletableFuture().get();
+
+    if (!kernel.getModuleManager().getModules().isEmpty()) {
+      throw new IllegalStateException("Failed to remove modules");
+    }
+
+    if (value == Clean.Mode.Before) {
+      applyDeclaredTestState(context, kernel);
+    }
+  }
+
+  private void doInstall(Kernel kernel, ModuleInstallationGroup modules, boolean restoreState)
+      throws Exception {
+    if (modules != null) {
+      val prepped = kernel.getModuleManager().prepare(modules);
+      prepped.commit().toCompletableFuture().get();
+
+      if (restoreState) {
+        kernel.persistState().toCompletableFuture().get();
+      }
+
+      kernel.stop();
+
+      kernel.start();
+      if (restoreState) {
+        kernel.restoreState().toCompletableFuture().get();
+      }
+    }
+  }
+
+  private void doCleanMethod(ExtensionContext context, Clean.Mode requestedMethodMode)
+      throws Exception {
+    var clean = context.getRequiredTestMethod().getAnnotation(Clean.class);
+    var proceedToClean = proceedToClean(clean, requestedMethodMode);
+
+    if (!proceedToClean) {
+      clean = context.getRequiredTestClass().getAnnotation(Clean.class);
+      proceedToClean = proceedToClean(clean, requestedMethodMode);
+    }
+
+    if (proceedToClean) {
+      val ctxmgr = getTestContextManager(context);
+      val ctx = ctxmgr.getTestContext().getApplicationContext();
+      doClean(ctx.getBean(Kernel.class), context, ctx, clean.value());
+    }
+  }
+
+  private boolean proceedToClean(Clean clean, Clean.Mode mode) {
+    return clean != null && mode(clean) == mode;
+  }
+
+  private Clean.Mode mode(Clean clean) {
+    if (clean.mode() != clean.value()) {
+      return clean.mode();
+    }
+    return clean.value();
   }
 }

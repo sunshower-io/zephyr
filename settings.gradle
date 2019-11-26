@@ -17,6 +17,7 @@ include(
         'kernel-modules:sunshower-xml-state',
         'kernel-modules:sunshower-felix',
         'kernel-modules:sunshower-yaml-reader',
+        'kernel-modules:synchronous-api',
 
 
         'kernel-tests:kernel-system-tests',
@@ -36,5 +37,6 @@ include(
         'kernel-tests:test-modules:test-module-2',
         'kernel-tests:test-modules:test-module-3',
         'kernel-tests:test-plugins:test-plugin-spring',
-        'kernel-tests:test-plugins:test-plugin-spring-dep'
+        'kernel-tests:test-plugins:test-plugin-spring-dep',
+        'kernel-tests:test-plugins:test-plugin-spring-error'
 )

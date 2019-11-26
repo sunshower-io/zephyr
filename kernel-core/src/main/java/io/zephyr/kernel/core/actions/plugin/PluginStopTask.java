@@ -29,10 +29,10 @@ public class PluginStopTask extends Task {
     synchronized (this) {
       val module = manager.getModule(coordinate);
       val currentState = module.getLifecycle().getState();
+      scope.set(PluginRemoveTask.MODULE_COORDINATE, coordinate);
       if (currentState == Lifecycle.State.Resolved) {
         try {
           module.getFileSystem().close();
-          kernel.getModuleClasspathManager().uninstall(module);
         } catch (IOException ex) {
           module.getLifecycle().setState(Lifecycle.State.Failed);
           throw new PluginException(ex);
@@ -42,7 +42,6 @@ public class PluginStopTask extends Task {
         try {
           module.getLifecycle().setState(Lifecycle.State.Stopping);
           module.getActivator().stop(kernel);
-          kernel.getModuleClasspathManager().uninstall(module);
           ((DefaultModule) module).setActivator(null);
           try {
             module.getFileSystem().close();

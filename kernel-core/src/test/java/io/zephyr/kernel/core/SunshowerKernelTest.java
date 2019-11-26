@@ -4,6 +4,7 @@ import static io.sunshower.test.common.Tests.relativeToProjectBuild;
 import static org.junit.jupiter.api.Assertions.*;
 
 import io.sunshower.test.common.Tests;
+import io.zephyr.kernel.Lifecycle;
 import io.zephyr.kernel.launch.KernelOptions;
 import io.zephyr.kernel.misc.SuppressFBWarnings;
 import io.zephyr.kernel.module.*;
@@ -90,6 +91,46 @@ public class SunshowerKernelTest {
   }
 
   @Test
+  void ensureRemovingPluginWorks() {
+    kernel.start();
+    yamlModule = relativeToProjectBuild("kernel-modules:sunshower-yaml-reader", "war", "libs");
+    install(yamlModule);
+    kernel.stop();
+
+    kernel.start();
+    springPlugin =
+        relativeToProjectBuild("kernel-tests:test-plugins:test-plugin-spring", "war", "libs");
+    install(springPlugin);
+    assertEquals(kernel.getModuleManager().getModules().size(), 1, "must have one plugin");
+
+    remove("spring-plugin");
+
+    assertTrue(kernel.getModuleManager().getModules().isEmpty(), "must have no plugins");
+  }
+
+  @Test
+  void ensureInstallingAndStartingInvalidPluginFails() {
+
+    kernel.start();
+    yamlModule = relativeToProjectBuild("kernel-modules:sunshower-yaml-reader", "war", "libs");
+    install(yamlModule);
+    kernel.stop();
+    kernel.start();
+
+    springPlugin =
+        relativeToProjectBuild("kernel-tests:test-plugins:test-plugin-spring", "war", "libs");
+
+    install(springPlugin);
+
+    springPlugin =
+        relativeToProjectBuild("kernel-tests:test-plugins:test-plugin-spring-error", "war", "libs");
+    install(springPlugin);
+    start("spring-plugin-error");
+    val failed = kernel.getModuleManager().getModules(Lifecycle.State.Failed);
+    assertEquals(failed.size(), 1, "must have one failed plugin");
+  }
+
+  @Test
   void ensureInstallingDependentPluginWorks() throws InterruptedException {
 
     kernel.start();
@@ -131,6 +172,10 @@ public class SunshowerKernelTest {
   private void stop(String s) {
 
     request(s, ModuleLifecycle.Actions.Stop);
+  }
+
+  private void remove(String name) {
+    request(name, ModuleLifecycle.Actions.Delete);
   }
 
   @SneakyThrows

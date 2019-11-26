@@ -2,6 +2,7 @@ package io.zephyr.kernel;
 
 import io.zephyr.PluginActivator;
 import io.zephyr.kernel.core.ModuleClasspath;
+import io.zephyr.kernel.memento.Originator;
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
 import java.util.ServiceLoader;
@@ -9,7 +10,7 @@ import java.util.Set;
 import lombok.NonNull;
 import lombok.val;
 
-public interface Module extends Comparable<Module> {
+public interface Module extends Comparable<Module>, Originator {
 
   enum Type {
     Plugin,

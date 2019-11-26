@@ -1,6 +1,7 @@
 package io.zephyr.kernel.core.actions;
 
 import io.sunshower.gyre.Scope;
+import io.zephyr.common.io.Files;
 import io.zephyr.kernel.Lifecycle;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.concurrency.Task;
@@ -13,8 +14,6 @@ import io.zephyr.kernel.dependencies.DependencyGraph;
 import io.zephyr.kernel.dependencies.UnresolvedDependencyException;
 import io.zephyr.kernel.events.Events;
 import io.zephyr.kernel.log.Logging;
-import io.zephyr.kernel.memento.core.PluginCaretaker;
-import java.nio.file.FileSystem;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -46,16 +45,6 @@ public class WritePluginDescriptorPhase extends Task {
 
     val kernel = scope.<SunshowerKernel>get("SunshowerKernel");
 
-    //    ServiceLoader<PluginCaretaker> caretakers =
-    //        ServiceLoader.load(PluginCaretaker.class, kernel.getClassLoader());
-    //
-    //    val caretaker = caretakers.findFirst();
-    //    if (caretaker.isEmpty()) {
-    //      log.log(Level.WARNING, "plugin.phase.nocaretakers");
-    //      throw new TaskException(TaskStatus.UNRECOVERABLE);
-    //    }
-
-    PluginCaretaker actualCaretaker = null;
     val moduleManager = kernel.getModuleManager();
 
     log.log(Level.INFO, "plugin.phase.resolvingplugins");
@@ -66,7 +55,7 @@ public class WritePluginDescriptorPhase extends Task {
     checkForCyclicDependencies(dependencyGraph, installedPlugins);
     resolvePlugins(moduleManager, installedPlugins);
 
-    saveAll(kernel.getFileSystem(), moduleManager, actualCaretaker, installedPlugins);
+    saveAll(kernel, installedPlugins);
     kernel.dispatchEvent(
         PluginEvents.PLUGIN_SET_INSTALLATION_COMPLETE, Events.create(installedPlugins));
 
@@ -147,9 +136,15 @@ public class WritePluginDescriptorPhase extends Task {
     }
   }
 
-  private void saveAll(
-      FileSystem fileSystem,
-      ModuleManager moduleManager,
-      PluginCaretaker actualCaretaker,
-      Set<Module> installedPlugins) {}
+  private void saveAll(SunshowerKernel kernel, Set<Module> installedPlugins) {
+    for (val plugin : installedPlugins) {
+      val pfs = plugin.getFileSystem();
+      try {
+        val pmemento = plugin.save();
+        Files.tryWrite(pmemento.locate("plugin", pfs), pmemento);
+      } catch (Exception e) {
+        log.log(Level.WARNING, "failed to write descriptor", e);
+      }
+    }
+  }
 }

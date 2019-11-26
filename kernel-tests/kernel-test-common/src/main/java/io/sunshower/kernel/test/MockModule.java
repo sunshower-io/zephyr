@@ -4,6 +4,7 @@ import io.zephyr.PluginActivator;
 import io.zephyr.kernel.*;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.core.ModuleClasspath;
+import io.zephyr.kernel.memento.Memento;
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
 import java.util.HashSet;
@@ -96,4 +97,12 @@ public class MockModule implements Module {
   public <S> ServiceLoader<S> resolveServiceLoader(Class<S> type) {
     return null;
   }
+
+  @Override
+  public Memento save() {
+    return null;
+  }
+
+  @Override
+  public void restore(Memento memento) {}
 }
