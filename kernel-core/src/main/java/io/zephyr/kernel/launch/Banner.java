@@ -5,7 +5,6 @@ import io.zephyr.api.Console;
 import io.zephyr.kernel.misc.SuppressFBWarnings;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.io.PrintWriter;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.Scanner;

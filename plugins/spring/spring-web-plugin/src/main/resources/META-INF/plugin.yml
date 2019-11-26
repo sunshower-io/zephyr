@@ -1,0 +1,7 @@
+plugin:
+  name: spring-plugin
+  group: io.sunshower.spring
+  version: 1.0.0
+  order: 1
+  type: plugin
+  description: spring-boot-plugin
