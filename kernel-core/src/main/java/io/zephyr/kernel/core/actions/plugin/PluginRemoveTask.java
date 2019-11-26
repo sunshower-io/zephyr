@@ -3,6 +3,8 @@ package io.zephyr.kernel.core.actions.plugin;
 import io.sunshower.gyre.Scope;
 import io.zephyr.kernel.Coordinate;
 import io.zephyr.kernel.concurrency.Task;
+import io.zephyr.kernel.concurrency.TaskException;
+import io.zephyr.kernel.concurrency.TaskStatus;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.core.Plugins;
 import java.io.IOException;
@@ -11,13 +13,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import lombok.val;
 
-/**
- * TODO: 11/26/19 Lisa: add PluginRemoveTask logging (i81n file, logger and messages, log exception
- * and throw TaskException to halt execution (Unrecoverable)
- */
 public class PluginRemoveTask extends Task {
 
   static final Logger log = Logger.getLogger(PluginRemoveTask.class.getName());
@@ -46,7 +45,9 @@ public class PluginRemoveTask extends Task {
         kernel.getModuleManager().getDependencyGraph().remove(module);
         kernel.getModuleClasspathManager().uninstall(module);
       } catch (IOException ex) {
-        log.warning("Failed to remove plugin");
+        log.log(Level.WARNING, "plugin.remove.failed", new Object[] {ex.getMessage()});
+        log.log(Level.FINE, "Error", ex);
+        throw new TaskException(ex, TaskStatus.UNRECOVERABLE);
       }
       return null;
     }
