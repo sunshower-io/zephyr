@@ -12,6 +12,7 @@ import java.nio.file.Files;
 import javax.inject.Inject;
 import lombok.val;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.annotation.DirtiesContext;
 
 import static org.junit.jupiter.api.Assertions.*;
 
