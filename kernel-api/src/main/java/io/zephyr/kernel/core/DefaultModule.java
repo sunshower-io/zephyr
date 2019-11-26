@@ -16,6 +16,8 @@ import java.util.Set;
 import lombok.SneakyThrows;
 import lombok.val;
 
+import static io.zephyr.kernel.memento.Mementos.writeCoordinate;
+
 public class DefaultModule implements Module, Comparable<Module>, Originator {
   private int order;
   private Type type;
@@ -56,6 +58,10 @@ public class DefaultModule implements Module, Comparable<Module>, Originator {
     this.fileSystem = fileSystem;
     this.dependencies = dependencies;
     this.moduleDirectory = moduleDirectory;
+  }
+
+  public void setKernel(Kernel kernel) {
+    this.kernel = kernel;
   }
 
   public DefaultModule() {}
@@ -234,13 +240,8 @@ public class DefaultModule implements Module, Comparable<Module>, Originator {
 
   @Override
   public Memento save() {
-    Memento result = loadMemento();
-
-    if (result == null) {
-      return null;
-    }
-
-    return save(result);
+    val memento = Memento.load(kernel.getClassLoader(), getClassLoader());
+    return save(memento);
   }
 
   @Override
@@ -316,13 +317,6 @@ public class DefaultModule implements Module, Comparable<Module>, Originator {
     }
   }
 
-  private void writeCoordinate(Memento result, Coordinate coordinate) {
-    val coordinateMemento = result.child("coordinate");
-    coordinateMemento.write("group", coordinate.getGroup());
-    coordinateMemento.write("name", coordinate.getName());
-    coordinateMemento.write("version", coordinate.getVersion());
-  }
-
   private void readLibraries(Memento memento) {
     libraries = new HashSet<>();
     val librariesMemento = memento.childNamed("libraries");
@@ -338,27 +332,5 @@ public class DefaultModule implements Module, Comparable<Module>, Originator {
       val libraryMemento = librariesMemento.child("library");
       libraryMemento.setValue(library.getFile().getAbsolutePath());
     }
-  }
-
-  @SuppressWarnings({"unchecked", "rawtypes"})
-  private Memento loadMemento() {
-    var loader = resolveServiceLoader(Memento.class).iterator();
-    Memento result = null;
-    while (loader.hasNext()) {
-      val next = loader.next();
-      result = next;
-      break;
-    }
-    if (result != null) {
-      return result;
-    }
-
-    loader = ServiceLoader.load(Memento.class, kernel.getClassLoader()).iterator();
-    while (loader.hasNext()) {
-      val next = loader.next();
-      result = next;
-      break;
-    }
-    return result;
   }
 }

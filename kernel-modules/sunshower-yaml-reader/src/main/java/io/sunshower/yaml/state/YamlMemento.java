@@ -7,6 +7,8 @@ import io.zephyr.kernel.core.ModuleCoordinate;
 import io.zephyr.kernel.core.SemanticVersion;
 import io.zephyr.kernel.memento.Memento;
 import java.io.*;
+import java.nio.file.FileSystem;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 import lombok.val;
@@ -75,15 +77,16 @@ public class YamlMemento implements Memento {
   @SuppressWarnings("unchecked")
   public <U> U read(String name, Class<U> value) {
     if (Coordinate.class.isAssignableFrom(value)) {
-      return (U) readCoordinate();
+      return (U) readCoordinate(name);
     }
     return (U) values.get(name);
   }
 
-  private Coordinate readCoordinate() {
-    val group = read("group", String.class);
-    val name = read("name", String.class);
-    val version = read("version", String.class);
+  private Coordinate readCoordinate(String cgroupName) {
+    val child = childNamed(cgroupName);
+    val group = child.read("group", String.class);
+    val name = child.read("name", String.class);
+    val version = child.read("version", String.class);
     return new ModuleCoordinate(name, group, new SemanticVersion(version));
   }
 
@@ -129,5 +132,10 @@ public class YamlMemento implements Memento {
   @Override
   public List<Memento> getChildren(String name) {
     return children.stream().filter(t -> t.name.equals(name)).collect(Collectors.toList());
+  }
+
+  @Override
+  public Path locate(String prefix, FileSystem fs) {
+    return fs.getPath(String.format("%s.yaml", prefix));
   }
 }

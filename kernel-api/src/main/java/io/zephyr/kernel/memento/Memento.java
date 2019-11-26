@@ -1,9 +1,15 @@
 package io.zephyr.kernel.memento;
 
+import lombok.val;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.FileSystem;
+import java.nio.file.Path;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.ServiceLoader;
 
 public interface Memento {
 
@@ -34,4 +40,21 @@ public interface Memento {
   void read(InputStream inputStream) throws Exception;
 
   List<Memento> getChildren(String name);
+
+  Path locate(String prefix, FileSystem fs);
+
+  static MementoProvider loadProvider(ClassLoader... loaders) {
+    for (val classloader : loaders) {
+      var loader = ServiceLoader.load(MementoProvider.class, classloader).iterator();
+      if (loader.hasNext()) {
+        return loader.next();
+      }
+    }
+    throw new NoSuchElementException(
+        "No Memento service loader defined in any specified classloader");
+  }
+
+  static Memento load(ClassLoader... loaders) {
+    return loadProvider(loaders).newMemento();
+  }
 }

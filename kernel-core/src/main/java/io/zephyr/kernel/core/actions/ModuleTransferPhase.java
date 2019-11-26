@@ -5,6 +5,7 @@ import io.zephyr.kernel.concurrency.Task;
 import io.zephyr.kernel.concurrency.TaskException;
 import io.zephyr.kernel.concurrency.TaskStatus;
 import io.zephyr.kernel.core.ModuleDescriptor;
+import io.zephyr.kernel.core.Plugins;
 import io.zephyr.kernel.log.Logging;
 import java.io.File;
 import java.io.IOException;
@@ -77,19 +78,11 @@ public class ModuleTransferPhase extends Task {
     synchronized (this) {
       ModuleDescriptor descriptor = scope.get(ModuleScanPhase.MODULE_DESCRIPTOR);
       val coordinate = descriptor.getCoordinate();
-      val uri =
-          String.format(
-              "droplet://%s.%s?version=%s",
-              coordinate.getGroup(), coordinate.getName(), coordinate.getVersion());
-      log.log(Level.INFO, "transfer.uri", uri);
-
       try {
-        FileSystem fs;
-        try {
-          fs = FileSystems.getFileSystem(URI.create(uri));
-        } catch (FileSystemNotFoundException ex) {
-          fs = FileSystems.newFileSystem(URI.create(uri), Collections.emptyMap());
-        }
+        val result = Plugins.getFileSystem(coordinate);
+        val uri = result.fst;
+        val fs = result.snd;
+        log.log(Level.INFO, "transfer.uri", uri);
 
         log.log(
             Level.INFO,

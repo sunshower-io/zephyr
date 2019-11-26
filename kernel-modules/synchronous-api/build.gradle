@@ -1,0 +1,37 @@
+apply plugin: 'war'
+apply plugin: 'pmd'
+apply plugin: 'java'
+apply plugin: 'java-library'
+
+
+
+dependencies {
+    testImplementation project(':kernel-tests:kernel-test')
+
+    compileOnly project(":kernel-api")
+    compileOnly project(':kernel-modules:kernel-lib')
+
+
+    testImplementation project(':kernel-core')
+    testImplementation project(':kernel-modules:kernel-lib')
+    [
+            "org.junit.jupiter:junit-jupiter-api",
+            "org.junit.jupiter:junit-jupiter-engine",
+    ].each {
+        testImplementation it
+    }
+}
+
+war {
+    manifest {
+        attributes(
+                "type": "kernel-module",
+                "composite": true,
+                "group": project.group,
+                "name": project.name,
+                "version": "1.0.0-SNAPSHOT",
+                "protected": false
+        )
+
+    }
+}

@@ -1,6 +1,7 @@
 apply plugin: 'java'
 
 dependencies {
+
     testImplementation project(':kernel-core')
     testImplementation project(':kernel-tests:kernel-test')
 }

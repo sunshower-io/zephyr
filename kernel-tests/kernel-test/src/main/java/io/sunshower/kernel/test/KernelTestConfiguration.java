@@ -1,6 +1,8 @@
 package io.sunshower.kernel.test;
 
 import io.sunshower.test.common.Tests;
+import io.zephyr.api.DefaultZephyr;
+import io.zephyr.api.Zephyr;
 import io.zephyr.kernel.concurrency.ExecutorWorkerPool;
 import io.zephyr.kernel.concurrency.KernelScheduler;
 import io.zephyr.kernel.concurrency.Scheduler;
@@ -30,6 +32,11 @@ public class KernelTestConfiguration {
     options.setHomeDirectory(kernelRootDirectory);
     SunshowerKernel.setKernelOptions(options);
     return options;
+  }
+
+  @Bean
+  public Zephyr zephyr(Kernel kernel) {
+    return new DefaultZephyr(null, kernel);
   }
 
   @Bean

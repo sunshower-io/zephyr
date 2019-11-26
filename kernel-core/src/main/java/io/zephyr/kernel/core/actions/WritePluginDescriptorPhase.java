@@ -45,15 +45,6 @@ public class WritePluginDescriptorPhase extends Task {
 
     val kernel = scope.<SunshowerKernel>get("SunshowerKernel");
 
-    //    ServiceLoader<PluginCaretaker> caretakers =
-    //        ServiceLoader.load(PluginCaretaker.class, kernel.getClassLoader());
-    //
-    //    val caretaker = caretakers.findFirst();
-    //    if (caretaker.isEmpty()) {
-    //      log.log(Level.WARNING, "plugin.phase.nocaretakers");
-    //      throw new TaskException(TaskStatus.UNRECOVERABLE);
-    //    }
-
     val moduleManager = kernel.getModuleManager();
 
     log.log(Level.INFO, "plugin.phase.resolvingplugins");
