@@ -2,19 +2,19 @@ package io.zephyr.kernel.core;
 
 import io.sunshower.gyre.Pair;
 import io.zephyr.kernel.Coordinate;
-import lombok.val;
-
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystemNotFoundException;
 import java.nio.file.FileSystems;
 import java.util.Collections;
+import lombok.val;
 
 public class Plugins {
 
   static final String FILE_SYSTEM_URI_TEMPLATE = "droplet://%s.%s?version=%s";
 
+  @SuppressWarnings({"PMD.CloseResource", "PMD.DataflowAnomalyAnalysis"})
   public static final Pair<String, FileSystem> getFileSystem(Coordinate coordinate)
       throws IOException {
     val uri =
@@ -31,5 +31,4 @@ public class Plugins {
     }
     return Pair.of(uri, fs);
   }
-
 }

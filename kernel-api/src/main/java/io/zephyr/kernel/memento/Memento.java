@@ -1,7 +1,5 @@
 package io.zephyr.kernel.memento;
 
-import lombok.val;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -10,6 +8,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.ServiceLoader;
+import lombok.val;
 
 public interface Memento {
 

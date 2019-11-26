@@ -3,7 +3,6 @@ package io.zephyr.api;
 import io.zephyr.kernel.Coordinate;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.module.ModuleLifecycle;
-
 import java.net.URL;
 import java.util.Collection;
 import java.util.List;

@@ -9,7 +9,6 @@ import io.zephyr.kernel.core.actions.plugin.PluginRemoveTask;
 import io.zephyr.kernel.core.actions.plugin.PluginStartTask;
 import io.zephyr.kernel.core.actions.plugin.PluginStopTask;
 import io.zephyr.kernel.module.*;
-
 import java.util.*;
 import java.util.concurrent.CompletionStage;
 import lombok.val;
@@ -61,7 +60,6 @@ final class DefaultModuleLifecycleStatusChangeGroup implements ModuleLifecycleSt
         }
       }
     }
-    System.out.println(taskGraph);
     return new DefaultProcess<>("module:lifecycle:change", true, true, Scope.root(), taskGraph);
   }
 

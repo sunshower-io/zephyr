@@ -1,5 +1,7 @@
 package io.zephyr.kernel.core;
 
+import static io.zephyr.kernel.memento.Mementos.writeCoordinate;
+
 import io.zephyr.PluginActivator;
 import io.zephyr.kernel.*;
 import io.zephyr.kernel.Module;
@@ -15,8 +17,6 @@ import java.util.ServiceLoader;
 import java.util.Set;
 import lombok.SneakyThrows;
 import lombok.val;
-
-import static io.zephyr.kernel.memento.Mementos.writeCoordinate;
 
 public class DefaultModule implements Module, Comparable<Module>, Originator {
   private int order;

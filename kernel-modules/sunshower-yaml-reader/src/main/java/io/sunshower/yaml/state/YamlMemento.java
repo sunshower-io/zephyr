@@ -25,9 +25,8 @@ public class YamlMemento implements Memento {
   public List<YamlMemento> children;
 
   public YamlMemento(String name) {
+    this();
     this.name = name;
-    this.values = new HashMap<>();
-    this.children = new ArrayList<>();
   }
 
   public YamlMemento() {

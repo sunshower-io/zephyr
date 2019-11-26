@@ -5,17 +5,24 @@ import io.zephyr.kernel.Module;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.core.ModuleCoordinate;
 import io.zephyr.kernel.module.*;
-import lombok.val;
-
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import lombok.val;
 
+@SuppressWarnings({
+  "PMD.BeanMembersShouldSerialize",
+  "PMD.AvoidDuplicateLiterals",
+  "PMD.DataflowAnomalyAnalysis"
+})
 public class DefaultZephyr implements Zephyr {
+  static final Logger log = Logger.getLogger(Zephyr.class.getName());
   /** The module that this zephyr instance is called from */
   private final Module module;
 
@@ -42,7 +49,7 @@ public class DefaultZephyr implements Zephyr {
     try {
       kernel.getModuleManager().prepare(installationGroup).commit().toCompletableFuture().get();
     } catch (Exception ex) {
-      ex.printStackTrace();
+      log.log(Level.INFO, "Operation failed:", ex.getMessage());
     }
   }
 
@@ -51,7 +58,7 @@ public class DefaultZephyr implements Zephyr {
     try {
       changeLifecycle(pluginCoords, ModuleLifecycle.Actions.Activate);
     } catch (Exception ex) {
-      ex.printStackTrace();
+      log.log(Level.INFO, "Operation failed:", ex.getMessage());
     }
   }
 
@@ -60,7 +67,7 @@ public class DefaultZephyr implements Zephyr {
     try {
       changeLifecycle(pluginCoords, ModuleLifecycle.Actions.Stop);
     } catch (Exception ex) {
-      ex.printStackTrace();
+      log.log(Level.INFO, "Operation failed:", ex.getMessage());
     }
   }
 
@@ -69,7 +76,7 @@ public class DefaultZephyr implements Zephyr {
     try {
       changeLifecycle(pluginCoords, ModuleLifecycle.Actions.Delete);
     } catch (Exception ex) {
-      ex.printStackTrace();
+      log.log(Level.INFO, "Operation failed:", ex.getMessage());
     }
   }
 

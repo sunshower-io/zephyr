@@ -1,6 +1,5 @@
 package io.zephyr.kernel.core;
 
-import io.zephyr.common.io.FilePermissionChecker;
 import io.zephyr.common.io.Files;
 import io.zephyr.kernel.Coordinate;
 import io.zephyr.kernel.Lifecycle;
@@ -15,7 +14,11 @@ import io.zephyr.kernel.events.AbstractEventSource;
 import io.zephyr.kernel.launch.KernelOptions;
 import io.zephyr.kernel.log.Logging;
 import io.zephyr.kernel.memento.Memento;
-
+import io.zephyr.kernel.memento.MementoProvider;
+import io.zephyr.kernel.memento.Mementos;
+import io.zephyr.kernel.module.ModuleLifecycle;
+import io.zephyr.kernel.module.ModuleLifecycleChangeGroup;
+import io.zephyr.kernel.module.ModuleLifecycleChangeRequest;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.*;
@@ -24,20 +27,17 @@ import java.util.concurrent.CompletionStage;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.inject.Inject;
-
-import io.zephyr.kernel.memento.MementoProvider;
-import io.zephyr.kernel.memento.Mementos;
-import io.zephyr.kernel.module.ModuleLifecycle;
-import io.zephyr.kernel.module.ModuleLifecycleChangeGroup;
-import io.zephyr.kernel.module.ModuleLifecycleChangeRequest;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.val;
 
-import static io.zephyr.common.io.Files.doCheck;
-
-@SuppressWarnings({"PMD.AvoidUsingVolatile", "PMD.DoNotUseThreads"})
+@SuppressWarnings({
+  "PMD.AvoidUsingVolatile",
+  "PMD.DoNotUseThreads",
+  "PMD.UnusedPrivateMethod",
+  "PMD.AvoidInstantiatingObjectsInLoops"
+})
 public class SunshowerKernel extends AbstractEventSource implements Kernel {
 
   static final Logger log = Logging.get(SunshowerKernel.class);
@@ -158,10 +158,14 @@ public class SunshowerKernel extends AbstractEventSource implements Kernel {
     try {
       doRestore(memento).toCompletableFuture().get();
     } catch (Exception ex) {
-      ex.printStackTrace();
+      log.log(Level.WARNING, "failed to restore kernel state.  Reason: {0}", ex.getMessage());
+      if (log.isLoggable(Level.FINE)) {
+        log.log(Level.FINE, "Reason: ", ex);
+      }
     }
   }
 
+  @SuppressWarnings("PMD.DataflowAnomalyAnalysis")
   private CompletionStage<Void> doRestore(Memento memento) {
     val pluginsMemento = memento.childNamed("plugins");
     val pluginMementoProvider = Memento.loadProvider(getClassLoader());
@@ -230,7 +234,6 @@ public class SunshowerKernel extends AbstractEventSource implements Kernel {
       throw new RuntimeException(ex);
       // todo: handle fs create failed
     } catch (Exception ex) {
-      ex.printStackTrace();
       throw new RuntimeException(ex);
       // todo: handle plugin hydration failed
     }

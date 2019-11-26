@@ -13,7 +13,6 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.nio.file.FileSystems;
 import java.util.stream.Collectors;
-
 import lombok.val;
 import org.junit.jupiter.api.extension.*;
 import org.springframework.beans.factory.annotation.ParameterResolutionDelegate;
@@ -223,7 +222,9 @@ public class KernelExtension
       throws Exception {
     val zephyr = ctx.getBean(Zephyr.class);
     val coords =
-        zephyr.getPluginCoordinates().stream()
+        zephyr
+            .getPluginCoordinates()
+            .stream()
             .map(Coordinate::toCanonicalForm)
             .collect(Collectors.toSet());
     zephyr.remove(coords);

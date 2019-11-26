@@ -199,7 +199,10 @@ public class SunshowerKernelTest {
   private void request(String pluginName, ModuleLifecycle.Actions action) {
 
     val plugin =
-        kernel.getModuleManager().getModules().stream()
+        kernel
+            .getModuleManager()
+            .getModules()
+            .stream()
             .filter(t -> t.getCoordinate().getName().equals(pluginName))
             .findFirst()
             .get();

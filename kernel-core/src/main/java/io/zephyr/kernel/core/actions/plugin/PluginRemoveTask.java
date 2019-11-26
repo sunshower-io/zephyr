@@ -5,20 +5,22 @@ import io.zephyr.kernel.Coordinate;
 import io.zephyr.kernel.concurrency.Task;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.core.Plugins;
-import lombok.val;
-
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.logging.Logger;
+import lombok.val;
 
 /**
  * TODO: 11/26/19 Lisa: add PluginRemoveTask logging (i81n file, logger and messages, log exception
  * and throw TaskException to halt execution (Unrecoverable)
  */
 public class PluginRemoveTask extends Task {
+
+  static final Logger log = Logger.getLogger(PluginRemoveTask.class.getName());
 
   public static final String MODULE_COORDINATE = "plugin:remove:task:coordinate";
 
@@ -30,6 +32,7 @@ public class PluginRemoveTask extends Task {
   }
 
   @Override
+  @SuppressWarnings("PMD.DataflowAnomalyAnalysis")
   public TaskValue run(Scope scope) {
     synchronized (this) {
       try {
@@ -43,7 +46,7 @@ public class PluginRemoveTask extends Task {
         kernel.getModuleManager().getDependencyGraph().remove(module);
         kernel.getModuleClasspathManager().uninstall(module);
       } catch (IOException ex) {
-
+        log.warning("Failed to remove plugin");
       }
       return null;
     }

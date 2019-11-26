@@ -1,5 +1,7 @@
 package io.sunshower.kernel.core;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import io.sunshower.kernel.test.Clean;
 import io.sunshower.kernel.test.Module;
 import io.sunshower.kernel.test.Modules;
@@ -13,8 +15,6 @@ import java.nio.file.Files;
 import javax.inject.Inject;
 import lombok.val;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @ZephyrTest
 @Modules({

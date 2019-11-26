@@ -2,11 +2,10 @@ package io.sunshower.yaml.state;
 
 import io.zephyr.kernel.memento.Memento;
 import io.zephyr.kernel.memento.MementoProvider;
-import lombok.val;
-
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
+import lombok.val;
 
 public class YamlMementoProvider implements MementoProvider {
   @Override
@@ -25,6 +24,7 @@ public class YamlMementoProvider implements MementoProvider {
   }
 
   @Override
+  @SuppressWarnings({"PMD.DataflowAnomalyAnalysis"})
   public Memento newMemento(String prefix, String name, FileSystem fileSystem) throws Exception {
     val result = new YamlMemento(name);
     try (val inputStream =
