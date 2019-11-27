@@ -50,10 +50,8 @@ class KernelStartProcessTest {
 
     context = Scope.root();
     scheduler = new KernelScheduler<>(new ExecutorWorkerPool(Executors.newFixedThreadPool(2)));
-    kernel =
-        spy(
-            new SunshowerKernel(
-                mock(ModuleClasspathManager.class), mock(ModuleManager.class), scheduler));
+    kernel = spy(new SunshowerKernel(mock(ModuleManager.class), scheduler));
+    kernel.setModuleClasspathManager(mock(ModuleClasspathManager.class));
     context.set("SunshowerKernel", kernel);
   }
 

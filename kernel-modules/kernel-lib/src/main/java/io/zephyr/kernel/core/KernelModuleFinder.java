@@ -23,10 +23,11 @@ public final class KernelModuleFinder implements ModuleFinder {
 
   private final LocalLoader localLoader;
 
-  KernelModuleFinder(@NonNull Module module, @NonNull final ModuleLoader loader) {
+  KernelModuleFinder(
+      @NonNull Module module, @NonNull final ModuleLoader loader, @NonNull Kernel kernel) {
     this.module = module;
     this.moduleLoader = loader;
-    this.localLoader = new KernelClasspathLocalLoader();
+    this.localLoader = new KernelClasspathLocalLoader(kernel);
   }
 
   @Override

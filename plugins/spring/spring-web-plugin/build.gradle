@@ -3,5 +3,6 @@ apply plugin: 'war'
 apply plugin: 'java-library'
 dependencies {
     compileOnly project(':kernel-api')
-    api("org.springframework.boot:spring-boot-starter")
+    api("org.springframework.boot:spring-boot-starter-web")
+    testImplementation project(":kernel-tests:kernel-test")
 }

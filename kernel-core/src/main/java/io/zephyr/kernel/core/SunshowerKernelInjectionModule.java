@@ -13,8 +13,10 @@ import java.util.ServiceLoader;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.inject.Singleton;
+import lombok.val;
 
 @Module
+@SuppressWarnings("PMD.UnusedPrivateMethod")
 public class SunshowerKernelInjectionModule {
 
   @Provides
@@ -45,8 +47,15 @@ public class SunshowerKernelInjectionModule {
   @Provides
   @Singleton
   public Kernel sunshowerKernel(
-      SunshowerKernel kernel, ModuleManager moduleManager, KernelOptions options) {
+      ModuleManager moduleManager,
+      DependencyGraph graph,
+      KernelOptions options,
+      ClassLoader classLoader,
+      Scheduler<String> scheduler) {
     SunshowerKernel.setKernelOptions(options);
+    val kernel = new SunshowerKernel(moduleManager, scheduler);
+    val classpathManager = moduleClasspathManager(graph, classLoader, kernel);
+    kernel.setModuleClasspathManager(classpathManager);
     moduleManager.initialize(kernel);
     return kernel;
   }
@@ -57,13 +66,13 @@ public class SunshowerKernelInjectionModule {
     return new DefaultModuleManager(dependencyGraph);
   }
 
-  @Provides
-  @Singleton
-  public ModuleClasspathManager moduleClasspathManager(
-      DependencyGraph graph, ClassLoader classLoader) {
-    return ServiceLoader.load(ModuleClasspathManagerProvider.class, classLoader)
-        .findFirst()
-        .get()
-        .create(graph);
+  private ModuleClasspathManager moduleClasspathManager(
+      DependencyGraph graph, ClassLoader classLoader, Kernel kernel) {
+    val result =
+        ServiceLoader.load(ModuleClasspathManagerProvider.class, classLoader)
+            .findFirst()
+            .get()
+            .create(graph, kernel);
+    return result;
   }
 }

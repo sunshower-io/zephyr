@@ -1,7 +1,7 @@
 plugin:
-  name: spring-plugin
-  group: io.sunshower.spring
+  name: spring-web-plugin
+  group: io.zephyr.spring
   version: 1.0.0
   order: 1
   type: plugin
-  description: spring-boot-plugin
+  description: Plugin supporting extension points for Spring Web.

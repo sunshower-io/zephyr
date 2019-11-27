@@ -4,5 +4,5 @@ import io.zephyr.kernel.dependencies.DependencyGraph;
 
 public interface ModuleClasspathManagerProvider {
 
-  ModuleClasspathManager create(DependencyGraph graph);
+  ModuleClasspathManager create(DependencyGraph graph, Kernel kernel);
 }

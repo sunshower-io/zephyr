@@ -58,6 +58,7 @@ public class DefaultZephyr implements Zephyr {
     try {
       changeLifecycle(pluginCoords, ModuleLifecycle.Actions.Activate);
     } catch (Exception ex) {
+      ex.printStackTrace();
       log.log(Level.INFO, "Operation failed:", ex.getMessage());
     }
   }
@@ -116,7 +117,7 @@ public class DefaultZephyr implements Zephyr {
       kernel.persistState().toCompletableFuture().get();
       kernel.stop();
     } catch (Exception ex) {
-      throw new RuntimeException(ex); // // TODO: 11/25/19 create a better exception
+      log.log(Level.INFO, ex.getMessage());
     }
   }
 
@@ -126,7 +127,7 @@ public class DefaultZephyr implements Zephyr {
       kernel.start();
       kernel.restoreState().toCompletableFuture().get();
     } catch (Exception ex) {
-      throw new RuntimeException(ex); // // TODO: 11/25/19 create a better exception
+      log.log(Level.INFO, ex.getMessage());
     }
   }
 

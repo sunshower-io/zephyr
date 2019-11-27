@@ -45,8 +45,10 @@ public class KernelTestConfiguration {
   }
 
   @Bean
-  public ModuleClasspathManager moduleClasspathManager(DependencyGraph graph) {
-    return new KernelModuleLoader(graph);
+  public ModuleClasspathManager moduleClasspathManager(DependencyGraph graph, Kernel kernel) {
+    val result = new KernelModuleLoader(graph, kernel);
+    ((SunshowerKernel) kernel).setModuleClasspathManager(result);
+    return result;
   }
 
   @Bean
@@ -76,12 +78,9 @@ public class KernelTestConfiguration {
   }
 
   @Bean
-  public Kernel kernel(
-      ModuleManager moduleManager,
-      Scheduler scheduler,
-      ModuleClasspathManager moduleClasspathManager) {
+  public Kernel kernel(ModuleManager moduleManager, Scheduler scheduler) {
 
-    val result = new SunshowerKernel(moduleClasspathManager, moduleManager, scheduler);
+    val result = new SunshowerKernel(moduleManager, scheduler);
     moduleManager.initialize(result);
     return result;
   }
