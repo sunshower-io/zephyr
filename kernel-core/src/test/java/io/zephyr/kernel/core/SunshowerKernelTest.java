@@ -93,11 +93,7 @@ public class SunshowerKernelTest {
   @Test
   void ensureStartingSpringBootPluginFileWorks() throws InterruptedException {
 
-    kernel.start();
-    yamlModule = relativeToProjectBuild("kernel-modules:sunshower-yaml-reader", "war", "libs");
-    install(yamlModule);
-    kernel.stop();
-    kernel.start();
+    installYamlModule();
 
     springPlugin = relativeToProjectBuild("plugins:spring:spring-web-plugin", "war", "libs");
     install(springPlugin);
@@ -106,14 +102,32 @@ public class SunshowerKernelTest {
     remove("spring-web-plugin");
   }
 
-  @Test
-  void ensureRemovingPluginWorks() {
+  private void installYamlModule() {
     kernel.start();
     yamlModule = relativeToProjectBuild("kernel-modules:sunshower-yaml-reader", "war", "libs");
     install(yamlModule);
     kernel.stop();
-
     kernel.start();
+  }
+
+  @Test
+  void ensureTransitiveSpringWebPluginWorks() throws InterruptedException {
+    installYamlModule();
+    springPlugin = relativeToProjectBuild("plugins:spring:spring-web-plugin", "war", "libs");
+    install(springPlugin);
+
+    springPlugin =
+        relativeToProjectBuild("kernel-tests:test-plugins:test-spring-web-plugin", "war", "libs");
+    install(springPlugin);
+    start("test-spring-web-plugin");
+    Thread.sleep(100000);
+    stop("test-spring-web-plugin");
+    remove("spring-web-plugin");
+  }
+
+  @Test
+  void ensureRemovingPluginWorks() {
+    installYamlModule();
     springPlugin =
         relativeToProjectBuild("kernel-tests:test-plugins:test-plugin-spring", "war", "libs");
     install(springPlugin);
@@ -127,11 +141,7 @@ public class SunshowerKernelTest {
   @Test
   void ensureInstallingAndStartingInvalidPluginFails() {
 
-    kernel.start();
-    yamlModule = relativeToProjectBuild("kernel-modules:sunshower-yaml-reader", "war", "libs");
-    install(yamlModule);
-    kernel.stop();
-    kernel.start();
+    installYamlModule();
 
     springPlugin =
         relativeToProjectBuild("kernel-tests:test-plugins:test-plugin-spring", "war", "libs");
