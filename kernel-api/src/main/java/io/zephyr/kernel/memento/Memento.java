@@ -5,9 +5,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.ServiceLoader;
+import java.nio.file.Paths;
+import java.util.*;
 import lombok.val;
 
 public interface Memento {
@@ -49,11 +48,128 @@ public interface Memento {
         return loader.next();
       }
     }
-    throw new NoSuchElementException(
-        "No Memento service loader defined in any specified classloader");
+    return new NoOpMementoProvider();
   }
 
   static Memento load(ClassLoader... loaders) {
     return loadProvider(loaders).newMemento();
+  }
+}
+
+class NoOpMemento implements Memento {
+
+  String name;
+  Object value;
+  Map<String, Object> values;
+  List<NoOpMemento> children;
+
+  public NoOpMemento(String name) {
+
+    this.name = name;
+  }
+
+  public NoOpMemento() {
+    this(null);
+  }
+
+  @Override
+  public void write(String name, Object value) {
+    if (values == null) {
+      values = new HashMap<>();
+    }
+    values.put(name, value);
+  }
+
+  @Override
+  public void write(String name, int item) {
+    write(name, Integer.valueOf(item));
+  }
+
+  @Override
+  public void write(String name, long item) {
+
+    write(name, Long.valueOf(item));
+  }
+
+  @Override
+  public void write(String name, String value) {
+    write(name, value);
+  }
+
+  @Override
+  public Memento child(String name) {
+    if (children == null) {
+      children = new ArrayList<>();
+    }
+    val result = new NoOpMemento(name);
+    children.add(result);
+    return result;
+  }
+
+  @Override
+  public Memento childNamed(String name) {
+    return children.stream().filter(t -> t.name.equals(name)).findFirst().get();
+  }
+
+  @Override
+  public <T> T read(String name, Class<T> value) {
+    return (T) values.get(name);
+  }
+
+  @Override
+  public void setValue(Object value) {
+    this.value = value;
+  }
+
+  @Override
+  public void setValue(String value) {
+    this.value = value;
+  }
+
+  @Override
+  public Object getValue() {
+    return value;
+  }
+
+  @Override
+  public void flush() throws IOException {}
+
+  @Override
+  public void write(OutputStream outputStream) throws Exception {}
+
+  @Override
+  public void read(InputStream inputStream) throws Exception {}
+
+  @Override
+  public List<Memento> getChildren(String name) {
+    return Collections.emptyList();
+  }
+
+  @Override
+  public Path locate(String prefix, FileSystem fs) {
+    return Paths.get(System.getProperty("user.dir"));
+  }
+}
+
+class NoOpMementoProvider implements MementoProvider {
+
+  @Override
+  public Memento newMemento() {
+    return new NoOpMemento();
+  }
+
+  @Override
+  public Memento newMemento(String name) {
+    return new NoOpMemento();
+  }
+
+  @Override
+  public Memento newMemento(String name, FileSystem fileSystem) throws Exception {
+    return new NoOpMemento();
+  }
+
+  @Override
+  public Memento newMemento(String prefix, String name, FileSystem fileSystem) throws Exception {
+    return new NoOpMemento();
   }
 }
