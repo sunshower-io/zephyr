@@ -78,7 +78,7 @@ public class KernelTestConfiguration {
   }
 
   @Bean
-  public Kernel kernel(ModuleManager moduleManager, Scheduler scheduler) {
+  public Kernel kernel(ModuleManager moduleManager, Scheduler<String> scheduler) {
 
     val result = new SunshowerKernel(moduleManager, scheduler);
     moduleManager.initialize(result);

@@ -33,7 +33,10 @@ public class YamlPluginDescriptorScanner implements ModuleScanner {
    * we're scanning a WAR or a JAR
    */
   static final Set<String> SEARCH_PATHS =
-      Set.of("META-INF/plugin.yml", "WEB-INF/classes/META-INF/plugin.yml");
+      Set.of(
+          "META-INF/plugin.yml",
+          "WEB-INF/classes/META-INF/plugin.yml",
+          "BOOT-INF/classes/META-INF/plugin.yml");
 
   static final Logger log =
       Logger.getLogger(

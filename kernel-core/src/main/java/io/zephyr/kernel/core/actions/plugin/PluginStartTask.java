@@ -43,7 +43,7 @@ public class PluginStartTask extends Task {
         manager.getModuleLoader().check(module);
         for (val activator : loader) {
           try {
-            activator.start(kernel);
+            activator.start(kernel, module);
             ((DefaultModule) module).setActivator(activator);
           } catch (Exception | LinkageError ex) {
             module.getLifecycle().setState(Lifecycle.State.Failed);

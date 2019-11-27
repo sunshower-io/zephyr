@@ -91,6 +91,22 @@ public class SunshowerKernelTest {
   }
 
   @Test
+  void ensureStartingSpringBootPluginFileWorks() throws InterruptedException {
+
+    kernel.start();
+    yamlModule = relativeToProjectBuild("kernel-modules:sunshower-yaml-reader", "war", "libs");
+    install(yamlModule);
+    kernel.stop();
+    kernel.start();
+
+    springPlugin = relativeToProjectBuild("plugins:spring:spring-web-plugin", "war", "libs");
+    install(springPlugin);
+    start("spring-web-plugin");
+    stop("spring-web-plugin");
+    remove("spring-web-plugin");
+  }
+
+  @Test
   void ensureRemovingPluginWorks() {
     kernel.start();
     yamlModule = relativeToProjectBuild("kernel-modules:sunshower-yaml-reader", "war", "libs");
@@ -199,10 +215,7 @@ public class SunshowerKernelTest {
   private void request(String pluginName, ModuleLifecycle.Actions action) {
 
     val plugin =
-        kernel
-            .getModuleManager()
-            .getModules()
-            .stream()
+        kernel.getModuleManager().getModules().stream()
             .filter(t -> t.getCoordinate().getName().equals(pluginName))
             .findFirst()
             .get();

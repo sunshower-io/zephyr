@@ -93,7 +93,10 @@ class NoOpMemento implements Memento {
 
   @Override
   public void write(String name, String value) {
-    write(name, value);
+    if (values == null) {
+      values = new HashMap<>();
+    }
+    values.put(name, value);
   }
 
   @Override

@@ -31,7 +31,8 @@ public class ModuleUnpackPhase extends Task {
   public static final String LIBRARY_DIRECTORIES = "MODULE_UNPACK_LIBRARIES";
   public static final String INSTALLED_LIBRARIES = "MODULE_INSTALLED_LIBRARIES";
   public static final String MODULE_ASSEMBLY = "MODULE_RELEVANT_SEARCH_PATHS";
-  private static final Set<String> RESOURCE_DIRECTORIES = Set.of("WEB-INF/classes/");
+  private static final Set<String> RESOURCE_DIRECTORIES =
+      Set.of("WEB-INF/classes/", "META-INF/", "BOOT-INF/classes", "BOOT-INF/classes/META-INF/");
 
   static {
     log = Logging.get(ModuleUnpackPhase.class);
@@ -47,7 +48,7 @@ public class ModuleUnpackPhase extends Task {
   public TaskValue run(Scope context) {
     Set<String> libDirectories = context.get(LIBRARY_DIRECTORIES);
     if (libDirectories == null) {
-      libDirectories = Set.of("WEB-INF/lib/");
+      libDirectories = Set.of("WEB-INF/lib/", "BOOT-INF/lib/");
     }
     File assemblyFile = context.get(ModuleTransferPhase.MODULE_ASSEMBLY_FILE);
     val assembly = new Assembly(assemblyFile);
