@@ -120,7 +120,6 @@ public class SunshowerKernelTest {
         relativeToProjectBuild("kernel-tests:test-plugins:test-spring-web-plugin", "war", "libs");
     install(springPlugin);
     start("test-spring-web-plugin");
-    Thread.sleep(100000);
     stop("test-spring-web-plugin");
     remove("spring-web-plugin");
   }
@@ -225,7 +224,10 @@ public class SunshowerKernelTest {
   private void request(String pluginName, ModuleLifecycle.Actions action) {
 
     val plugin =
-        kernel.getModuleManager().getModules().stream()
+        kernel
+            .getModuleManager()
+            .getModules()
+            .stream()
             .filter(t -> t.getCoordinate().getName().equals(pluginName))
             .findFirst()
             .get();
