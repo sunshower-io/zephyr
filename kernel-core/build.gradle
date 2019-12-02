@@ -11,6 +11,20 @@ apply plugin: 'com.github.spotbugs'
 configurations {
     bundle
 }
+
+publishing {
+    publications {
+
+        applicationTar(MavenPublication) {
+            from components.java
+            artifact source: distTar, classifier: 'tar', extension: 'tar'
+        }
+        applicationZip(MavenPublication) {
+            from components.java
+            artifact source: distZip, classifier: 'zip', extension: 'zip'
+        }
+    }
+}
 dependencies {
 
     /**
