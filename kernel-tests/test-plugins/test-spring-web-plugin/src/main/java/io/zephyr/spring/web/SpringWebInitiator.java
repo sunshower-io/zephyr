@@ -2,10 +2,8 @@ package io.zephyr.spring.web;
 
 import io.zephyr.PluginActivator;
 import io.zephyr.PluginContext;
-import io.zephyr.kernel.Module;
 import io.zephyr.spring.web.controllers.HelloController;
 import lombok.val;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -16,17 +14,9 @@ import org.springframework.core.io.DefaultResourceLoader;
 public class SpringWebInitiator implements PluginActivator {
   private ConfigurableApplicationContext applicationContext;
 
-  public static void main(String[] args) {
-    val app =
-        new SpringApplication(
-            new DefaultResourceLoader(SpringWebInitiator.class.getClassLoader()),
-            SpringWebInitiator.class,
-            HelloController.class);
-    app.run();
-  }
-
   @Override
-  public void start(PluginContext context, Module module) {
+  public void start(PluginContext context) {
+    val module = context.getModule();
     applicationContext =
         new SpringApplicationBuilder(SpringWebInitiator.class)
             .web(WebApplicationType.SERVLET)
@@ -35,7 +25,7 @@ public class SpringWebInitiator implements PluginActivator {
   }
 
   @Override
-  public void stop(PluginContext context, Module module) {
+  public void stop(PluginContext context) {
     applicationContext.close();
   }
 }

@@ -2,7 +2,6 @@ apply plugin: 'war'
 apply plugin: 'java-library'
 
 dependencies {
-    implementation project(':kernel-api')
     compileOnly project(':kernel-api')
     api("org.springframework.boot:spring-boot-starter-web")
     api("org.springframework.boot:spring-boot-starter-undertow")

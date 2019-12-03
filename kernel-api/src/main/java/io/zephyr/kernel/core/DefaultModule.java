@@ -3,6 +3,7 @@ package io.zephyr.kernel.core;
 import static io.zephyr.kernel.memento.Mementos.writeCoordinate;
 
 import io.zephyr.PluginActivator;
+import io.zephyr.PluginContext;
 import io.zephyr.kernel.*;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.memento.Memento;
@@ -30,6 +31,7 @@ public class DefaultModule implements Module, Comparable<Module>, Originator {
   private FileSystem fileSystem;
   private Lifecycle lifecycle;
 
+  private PluginContext context;
   private ModuleLoader moduleLoader;
   private PluginActivator activator;
   private ModuleClasspath moduleClasspath;
@@ -218,6 +220,11 @@ public class DefaultModule implements Module, Comparable<Module>, Originator {
   }
 
   @Override
+  public PluginContext getContext() {
+    return context;
+  }
+
+  @Override
   public boolean equals(Object o) {
     if (o == this) {
       return true;
@@ -336,5 +343,9 @@ public class DefaultModule implements Module, Comparable<Module>, Originator {
   @Override
   public String toString() {
     return "Module{" + getCoordinate() + "}";
+  }
+
+  public void setContext(PluginContext ctx) {
+    this.context = ctx;
   }
 }

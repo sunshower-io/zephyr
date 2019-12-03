@@ -120,6 +120,7 @@ public class SunshowerKernelTest {
         relativeToProjectBuild("kernel-tests:test-plugins:test-spring-web-plugin", "war", "libs");
     install(springPlugin);
     start("test-spring-web-plugin");
+
     stop("test-spring-web-plugin");
     remove("spring-web-plugin");
   }

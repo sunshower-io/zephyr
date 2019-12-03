@@ -1,6 +1,7 @@
 package io.sunshower.kernel.test;
 
 import io.zephyr.PluginActivator;
+import io.zephyr.PluginContext;
 import io.zephyr.kernel.*;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.core.ModuleClasspath;
@@ -95,6 +96,11 @@ public class MockModule implements Module {
 
   @Override
   public <S> ServiceLoader<S> resolveServiceLoader(Class<S> type) {
+    return null;
+  }
+
+  @Override
+  public PluginContext getContext() {
     return null;
   }
 
