@@ -3,6 +3,7 @@ package io.zephyr.api;
 import java.rmi.Remote;
 
 public interface Invoker extends Remote {
+  void setConsole(Console console) throws Exception;
 
   Console getConsole() throws Exception;
 

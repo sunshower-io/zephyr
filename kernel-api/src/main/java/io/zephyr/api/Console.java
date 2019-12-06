@@ -1,9 +1,28 @@
 package io.zephyr.api;
 
+import lombok.val;
+
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.text.MessageFormat;
+import java.util.Arrays;
 
 public interface Console {
+  default void flush() {}
+
+  default Object getTarget() {
+    return getWriter();
+  }
+
+  default String writeString(String line, Color[] colors, Object[] args) {
+    val sbuilder = new StringBuilder();
+    for (val color : colors) {
+      sbuilder.append(color);
+    }
+    sbuilder.append(String.format(line, args));
+    sbuilder.append(Color.Reset);
+    return sbuilder.toString();
+  }
 
   void writeln(String line, Color[] colors, Object... args);
 
@@ -16,4 +35,6 @@ public interface Console {
   void successln(String line, Object... args);
 
   PrintStream getWriter();
+
+  void write(Object o);
 }

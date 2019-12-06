@@ -3,7 +3,12 @@ package io.zephyr.kernel.launch;
 import io.zephyr.api.Console;
 import io.zephyr.api.Invoker;
 import io.zephyr.api.Parameters;
+
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import lombok.val;
 import picocli.CommandLine;
 
@@ -23,6 +28,7 @@ public class InteractiveShell {
     this.options = options;
   }
 
+  @SuppressWarnings("unchecked")
   public void start() {
     String[] args = null;
     for (; ; ) {
@@ -36,7 +42,19 @@ public class InteractiveShell {
           return;
         }
         invoker.invoke(Parameters.of(args));
+        val console = invoker.getConsole();
+        val target = console.getTarget();
+        synchronized (invoker) {
+          if (target instanceof List) {
+            val iter = ((List) target).iterator();
+            while (iter.hasNext()) {
+              System.out.println(iter.next());
+            }
+          }
+          console.flush();
+        }
       } catch (Exception ex) {
+        ex.printStackTrace();
         console.errorln("Command {0} not understood", Arrays.toString(args));
       }
     }

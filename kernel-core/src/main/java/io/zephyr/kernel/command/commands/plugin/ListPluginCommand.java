@@ -33,7 +33,7 @@ public class ListPluginCommand extends AbstractCommand {
     console.successln("Modules installed:");
     for (val module : manager.getModules()) {
       console.successln(
-          "\t{0} | state {1}",
+          "\t%s | state %s",
           module.getCoordinate().toCanonicalForm(), module.getLifecycle().getState());
     }
 

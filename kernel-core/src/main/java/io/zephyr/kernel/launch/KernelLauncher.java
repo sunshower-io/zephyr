@@ -4,6 +4,7 @@ import io.zephyr.api.CommandContext;
 import io.zephyr.api.Console;
 import io.zephyr.api.Invoker;
 import io.zephyr.api.Parameters;
+import io.zephyr.kernel.command.ColoredConsole;
 import io.zephyr.kernel.command.DaggerShellInjectionConfiguration;
 import io.zephyr.kernel.command.DefaultCommandContext;
 import io.zephyr.kernel.misc.SuppressFBWarnings;
@@ -13,6 +14,8 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import lombok.SneakyThrows;
 import lombok.val;
 import picocli.CommandLine;
 
@@ -54,6 +57,7 @@ public class KernelLauncher {
 
   private void runInteractive() {
     try {
+      console = new ColoredConsole();
       new Banner(console).print();
     } catch (Exception ex) {
       log.warning("Can't print banner");
@@ -106,6 +110,7 @@ public class KernelLauncher {
     }
   }
 
+  @SneakyThrows
   @SuppressWarnings("PMD.SystemPrintln")
   private void startServer() {
     try {
@@ -114,15 +119,19 @@ public class KernelLauncher {
       System.out.println("Server is already running on port " + options.getPort());
     }
 
+    val console = new RecordingConsole();
     context.register(KernelOptions.class, options);
+    context.register(Console.class, console);
 
     val invoker =
         DaggerShellInjectionConfiguration.factory()
             .create(ClassLoader.getSystemClassLoader(), context)
             .createShell();
-    val server = DaggerServerInjectionConfiguration.factory().build(options, invoker).server();
+    val server = DaggerServerInjectionConfiguration.factory().build(options, invoker, console).server();
+    new Banner(invoker.getConsole()).print();
     context.register(Server.class, server);
     context.register(Invoker.class, invoker);
+    invoker.setConsole(console);
     server.start();
   }
 

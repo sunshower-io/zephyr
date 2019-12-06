@@ -31,13 +31,8 @@ public class ColoredConsole implements Console {
 
   @Override
   public void writeln(String line, Color[] colors, Object... args) {
-    val sbuilder = new StringBuilder();
-    for (val color : colors) {
-      sbuilder.append(color);
-    }
-    sbuilder.append(MessageFormat.format(line, args));
-    sbuilder.append(Color.Reset);
-    out.println(sbuilder.toString());
+    val sbuilder = writeString(line, colors, args);
+    out.println(sbuilder);
   }
 
   @Override
@@ -58,11 +53,16 @@ public class ColoredConsole implements Console {
 
   @Override
   public void successln(String string, Object... args) {
-    writeln(string, Color.colors(Color.GreenBoldBright), args);
+    writeln(string, Color.colors(Color.GreenBright), args);
   }
 
   @Override
   public PrintStream getWriter() {
     return out;
+  }
+
+  @Override
+  public void write(Object o) {
+    out.print(o);
   }
 }
