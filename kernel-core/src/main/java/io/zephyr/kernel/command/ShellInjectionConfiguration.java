@@ -4,7 +4,6 @@ import dagger.BindsInstance;
 import dagger.Component;
 import io.zephyr.api.CommandContext;
 import io.zephyr.api.Console;
-
 import java.io.InputStream;
 import java.io.PrintStream;
 import javax.inject.Singleton;

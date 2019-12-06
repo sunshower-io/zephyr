@@ -6,7 +6,6 @@ import io.zephyr.kernel.misc.SuppressFBWarnings;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
-import java.text.MessageFormat;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 import lombok.val;

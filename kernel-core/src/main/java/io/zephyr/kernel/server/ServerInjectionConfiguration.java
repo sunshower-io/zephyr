@@ -4,8 +4,8 @@ import dagger.BindsInstance;
 import dagger.Component;
 import io.zephyr.api.Console;
 import io.zephyr.api.Invoker;
+import io.zephyr.kernel.command.ColoredConsole;
 import io.zephyr.kernel.launch.KernelOptions;
-import io.zephyr.kernel.launch.RecordingConsole;
 
 @Component(modules = ServerModule.class)
 public interface ServerInjectionConfiguration {
@@ -14,6 +14,11 @@ public interface ServerInjectionConfiguration {
 
   @Component.Factory
   interface Builder {
+
+    default ServerInjectionConfiguration build(KernelOptions options, Invoker invoker) {
+      return build(options, invoker, new ColoredConsole());
+    }
+
     ServerInjectionConfiguration build(
         @BindsInstance KernelOptions options,
         @BindsInstance Invoker invoker,

@@ -3,16 +3,13 @@ package io.zephyr.kernel.launch;
 import io.zephyr.api.Console;
 import io.zephyr.api.Invoker;
 import io.zephyr.api.Parameters;
-
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-
 import lombok.val;
 import picocli.CommandLine;
 
 @SuppressWarnings({
+  "PMD.SystemPrintln",
   "PMD.DataflowAnomalyAnalysis",
   "PMD.UnusedPrivateField",
   "PMD.AvoidInstantiatingObjectsInLoops"
@@ -54,7 +51,6 @@ public class InteractiveShell {
           console.flush();
         }
       } catch (Exception ex) {
-        ex.printStackTrace();
         console.errorln("Command {0} not understood", Arrays.toString(args));
       }
     }

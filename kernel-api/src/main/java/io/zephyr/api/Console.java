@@ -1,11 +1,8 @@
 package io.zephyr.api;
 
-import lombok.val;
-
 import java.io.InputStream;
 import java.io.PrintStream;
-import java.text.MessageFormat;
-import java.util.Arrays;
+import lombok.val;
 
 public interface Console {
   default void flush() {}

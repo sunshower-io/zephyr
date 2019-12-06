@@ -1,21 +1,23 @@
 package io.zephyr.kernel.launch;
 
-import lombok.val;
-
+import io.zephyr.kernel.misc.SuppressFBWarnings;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import lombok.val;
 
+@SuppressFBWarnings
+@SuppressWarnings("PMD.AvoidUsingVolatile")
 public class OutputArrayInputStream extends InputStream {
 
   private final List<String> messages;
-  private volatile int read;
+  private volatile int readCount;
   private volatile int currentIdx;
   private volatile boolean closed;
 
   public OutputArrayInputStream(List<String> messages) {
     this.messages = messages;
-    read = 0;
+    readCount = 0;
     closed = false;
     currentIdx = 0;
   }
@@ -26,18 +28,18 @@ public class OutputArrayInputStream extends InputStream {
       if (closed) {
         throw new IOException("Stream closed");
       }
-      if (read < messages.size()) {
-        val current = messages.get(read);
+      if (readCount < messages.size()) {
+        val current = messages.get(readCount);
         if (currentIdx < current.length()) {
           return current.charAt(currentIdx++);
         }
         if (currentIdx == current.length()) {
-          read++;
+          readCount++;
           currentIdx = 0;
         }
       }
 
-      while (read == messages.size()) {
+      while (readCount == messages.size()) {
         try {
           messages.wait(100);
         } catch (InterruptedException ex) {
@@ -50,7 +52,7 @@ public class OutputArrayInputStream extends InputStream {
 
   @Override
   public void reset() {
-    read = 0;
+    readCount = 0;
     currentIdx = 0;
   }
 

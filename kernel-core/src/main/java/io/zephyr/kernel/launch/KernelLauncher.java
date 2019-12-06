@@ -14,7 +14,6 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import lombok.SneakyThrows;
 import lombok.val;
 import picocli.CommandLine;
@@ -127,7 +126,8 @@ public class KernelLauncher {
         DaggerShellInjectionConfiguration.factory()
             .create(ClassLoader.getSystemClassLoader(), context)
             .createShell();
-    val server = DaggerServerInjectionConfiguration.factory().build(options, invoker, console).server();
+    val server =
+        DaggerServerInjectionConfiguration.factory().build(options, invoker, console).server();
     new Banner(invoker.getConsole()).print();
     context.register(Server.class, server);
     context.register(Invoker.class, invoker);

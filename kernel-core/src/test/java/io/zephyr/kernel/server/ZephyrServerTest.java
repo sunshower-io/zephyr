@@ -47,7 +47,7 @@ class ZephyrServerTest {
         DaggerShellInjectionConfiguration.factory()
             .create(ClassLoader.getSystemClassLoader(), context)
             .createShell();
-    server = DaggerServerInjectionConfiguration.factory().build(options, invoker, console).server();
+    server = DaggerServerInjectionConfiguration.factory().build(options, invoker).server();
     context.register(Server.class, server);
     context.register(KernelOptions.class, options);
   }

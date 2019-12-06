@@ -2,15 +2,13 @@ package io.zephyr.kernel.launch;
 
 import io.zephyr.api.Color;
 import io.zephyr.api.Console;
-import lombok.Synchronized;
-import lombok.val;
-
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import lombok.Synchronized;
+import lombok.val;
 
 public class RecordingConsole implements Console, Serializable {
   private static final long serialVersionUID = 1L;
@@ -68,11 +66,13 @@ public class RecordingConsole implements Console, Serializable {
     messages.add(String.valueOf(o));
   }
 
+  @Override
   @Synchronized
   public List<String> getTarget() {
     return getMessages();
   }
 
+  @Override
   @Synchronized
   public void flush() {
     messages.clear();
