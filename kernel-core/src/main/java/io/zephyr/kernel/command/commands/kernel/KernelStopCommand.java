@@ -63,18 +63,16 @@ public class KernelStopCommand extends DefaultCommand {
     @Override
     public void onEvent(EventType type, Event<Kernel> event) {
       val console = context.getService(Console.class);
-      if (type instanceof KernelEventTypes) {
-        val etype = (KernelEventTypes) type;
-        switch (etype) {
-          case KERNEL_SHUTDOWN_INITIATED:
-            console.errorln("Shutting down kernel");
-            break;
-          case KERNEL_SHUTDOWN_SUCCEEDED:
-            console.successln("Successfully shut down Zephyr kernel");
-            break;
-          default:
-            return;
-        }
+      val etype = (KernelEventTypes) type;
+      switch (etype) {
+        case KERNEL_SHUTDOWN_INITIATED:
+          console.errorln("Shutting down kernel");
+          break;
+        case KERNEL_SHUTDOWN_SUCCEEDED:
+          console.successln("Successfully shut down Zephyr kernel");
+          break;
+        default:
+          return;
       }
     }
   }

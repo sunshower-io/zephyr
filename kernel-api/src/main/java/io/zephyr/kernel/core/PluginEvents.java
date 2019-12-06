@@ -12,9 +12,4 @@ public enum PluginEvents implements EventType {
   PLUGIN_INSTALLATION_INITIATED,
   PLUGIN_INSTALLATION_COMPLETE,
   PLUGIN_INSTALLATION_FAILED;
-
-  @Override
-  public int getId() {
-    return ordinal();
-  }
 }

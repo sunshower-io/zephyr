@@ -78,21 +78,19 @@ public class KernelStartCommand extends DefaultCommand {
     @Override
     public void onEvent(EventType type, Event<Kernel> event) {
       val console = context.getService(Console.class);
-      if (type instanceof KernelEventTypes) {
-        val etype = (KernelEventTypes) type;
-        switch (etype) {
-          case KERNEL_START_FAILED:
-            console.errorln("Starting kernel failed");
-            break;
-          case KERNEL_START_INITIATED:
-            console.successln("Starting Zephyr Kernel");
-            break;
-          case KERNEL_START_SUCCEEDED:
-            console.successln("Successfully started Zephyr Kernel");
-            break;
-          default:
-            return;
-        }
+      val etype = (KernelEventTypes) type;
+      switch (etype) {
+        case KERNEL_START_FAILED:
+          console.errorln("Starting kernel failed");
+          break;
+        case KERNEL_START_INITIATED:
+          console.successln("Starting Zephyr Kernel");
+          break;
+        case KERNEL_START_SUCCEEDED:
+          console.successln("Successfully started Zephyr Kernel");
+          break;
+        default:
+          return;
       }
     }
   }
