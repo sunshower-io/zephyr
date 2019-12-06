@@ -34,6 +34,7 @@ public class KernelStartCommand extends DefaultCommand {
   public Result execute(CommandContext context) {
 
     val options = context.getService(KernelOptions.class);
+    val console = context.getService(Console.class);
 
     if (!(arguments == null || arguments.length == 0)) {
       CommandLine.populateCommand(options, arguments);
@@ -59,6 +60,11 @@ public class KernelStartCommand extends DefaultCommand {
       }
       kernel.start();
       ((DefaultCommandContext) context).register(Kernel.class, kernel);
+
+      kernel.restoreState().toCompletableFuture().get();
+    } catch (Exception ex) {
+      console.errorln("Failed to restore kernel state.  Reason: ", ex.getMessage());
+
     } finally {
       kernel.removeEventListener(listener);
     }
@@ -72,19 +78,21 @@ public class KernelStartCommand extends DefaultCommand {
     @Override
     public void onEvent(EventType type, Event<Kernel> event) {
       val console = context.getService(Console.class);
-      val etype = (KernelEventTypes) type;
-      switch (etype) {
-        case KERNEL_START_FAILED:
-          console.errorln("Starting kernel failed");
-          break;
-        case KERNEL_START_INITIATED:
-          console.successln("Starting Zephyr Kernel");
-          break;
-        case KERNEL_START_SUCCEEDED:
-          console.successln("Successfully started Zephyr Kernel");
-          break;
-        default:
-          return;
+      if (type instanceof KernelEventTypes) {
+        val etype = (KernelEventTypes) type;
+        switch (etype) {
+          case KERNEL_START_FAILED:
+            console.errorln("Starting kernel failed");
+            break;
+          case KERNEL_START_INITIATED:
+            console.successln("Starting Zephyr Kernel");
+            break;
+          case KERNEL_START_SUCCEEDED:
+            console.successln("Successfully started Zephyr Kernel");
+            break;
+          default:
+            return;
+        }
       }
     }
   }

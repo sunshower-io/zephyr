@@ -44,7 +44,12 @@ public class KernelStopCommand extends DefaultCommand {
       if (lifecycle.getState() != KernelLifecycle.State.Running) {
         return Result.failure();
       }
+      console.successln("Attempting to save kernel state...");
+      kernel.persistState().toCompletableFuture().get();
+      console.successln("Successfully wrote kernel state");
       kernel.stop();
+    } catch (Exception e) {
+      console.errorln("Failed to save state: ", e.getMessage());
     } finally {
       kernel.removeEventListener(listener);
     }
@@ -58,16 +63,18 @@ public class KernelStopCommand extends DefaultCommand {
     @Override
     public void onEvent(EventType type, Event<Kernel> event) {
       val console = context.getService(Console.class);
-      val etype = (KernelEventTypes) type;
-      switch (etype) {
-        case KERNEL_SHUTDOWN_INITIATED:
-          console.errorln("Shutting down kernel");
-          break;
-        case KERNEL_SHUTDOWN_SUCCEEDED:
-          console.successln("Successfully shut down Zephyr kernel");
-          break;
-        default:
-          return;
+      if (type instanceof KernelEventTypes) {
+        val etype = (KernelEventTypes) type;
+        switch (etype) {
+          case KERNEL_SHUTDOWN_INITIATED:
+            console.errorln("Shutting down kernel");
+            break;
+          case KERNEL_SHUTDOWN_SUCCEEDED:
+            console.successln("Successfully shut down Zephyr kernel");
+            break;
+          default:
+            return;
+        }
       }
     }
   }
