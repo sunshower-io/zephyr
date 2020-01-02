@@ -45,23 +45,20 @@ public class SunshowerKernel extends AbstractEventSource implements Kernel {
   /** class fields */
   @Setter private static KernelOptions kernelOptions;
 
-  private final Scheduler<String> scheduler;
-  private final ModuleClasspathManager moduleClasspathManager;
-  @Getter private final ModuleManager moduleManager;
-  private final KernelLifecycle lifecycle;
   /** Instance fields */
   private volatile ClassLoader classLoader;
 
+  @Getter private final ModuleManager moduleManager;
   @Getter @Setter private volatile FileSystem fileSystem;
 
+  private final KernelLifecycle lifecycle;
+  private final Scheduler<String> scheduler;
+  @Setter private ModuleClasspathManager moduleClasspathManager;
+
   @Inject
-  public SunshowerKernel(
-      ModuleClasspathManager moduleClasspathManager,
-      ModuleManager moduleManager,
-      Scheduler<String> scheduler) {
+  public SunshowerKernel(ModuleManager moduleManager, Scheduler<String> scheduler) {
     this.scheduler = scheduler;
     this.moduleManager = moduleManager;
-    this.moduleClasspathManager = moduleClasspathManager;
     this.lifecycle = new DefaultKernelLifecycle(this, scheduler);
   }
 

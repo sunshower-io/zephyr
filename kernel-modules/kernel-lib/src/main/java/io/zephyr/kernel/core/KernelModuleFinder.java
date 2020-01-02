@@ -13,6 +13,7 @@ import lombok.NonNull;
 import lombok.val;
 import org.jboss.modules.*;
 import org.jboss.modules.ModuleLoader;
+import org.jboss.modules.filter.PathFilters;
 
 @SuppressWarnings("PMD.UnusedPrivateMethod")
 public final class KernelModuleFinder implements ModuleFinder {
@@ -23,10 +24,11 @@ public final class KernelModuleFinder implements ModuleFinder {
 
   private final LocalLoader localLoader;
 
-  KernelModuleFinder(@NonNull Module module, @NonNull final ModuleLoader loader) {
+  KernelModuleFinder(
+      @NonNull Module module, @NonNull final ModuleLoader loader, @NonNull Kernel kernel) {
     this.module = module;
     this.moduleLoader = loader;
-    this.localLoader = new KernelClasspathLocalLoader();
+    this.localLoader = new KernelClasspathLocalLoader(kernel);
   }
 
   @Override
@@ -76,6 +78,9 @@ public final class KernelModuleFinder implements ModuleFinder {
           new ModuleDependencySpecBuilder()
               .setName(dependency.getCoordinate().toCanonicalForm())
               .setModuleLoader(moduleLoader)
+              .setImportServices(true)
+              .setExport(true)
+              .setImportFilter(PathFilters.acceptAll())
               .build();
       moduleSpec.addDependency(dep);
     }

@@ -41,7 +41,7 @@ public class PluginStopTask extends Task {
       if (currentState == Lifecycle.State.Active) { // // TODO: 11/11/19 handle Failed
         try {
           module.getLifecycle().setState(Lifecycle.State.Stopping);
-          module.getActivator().stop(kernel);
+          module.getActivator().stop(kernel, module);
           ((DefaultModule) module).setActivator(null);
           try {
             module.getFileSystem().close();

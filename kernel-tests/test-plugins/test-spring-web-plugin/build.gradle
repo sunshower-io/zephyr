@@ -1,0 +1,10 @@
+apply plugin: 'war'
+apply plugin: 'java'
+apply plugin: 'java-library'
+dependencies {
+    compileOnly project(':kernel-api')
+    compileOnly project(':plugins:spring:spring-web-plugin')
+    testImplementation project(":kernel-tests:kernel-test")
+
+}
+

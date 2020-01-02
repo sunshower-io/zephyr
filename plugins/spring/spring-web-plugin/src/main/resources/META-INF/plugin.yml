@@ -1,0 +1,7 @@
+plugin:
+  name: spring-web-plugin
+  group: io.zephyr.spring
+  version: 1.0.0
+  order: 1
+  type: plugin
+  description: Plugin supporting extension points for Spring Web.

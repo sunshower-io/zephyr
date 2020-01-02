@@ -7,10 +7,23 @@ apply plugin: 'java'
 apply plugin: 'application'
 apply plugin: 'java-library'
 apply plugin: 'com.github.spotbugs'
-apply plugin: 'net.nemerosa.versioning'
 
 configurations {
     bundle
+}
+
+publishing {
+    publications {
+
+        applicationTar(MavenPublication) {
+            from components.java
+            artifact source: distTar, classifier: 'tar', extension: 'tar'
+        }
+        applicationZip(MavenPublication) {
+            from components.java
+            artifact source: distZip, classifier: 'zip', extension: 'zip'
+        }
+    }
 }
 dependencies {
 
@@ -73,7 +86,7 @@ jar {
 }
 
 application {
-    mainClassName = 'io.sunshower.kernel.launch.KernelLauncher'
+    mainClassName = 'io.zephyr.kernel.launch.KernelLauncher'
 }
 
 

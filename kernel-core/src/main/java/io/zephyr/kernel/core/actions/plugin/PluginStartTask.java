@@ -8,12 +8,16 @@ import io.zephyr.kernel.concurrency.Task;
 import io.zephyr.kernel.core.DefaultModule;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.core.ModuleManager;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import lombok.val;
 
 public class PluginStartTask extends Task {
   private final Kernel kernel;
   private final Coordinate coordinate;
   private final ModuleManager manager;
+
+  static final Logger log = Logger.getLogger(PluginStartTask.class.getName());
 
   public PluginStartTask(Coordinate coordinate, ModuleManager manager, Kernel kernel) {
     super("plugin:start:" + coordinate.toCanonicalForm());
@@ -39,10 +43,13 @@ public class PluginStartTask extends Task {
         manager.getModuleLoader().check(module);
         for (val activator : loader) {
           try {
-            activator.start(kernel);
+            activator.start(kernel, module);
             ((DefaultModule) module).setActivator(activator);
           } catch (Exception | LinkageError ex) {
             module.getLifecycle().setState(Lifecycle.State.Failed);
+            log.log(
+                Level.WARNING, "Failed to start plugin ''{0}''.  Reason: ''{1}''", ex.getMessage());
+            log.log(Level.INFO, "Reason: ", ex);
             return null;
           }
           break;

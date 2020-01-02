@@ -37,6 +37,13 @@ include(
         'kernel-tests:test-modules:test-module-2',
         'kernel-tests:test-modules:test-module-3',
         'kernel-tests:test-plugins:test-plugin-spring',
+        'kernel-tests:test-plugins:test-spring-web-plugin',
         'kernel-tests:test-plugins:test-plugin-spring-dep',
-        'kernel-tests:test-plugins:test-plugin-spring-error'
+        'kernel-tests:test-plugins:test-plugin-spring-error',
+
+
+        /**
+         * official plugins
+         */
+        'plugins:spring:spring-web-plugin'
 )

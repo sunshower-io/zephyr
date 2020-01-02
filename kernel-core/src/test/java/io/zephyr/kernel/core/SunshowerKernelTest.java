@@ -91,13 +91,42 @@ public class SunshowerKernelTest {
   }
 
   @Test
-  void ensureRemovingPluginWorks() {
+  void ensureStartingSpringBootPluginFileWorks() throws InterruptedException {
+
+    installYamlModule();
+
+    springPlugin = relativeToProjectBuild("plugins:spring:spring-web-plugin", "war", "libs");
+    install(springPlugin);
+    start("spring-web-plugin");
+    stop("spring-web-plugin");
+    remove("spring-web-plugin");
+  }
+
+  private void installYamlModule() {
     kernel.start();
     yamlModule = relativeToProjectBuild("kernel-modules:sunshower-yaml-reader", "war", "libs");
     install(yamlModule);
     kernel.stop();
-
     kernel.start();
+  }
+
+  @Test
+  void ensureTransitiveSpringWebPluginWorks() throws InterruptedException {
+    installYamlModule();
+    springPlugin = relativeToProjectBuild("plugins:spring:spring-web-plugin", "war", "libs");
+    install(springPlugin);
+
+    springPlugin =
+        relativeToProjectBuild("kernel-tests:test-plugins:test-spring-web-plugin", "war", "libs");
+    install(springPlugin);
+    start("test-spring-web-plugin");
+    stop("test-spring-web-plugin");
+    remove("spring-web-plugin");
+  }
+
+  @Test
+  void ensureRemovingPluginWorks() {
+    installYamlModule();
     springPlugin =
         relativeToProjectBuild("kernel-tests:test-plugins:test-plugin-spring", "war", "libs");
     install(springPlugin);
@@ -111,11 +140,7 @@ public class SunshowerKernelTest {
   @Test
   void ensureInstallingAndStartingInvalidPluginFails() {
 
-    kernel.start();
-    yamlModule = relativeToProjectBuild("kernel-modules:sunshower-yaml-reader", "war", "libs");
-    install(yamlModule);
-    kernel.stop();
-    kernel.start();
+    installYamlModule();
 
     springPlugin =
         relativeToProjectBuild("kernel-tests:test-plugins:test-plugin-spring", "war", "libs");

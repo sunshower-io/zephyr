@@ -20,19 +20,21 @@ import org.jboss.modules.ModuleNotFoundException;
 public final class KernelModuleLoader extends ModuleLoader
     implements io.zephyr.kernel.core.ModuleLoader, ModuleClasspathManager {
 
+  private final Kernel kernel;
   private DependencyGraph graph;
   private final Map<String, UnloadableKernelModuleLoader> moduleLoaders;
 
-  public KernelModuleLoader(final DependencyGraph graph) {
+  public KernelModuleLoader(final DependencyGraph graph, Kernel kernel) {
     moduleLoaders = new HashMap<>();
     this.graph = graph;
+    this.kernel = kernel;
   }
 
   @Override
   public void install(Module module) {
     val coordinate = module.getCoordinate();
     val id = coordinate.toCanonicalForm();
-    val loader = new UnloadableKernelModuleLoader(new KernelModuleFinder(module, this));
+    val loader = new UnloadableKernelModuleLoader(new KernelModuleFinder(module, this, kernel));
     ((DefaultModule) module).setModuleLoader(loader);
     moduleLoaders.put(id, loader);
   }
@@ -73,7 +75,7 @@ public final class KernelModuleLoader extends ModuleLoader
       result = ModuleLoader.preloadModule(name, loader);
     }
     val target = (DefaultModule) graph.get(ModuleCoordinate.parse(name));
-    val loader = new UnloadableKernelModuleLoader(new KernelModuleFinder(target, this));
+    val loader = new UnloadableKernelModuleLoader(new KernelModuleFinder(target, this, kernel));
     val classpath = new DefaultModuleClasspath(result, loader);
     target.setModuleLoader(loader);
     target.setModuleClasspath(classpath);
@@ -101,8 +103,9 @@ public final class KernelModuleLoader extends ModuleLoader
 
     boolean unload(Coordinate coordinate) throws ModuleLoadException {
       val id = coordinate.toCanonicalForm();
-      //parallel unloading can be hard to reason about, but one of the invariants
-      // is that the modules are always shut down in the correct order even if one has been shut down
+      // parallel unloading can be hard to reason about, but one of the invariants
+      // is that the modules are always shut down in the correct order even if one has been shut
+      // down
       // as part of the dependent graph of another
       val module = findLoadedModuleLocal(id);
 
