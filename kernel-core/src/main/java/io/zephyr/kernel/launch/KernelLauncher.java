@@ -1,9 +1,9 @@
 package io.zephyr.kernel.launch;
 
-import io.zephyr.api.CommandContext;
-import io.zephyr.api.Console;
-import io.zephyr.api.Invoker;
-import io.zephyr.api.Parameters;
+import io.zephyr.cli.CommandContext;
+import io.zephyr.cli.Console;
+import io.zephyr.cli.Invoker;
+import io.zephyr.cli.Parameters;
 import io.zephyr.kernel.command.ColoredConsole;
 import io.zephyr.kernel.command.DaggerShellInjectionConfiguration;
 import io.zephyr.kernel.command.DefaultCommandContext;

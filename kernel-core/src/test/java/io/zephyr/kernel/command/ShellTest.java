@@ -3,10 +3,10 @@ package io.zephyr.kernel.command;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import io.zephyr.api.Command;
-import io.zephyr.api.CommandContext;
-import io.zephyr.api.Parameters;
-import io.zephyr.api.Result;
+import io.zephyr.cli.Command;
+import io.zephyr.cli.CommandContext;
+import io.zephyr.cli.Parameters;
+import io.zephyr.cli.Result;
 import io.zephyr.kernel.misc.SuppressFBWarnings;
 import java.io.*;
 import java.rmi.RemoteException;

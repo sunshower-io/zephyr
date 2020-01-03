@@ -2,8 +2,8 @@ package io.zephyr.kernel.server;
 
 import dagger.BindsInstance;
 import dagger.Component;
-import io.zephyr.api.Console;
-import io.zephyr.api.Invoker;
+import io.zephyr.cli.Console;
+import io.zephyr.cli.Invoker;
 import io.zephyr.kernel.command.ColoredConsole;
 import io.zephyr.kernel.launch.KernelOptions;
 

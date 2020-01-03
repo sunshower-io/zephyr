@@ -1,8 +1,8 @@
 package io.zephyr.kernel.command;
 
-import io.zephyr.api.Command;
-import io.zephyr.api.CommandContext;
-import io.zephyr.api.CommandRegistry;
+import io.zephyr.cli.Command;
+import io.zephyr.cli.CommandContext;
+import io.zephyr.cli.CommandRegistry;
 import io.zephyr.kernel.misc.SuppressFBWarnings;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

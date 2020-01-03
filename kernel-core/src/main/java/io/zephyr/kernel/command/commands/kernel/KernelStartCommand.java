@@ -2,9 +2,9 @@ package io.zephyr.kernel.command.commands.kernel;
 
 import static io.zephyr.kernel.core.KernelEventTypes.*;
 
-import io.zephyr.api.CommandContext;
-import io.zephyr.api.Console;
-import io.zephyr.api.Result;
+import io.zephyr.cli.CommandContext;
+import io.zephyr.cli.Console;
+import io.zephyr.cli.Result;
 import io.zephyr.kernel.command.DefaultCommand;
 import io.zephyr.kernel.command.DefaultCommandContext;
 import io.zephyr.kernel.core.DaggerSunshowerKernelConfiguration;

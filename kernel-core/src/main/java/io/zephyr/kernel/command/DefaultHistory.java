@@ -1,7 +1,7 @@
 package io.zephyr.kernel.command;
 
-import io.zephyr.api.Command;
-import io.zephyr.api.History;
+import io.zephyr.cli.Command;
+import io.zephyr.cli.History;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

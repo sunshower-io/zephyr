@@ -1,6 +1,6 @@
 package io.zephyr.kernel.server;
 
-import io.zephyr.api.Invoker;
+import io.zephyr.cli.Invoker;
 import io.zephyr.kernel.launch.KernelOptions;
 import io.zephyr.kernel.launch.RMI;
 import io.zephyr.kernel.log.Logging;

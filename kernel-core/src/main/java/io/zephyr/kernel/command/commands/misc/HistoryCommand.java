@@ -1,9 +1,9 @@
 package io.zephyr.kernel.command.commands.misc;
 
-import io.zephyr.api.CommandContext;
-import io.zephyr.api.Console;
-import io.zephyr.api.Invoker;
-import io.zephyr.api.Result;
+import io.zephyr.cli.CommandContext;
+import io.zephyr.cli.Console;
+import io.zephyr.cli.Invoker;
+import io.zephyr.cli.Result;
 import io.zephyr.kernel.command.AbstractCommand;
 import java.util.logging.Level;
 import java.util.logging.Logger;

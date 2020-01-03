@@ -1,6 +1,6 @@
 package io.zephyr.kernel.command;
 
-import io.zephyr.api.*;
+import io.zephyr.cli.*;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.logging.Level;

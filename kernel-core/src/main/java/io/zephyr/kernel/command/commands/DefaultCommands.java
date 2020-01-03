@@ -1,7 +1,7 @@
 package io.zephyr.kernel.command.commands;
 
-import io.zephyr.api.CommandRegistry;
-import io.zephyr.api.CommandRegistryDecorator;
+import io.zephyr.cli.CommandRegistry;
+import io.zephyr.cli.CommandRegistryDecorator;
 import io.zephyr.kernel.command.commands.kernel.KernelCommandSet;
 import io.zephyr.kernel.command.commands.misc.HistoryCommand;
 import io.zephyr.kernel.command.commands.plugin.PluginGroup;

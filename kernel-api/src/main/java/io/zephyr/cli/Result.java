@@ -1,4 +1,4 @@
-package io.zephyr.api;
+package io.zephyr.cli;
 
 public class Result {
   public static Result success() {

@@ -1,7 +1,8 @@
-package io.zephyr.api;
+package io.zephyr.cli;
 
 import io.zephyr.kernel.core.KernelException;
 
+/** todo: move CLI to kernel module (should not be in API) */
 public class CommandNotFoundException extends KernelException {
 
   public CommandNotFoundException() {

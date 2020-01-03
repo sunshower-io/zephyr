@@ -1,4 +1,4 @@
-package io.zephyr.api;
+package io.zephyr.cli;
 
 import java.io.InputStream;
 import java.io.PrintStream;

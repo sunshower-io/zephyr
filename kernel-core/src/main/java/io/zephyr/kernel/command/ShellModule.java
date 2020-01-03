@@ -2,10 +2,10 @@ package io.zephyr.kernel.command;
 
 import dagger.Module;
 import dagger.Provides;
-import io.zephyr.api.CommandContext;
-import io.zephyr.api.CommandRegistry;
-import io.zephyr.api.CommandRegistryDecorator;
-import io.zephyr.api.Console;
+import io.zephyr.cli.CommandContext;
+import io.zephyr.cli.CommandRegistry;
+import io.zephyr.cli.CommandRegistryDecorator;
+import io.zephyr.cli.Console;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;

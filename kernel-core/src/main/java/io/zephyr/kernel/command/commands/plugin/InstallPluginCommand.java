@@ -2,9 +2,9 @@ package io.zephyr.kernel.command.commands.plugin;
 
 import static io.zephyr.kernel.core.PluginEvents.*;
 
-import io.zephyr.api.CommandContext;
-import io.zephyr.api.Console;
-import io.zephyr.api.Result;
+import io.zephyr.cli.CommandContext;
+import io.zephyr.cli.Console;
+import io.zephyr.cli.Result;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.command.AbstractCommand;
 import io.zephyr.kernel.core.Kernel;

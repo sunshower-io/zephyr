@@ -1,8 +1,8 @@
 package io.zephyr.kernel.launch;
 
-import io.zephyr.api.Console;
-import io.zephyr.api.Invoker;
-import io.zephyr.api.Parameters;
+import io.zephyr.cli.Console;
+import io.zephyr.cli.Invoker;
+import io.zephyr.cli.Parameters;
 import java.util.Arrays;
 import java.util.List;
 import lombok.val;

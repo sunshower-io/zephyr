@@ -1,7 +1,7 @@
 package io.zephyr.kernel.command;
 
-import io.zephyr.api.Command;
-import io.zephyr.api.CommandRegistry;
+import io.zephyr.cli.Command;
+import io.zephyr.cli.CommandRegistry;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;

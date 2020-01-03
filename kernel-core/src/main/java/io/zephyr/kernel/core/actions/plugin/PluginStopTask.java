@@ -39,11 +39,11 @@ public class PluginStopTask extends Task {
         try {
           module.getLifecycle().setState(Lifecycle.State.Stopping);
           val activator = module.getActivator();
-          if (activator != null) {
-            module.getActivator().stop(module.getContext());
-          }
-          ((DefaultModule) module).setActivator(null);
           try {
+            if (activator != null) {
+              module.getActivator().stop(module.getContext());
+            }
+            ((DefaultModule) module).setActivator(null);
             module.getFileSystem().close();
           } catch (Exception ex) {
             module.getLifecycle().setState(Lifecycle.State.Failed);

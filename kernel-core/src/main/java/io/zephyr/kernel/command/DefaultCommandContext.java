@@ -1,6 +1,6 @@
 package io.zephyr.kernel.command;
 
-import io.zephyr.api.CommandContext;
+import io.zephyr.cli.CommandContext;
 import java.util.HashMap;
 import java.util.Map;
 

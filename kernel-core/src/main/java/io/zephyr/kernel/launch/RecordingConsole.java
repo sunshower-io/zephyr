@@ -1,7 +1,7 @@
 package io.zephyr.kernel.launch;
 
-import io.zephyr.api.Color;
-import io.zephyr.api.Console;
+import io.zephyr.cli.Color;
+import io.zephyr.cli.Console;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.io.Serializable;

@@ -1,4 +1,4 @@
-package io.zephyr.api;
+package io.zephyr.cli;
 
 public enum Color {
   Reset("\033[0m"), // Text Reset

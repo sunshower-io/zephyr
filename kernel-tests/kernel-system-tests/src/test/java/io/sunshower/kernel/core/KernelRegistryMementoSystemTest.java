@@ -7,7 +7,7 @@ import io.sunshower.kernel.test.Module;
 import io.sunshower.kernel.test.Modules;
 import io.sunshower.kernel.test.ZephyrTest;
 import io.sunshower.test.common.Tests;
-import io.zephyr.api.Zephyr;
+import io.zephyr.cli.Zephyr;
 import io.zephyr.kernel.Lifecycle;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.core.ModuleManager;

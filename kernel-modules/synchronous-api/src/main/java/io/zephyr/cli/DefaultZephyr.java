@@ -1,4 +1,4 @@
-package io.zephyr.api;
+package io.zephyr.cli;
 
 import io.zephyr.kernel.Coordinate;
 import io.zephyr.kernel.Module;

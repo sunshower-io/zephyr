@@ -2,8 +2,8 @@ package io.zephyr.kernel.command;
 
 import dagger.BindsInstance;
 import dagger.Component;
-import io.zephyr.api.CommandContext;
-import io.zephyr.api.Console;
+import io.zephyr.cli.CommandContext;
+import io.zephyr.cli.Console;
 import java.io.InputStream;
 import java.io.PrintStream;
 import javax.inject.Singleton;
