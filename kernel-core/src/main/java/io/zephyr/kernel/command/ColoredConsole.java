@@ -1,12 +1,11 @@
 package io.zephyr.kernel.command;
 
-import io.zephyr.api.Color;
-import io.zephyr.api.Console;
+import io.zephyr.cli.Color;
+import io.zephyr.cli.Console;
 import io.zephyr.kernel.misc.SuppressFBWarnings;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
-import java.text.MessageFormat;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 import lombok.val;
@@ -31,13 +30,8 @@ public class ColoredConsole implements Console {
 
   @Override
   public void writeln(String line, Color[] colors, Object... args) {
-    val sbuilder = new StringBuilder();
-    for (val color : colors) {
-      sbuilder.append(color);
-    }
-    sbuilder.append(MessageFormat.format(line, args));
-    sbuilder.append(Color.Reset);
-    out.println(sbuilder.toString());
+    val sbuilder = writeString(line, colors, args);
+    out.println(sbuilder);
   }
 
   @Override
@@ -58,11 +52,16 @@ public class ColoredConsole implements Console {
 
   @Override
   public void successln(String string, Object... args) {
-    writeln(string, Color.colors(Color.GreenBoldBright), args);
+    writeln(string, Color.colors(Color.GreenBright), args);
   }
 
   @Override
   public PrintStream getWriter() {
     return out;
+  }
+
+  @Override
+  public void write(Object o) {
+    out.print(o);
   }
 }

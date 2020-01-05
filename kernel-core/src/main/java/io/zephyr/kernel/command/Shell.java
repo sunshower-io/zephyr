@@ -1,14 +1,17 @@
 package io.zephyr.kernel.command;
 
-import io.zephyr.api.*;
+import io.zephyr.cli.*;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import lombok.NonNull;
 import lombok.val;
 import picocli.CommandLine;
 
 public class Shell implements Invoker, Remote {
-  protected final transient Console console;
+  static final Logger log = Logger.getLogger(Shell.class.getName());
+  protected Console console;
 
   private final transient DefaultHistory history;
   private final transient CommandRegistry registry;
@@ -26,6 +29,11 @@ public class Shell implements Invoker, Remote {
   }
 
   @Override
+  public void setConsole(@NonNull Console console) throws Exception {
+    this.console = console;
+  }
+
+  @Override
   public Console getConsole() throws RemoteException {
     return console;
   }
@@ -37,6 +45,7 @@ public class Shell implements Invoker, Remote {
     try {
       cli.execute(parameters.formals());
     } catch (Exception ex) {
+      log.log(Level.WARNING, "Command failed.  Reason: ", ex);
       cli.usage(System.out);
     }
     return null;

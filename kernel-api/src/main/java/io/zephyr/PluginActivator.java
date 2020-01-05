@@ -1,10 +1,14 @@
 package io.zephyr;
 
-import io.zephyr.kernel.Module;
-
+/**
+ * All exceptions must be handled by the kernel, which is why we do not restrict the exception type
+ * to KernelException.
+ */
 public interface PluginActivator {
 
-  void start(PluginContext context, Module module);
+  default void initialize(PluginContext ctx) throws Exception {}
 
-  void stop(PluginContext context, Module module);
+  void start(PluginContext context) throws Exception;
+
+  void stop(PluginContext context) throws Exception;
 }

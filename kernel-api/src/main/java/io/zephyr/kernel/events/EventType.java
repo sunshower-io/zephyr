@@ -11,11 +11,7 @@ public interface EventType {
   Generator instance = new Generator();
 
   final class Generator {
-    final AtomicInteger counter;
-
-    Generator() {
-      counter = new AtomicInteger();
-    }
+    static final AtomicInteger counter = new AtomicInteger();
 
     final int id() {
       return counter.getAndIncrement();

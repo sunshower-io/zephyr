@@ -3,7 +3,7 @@ package io.zephyr.spring.web;
 import io.sunshower.kernel.test.Module;
 import io.sunshower.kernel.test.Modules;
 import io.sunshower.kernel.test.ZephyrTest;
-import io.zephyr.api.Zephyr;
+import io.zephyr.cli.Zephyr;
 import javax.inject.Inject;
 import org.junit.jupiter.api.Test;
 

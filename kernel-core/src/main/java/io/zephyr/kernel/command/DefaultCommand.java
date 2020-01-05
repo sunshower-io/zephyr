@@ -1,7 +1,7 @@
 package io.zephyr.kernel.command;
 
-import io.zephyr.api.CommandContext;
-import io.zephyr.api.Result;
+import io.zephyr.cli.CommandContext;
+import io.zephyr.cli.Result;
 
 public class DefaultCommand extends AbstractCommand {
   private static final long serialVersionUID = 5240261956667412465L;

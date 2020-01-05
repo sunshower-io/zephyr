@@ -2,12 +2,10 @@ package io.zephyr.kernel.command;
 
 import dagger.Module;
 import dagger.Provides;
-import io.zephyr.api.CommandContext;
-import io.zephyr.api.CommandRegistry;
-import io.zephyr.api.CommandRegistryDecorator;
-import io.zephyr.api.Console;
-import java.io.InputStream;
-import java.io.PrintStream;
+import io.zephyr.cli.CommandContext;
+import io.zephyr.cli.CommandRegistry;
+import io.zephyr.cli.CommandRegistryDecorator;
+import io.zephyr.cli.Console;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
@@ -16,15 +14,6 @@ import lombok.val;
 
 @Module
 public class ShellModule {
-
-  @Provides
-  @Singleton
-  public Console console(
-      InputStream inputStream, PrintStream outputStream, CommandContext context) {
-    val result = new ColoredConsole(inputStream, outputStream);
-    ((DefaultCommandContext) context).register(Console.class, result);
-    return result;
-  }
 
   @Provides
   @Singleton

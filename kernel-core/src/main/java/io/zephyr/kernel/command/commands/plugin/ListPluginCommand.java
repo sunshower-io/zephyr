@@ -1,8 +1,8 @@
 package io.zephyr.kernel.command.commands.plugin;
 
-import io.zephyr.api.CommandContext;
-import io.zephyr.api.Console;
-import io.zephyr.api.Result;
+import io.zephyr.cli.CommandContext;
+import io.zephyr.cli.Console;
+import io.zephyr.cli.Result;
 import io.zephyr.kernel.command.AbstractCommand;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.core.KernelLifecycle;
@@ -33,7 +33,7 @@ public class ListPluginCommand extends AbstractCommand {
     console.successln("Modules installed:");
     for (val module : manager.getModules()) {
       console.successln(
-          "\t{0} | state {1}",
+          "\t%s | state %s",
           module.getCoordinate().toCanonicalForm(), module.getLifecycle().getState());
     }
 

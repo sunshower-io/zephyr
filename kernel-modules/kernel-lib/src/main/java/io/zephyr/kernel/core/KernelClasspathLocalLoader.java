@@ -7,7 +7,7 @@ import org.jboss.modules.Resource;
 
 public class KernelClasspathLocalLoader implements LocalLoader {
 
-  //  final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+  //    final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
   final ClassLoader classLoader;
 
   public KernelClasspathLocalLoader(final Kernel kernel) {

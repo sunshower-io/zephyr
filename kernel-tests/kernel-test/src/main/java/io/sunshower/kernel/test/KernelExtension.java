@@ -1,7 +1,7 @@
 package io.sunshower.kernel.test;
 
 import io.sunshower.test.common.Tests;
-import io.zephyr.api.Zephyr;
+import io.zephyr.cli.Zephyr;
 import io.zephyr.kernel.Coordinate;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.module.ModuleInstallationGroup;

@@ -35,7 +35,7 @@ public class ModuleInstallationCompletionPhase extends Task {
       final FileSystem fileSystem = context.get(ModuleTransferPhase.MODULE_FILE_SYSTEM);
       final File moduleDirectory = context.get(ModuleTransferPhase.MODULE_DIRECTORY);
       final Assembly assembly = context.get(ModuleUnpackPhase.MODULE_ASSEMBLY);
-      final Set<Library> libraries = context.get(ModuleUnpackPhase.INSTALLED_LIBRARIES);
+      //      final Set<Library> libraries = context.get(ModuleUnpackPhase.INSTALLED_LIBRARIES);
 
       DefaultModule module =
           new DefaultModule(
@@ -47,7 +47,7 @@ public class ModuleInstallationCompletionPhase extends Task {
               moduleDirectory.getAbsoluteFile().toPath(),
               descriptor.getCoordinate(),
               fileSystem,
-              libraries,
+              assembly.getLibraries(),
               Set.copyOf(descriptor.getDependencies()));
 
       val lifecycle = createLifecycle(module);

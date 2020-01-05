@@ -1,5 +1,6 @@
 package io.zephyr.kernel.core;
 
+import io.zephyr.PluginContext;
 import io.zephyr.common.io.Files;
 import io.zephyr.kernel.Coordinate;
 import io.zephyr.kernel.Lifecycle;
@@ -121,6 +122,13 @@ public class SunshowerKernel extends AbstractEventSource implements Kernel {
   @Override
   public Scheduler<String> getScheduler() {
     return scheduler;
+  }
+
+  @Override
+  public PluginContext createContext(Module module) {
+    val ctx = new DefaultPluginContext(module, this);
+    ((DefaultModule) module).setContext(ctx);
+    return ctx;
   }
 
   @SuppressWarnings("PMD.UnusedPrivateMethod")

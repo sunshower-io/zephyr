@@ -3,8 +3,8 @@ package io.zephyr.kernel.server;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import io.sunshower.test.common.Tests;
-import io.zephyr.api.Invoker;
-import io.zephyr.api.Parameters;
+import io.zephyr.cli.Invoker;
+import io.zephyr.cli.Parameters;
 import io.zephyr.kernel.command.DaggerShellInjectionConfiguration;
 import io.zephyr.kernel.command.DefaultCommandContext;
 import io.zephyr.kernel.launch.KernelOptions;

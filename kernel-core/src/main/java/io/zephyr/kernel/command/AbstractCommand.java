@@ -1,6 +1,6 @@
 package io.zephyr.kernel.command;
 
-import io.zephyr.api.Command;
+import io.zephyr.cli.Command;
 import lombok.Getter;
 import lombok.NonNull;
 

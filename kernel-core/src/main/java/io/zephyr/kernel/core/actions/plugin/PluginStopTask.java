@@ -6,20 +6,17 @@ import io.zephyr.kernel.Lifecycle;
 import io.zephyr.kernel.PluginException;
 import io.zephyr.kernel.concurrency.Task;
 import io.zephyr.kernel.core.DefaultModule;
-import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.core.ModuleManager;
 import java.io.IOException;
 import lombok.val;
 
 public class PluginStopTask extends Task {
 
-  private final Kernel kernel;
   private final Coordinate coordinate;
   private final ModuleManager manager;
 
-  public PluginStopTask(Coordinate coordinate, ModuleManager manager, Kernel kernel) {
+  public PluginStopTask(Coordinate coordinate, ModuleManager manager) {
     super("plugin:stop" + coordinate.toCanonicalForm());
-    this.kernel = kernel;
     this.manager = manager;
     this.coordinate = coordinate;
   }
@@ -41,9 +38,12 @@ public class PluginStopTask extends Task {
       if (currentState == Lifecycle.State.Active) { // // TODO: 11/11/19 handle Failed
         try {
           module.getLifecycle().setState(Lifecycle.State.Stopping);
-          module.getActivator().stop(kernel, module);
-          ((DefaultModule) module).setActivator(null);
+          val activator = module.getActivator();
           try {
+            if (activator != null) {
+              module.getActivator().stop(module.getContext());
+            }
+            ((DefaultModule) module).setActivator(null);
             module.getFileSystem().close();
           } catch (Exception ex) {
             module.getLifecycle().setState(Lifecycle.State.Failed);

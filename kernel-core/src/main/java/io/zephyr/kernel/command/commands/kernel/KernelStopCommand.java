@@ -2,9 +2,9 @@ package io.zephyr.kernel.command.commands.kernel;
 
 import static io.zephyr.kernel.core.KernelEventTypes.*;
 
-import io.zephyr.api.CommandContext;
-import io.zephyr.api.Console;
-import io.zephyr.api.Result;
+import io.zephyr.cli.CommandContext;
+import io.zephyr.cli.Console;
+import io.zephyr.cli.Result;
 import io.zephyr.kernel.command.DefaultCommand;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.core.KernelEventTypes;
@@ -44,7 +44,12 @@ public class KernelStopCommand extends DefaultCommand {
       if (lifecycle.getState() != KernelLifecycle.State.Running) {
         return Result.failure();
       }
+      console.successln("Attempting to save kernel state...");
+      kernel.persistState().toCompletableFuture().get();
+      console.successln("Successfully wrote kernel state");
       kernel.stop();
+    } catch (Exception e) {
+      console.errorln("Failed to save state: ", e.getMessage());
     } finally {
       kernel.removeEventListener(listener);
     }

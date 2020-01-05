@@ -17,9 +17,4 @@ public enum KernelEventTypes implements EventType {
   KERNEL_FILESYSTEM_CREATED,
   KERNEL_CLASSLOADER_CREATED,
   KERNEL_MODULE_LIST_READ;
-
-  @Override
-  public int getId() {
-    return ordinal();
-  }
 }

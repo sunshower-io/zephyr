@@ -2,9 +2,9 @@ package io.zephyr.kernel.command.commands.plugin;
 
 import static io.zephyr.kernel.core.PluginEvents.*;
 
-import io.zephyr.api.CommandContext;
-import io.zephyr.api.Console;
-import io.zephyr.api.Result;
+import io.zephyr.cli.CommandContext;
+import io.zephyr.cli.Console;
+import io.zephyr.cli.Result;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.command.AbstractCommand;
 import io.zephyr.kernel.core.Kernel;
@@ -67,7 +67,7 @@ public class InstallPluginCommand extends AbstractCommand {
 
       kernel.getModuleManager().prepare(request).commit().toCompletableFuture().get();
     } catch (Exception ex) {
-      console.errorln("Failed to install plugins.  Reason: {0}", ex.getMessage());
+      console.errorln("Failed to install plugins.  Reason: %s", ex.getMessage());
     } finally {
       kernel.removeEventListener(listener);
     }
@@ -81,7 +81,7 @@ public class InstallPluginCommand extends AbstractCommand {
       try {
         results.add(new URL(normalized));
       } catch (MalformedURLException e) {
-        console.errorln("url ''{0}'' isn't valid--will not be installed", normalized);
+        console.errorln("url '%s' isn't valid--will not be installed", normalized);
       }
     }
     return results;
@@ -91,7 +91,7 @@ public class InstallPluginCommand extends AbstractCommand {
     if (url.charAt(0) == '.' || url.charAt(0) == '/') {
       val result = new File(url).getAbsoluteFile().getAbsolutePath();
       val fileResult = String.format("file://%s", result);
-      console.successln("Normalizing {0} -> {1}", url, fileResult);
+      console.successln("Normalizing %s -> %s", url, fileResult);
       return fileResult;
     }
     return url;
@@ -100,7 +100,7 @@ public class InstallPluginCommand extends AbstractCommand {
   private void logUrls(Console console) {
     console.successln("Will install:");
     for (val url : urls) {
-      console.successln("\t{0}", url);
+      console.successln("\t%s", url);
     }
   }
 
@@ -123,13 +123,13 @@ public class InstallPluginCommand extends AbstractCommand {
         case PLUGIN_INSTALLATION_COMPLETE:
           val module = (Module) event.getTarget();
           console.successln(
-              "Successfully installed plugin ''{0}''", module.getCoordinate().toCanonicalForm());
+              "Successfully installed plugin '%s'", module.getCoordinate().toCanonicalForm());
           break;
         case PLUGIN_INSTALLATION_INITIATED:
-          console.successln("Beginning download of plugin at ''{0}''", event.getTarget());
+          console.successln("Beginning download of plugin at '%s'", event.getTarget());
           break;
         case PLUGIN_INSTALLATION_FAILED:
-          console.errorln("Failed to install plugin ''{0}''", event.getTarget());
+          console.errorln("Failed to install plugin '%s'", event.getTarget());
           break;
         case PLUGIN_SET_INSTALLATION_COMPLETE:
           console.successln("successfully installed plugins");

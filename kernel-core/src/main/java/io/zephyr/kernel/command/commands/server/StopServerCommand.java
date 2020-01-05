@@ -1,7 +1,7 @@
 package io.zephyr.kernel.command.commands.server;
 
-import io.zephyr.api.CommandContext;
-import io.zephyr.api.Result;
+import io.zephyr.cli.CommandContext;
+import io.zephyr.cli.Result;
 import io.zephyr.kernel.command.DefaultCommand;
 import io.zephyr.kernel.server.Server;
 import picocli.CommandLine;

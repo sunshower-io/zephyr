@@ -8,6 +8,7 @@ import io.zephyr.kernel.concurrency.Task;
 import io.zephyr.kernel.core.DefaultModule;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.core.ModuleManager;
+import java.util.ServiceConfigurationError;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import lombok.val;
@@ -32,7 +33,7 @@ public class PluginStartTask extends Task {
    * lifecycle events dispatched by the PluginContext
    */
   @Override
-  @SuppressWarnings("PMD.AvoidBranchingStatementAsLastInLoop")
+  @SuppressWarnings({"PMD.AvoidBranchingStatementAsLastInLoop", "PMD.DataflowAnomalyAnalysis"})
   public TaskValue run(Scope scope) {
     synchronized (this) {
       val module = manager.getModule(coordinate);
@@ -41,11 +42,12 @@ public class PluginStartTask extends Task {
         module.getLifecycle().setState(Lifecycle.State.Starting);
         val loader = module.getModuleClasspath().resolveServiceLoader(PluginActivator.class);
         manager.getModuleLoader().check(module);
+        val ctx = kernel.createContext(module);
         for (val activator : loader) {
           try {
-            activator.start(kernel, module);
+            activator.start(ctx);
             ((DefaultModule) module).setActivator(activator);
-          } catch (Exception | LinkageError ex) {
+          } catch (Exception | ServiceConfigurationError | LinkageError ex) {
             module.getLifecycle().setState(Lifecycle.State.Failed);
             log.log(
                 Level.WARNING, "Failed to start plugin ''{0}''.  Reason: ''{1}''", ex.getMessage());
