@@ -9,4 +9,7 @@ dependencies {
     ].each {
         api "org.springframework:$it"
     }
+
+    api project(':kernel-api')
+    api project(':kernel-modules:kernel-lib')
 }

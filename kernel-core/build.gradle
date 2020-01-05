@@ -60,6 +60,7 @@ dependencies {
     testImplementation project(':kernel-modules:kernel-lib')
     testImplementation project(':kernel-tests:kernel-test-common')
 
+    testImplementation project(':kernel-modules:sunshower-spring')
 
     /**
      * Annotation Processors

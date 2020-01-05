@@ -4,4 +4,6 @@ dependencies {
 
     testImplementation project(':kernel-core')
     testImplementation project(':kernel-tests:kernel-test')
+    testImplementation project(':kernel-modules:kernel-lib')
+    testImplementation project(':kernel-modules:sunshower-spring')
 }
