@@ -123,7 +123,7 @@ final class DefaultModuleInstallationStatusGroup implements ModuleInstallationSt
 
       /** unpack modules */
       val unpackModuleName = format("module:unpack:%s", location);
-      val unpackTask = new ModuleUnpackPhase(unpackModuleName);
+      val unpackTask = new ModuleUnpackPhase(unpackModuleName, kernel);
       taskBuilder.register(unpackTask);
       taskBuilder.task(unpackModuleName).dependsOn(transferModuleName);
 
