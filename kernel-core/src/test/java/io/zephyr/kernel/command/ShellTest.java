@@ -1,6 +1,5 @@
 package io.zephyr.kernel.command;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import io.zephyr.cli.Command;

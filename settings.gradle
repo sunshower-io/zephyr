@@ -1,4 +1,6 @@
 include(
+        'kernel-modules:zephyr:zephyr-shell',
+
         'kernel-gyre:gyre-api',
         'kernel-gyre:gyre-core',
         'kernel-gyre:gyre-breeze',

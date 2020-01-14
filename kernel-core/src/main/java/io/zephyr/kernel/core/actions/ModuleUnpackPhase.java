@@ -41,10 +41,6 @@ public class ModuleUnpackPhase extends Task implements ModuleAssemblyExtractor.E
   @Override
   @SuppressWarnings({"PMD.CloseResource", "PMD.DataflowAnomalyAnalysis"})
   public TaskValue run(Scope context) {
-    //    Set<String> libDirectories = context.get(LIBRARY_DIRECTORIES);
-    //    if (libDirectories == null) {
-    //      libDirectories = Set.of("WEB-INF/lib/", "BOOT-INF/lib/");
-    //    }
     File assemblyFile = context.get(ModuleTransferPhase.MODULE_ASSEMBLY_FILE);
     val assembly = new Assembly(assemblyFile);
     FileSystem moduleFileSystem = context.get(ModuleTransferPhase.MODULE_FILE_SYSTEM);
@@ -65,17 +61,6 @@ public class ModuleUnpackPhase extends Task implements ModuleAssemblyExtractor.E
     }
     context.set(MODULE_ASSEMBLY, assembly);
     return null;
-
-    //    try {
-    //      log.log(Level.INFO, "module.unpack.begin", assemblyFile);
-    //      log.log(Level.INFO, "module.unpack.complete", assemblyFile);
-    ////      context.set(MODULE_ASSEMBLY, assembly);
-    ////      context.set(INSTALLED_LIBRARIES, libraryFiles);
-    //    } catch (IOException ex) {
-    //      log.log(Level.WARNING, "module.unpack.failed", assemblyFile);
-    //      throw new TaskException(ex, TaskStatus.UNRECOVERABLE);
-    //    }
-    //    return null;
   }
 
   @Override

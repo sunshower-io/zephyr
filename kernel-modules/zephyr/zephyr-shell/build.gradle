@@ -1,0 +1,18 @@
+apply plugin: 'java'
+apply plugin: 'java-library'
+dependencies {
+
+
+    [
+
+            'info.picocli:picocli',
+            'com.google.dagger:dagger',
+            project(':kernel-core'),
+            project(':kernel-api'),
+            project(':kernel-modules:kernel-lib')
+    ].each {
+        implementation it
+    }
+
+    annotationProcessor 'com.google.dagger:dagger-compiler'
+}

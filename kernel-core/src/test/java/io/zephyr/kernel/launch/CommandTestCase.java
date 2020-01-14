@@ -6,7 +6,7 @@ import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.core.KernelLifecycle;
 import io.zephyr.kernel.core.SunshowerKernel;
 import io.zephyr.kernel.misc.SuppressFBWarnings;
-import io.zephyr.kernel.server.Server;
+import io.zephyr.kernel.modules.cli.server.Server;
 import java.net.URI;
 import java.nio.file.FileSystems;
 import java.time.Duration;

@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.sunshower.test.common.Tests;
-import io.zephyr.kernel.server.Server;
+import io.zephyr.kernel.modules.cli.server.Server;
 import org.junit.jupiter.api.Test;
 
 @SuppressWarnings({

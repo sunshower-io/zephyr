@@ -1,7 +1,5 @@
 package io.zephyr.kernel.command;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import io.zephyr.cli.CommandContext;
 import io.zephyr.cli.CommandRegistry;
 import io.zephyr.cli.Result;

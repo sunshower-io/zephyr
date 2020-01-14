@@ -4,7 +4,7 @@ import io.sunshower.test.common.Tests;
 import io.zephyr.kernel.Lifecycle;
 import io.zephyr.kernel.launch.CommandTestCase;
 import io.zephyr.kernel.launch.KernelLauncher;
-import io.zephyr.kernel.server.Server;
+import io.zephyr.kernel.modules.cli.server.Server;
 import java.io.File;
 import java.util.UUID;
 import org.junit.jupiter.api.*;
