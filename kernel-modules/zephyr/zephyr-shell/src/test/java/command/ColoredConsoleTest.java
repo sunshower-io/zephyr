@@ -1,6 +1,7 @@
 package command;
 
-import io.zephyr.cli.Color;
+import io.zephyr.kernel.modules.shell.command.ColoredConsole;
+import io.zephyr.kernel.modules.shell.console.Color;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

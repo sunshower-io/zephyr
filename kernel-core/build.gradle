@@ -38,9 +38,16 @@ dependencies {
      */
 
     [
-            'com.google.dagger:dagger',
-            project(':kernel-api'),
+            /**
+             * external dependencies
+             */
             'info.picocli:picocli',
+            'com.google.dagger:dagger',
+
+            /**
+             * project dependencies
+             */
+            project(':kernel-api'),
             project(':kernel-gyre:gyre-api'),
             project(':kernel-modules:kernel-lib')
     ].each {
@@ -55,12 +62,24 @@ dependencies {
 
 
 
-    testImplementation project(':kernel-gyre:gyre-api')
-    testImplementation 'org.jboss.modules:jboss-modules'
-    testImplementation project(':kernel-modules:kernel-lib')
-    testImplementation project(':kernel-tests:kernel-test-common')
+    [
 
-    testImplementation project(':kernel-modules:sunshower-spring')
+            /**
+             * external dependencies
+             */
+            'org.jboss.modules:jboss-modules',
+
+            /**
+             * project dependencies
+             */
+            project(':kernel-gyre:gyre-api'),
+            project(':kernel-modules:kernel-lib'),
+            project(':kernel-tests:kernel-test-common'),
+            project(':kernel-modules:sunshower-spring')
+    ].each {
+        testImplementation it
+    }
+
 
     /**
      * Annotation Processors

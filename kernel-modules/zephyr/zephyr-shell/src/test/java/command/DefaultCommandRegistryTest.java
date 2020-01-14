@@ -1,8 +1,12 @@
 package command;
 
-import io.zephyr.cli.CommandContext;
-import io.zephyr.cli.CommandRegistry;
-import io.zephyr.cli.Result;
+import static org.junit.jupiter.api.Assertions.*;
+
+import io.zephyr.kernel.modules.shell.command.AbstractCommand;
+import io.zephyr.kernel.modules.shell.command.DefaultCommandRegistry;
+import io.zephyr.kernel.modules.shell.console.CommandContext;
+import io.zephyr.kernel.modules.shell.console.CommandRegistry;
+import io.zephyr.kernel.modules.shell.console.Result;
 import lombok.NonNull;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;

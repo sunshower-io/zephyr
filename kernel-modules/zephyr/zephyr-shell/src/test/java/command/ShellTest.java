@@ -1,13 +1,17 @@
 package command;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import io.zephyr.cli.Command;
-import io.zephyr.cli.CommandContext;
-import io.zephyr.cli.Parameters;
-import io.zephyr.cli.Result;
 import io.zephyr.kernel.misc.SuppressFBWarnings;
+import io.zephyr.kernel.modules.shell.command.DaggerShellInjectionConfiguration;
+import io.zephyr.kernel.modules.shell.command.DefaultCommandContext;
+import io.zephyr.kernel.modules.shell.command.Shell;
+import io.zephyr.kernel.modules.shell.console.Command;
+import io.zephyr.kernel.modules.shell.console.CommandContext;
+import io.zephyr.kernel.modules.shell.console.Parameters;
+import io.zephyr.kernel.modules.shell.console.Result;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.rmi.RemoteException;

@@ -1,14 +1,13 @@
 package io.zephyr.kernel.launch;
 
-import io.zephyr.kernel.Options;
-import io.zephyr.kernel.extensions.EntryPoint;
-import lombok.Getter;
-
-import java.util.Map;
-import java.util.logging.Logger;
-
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+
+import io.zephyr.kernel.Options;
+import io.zephyr.kernel.extensions.EntryPoint;
+import java.util.Map;
+import java.util.logging.Logger;
+import lombok.Getter;
 
 public class MockEntryPoint implements EntryPoint {
 
@@ -34,6 +33,7 @@ public class MockEntryPoint implements EntryPoint {
   }
 
   @Override
+  @SuppressWarnings("PMD.FinalizeOverloaded")
   public void finalize(Map<ContextEntries, Object> context) {
     mock.finalize(context);
   }

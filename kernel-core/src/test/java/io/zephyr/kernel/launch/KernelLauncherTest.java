@@ -1,14 +1,14 @@
 package io.zephyr.kernel.launch;
 
-import io.zephyr.kernel.extensions.EntryPoint;
-import io.zephyr.kernel.extensions.EntryPointRegistry;
-import lombok.val;
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+
+import io.zephyr.kernel.extensions.EntryPoint;
+import io.zephyr.kernel.extensions.EntryPointRegistry;
+import lombok.val;
+import org.junit.jupiter.api.Test;
 
 class KernelLauncherTest {
 
@@ -54,14 +54,14 @@ class KernelLauncherTest {
   void ensureRegistryContainsCorrectEntryPointCount() {
     val ctx = runAndGetMock().getContext();
     val registry = (EntryPointRegistry) ctx.get(EntryPoint.ContextEntries.ENTRY_POINT_REGISTRY);
-    assertEquals(2, registry.getEntryPoints().size() , "must contain 2 entrypoints");
+    assertEquals(2, registry.getEntryPoints().size(), "must contain 2 entrypoints");
   }
 
   MockEntryPoint runAndGetMock() {
     return runAndGetMock(new String[0]);
   }
 
-  MockEntryPoint runAndGetMock(String[] args) {
+  MockEntryPoint runAndGetMock(String... args) {
     val ctx = KernelLauncher.doLaunch(args);
     val registry = (EntryPointRegistry) ctx.get(EntryPoint.ContextEntries.ENTRY_POINT_REGISTRY);
     return (MockEntryPoint)

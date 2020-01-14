@@ -3,18 +3,19 @@ package io.zephyr.kernel.modules.shell;
 import io.zephyr.kernel.Options;
 import io.zephyr.kernel.extensions.EntryPoint;
 import io.zephyr.kernel.modules.shell.console.Console;
+import java.util.Map;
 import java.util.logging.Logger;
 
 public class ZephyrCliEntryPoint implements EntryPoint {
 
   static Logger log = Logger.getLogger(ZephyrCliEntryPoint.class.getName());
-//  final ShellOptions options;
+  //  final ShellOptions options;
 
   /** private state */
   private Console console;
 
   public ZephyrCliEntryPoint() {
-//    this.options = args;
+    //    this.options = args;
   }
 
   //  @Override
@@ -41,6 +42,33 @@ public class ZephyrCliEntryPoint implements EntryPoint {
   public Logger getLogger() {
     return log;
   }
+
+  @Override
+  public void initialize(Map<ContextEntries, Object> context) {
+    System.out.println(context);
+  }
+
+  @Override
+  public void finalize(Map<ContextEntries, Object> context) {}
+
+  @Override
+  public void start() {}
+
+  @Override
+  public void stop() {}
+
+  @Override
+  public <T> T getService(Class<T> type) {
+    return null;
+  }
+
+  @Override
+  public <T> boolean exports(Class<T> type) {
+    return false;
+  }
+
+  @Override
+  public void run(Map<ContextEntries, Object> ctx) {}
 
   @Override
   public Options<?> getOptions() {

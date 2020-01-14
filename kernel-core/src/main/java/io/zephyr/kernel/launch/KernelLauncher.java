@@ -134,7 +134,8 @@ public class KernelLauncher implements EntryPoint, EntryPointRegistry {
 
   static Map<ContextEntries, Object> launch(String[] args) {
     val loaders =
-        ServiceLoader.load(EntryPoint.class, ClassLoader.getSystemClassLoader()).stream()
+        ServiceLoader.load(EntryPoint.class, ClassLoader.getSystemClassLoader())
+            .stream()
             .map(ServiceLoader.Provider::get)
             .sorted(PrioritizedExtension::compareTo)
             .collect(Collectors.toList());
