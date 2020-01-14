@@ -97,12 +97,17 @@ public class KernelLauncher implements EntryPoint, EntryPointRegistry {
   }
 
   public static void main(String[] args) {
+    doLaunch(args);
+  }
+
+  static Map<ContextEntries, Object> doLaunch(String[] args) {
     log.log(Level.INFO, "kernel.launcher.starting");
     Map<ContextEntries, Object> context = launch(args);
     log.log(Level.INFO, "kernel.launcher.stopping");
     stop(context);
     doFinalize(context);
     log.log(Level.INFO, "kernel.launcher.stopped");
+    return context;
   }
 
   @SuppressWarnings({"unchecked", "PMD.AvoidCallingFinalize"})
@@ -129,8 +134,7 @@ public class KernelLauncher implements EntryPoint, EntryPointRegistry {
 
   static Map<ContextEntries, Object> launch(String[] args) {
     val loaders =
-        ServiceLoader.load(EntryPoint.class, ClassLoader.getSystemClassLoader())
-            .stream()
+        ServiceLoader.load(EntryPoint.class, ClassLoader.getSystemClassLoader()).stream()
             .map(ServiceLoader.Provider::get)
             .sorted(PrioritizedExtension::compareTo)
             .collect(Collectors.toList());
