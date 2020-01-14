@@ -92,4 +92,7 @@ application {
 }
 
 
+startScripts {
+    classpath = files("lib/*")
+}
 

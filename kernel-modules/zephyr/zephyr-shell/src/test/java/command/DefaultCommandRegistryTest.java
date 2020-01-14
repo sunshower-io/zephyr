@@ -1,4 +1,4 @@
-package io.zephyr.kernel.command;
+package command;
 
 import io.zephyr.cli.CommandContext;
 import io.zephyr.cli.CommandRegistry;

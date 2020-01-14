@@ -1,5 +1,6 @@
-package io.zephyr.kernel.command;
+package command;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import io.zephyr.cli.Command;
@@ -7,7 +8,8 @@ import io.zephyr.cli.CommandContext;
 import io.zephyr.cli.Parameters;
 import io.zephyr.cli.Result;
 import io.zephyr.kernel.misc.SuppressFBWarnings;
-import java.io.*;
+import java.io.InputStream;
+import java.io.PrintStream;
 import java.rmi.RemoteException;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
