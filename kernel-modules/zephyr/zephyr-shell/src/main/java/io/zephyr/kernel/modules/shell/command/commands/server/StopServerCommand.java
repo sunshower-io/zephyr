@@ -19,7 +19,6 @@ public class StopServerCommand extends DefaultCommand {
   public Result execute(CommandContext context) {
     try {
       context.getService(Server.class).stop();
-      System.out.println("STOP");
     } catch (Exception ex) {
       ex.printStackTrace();
     }

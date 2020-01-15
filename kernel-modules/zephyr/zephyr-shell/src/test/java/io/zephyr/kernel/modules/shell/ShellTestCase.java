@@ -2,6 +2,7 @@ package io.zephyr.kernel.modules.shell;
 
 import io.sunshower.test.common.Tests;
 import io.zephyr.kernel.core.Kernel;
+import io.zephyr.kernel.core.KernelLifecycle;
 import io.zephyr.kernel.extensions.EntryPoint;
 import io.zephyr.kernel.launch.KernelLauncher;
 import io.zephyr.kernel.modules.shell.server.Server;
@@ -48,7 +49,6 @@ public class ShellTestCase {
     }
 
     while ((server = launcher.resolveService(Server.class)) == null) {
-      System.out.println(launcher.getEntryPoints());
       Thread.sleep(100);
     }
     while (!server.isRunning()) {
@@ -59,35 +59,50 @@ public class ShellTestCase {
   protected void restartKernel() {
     run("kernel", "restart");
   }
+
+  protected void runAsync(String... args) {
+    new Thread(
+            () -> {
+              run(args);
+            })
+        .start();
+  }
+
   @SneakyThrows
   protected void startKernel() {
     if (server == null) {
       startServer();
     }
-    run("kernel", "start", "-h", homeDirectory.getAbsolutePath());
+    runAsync("kernel", "start", "-h", homeDirectory.getAbsolutePath());
     while ((kernel = launcher.resolveService(Kernel.class)) == null) {
       Thread.sleep(100);
     }
+    System.out.println("Successfully started kernel");
   }
 
+  @SneakyThrows
   protected void stopKernel() {
     checkServer();
-    run("kernel", "stop");
+    runAsync("kernel", "stop");
+    while (kernel.getLifecycle().getState() != KernelLifecycle.State.Running) {
+      Thread.sleep(100);
+    }
+    System.out.println("Kernel stopped");
   }
 
   @SneakyThrows
   protected void stopServer() {
     checkServer();
-    run("server", "stop");
+    runAsync("server", "stop");
+    while(server.isRunning()) {
+      Thread.sleep(100);
+    }
+    System.out.println("Stopped server");
     launcher = null;
   }
 
   protected void run(String... args) {
-    new Thread(
-            () -> {
-              KernelLauncher.main(args);
-            })
-        .start();
+    KernelLauncher.main(args);
   }
 
   @SneakyThrows

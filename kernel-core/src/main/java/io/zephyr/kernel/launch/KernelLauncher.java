@@ -205,7 +205,11 @@ public class KernelLauncher implements EntryPoint, EntryPointRegistry {
     while (true) {
       synchronized (lock) {
         try {
-          val entryPoint = completionQueue.take();
+          val entryPoint = completionQueue.poll(200, TimeUnit.MICROSECONDS);
+          if(entryPoint == null) {
+            check(tasks, null); // need to call notifyAll() on KernelLauncher to check for removed entrypoints
+            continue;
+          }
           log.log(Level.WARNING, "kernel.entrypoint.running.complete", entryPoint);
           if (check(tasks, entryPoint.get())) {
             return;
