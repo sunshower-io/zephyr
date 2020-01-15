@@ -20,7 +20,7 @@ public class StopServerCommand extends DefaultCommand {
     try {
       context.getService(Server.class).stop();
     } catch (Exception ex) {
-      ex.printStackTrace();
+      return Result.failure();
     }
     return Result.success();
   }
