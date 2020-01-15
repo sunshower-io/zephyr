@@ -5,22 +5,18 @@ import io.zephyr.kernel.Module;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.core.KernelLifecycle;
 import io.zephyr.kernel.core.SunshowerKernel;
-import io.zephyr.kernel.extensions.EntryPoint;
 import io.zephyr.kernel.launch.KernelLauncher;
 import io.zephyr.kernel.launch.KernelOptions;
 import io.zephyr.kernel.misc.SuppressFBWarnings;
 import io.zephyr.kernel.modules.shell.server.Server;
-import lombok.SneakyThrows;
-import lombok.val;
-import org.junit.jupiter.api.AfterEach;
-
 import java.net.URI;
 import java.nio.file.FileSystems;
 import java.time.Duration;
 import java.util.Collection;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
+import lombok.SneakyThrows;
+import lombok.val;
+import org.junit.jupiter.api.AfterEach;
 
 @SuppressWarnings({
   "PMD.DoNotUseThreads",

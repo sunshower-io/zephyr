@@ -6,12 +6,10 @@ import io.zephyr.kernel.core.KernelLifecycle;
 import io.zephyr.kernel.extensions.EntryPoint;
 import io.zephyr.kernel.launch.KernelLauncher;
 import io.zephyr.kernel.modules.shell.server.Server;
-import lombok.SneakyThrows;
-import lombok.val;
-
 import java.io.File;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
+import lombok.SneakyThrows;
+import lombok.val;
 
 public class ShellTestCase {
 
@@ -94,7 +92,7 @@ public class ShellTestCase {
   protected void stopServer() {
     checkServer();
     runAsync("server", "stop");
-    while(server.isRunning()) {
+    while (server.isRunning()) {
       Thread.sleep(100);
     }
     System.out.println("Stopped server");

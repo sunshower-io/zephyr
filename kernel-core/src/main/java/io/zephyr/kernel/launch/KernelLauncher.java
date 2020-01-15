@@ -188,7 +188,8 @@ public class KernelLauncher implements EntryPoint, EntryPointRegistry {
   }
 
   private static List<EntryPoint> resolveEntryPoints() {
-    return ServiceLoader.load(EntryPoint.class, ClassLoader.getSystemClassLoader()).stream()
+    return ServiceLoader.load(EntryPoint.class, ClassLoader.getSystemClassLoader())
+        .stream()
         .map(ServiceLoader.Provider::get)
         .sorted(PrioritizedExtension::compareTo)
         .collect(Collectors.toList());
@@ -206,8 +207,10 @@ public class KernelLauncher implements EntryPoint, EntryPointRegistry {
       synchronized (lock) {
         try {
           val entryPoint = completionQueue.poll(200, TimeUnit.MICROSECONDS);
-          if(entryPoint == null) {
-            check(tasks, null); // need to call notifyAll() on KernelLauncher to check for removed entrypoints
+          if (entryPoint == null) {
+            check(
+                tasks,
+                null); // need to call notifyAll() on KernelLauncher to check for removed entrypoints
             continue;
           }
           log.log(Level.WARNING, "kernel.entrypoint.running.complete", entryPoint);
@@ -309,6 +312,6 @@ public class KernelLauncher implements EntryPoint, EntryPointRegistry {
 
   @Override
   public int getPriority() {
-    return PrioritizedExtension.HIGHEST_PRIORITY;
+    return PrioritizedExtension.HIGHEST_PRIORITY + 10;
   }
 }

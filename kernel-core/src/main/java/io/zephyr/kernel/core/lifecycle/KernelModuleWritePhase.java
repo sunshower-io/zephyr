@@ -1,11 +1,11 @@
 package io.zephyr.kernel.core.lifecycle;
 
 import io.sunshower.gyre.Scope;
+import io.zephyr.kernel.KernelModuleEntry;
 import io.zephyr.kernel.concurrency.Task;
 import io.zephyr.kernel.concurrency.TaskException;
 import io.zephyr.kernel.concurrency.TaskStatus;
 import io.zephyr.kernel.core.Kernel;
-import io.zephyr.kernel.KernelModuleEntry;
 import java.util.List;
 import lombok.val;
 

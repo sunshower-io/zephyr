@@ -4,11 +4,10 @@ import io.zephyr.kernel.Options;
 import io.zephyr.kernel.core.ValidationErrors;
 import io.zephyr.kernel.core.ValidationException;
 import io.zephyr.kernel.core.ValidationStep;
+import java.io.File;
 import lombok.Getter;
 import lombok.Setter;
 import picocli.CommandLine;
-
-import java.io.File;
 
 public class ShellOptions implements Options<ShellOptions> {
 

@@ -1,7 +1,6 @@
 package io.zephyr.kernel.core;
 
 import io.zephyr.kernel.Coordinate;
-import io.zephyr.kernel.KernelModuleEntry;
 import io.zephyr.kernel.Lifecycle;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.dependencies.DependencyGraph;

@@ -1,5 +1,6 @@
 package io.zephyr.kernel.classloading;
 
+import io.zephyr.kernel.KernelModuleEntry;
 import io.zephyr.kernel.misc.SuppressFBWarnings;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
@@ -9,8 +10,6 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Enumeration;
 import java.util.List;
-
-import io.zephyr.kernel.KernelModuleEntry;
 import lombok.val;
 
 @SuppressFBWarnings
@@ -30,8 +29,6 @@ public final class KernelClassloader extends URLClassLoader {
     super(urls, parent);
     this.kernelModules = entries;
   }
-
-
 
   @Override
   public URL findResource(String name) {

@@ -8,6 +8,6 @@ Welcome to
          /_/          /____/
 
 ======================================
-ZepyrCore :: Kernel Version {0} :: Revision {1}
+ZephyrCore :: Kernel Version {0} :: Revision {1}
 Build: {2}
 

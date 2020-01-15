@@ -2,6 +2,7 @@ package io.zephyr.kernel.module;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import io.zephyr.kernel.KernelModuleEntry;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.PushbackInputStream;
@@ -9,8 +10,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
-
-import io.zephyr.kernel.KernelModuleEntry;
 import lombok.val;
 import org.junit.jupiter.api.Test;
 

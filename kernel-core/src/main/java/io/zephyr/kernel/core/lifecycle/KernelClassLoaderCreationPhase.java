@@ -1,13 +1,13 @@
 package io.zephyr.kernel.core.lifecycle;
 
 import io.sunshower.gyre.Scope;
+import io.zephyr.kernel.KernelModuleEntry;
 import io.zephyr.kernel.classloading.KernelClassloader;
 import io.zephyr.kernel.concurrency.Task;
 import io.zephyr.kernel.concurrency.TaskException;
 import io.zephyr.kernel.concurrency.TaskStatus;
 import io.zephyr.kernel.core.SunshowerKernel;
 import io.zephyr.kernel.misc.SuppressFBWarnings;
-import io.zephyr.kernel.KernelModuleEntry;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;

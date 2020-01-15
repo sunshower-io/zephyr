@@ -1,10 +1,8 @@
 package io.zephyr.kernel.extensions;
 
-import lombok.val;
-
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.function.Predicate;
+import lombok.val;
 
 public interface EntryPointRegistry {
 

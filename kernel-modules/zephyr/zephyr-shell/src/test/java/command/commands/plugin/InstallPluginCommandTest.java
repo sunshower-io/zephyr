@@ -1,17 +1,15 @@
 package command.commands.plugin;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import io.sunshower.test.common.Tests;
 import io.zephyr.kernel.launch.KernelLauncher;
+import java.io.File;
+import java.util.UUID;
+import launch.CommandTestCase;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.io.File;
-import java.util.UUID;
-
-import launch.CommandTestCase;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")
 class InstallPluginCommandTest extends CommandTestCase {
@@ -53,7 +51,7 @@ class InstallPluginCommandTest extends CommandTestCase {
           new String[] {"kernel", "start", "-h", Tests.createTemp().getAbsolutePath()});
       waitForKernel();
       runKernel("plugin", "install", yamlModule.getAbsolutePath());
-//      waitForPluginCount(1);
+      //      waitForPluginCount(1);
       val kernel = getKernel();
       assertEquals(
           kernel.getModuleManager().getModules().size(), 1, "must have one plugin installed");

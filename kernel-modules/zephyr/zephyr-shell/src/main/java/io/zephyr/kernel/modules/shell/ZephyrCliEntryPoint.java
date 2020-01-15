@@ -9,13 +9,12 @@ import io.zephyr.kernel.modules.shell.console.Invoker;
 import io.zephyr.kernel.modules.shell.console.Parameters;
 import io.zephyr.kernel.modules.shell.server.DaggerServerInjectionConfiguration;
 import io.zephyr.kernel.modules.shell.server.Server;
-import lombok.SneakyThrows;
-import lombok.val;
-
 import java.rmi.registry.LocateRegistry;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import lombok.SneakyThrows;
+import lombok.val;
 
 public class ZephyrCliEntryPoint implements EntryPoint {
 

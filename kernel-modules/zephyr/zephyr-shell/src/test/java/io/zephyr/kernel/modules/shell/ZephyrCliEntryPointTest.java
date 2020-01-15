@@ -1,9 +1,9 @@
 package io.zephyr.kernel.modules.shell;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class ZephyrCliEntryPointTest extends ShellTestCase {
 

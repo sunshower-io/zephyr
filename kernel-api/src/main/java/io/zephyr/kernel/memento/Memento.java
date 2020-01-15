@@ -111,7 +111,7 @@ class NoOpMemento implements Memento {
 
   @Override
   public Memento childNamed(String name) {
-    if(children == null) {
+    if (children == null) {
       return new NoOpMemento();
     }
     return children.stream().filter(t -> t.name.equals(name)).findFirst().get();
