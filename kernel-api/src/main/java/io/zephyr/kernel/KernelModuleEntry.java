@@ -1,4 +1,4 @@
-package io.zephyr.kernel.module;
+package io.zephyr.kernel;
 
 import java.util.List;
 import lombok.AllArgsConstructor;

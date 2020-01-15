@@ -1,5 +1,6 @@
 package io.zephyr.kernel.module;
 
+import io.zephyr.kernel.KernelModuleEntry;
 import io.zephyr.kernel.core.KernelException;
 import io.zephyr.kernel.log.Logging;
 import io.zephyr.kernel.misc.SuppressFBWarnings;

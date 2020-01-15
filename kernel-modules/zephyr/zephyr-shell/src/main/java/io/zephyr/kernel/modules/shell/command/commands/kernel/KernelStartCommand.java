@@ -34,12 +34,14 @@ public class KernelStartCommand extends DefaultCommand {
 
     val options = context.getService(ShellOptions.class);
     val console = context.getService(Console.class);
-    val kernelOptions = context.getService(KernelOptions.class);
 
     if (!(arguments == null || arguments.length == 0)) {
       CommandLine.populateCommand(options, arguments);
       options.validate();
     }
+
+    val kernelOptions = new KernelOptions();
+    kernelOptions.setHomeDirectory(options.getHomeDirectory());
 
     Kernel kernel = context.getService(Kernel.class);
 
@@ -67,7 +69,6 @@ public class KernelStartCommand extends DefaultCommand {
       kernel.restoreState().toCompletableFuture().get();
     } catch (Exception ex) {
       console.errorln("Failed to restore kernel state.  Reason: ", ex.getMessage());
-
     } finally {
       kernel.removeEventListener(listener);
     }

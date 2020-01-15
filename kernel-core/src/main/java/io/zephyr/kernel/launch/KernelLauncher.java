@@ -1,5 +1,6 @@
 package io.zephyr.kernel.launch;
 
+import io.zephyr.common.Options;
 import io.zephyr.kernel.extensions.EntryPoint;
 import io.zephyr.kernel.extensions.EntryPointRegistry;
 import io.zephyr.kernel.extensions.PrioritizedExtension;
@@ -12,7 +13,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import lombok.val;
-import picocli.CommandLine;
 
 @SuppressFBWarnings
 @SuppressWarnings({
@@ -24,7 +24,14 @@ import picocli.CommandLine;
 })
 public class KernelLauncher implements EntryPoint, EntryPointRegistry {
 
+  static final Object lock = new Object();
   static final Logger log = Logging.get(KernelLauncher.class);
+
+  static KernelLauncher instance;
+
+  public static KernelLauncher getInstance() {
+    return instance;
+  }
 
   private KernelOptions options;
   private ExecutorService executorService;
@@ -46,6 +53,31 @@ public class KernelLauncher implements EntryPoint, EntryPointRegistry {
   }
 
   @Override
+  @SuppressWarnings("unchecked")
+  public synchronized void run(Map<ContextEntries, Object> ctx) {
+    while (true) {
+      try {
+        val tasks = (List<EntryPoint>) ctx.get(ContextEntries.ENTRY_POINTS_TEMP);
+        if (tasks.isEmpty()) {
+          return;
+        }
+        if (tasks.size() == 1) {
+          if (tasks.get(0) == this) {
+            return;
+          }
+        }
+        wait(100);
+      } catch (InterruptedException e) {
+        log.log(Level.INFO, "interrupted");
+      }
+    }
+  }
+
+  synchronized void check() {
+    notifyAll();
+  }
+
+  @Override
   public void start() {
     int concurrency = getOptions().getKernelConcurrency();
     log.log(Level.INFO, "kernel.launcher.kernel.concurrency", concurrency);
@@ -57,11 +89,12 @@ public class KernelLauncher implements EntryPoint, EntryPointRegistry {
   public void initialize(Map<ContextEntries, Object> context) {
     this.context = context;
     context.put(ContextEntries.ENTRY_POINT_REGISTRY, this);
-    val args = (String[]) context.get(ContextEntries.ARGS);
-    options = new KernelOptions();
-    val commandLine = new CommandLine(options).setUnmatchedArgumentsAllowed(true);
-    final CommandLine.ParseResult parseResult = commandLine.parseArgs(args);
-    context.put(ContextEntries.ARGS, parseResult.unmatched().toArray(new String[0]));
+    options = Options.create(KernelOptions::new, context);
+    KernelLauncher.instance = this;
+  }
+
+  public void finalize(Map<ContextEntries, Object> context) {
+    KernelLauncher.instance = null;
   }
 
   @Override
@@ -100,7 +133,7 @@ public class KernelLauncher implements EntryPoint, EntryPointRegistry {
     doLaunch(args);
   }
 
-  static Map<ContextEntries, Object> doLaunch(String[] args) {
+  public static Map<ContextEntries, Object> doLaunch(String[] args) {
     log.log(Level.INFO, "kernel.launcher.starting");
     Map<ContextEntries, Object> context = launch(args);
     log.log(Level.INFO, "kernel.launcher.stopping");
@@ -133,22 +166,32 @@ public class KernelLauncher implements EntryPoint, EntryPointRegistry {
   }
 
   static Map<ContextEntries, Object> launch(String[] args) {
-    val loaders =
-        ServiceLoader.load(EntryPoint.class, ClassLoader.getSystemClassLoader())
-            .stream()
-            .map(ServiceLoader.Provider::get)
-            .sorted(PrioritizedExtension::compareTo)
-            .collect(Collectors.toList());
+    List<EntryPoint> loaders = resolveEntryPoints();
+    val entryPoints = new ArrayList<>(loaders);
 
-    val context = new EnumMap<>(EntryPoint.ContextEntries.class);
-    context.put(ContextEntries.ARGS, args);
-    context.put(ContextEntries.ENTRY_POINTS, loaders);
+    EnumMap<ContextEntries, Object> context = initializeContext(args, loaders, entryPoints);
     initializeAll(loaders.iterator(), context);
     startAll(loaders.iterator());
     ExecutorService kernelExecutor = locateExecutor(loaders.iterator());
     context.put(ContextEntries.KERNEL_EXECUTOR_SERVICE, kernelExecutor);
-    runAll(kernelExecutor, loaders, context);
+    runAll(kernelExecutor, entryPoints, context);
     return context;
+  }
+
+  private static EnumMap<ContextEntries, Object> initializeContext(
+      String[] args, List<EntryPoint> loaders, List<EntryPoint> entryPoints) {
+    val context = new EnumMap<>(ContextEntries.class);
+    context.put(ContextEntries.ARGS, args);
+    context.put(ContextEntries.ENTRY_POINTS_TEMP, entryPoints);
+    context.put(ContextEntries.ENTRY_POINTS, loaders);
+    return context;
+  }
+
+  private static List<EntryPoint> resolveEntryPoints() {
+    return ServiceLoader.load(EntryPoint.class, ClassLoader.getSystemClassLoader()).stream()
+        .map(ServiceLoader.Provider::get)
+        .sorted(PrioritizedExtension::compareTo)
+        .collect(Collectors.toList());
   }
 
   @SuppressWarnings({"PMD.DataflowAnomalyAnalysis", "PMD.UnusedPrivateMethod"})
@@ -157,23 +200,49 @@ public class KernelLauncher implements EntryPoint, EntryPointRegistry {
     val completionQueue = new ArrayBlockingQueue<Future<EntryPoint>>(tasks.size());
     val completionService =
         new ExecutorCompletionService<EntryPoint>(kernelExecutor, completionQueue);
+    scheduleTasks(tasks, context, completionService);
+
+    while (true) {
+      synchronized (lock) {
+        try {
+          val entryPoint = completionQueue.take();
+          log.log(Level.WARNING, "kernel.entrypoint.running.complete", entryPoint);
+          if (check(tasks, entryPoint.get())) {
+            return;
+          }
+        } catch (InterruptedException ex) {
+          log.log(Level.WARNING, "kernel.entrypoint.running.interrupted");
+        } catch (ExecutionException ex) {
+          log.log(Level.WARNING, "kernel.entrypoint.running.failed", ex.getMessage());
+          log.log(Level.INFO, "kernel.entrypoint.running.failed.ex", ex);
+        }
+      }
+    }
+  }
+
+  private static void scheduleTasks(
+      List<EntryPoint> tasks,
+      Map<ContextEntries, Object> context,
+      ExecutorCompletionService<EntryPoint> completionService) {
     for (val entryPoint : tasks) {
       log.log(Level.INFO, "kernel.entrypoint.scheduling", entryPoint);
       completionService.submit(EntryPoint.wrap(entryPoint, context));
       log.log(Level.INFO, "kernel.entrypoint.scheduled", entryPoint);
     }
-    while (!completionQueue.isEmpty()) {
-      EntryPoint entryPoint = null;
-      try {
-        entryPoint = completionQueue.take().get();
-        log.log(Level.INFO, "kernel.entrypoint.running.complete", entryPoint);
-      } catch (InterruptedException ex) {
-        log.log(Level.WARNING, "kernel.entrypoint.running.interrupted");
-      } catch (ExecutionException ex) {
-        log.log(Level.WARNING, "kernel.entrypoint.running.failed", ex.getMessage());
-        log.log(Level.INFO, "kernel.entrypoint.running.failed.ex", ex);
+  }
+
+  private static boolean check(List<EntryPoint> tasks, EntryPoint entryPoint) {
+    val iter = tasks.iterator();
+    while (iter.hasNext()) {
+      val next = iter.next();
+      if (next == entryPoint) {
+        iter.remove();
+      }
+      if (next.getClass().equals(KernelLauncher.class)) {
+        ((KernelLauncher) next).check();
       }
     }
+    return tasks.isEmpty();
   }
 
   @SuppressWarnings("PMD.DataflowAnomalyAnalysis")
@@ -224,7 +293,9 @@ public class KernelLauncher implements EntryPoint, EntryPointRegistry {
   @Override
   @SuppressWarnings("unchecked")
   public List<EntryPoint> getEntryPoints() {
-    return (List<EntryPoint>) context.get(ContextEntries.ENTRY_POINTS);
+    synchronized (KernelLauncher.class) {
+      return (List<EntryPoint>) context.get(ContextEntries.ENTRY_POINTS);
+    }
   }
 
   @Override

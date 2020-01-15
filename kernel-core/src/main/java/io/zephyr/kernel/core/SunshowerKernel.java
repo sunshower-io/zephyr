@@ -3,6 +3,7 @@ package io.zephyr.kernel.core;
 import io.zephyr.PluginContext;
 import io.zephyr.common.io.Files;
 import io.zephyr.kernel.Coordinate;
+import io.zephyr.kernel.KernelModuleEntry;
 import io.zephyr.kernel.Lifecycle;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.classloading.KernelClassloader;
@@ -72,6 +73,11 @@ public class SunshowerKernel extends AbstractEventSource implements Kernel {
 
   public static void setKernelOptions(KernelOptions options) {
     kernelOptions = options;
+  }
+
+  @Override
+  public List<KernelModuleEntry> getKernelModules() {
+    return ((KernelClassloader) classLoader).getKernelModules();
   }
 
   @Override

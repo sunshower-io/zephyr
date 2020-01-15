@@ -8,7 +8,7 @@ import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.core.KernelException;
 import io.zephyr.kernel.log.Logging;
 import io.zephyr.kernel.misc.SuppressFBWarnings;
-import io.zephyr.kernel.module.KernelModuleEntry;
+import io.zephyr.kernel.KernelModuleEntry;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;

@@ -1,8 +1,10 @@
 package io.zephyr.kernel.core;
 
 import io.zephyr.kernel.Coordinate;
+import io.zephyr.kernel.KernelModuleEntry;
 import io.zephyr.kernel.Lifecycle;
 import io.zephyr.kernel.Module;
+import io.zephyr.kernel.classloading.KernelClassloader;
 import io.zephyr.kernel.dependencies.DependencyGraph;
 import io.zephyr.kernel.events.EventSource;
 import io.zephyr.kernel.log.Logging;
@@ -63,6 +65,7 @@ public class DefaultModuleManager implements ModuleManager, EventSource {
     check();
     return kernel.getModuleClasspathManager();
   }
+
 
   @Override
   public List<Module> getModules() {

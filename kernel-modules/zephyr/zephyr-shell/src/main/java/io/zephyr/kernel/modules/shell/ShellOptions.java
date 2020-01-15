@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.Setter;
 import picocli.CommandLine;
 
+import java.io.File;
+
 public class ShellOptions implements Options<ShellOptions> {
 
   @Getter
@@ -32,6 +34,11 @@ public class ShellOptions implements Options<ShellOptions> {
   @Setter
   @CommandLine.Parameters(paramLabel = "commands", index = "0..*")
   private String[] commands;
+
+  @Getter
+  @Setter
+  @CommandLine.Option(names = {"-h", "--home-directory"})
+  private File homeDirectory;
 
   @Override
   public ShellOptions getTarget() {

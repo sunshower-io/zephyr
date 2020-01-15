@@ -7,7 +7,7 @@ import io.zephyr.kernel.concurrency.TaskStatus;
 import io.zephyr.kernel.core.KernelEventTypes;
 import io.zephyr.kernel.core.SunshowerKernel;
 import io.zephyr.kernel.events.Events;
-import io.zephyr.kernel.module.KernelModuleEntry;
+import io.zephyr.kernel.KernelModuleEntry;
 import io.zephyr.kernel.module.ModuleListParser;
 import lombok.val;
 

@@ -18,6 +18,7 @@ public interface EntryPoint extends PrioritizedExtension, Startable, Stoppable {
   enum ContextEntries {
     ARGS,
     ENTRY_POINTS,
+    ENTRY_POINTS_TEMP,
     KERNEL_EXECUTOR_SERVICE,
     ENTRY_POINT_REGISTRY;
   }

@@ -5,7 +5,7 @@ import io.zephyr.kernel.concurrency.Task;
 import io.zephyr.kernel.concurrency.TaskException;
 import io.zephyr.kernel.concurrency.TaskStatus;
 import io.zephyr.kernel.core.Kernel;
-import io.zephyr.kernel.module.KernelModuleEntry;
+import io.zephyr.kernel.KernelModuleEntry;
 import java.util.List;
 import lombok.val;
 

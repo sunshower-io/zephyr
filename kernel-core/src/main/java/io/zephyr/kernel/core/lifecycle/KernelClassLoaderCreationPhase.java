@@ -7,7 +7,7 @@ import io.zephyr.kernel.concurrency.TaskException;
 import io.zephyr.kernel.concurrency.TaskStatus;
 import io.zephyr.kernel.core.SunshowerKernel;
 import io.zephyr.kernel.misc.SuppressFBWarnings;
-import io.zephyr.kernel.module.KernelModuleEntry;
+import io.zephyr.kernel.KernelModuleEntry;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -32,7 +32,7 @@ public class KernelClassLoaderCreationPhase extends Task {
 
     try {
       URL[] url = readUrls(entries);
-      val loader = new KernelClassloader(url, ClassLoader.getSystemClassLoader());
+      val loader = new KernelClassloader(url, ClassLoader.getSystemClassLoader(), entries);
       kernel.setClassLoader(loader);
     } catch (MalformedURLException ex) {
       throw new TaskException(ex, TaskStatus.UNRECOVERABLE);

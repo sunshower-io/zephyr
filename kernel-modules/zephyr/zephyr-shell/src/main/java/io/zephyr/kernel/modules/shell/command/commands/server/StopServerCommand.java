@@ -17,7 +17,12 @@ public class StopServerCommand extends DefaultCommand {
 
   @Override
   public Result execute(CommandContext context) {
-    context.getService(Server.class).stop();
+    try {
+      context.getService(Server.class).stop();
+      System.out.println("STOP");
+    } catch (Exception ex) {
+      ex.printStackTrace();
+    }
     return Result.success();
   }
 }

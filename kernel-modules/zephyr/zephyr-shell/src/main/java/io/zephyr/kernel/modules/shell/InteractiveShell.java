@@ -1,6 +1,5 @@
 package io.zephyr.kernel.modules.shell;
 
-import io.zephyr.kernel.launch.KernelOptions;
 import io.zephyr.kernel.modules.shell.console.Console;
 import io.zephyr.kernel.modules.shell.console.Invoker;
 import io.zephyr.kernel.modules.shell.console.Parameters;
@@ -18,9 +17,9 @@ import picocli.CommandLine;
 public class InteractiveShell {
   private final Console console;
   private final Invoker invoker;
-  private final KernelOptions options;
+  private final ShellOptions options;
 
-  public InteractiveShell(Invoker invoker, KernelOptions options, Console console) {
+  public InteractiveShell(Invoker invoker, ShellOptions options, Console console) {
     this.invoker = invoker;
     this.console = console;
     this.options = options;
