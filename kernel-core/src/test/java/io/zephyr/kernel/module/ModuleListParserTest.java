@@ -2,6 +2,7 @@ package io.zephyr.kernel.module;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import io.zephyr.kernel.KernelModuleEntry;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.PushbackInputStream;

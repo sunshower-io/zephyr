@@ -1,0 +1,9 @@
+dependencies {
+
+    [
+            project(':kernel-api'),
+            project(':kernel-modules:zephyr:zephyr-shell')
+    ].each { dep ->
+        implementation dep
+    }
+}

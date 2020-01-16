@@ -1,5 +1,6 @@
 package io.zephyr.kernel.module;
 
+import io.zephyr.kernel.KernelModuleEntry;
 import io.zephyr.kernel.core.KernelException;
 import io.zephyr.kernel.log.Logging;
 import io.zephyr.kernel.misc.SuppressFBWarnings;
@@ -26,9 +27,6 @@ public class ModuleListParser {
 
   static final Logger log = Logging.get(ModuleListParser.class);
 
-  static final String FILE_SYSTEM_URI = "droplet://kernel";
-
-  static final int BUFFER_SIZE = 8192;
   static final String lineSeparator = System.getProperty("line.separator");
   static final int newLineLength = lineSeparator.length();
 

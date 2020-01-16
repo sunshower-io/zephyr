@@ -1,5 +1,6 @@
 package io.zephyr.kernel.classloading;
 
+import io.zephyr.kernel.KernelModuleEntry;
 import io.zephyr.kernel.misc.SuppressFBWarnings;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
@@ -8,6 +9,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Enumeration;
+import java.util.List;
 import lombok.val;
 
 @SuppressFBWarnings
@@ -21,9 +23,11 @@ public final class KernelClassloader extends URLClassLoader {
   static final int BUFFER_SIZE = 1024;
 
   final Object lock = new Object();
+  private final List<KernelModuleEntry> kernelModules;
 
-  public KernelClassloader(URL[] urls, ClassLoader parent) {
+  public KernelClassloader(URL[] urls, ClassLoader parent, List<KernelModuleEntry> entries) {
     super(urls, parent);
+    this.kernelModules = entries;
   }
 
   @Override
@@ -96,5 +100,9 @@ public final class KernelClassloader extends URLClassLoader {
     } catch (IOException | ClassNotFoundException e) {
       throw new ClassNotFoundException(name, e);
     }
+  }
+
+  public List<KernelModuleEntry> getKernelModules() {
+    return kernelModules;
   }
 }

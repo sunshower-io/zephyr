@@ -1,0 +1,193 @@
+package io.zephyr.kernel.modules.shell;
+
+import io.sunshower.test.common.Tests;
+import io.zephyr.kernel.Module;
+import io.zephyr.kernel.core.Kernel;
+import io.zephyr.kernel.core.KernelLifecycle;
+import io.zephyr.kernel.extensions.EntryPoint;
+import io.zephyr.kernel.launch.KernelLauncher;
+import io.zephyr.kernel.modules.shell.server.Server;
+import java.io.File;
+import java.util.Map;
+import lombok.SneakyThrows;
+import lombok.val;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+
+public class ShellTestCase {
+
+  protected File homeDirectory;
+  protected Kernel kernel;
+  protected Server server;
+  protected Thread serverThread;
+  protected KernelLauncher launcher;
+  protected Map<EntryPoint.ContextEntries, Object> launcherContext;
+
+  public enum TestPlugins implements Installable {
+    TEST_PLUGIN_1("kernel-tests:test-plugins:test-plugin-1"),
+    TEST_PLUGIN_2("kernel-tests:test-plugins:test-plugin-2");
+
+    final String path;
+
+    TestPlugins(String path) {
+      this.path = path;
+    }
+
+    @Override
+    public String getPath() {
+      return path;
+    }
+  }
+
+  public enum StandardModules implements Installable {
+    YAML("kernel-modules:sunshower-yaml-reader");
+    final String path;
+
+    StandardModules(String path) {
+      this.path = path;
+    }
+
+    @Override
+    public String getPath() {
+      return path;
+    }
+  }
+
+  public interface Installable {
+    String getPath();
+
+    default String getAssembly() {
+      return Tests.relativeToProjectBuild(getPath(), "war", "libs").getAbsolutePath();
+    }
+  }
+
+  @BeforeEach
+  void setUp() {
+    homeDirectory = Tests.createTemp();
+    startServer();
+    startKernel();
+    installKernelModules(StandardModules.YAML);
+  }
+
+  @AfterEach
+  void tearDown() {
+    stopKernel();
+    stopServer();
+  }
+
+  protected Module moduleNamed(String name) {
+    return kernel
+        .getModuleManager()
+        .getModules()
+        .stream()
+        .filter(t -> t.getCoordinate().getName().equals(name))
+        .findAny()
+        .get();
+  }
+
+  @SneakyThrows
+  protected void startServer() {
+    serverThread =
+        new Thread(
+            () -> {
+              run("-s");
+            });
+    serverThread.start();
+    while ((launcher = KernelLauncher.getInstance()) == null) {
+      Thread.sleep(100);
+    }
+
+    while ((server = launcher.resolveService(Server.class)) == null) {
+      Thread.sleep(100);
+    }
+    while (!server.isRunning()) {
+      Thread.sleep(100);
+    }
+  }
+
+  @SneakyThrows
+  protected void restartKernel() {
+    stopKernel();
+    startKernel();
+  }
+
+  protected void runAsync(String... args) {
+    new Thread(
+            () -> {
+              run(args);
+            })
+        .start();
+  }
+
+  @SneakyThrows
+  protected void startKernel() {
+    if (server == null) {
+      startServer();
+    }
+    runAsync("kernel", "start", "-h", homeDirectory.getAbsolutePath());
+    while ((kernel = launcher.resolveService(Kernel.class)) == null) {
+      Thread.sleep(100);
+    }
+    while (kernel.getLifecycle().getState() != KernelLifecycle.State.Running) {
+      Thread.sleep(100);
+    }
+    System.out.println("Successfully started kernel");
+  }
+
+  @SneakyThrows
+  protected void stopKernel() {
+    checkServer();
+    runAsync("kernel", "stop");
+    if (kernel != null) {
+      while (kernel.getLifecycle().getState() != KernelLifecycle.State.Stopped) {
+        Thread.sleep(100);
+      }
+    }
+    System.out.println("Kernel stopped");
+  }
+
+  @SneakyThrows
+  protected void stopServer() {
+    checkServer();
+    runAsync("server", "stop");
+    while (server.isRunning()) {
+      Thread.sleep(100);
+    }
+    System.out.println("Stopped server");
+    launcher = null;
+  }
+
+  protected void run(String... args) {
+    KernelLauncher.main(args);
+  }
+
+  @SneakyThrows
+  protected void install(Installable... modules) {
+    checkServer();
+    val result = new StringBuilder("plugin install ");
+    for (val module : modules) {
+      result.append(module.getAssembly()).append(" ");
+    }
+    val args = result.toString().trim().split("\\s+");
+    run(args);
+  }
+
+  @SneakyThrows
+  protected void installAndWaitForModuleCount(int count, Installable... modules) {
+    install(modules);
+    while (kernel.getModuleManager().getModules().size() < count) {
+      Thread.sleep(100);
+    }
+  }
+
+  protected void installKernelModules(Installable... modules) {
+    install(modules);
+    restartKernel();
+  }
+
+  private void checkServer() {
+    if (server == null) {
+      throw new IllegalStateException("Error:  Server is not running");
+    }
+  }
+}

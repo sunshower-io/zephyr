@@ -1,5 +1,6 @@
 package io.zephyr.kernel.launch;
 
+import io.zephyr.kernel.Options;
 import io.zephyr.kernel.core.AbstractValidatable;
 import io.zephyr.kernel.misc.SuppressFBWarnings;
 import java.io.File;
@@ -8,7 +9,8 @@ import lombok.Setter;
 import picocli.CommandLine;
 
 @SuppressFBWarnings
-public class KernelOptions extends AbstractValidatable<KernelOptions> {
+public class KernelOptions extends AbstractValidatable<KernelOptions>
+    implements Options<KernelOptions> {
 
   private static final long serialVersionUID = -4797996962045876401L;
 
@@ -20,17 +22,6 @@ public class KernelOptions extends AbstractValidatable<KernelOptions> {
     public static final String SUNSHOWER_HOME = "SUNSHOWER_HOME";
   }
 
-  @Getter
-  @Setter
-  @CommandLine.Option(names = {"-p", "--port"})
-  private int port = 9999;
-
-  /** Start the kernel server */
-  @Getter
-  @Setter
-  @CommandLine.Option(names = {"-s", "--server"})
-  private boolean server;
-
   /**
    * Specify the home directory for Sunshower.io. Sunshower data is stored here. For clustered
    * Sunshower.io kernels, this should be a distributed directory unless a data-distribution module
@@ -41,26 +32,23 @@ public class KernelOptions extends AbstractValidatable<KernelOptions> {
   @CommandLine.Option(names = {"-h", "--home-directory"})
   private File homeDirectory;
 
-  /** Specify the maximum number of threads the Sunshower Kernel may start */
+  /** Specify the maximum number of threads the Sunshower Kernel may start for gyre */
   @Getter
   @CommandLine.Option(
     names = {"-c", "--max-concurrency"},
-    defaultValue = "2",
+    defaultValue = "8",
     type = Integer.class
   )
   private Integer concurrency = 8;
 
-  /** if true, the Sunshower Kernel Launcher will start a shell */
+  /** Specify the maximum number of threads the Sunshower Kernel may start for kernel use */
   @Getter
-  @Setter
-  @CommandLine.Option(names = {"-i", "--interactive"})
-  private boolean interactive;
-
-  /** If we're not interactive, just pass 'em through and let the kernel execute them */
-  @Getter
-  @Setter
-  @CommandLine.Parameters(paramLabel = "arguments", index = "0..*")
-  private String[] parameters;
+  @CommandLine.Option(
+    names = {"-k", "--kernel-concurrency"},
+    defaultValue = "2",
+    type = Integer.class
+  )
+  private Integer kernelConcurrency = 2;
 
   public KernelOptions() {
     registerStep(KernelOptionsValidations.homeDirectory());

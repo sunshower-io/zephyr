@@ -1,6 +1,7 @@
 package io.zephyr.kernel.core.actions;
 
 import io.sunshower.gyre.Scope;
+import io.zephyr.kernel.KernelModuleEntry;
 import io.zephyr.kernel.Library;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.concurrency.Task;
@@ -8,21 +9,20 @@ import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.core.KernelException;
 import io.zephyr.kernel.log.Logging;
 import io.zephyr.kernel.misc.SuppressFBWarnings;
-import io.zephyr.kernel.module.KernelModuleEntry;
+import io.zephyr.kernel.module.ModuleListParser;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import lombok.val;
 
+@SuppressWarnings("PMD.UnusedPrivateMethod")
 public class WriteKernelModuleListPhase extends Task {
 
   static final Logger log = Logging.get(WriteKernelModuleListPhase.class);
@@ -41,15 +41,22 @@ public class WriteKernelModuleListPhase extends Task {
     log.log(Level.INFO, "located {0} modules to install", descriptors.size());
 
     val kernel = scope.<Kernel>get("SunshowerKernel");
-    val file = kernel.getFileSystem().getPath("modules.list");
-    writeModule(file, descriptors);
+    val fs = kernel.getFileSystem();
+    Set<KernelModuleEntry> entries = readEntries(fs);
+
+    val file = fs.getPath("modules.list");
+    writeModule(file, descriptors, entries);
 
     return null;
   }
 
+  private Set<KernelModuleEntry> readEntries(FileSystem fs) {
+    return new HashSet<>(ModuleListParser.read(fs, "modules.list"));
+  }
+
   @SuppressFBWarnings
   @SuppressWarnings({"PMD.AvoidInstantiatingObjectsInLoops", "PMD.UnusedPrivateMethod"})
-  private void writeModule(Path file, Collection<Module> modules) {
+  private void writeModule(Path file, Collection<Module> modules, Set<KernelModuleEntry> entries) {
     try (val outputStream =
         new BufferedWriter(
             new OutputStreamWriter(
@@ -67,8 +74,11 @@ public class WriteKernelModuleListPhase extends Task {
                 coord.getGroup(),
                 coord.getVersion().toString(),
                 libraryFiles(module, module.getLibraries()));
-        outputStream.write(entry.toString());
-        outputStream.write("\n");
+        if (!entries.contains(entry)) {
+          outputStream.write(entry.toString());
+          outputStream.write("\n");
+          entries.add(entry);
+        }
       }
     } catch (IOException ex) {
       throw new KernelException(ex);
