@@ -7,13 +7,13 @@ import org.junit.jupiter.api.Test;
 
 class ZephyrCliEntryPointTest extends ShellTestCase {
 
-  @RepeatedTest(10)
+  @RepeatedTest(2)
   void ensureServerLifecycleIsIdempotent() throws InterruptedException {
     startServer();
     stopServer();
   }
 
-  @RepeatedTest(10)
+  @Test
   void ensureStartingServerWorks() {
     startServer();
     assertTrue(server.isRunning(), "server must be running");
@@ -21,20 +21,25 @@ class ZephyrCliEntryPointTest extends ShellTestCase {
     assertFalse(server.isRunning(), "server must not be running");
   }
 
-  @Test
+  @RepeatedTest(2)
   void ensureStartingAndStoppingKernelWorks() {
+    startServer();
     startKernel();
     stopKernel();
     stopServer();
   }
 
-  @Test
-  void ensureInstallingKernelModuleWorks() {
-    startKernel();
-    install(StandardModules.YAML);
-    restartKernel();
-    assertEquals(1, kernel.getKernelModules().size(), "must have 1 module");
-    stopKernel();
-    stopServer();
+  @RepeatedTest(5)
+  void ensureInstallingKernelModuleWorks() throws InterruptedException {
+    try {
+      startServer();
+      startKernel();
+      install(StandardModules.YAML);
+      restartKernel();
+      assertEquals(1, kernel.getKernelModules().size(), "must only have one kernel module");
+    } finally {
+      stopKernel();
+      stopServer();
+    }
   }
 }

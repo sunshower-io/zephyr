@@ -18,9 +18,10 @@ import lombok.val;
 @SuppressWarnings({
   "PMD.UseVarargs",
   "PMD.ArrayIsStoredDirectly",
+  "PMD.UnusedPrivateMethod",
   "PMD.DoNotCallSystemExit",
   "PMD.FinalizeOverloaded",
-  "PMD.AvoidDuplicateLiterals"
+  "PMD.AvoidDuplicateLiterals",
 })
 public class KernelLauncher implements EntryPoint, EntryPointRegistry {
 
@@ -53,28 +54,32 @@ public class KernelLauncher implements EntryPoint, EntryPointRegistry {
   }
 
   @Override
-  @SuppressWarnings("unchecked")
-  public synchronized void run(Map<ContextEntries, Object> ctx) {
+  @SuppressWarnings({"unchecked", "PMD.AvoidLiteralsInIfCondition"})
+  public void run(Map<ContextEntries, Object> ctx) {
     while (true) {
-      try {
-        val tasks = (List<EntryPoint>) ctx.get(ContextEntries.ENTRY_POINTS_TEMP);
-        if (tasks.isEmpty()) {
-          return;
-        }
-        if (tasks.size() == 1) {
-          if (tasks.get(0) == this) {
+      synchronized (this) {
+        try {
+          val tasks = (List<EntryPoint>) ctx.get(ContextEntries.ENTRY_POINTS_TEMP);
+          if (tasks.isEmpty()) {
             return;
           }
+          if (tasks.size() == 1) {
+            if (tasks.get(0) == this) {
+              return;
+            }
+          }
+          wait(100);
+        } catch (InterruptedException e) {
+          log.log(Level.INFO, "interrupted");
         }
-        wait(100);
-      } catch (InterruptedException e) {
-        log.log(Level.INFO, "interrupted");
       }
     }
   }
 
-  synchronized void check() {
-    notifyAll();
+  void check() {
+    synchronized (this) {
+      notifyAll();
+    }
   }
 
   @Override
@@ -93,6 +98,8 @@ public class KernelLauncher implements EntryPoint, EntryPointRegistry {
     KernelLauncher.instance = this;
   }
 
+  @Override
+  @SuppressWarnings("PMD.NullAssignment")
   public void finalize(Map<ContextEntries, Object> context) {
     KernelLauncher.instance = null;
   }
@@ -195,7 +202,7 @@ public class KernelLauncher implements EntryPoint, EntryPointRegistry {
         .collect(Collectors.toList());
   }
 
-  @SuppressWarnings({"PMD.DataflowAnomalyAnalysis", "PMD.UnusedPrivateMethod"})
+  @SuppressWarnings({"PMD.DataflowAnomalyAnalysis"})
   private static void runAll(
       ExecutorService kernelExecutor, List<EntryPoint> tasks, Map<ContextEntries, Object> context) {
     val completionQueue = new ArrayBlockingQueue<Future<EntryPoint>>(tasks.size());
@@ -208,9 +215,8 @@ public class KernelLauncher implements EntryPoint, EntryPointRegistry {
         try {
           val entryPoint = completionQueue.poll(200, TimeUnit.MICROSECONDS);
           if (entryPoint == null) {
-            check(
-                tasks,
-                null); // need to call notifyAll() on KernelLauncher to check for removed entrypoints
+            check(tasks, null); // need to call notifyAll() on KernelLauncher to check for removed
+            // entrypoints
             continue;
           }
           log.log(Level.WARNING, "kernel.entrypoint.running.complete", entryPoint);
@@ -238,6 +244,7 @@ public class KernelLauncher implements EntryPoint, EntryPointRegistry {
     }
   }
 
+  @SuppressWarnings("PMD.CompareObjectsWithEquals")
   private static boolean check(List<EntryPoint> tasks, EntryPoint entryPoint) {
     val iter = tasks.iterator();
     while (iter.hasNext()) {
@@ -281,7 +288,6 @@ public class KernelLauncher implements EntryPoint, EntryPointRegistry {
     }
   }
 
-  @SuppressWarnings("PMD.UnusedPrivateMethod")
   private static void initializeAll(
       Iterator<EntryPoint> iterator, Map<ContextEntries, Object> context) {
     while (iterator.hasNext()) {
@@ -290,7 +296,6 @@ public class KernelLauncher implements EntryPoint, EntryPointRegistry {
     }
   }
 
-  @SuppressWarnings("PMD.UnusedPrivateMethod")
   private static void initialize(EntryPoint loader, Map<ContextEntries, Object> context) {
     log.log(Level.INFO, "kernel.entrypoint.initializing", loader);
     loader.initialize(context);

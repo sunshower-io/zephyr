@@ -24,4 +24,24 @@ public final class KernelModuleEntry {
           "%d:%s:%s:%s[%s]", order, group, name, version, String.join(",", libraryFiles));
     }
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof KernelModuleEntry)) return false;
+
+    KernelModuleEntry that = (KernelModuleEntry) o;
+
+    if (name != null ? !name.equals(that.name) : that.name != null) return false;
+    if (group != null ? !group.equals(that.group) : that.group != null) return false;
+    return version != null ? version.equals(that.version) : that.version == null;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = name != null ? name.hashCode() : 0;
+    result = 31 * result + (group != null ? group.hashCode() : 0);
+    result = 31 * result + (version != null ? version.hashCode() : 0);
+    return result;
+  }
 }

@@ -13,13 +13,10 @@ public class Options {
 
   public static <T extends io.zephyr.kernel.Options<T>> T create(
       Supplier<T> ctor, Map<EntryPoint.ContextEntries, Object> ctx) {
-
     val result = ctor.get();
     val args = (String[]) ctx.get(EntryPoint.ContextEntries.ARGS);
     val commandLine = new CommandLine(result).setUnmatchedArgumentsAllowed(true);
-    val parseResult = commandLine.parseArgs(args);
-    //    System.out.println("UNMATCHED " + parseResult.unmatched());
-    //    ctx.put(EntryPoint.ContextEntries.ARGS, parseResult.unmatched().toArray(new String[0]));
+    commandLine.parseArgs(args);
     return result;
   }
 }

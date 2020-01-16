@@ -9,8 +9,10 @@ import java.util.UUID;
 import launch.CommandTestCase;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+@Disabled
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")
 class InstallPluginCommandTest extends CommandTestCase {
 

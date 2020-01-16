@@ -16,6 +16,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+
 import lombok.val;
 
 @SuppressWarnings({
@@ -27,9 +29,6 @@ public class ModuleListParser {
 
   static final Logger log = Logging.get(ModuleListParser.class);
 
-  static final String FILE_SYSTEM_URI = "droplet://kernel";
-
-  static final int BUFFER_SIZE = 8192;
   static final String lineSeparator = System.getProperty("line.separator");
   static final int newLineLength = lineSeparator.length();
 

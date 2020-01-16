@@ -54,8 +54,10 @@ public class ShellTestCase {
     }
   }
 
+  @SneakyThrows
   protected void restartKernel() {
-    run("kernel", "restart");
+    stopKernel();
+    startKernel();
   }
 
   protected void runAsync(String... args) {
@@ -75,6 +77,9 @@ public class ShellTestCase {
     while ((kernel = launcher.resolveService(Kernel.class)) == null) {
       Thread.sleep(100);
     }
+    while (kernel.getLifecycle().getState() != KernelLifecycle.State.Running) {
+      Thread.sleep(100);
+    }
     System.out.println("Successfully started kernel");
   }
 
@@ -82,7 +87,7 @@ public class ShellTestCase {
   protected void stopKernel() {
     checkServer();
     runAsync("kernel", "stop");
-    while (kernel.getLifecycle().getState() != KernelLifecycle.State.Running) {
+    while (kernel.getLifecycle().getState() != KernelLifecycle.State.Stopped) {
       Thread.sleep(100);
     }
     System.out.println("Kernel stopped");
