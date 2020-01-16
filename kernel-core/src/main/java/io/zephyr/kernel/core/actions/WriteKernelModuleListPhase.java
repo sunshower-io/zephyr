@@ -9,6 +9,7 @@ import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.core.KernelException;
 import io.zephyr.kernel.log.Logging;
 import io.zephyr.kernel.misc.SuppressFBWarnings;
+import io.zephyr.kernel.module.ModuleListParser;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -19,10 +20,9 @@ import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import io.zephyr.kernel.module.ModuleListParser;
 import lombok.val;
 
+@SuppressWarnings("PMD.UnusedPrivateMethod")
 public class WriteKernelModuleListPhase extends Task {
 
   static final Logger log = Logging.get(WriteKernelModuleListPhase.class);
