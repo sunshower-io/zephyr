@@ -16,10 +16,9 @@ package command.commands.plugin;
 //
 // import static org.junit.jupiter.api.Assertions.*;
 
-import launch.CommandTestCase;
 
 @SuppressWarnings({"PMD.AvoidDuplicateLiterals", "PMD.JUnitAssertionsShouldIncludeMessage"})
-class StartPluginCommandTest extends CommandTestCase {
+class StartPluginCommandTest {
 
   //  File testPlugin1;
   //  File testPlugin2;

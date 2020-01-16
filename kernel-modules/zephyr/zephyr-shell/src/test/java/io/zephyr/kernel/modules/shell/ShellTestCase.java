@@ -1,6 +1,7 @@
 package io.zephyr.kernel.modules.shell;
 
 import io.sunshower.test.common.Tests;
+import io.zephyr.kernel.Module;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.core.KernelLifecycle;
 import io.zephyr.kernel.extensions.EntryPoint;
@@ -10,28 +11,75 @@ import java.io.File;
 import java.util.Map;
 import lombok.SneakyThrows;
 import lombok.val;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 public class ShellTestCase {
 
-  protected File homeDirectory = Tests.createTemp();
+  protected File homeDirectory;
   protected Kernel kernel;
   protected Server server;
   protected Thread serverThread;
   protected KernelLauncher launcher;
   protected Map<EntryPoint.ContextEntries, Object> launcherContext;
 
-  public enum StandardModules {
-    YAML("kernel-modules:sunshower-yaml-reader");
+  public enum TestPlugins implements Installable {
+    TEST_PLUGIN_1("kernel-tests:test-plugins:test-plugin-1"),
+    TEST_PLUGIN_2("kernel-tests:test-plugins:test-plugin-2");
 
+    final String path;
+
+    TestPlugins(String path) {
+      this.path = path;
+    }
+
+    @Override
+    public String getPath() {
+      return path;
+    }
+  }
+
+  public enum StandardModules implements Installable {
+    YAML("kernel-modules:sunshower-yaml-reader");
     final String path;
 
     StandardModules(String path) {
       this.path = path;
     }
 
+    @Override
     public String getPath() {
-      return Tests.relativeToProjectBuild(path, "war", "libs").getAbsolutePath();
+      return path;
     }
+  }
+
+  public interface Installable {
+    String getPath();
+
+    default String getAssembly() {
+      return Tests.relativeToProjectBuild(getPath(), "war", "libs").getAbsolutePath();
+    }
+  }
+
+  @BeforeEach
+  void setUp() {
+    homeDirectory = Tests.createTemp();
+    startServer();
+    startKernel();
+    installKernelModules(StandardModules.YAML);
+  }
+
+  @AfterEach
+  void tearDown() {
+    stopKernel();
+    stopServer();
+  }
+
+  protected Module moduleNamed(String name) {
+    return kernel.getModuleManager().getModules().stream()
+        .filter(t -> t.getCoordinate().getName().equals(name))
+        .findAny()
+        .get();
   }
 
   @SneakyThrows
@@ -109,14 +157,27 @@ public class ShellTestCase {
   }
 
   @SneakyThrows
-  protected void install(StandardModules... modules) {
+  protected void install(Installable... modules) {
     checkServer();
     val result = new StringBuilder("plugin install ");
     for (val module : modules) {
-      result.append(module.getPath()).append(" ");
+      result.append(module.getAssembly()).append(" ");
     }
     val args = result.toString().trim().split("\\s+");
     run(args);
+  }
+
+  @SneakyThrows
+  protected void installAndWaitForModuleCount(int count, Installable... modules) {
+    install(modules);
+    while (kernel.getModuleManager().getModules().size() < count) {
+      Thread.sleep(100);
+    }
+  }
+
+  protected void installKernelModules(Installable... modules) {
+    install(modules);
+    restartKernel();
   }
 
   private void checkServer() {

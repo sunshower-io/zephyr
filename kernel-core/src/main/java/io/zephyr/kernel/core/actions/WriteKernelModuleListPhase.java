@@ -1,15 +1,12 @@
 package io.zephyr.kernel.core.actions;
 
 import io.sunshower.gyre.Scope;
-import io.zephyr.kernel.Coordinate;
 import io.zephyr.kernel.KernelModuleEntry;
 import io.zephyr.kernel.Library;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.concurrency.Task;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.core.KernelException;
-import io.zephyr.kernel.core.KernelModuleLoader;
-import io.zephyr.kernel.core.lifecycle.KernelModuleListReadPhase;
 import io.zephyr.kernel.log.Logging;
 import io.zephyr.kernel.misc.SuppressFBWarnings;
 import java.io.BufferedWriter;

@@ -10,7 +10,6 @@ package command;
 //import java.util.UUID;
 //import org.junit.jupiter.api.*;
 
-import launch.CommandTestCase;
 
 /**
  * I guess these tests should live by the module memento, but that introduces dependency weirdness
@@ -21,7 +20,7 @@ import launch.CommandTestCase;
   "PMD.JUnitTestsShouldIncludeAssert",
   "PMD.JUnitAssertionsShouldIncludeMessage"
 })
-class DefaultModuleManagerMementoTest extends CommandTestCase {
+class DefaultModuleManagerMementoTest {
 
   //  private File testPlugin1;
   //  private File testPlugin2;

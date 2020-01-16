@@ -17,7 +17,7 @@ package launch;
   "PMD.JUnitTestContainsTooManyAsserts",
   "PMD.JUnitAssertionsShouldIncludeMessage"
 })
-class KernelLauncherTest extends CommandTestCase {
+class KernelLauncherTest {
 
   //  @Test
   //  void ensureStartingServerWorks() {
