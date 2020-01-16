@@ -15,7 +15,6 @@ package command.commands.plugin;
 //
 // import static org.junit.jupiter.api.Assertions.assertEquals;
 
-
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")
 public class StopPluginCommandTest {
   //

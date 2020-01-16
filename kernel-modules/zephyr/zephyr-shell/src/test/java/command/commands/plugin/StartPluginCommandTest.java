@@ -16,7 +16,6 @@ package command.commands.plugin;
 //
 // import static org.junit.jupiter.api.Assertions.*;
 
-
 @SuppressWarnings({"PMD.AvoidDuplicateLiterals", "PMD.JUnitAssertionsShouldIncludeMessage"})
 class StartPluginCommandTest {
 

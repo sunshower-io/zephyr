@@ -2,10 +2,21 @@ package io.zephyr.kernel.modules.shell;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import io.sunshower.test.common.Tests;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
 class ZephyrCliEntryPointTest extends ShellTestCase {
+
+  @BeforeEach
+  void setUp() {
+    homeDirectory = Tests.createTemp();
+  }
+
+  @AfterEach
+  void tearDown() {}
 
   @RepeatedTest(2)
   void ensureServerLifecycleIsIdempotent() throws InterruptedException {
@@ -29,7 +40,7 @@ class ZephyrCliEntryPointTest extends ShellTestCase {
     stopServer();
   }
 
-  @RepeatedTest(5)
+  @Test
   void ensureInstallingKernelModuleWorks() throws InterruptedException {
     try {
       startServer();

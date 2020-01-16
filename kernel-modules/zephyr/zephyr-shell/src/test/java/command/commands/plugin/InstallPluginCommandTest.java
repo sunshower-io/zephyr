@@ -9,14 +9,13 @@ package command.commands.plugin;
 // import launch.CommandTestCase;
 // import lombok.val;
 // import org.junit.jupiter.api.BeforeEach;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import io.zephyr.kernel.modules.shell.ShellTestCase;
 import lombok.SneakyThrows;
 import lombok.val;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 // import org.junit.jupiter.api.Test;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -51,5 +50,4 @@ class InstallPluginCommandTest extends ShellTestCase {
 
     Class.forName("plugin1.Test", true, snd.getClassLoader());
   }
-
 }

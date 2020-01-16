@@ -76,7 +76,10 @@ public class ShellTestCase {
   }
 
   protected Module moduleNamed(String name) {
-    return kernel.getModuleManager().getModules().stream()
+    return kernel
+        .getModuleManager()
+        .getModules()
+        .stream()
         .filter(t -> t.getCoordinate().getName().equals(name))
         .findAny()
         .get();
@@ -135,8 +138,10 @@ public class ShellTestCase {
   protected void stopKernel() {
     checkServer();
     runAsync("kernel", "stop");
-    while (kernel.getLifecycle().getState() != KernelLifecycle.State.Stopped) {
-      Thread.sleep(100);
+    if (kernel != null) {
+      while (kernel.getLifecycle().getState() != KernelLifecycle.State.Stopped) {
+        Thread.sleep(100);
+      }
     }
     System.out.println("Kernel stopped");
   }
