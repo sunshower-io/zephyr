@@ -20,7 +20,10 @@ class KernelSchedulerTest {
 
   @BeforeEach
   void setUp() {
-    scheduler = new KernelScheduler<>(new ExecutorWorkerPool(Executors.newFixedThreadPool(1)));
+    scheduler =
+        new KernelScheduler<>(
+            new ExecutorWorkerPool(
+                Executors.newFixedThreadPool(1), Executors.newFixedThreadPool(2)));
   }
 
   @Test

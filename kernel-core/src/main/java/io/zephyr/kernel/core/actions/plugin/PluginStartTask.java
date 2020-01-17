@@ -35,30 +35,28 @@ public class PluginStartTask extends Task {
   @Override
   @SuppressWarnings({"PMD.AvoidBranchingStatementAsLastInLoop", "PMD.DataflowAnomalyAnalysis"})
   public TaskValue run(Scope scope) {
-    synchronized (this) {
-      val module = manager.getModule(coordinate);
-      val currentState = module.getLifecycle().getState();
-      if (!currentState.isAtLeast(Lifecycle.State.Active)) { // // TODO: 11/11/19 handle failed
-        module.getLifecycle().setState(Lifecycle.State.Starting);
-        val loader = module.getModuleClasspath().resolveServiceLoader(PluginActivator.class);
-        manager.getModuleLoader().check(module);
-        val ctx = kernel.createContext(module);
-        for (val activator : loader) {
-          try {
-            activator.start(ctx);
-            ((DefaultModule) module).setActivator(activator);
-          } catch (Exception | ServiceConfigurationError | LinkageError ex) {
-            module.getLifecycle().setState(Lifecycle.State.Failed);
-            log.log(
-                Level.WARNING, "Failed to start plugin ''{0}''.  Reason: ''{1}''", ex.getMessage());
-            log.log(Level.INFO, "Reason: ", ex);
-            return null;
-          }
-          break;
+    val module = manager.getModule(coordinate);
+    val currentState = module.getLifecycle().getState();
+    if (!currentState.isAtLeast(Lifecycle.State.Active)) { // // TODO: 11/11/19 handle failed
+      module.getLifecycle().setState(Lifecycle.State.Starting);
+      val loader = module.getModuleClasspath().resolveServiceLoader(PluginActivator.class);
+      manager.getModuleLoader().check(module);
+      val ctx = kernel.createContext(module);
+      for (val activator : loader) {
+        try {
+          activator.start(ctx);
+          ((DefaultModule) module).setActivator(activator);
+        } catch (Exception | ServiceConfigurationError | LinkageError ex) {
+          module.getLifecycle().setState(Lifecycle.State.Failed);
+          log.log(
+              Level.WARNING, "Failed to start plugin ''{0}''.  Reason: ''{1}''", ex.getMessage());
+          log.log(Level.INFO, "Reason: ", ex);
+          return null;
         }
-        module.getLifecycle().setState(Lifecycle.State.Active);
+        break;
       }
-      return null;
+      module.getLifecycle().setState(Lifecycle.State.Active);
     }
+    return null;
   }
 }

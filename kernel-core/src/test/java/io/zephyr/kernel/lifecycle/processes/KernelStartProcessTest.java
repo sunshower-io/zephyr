@@ -49,7 +49,10 @@ class KernelStartProcessTest {
     SunshowerKernel.setKernelOptions(kernelOptions);
 
     context = Scope.root();
-    scheduler = new KernelScheduler<>(new ExecutorWorkerPool(Executors.newFixedThreadPool(2)));
+    scheduler =
+        new KernelScheduler<>(
+            new ExecutorWorkerPool(
+                Executors.newFixedThreadPool(2), Executors.newFixedThreadPool(2)));
     kernel = spy(new SunshowerKernel(mock(ModuleManager.class), scheduler));
     kernel.setModuleClasspathManager(mock(ModuleClasspathManager.class));
     context.set("SunshowerKernel", kernel);

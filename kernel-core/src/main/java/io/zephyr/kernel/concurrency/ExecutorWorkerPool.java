@@ -7,13 +7,14 @@ public class ExecutorWorkerPool implements WorkerPool {
   final ExecutorService executorService;
   final ExecutorService kernelExecutorService;
 
-  public ExecutorWorkerPool(ExecutorService executorService) {
+  public ExecutorWorkerPool(
+      ExecutorService executorService, final ExecutorService kernelExecutorService) {
     this.executorService = executorService;
     // this can't really rely on a single thread as the task graph will frequently block it, but we
     // don't need that many of them
     // this should probably be configurable
-    kernelExecutorService =
-        new ThreadPoolExecutor(0, 5, 60L, TimeUnit.SECONDS, new SynchronousQueue<>());
+    this.kernelExecutorService = kernelExecutorService;
+    //        new ThreadPoolExecutor(0, 5, 60L, TimeUnit.SECONDS, new SynchronousQueue<>());
   }
 
   @Override
