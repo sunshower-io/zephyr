@@ -15,6 +15,7 @@ import io.zephyr.kernel.modules.shell.console.Result;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.rmi.RemoteException;
+import java.util.Collections;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,7 +36,7 @@ class ShellTest {
 
   @BeforeEach
   void setUp() {
-    context = spy(new DefaultCommandContext());
+    context = spy(new DefaultCommandContext(Collections.emptyMap()));
     shell = doCreate();
   }
 

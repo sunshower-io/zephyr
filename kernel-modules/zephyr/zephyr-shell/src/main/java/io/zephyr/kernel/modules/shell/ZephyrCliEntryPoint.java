@@ -26,11 +26,9 @@ public class ZephyrCliEntryPoint implements EntryPoint {
   private String[] arguments;
   private ShellOptions options;
 
-  private final DefaultCommandContext context;
+  private DefaultCommandContext context;
 
-  public ZephyrCliEntryPoint() {
-    context = new DefaultCommandContext();
-  }
+  public ZephyrCliEntryPoint() {}
 
   @Override
   public Logger getLogger() {
@@ -41,6 +39,11 @@ public class ZephyrCliEntryPoint implements EntryPoint {
   public void initialize(Map<ContextEntries, Object> context) {
     options = io.zephyr.common.Options.create(ShellOptions::new, context);
     arguments = (String[]) context.get(ContextEntries.ARGS);
+    synchronized (this) {
+      this.context = new DefaultCommandContext(context);
+      System.out.println("NOTIFY");
+      notifyAll();
+    }
   }
 
   @Override
@@ -54,6 +57,7 @@ public class ZephyrCliEntryPoint implements EntryPoint {
 
   @Override
   public <T> T getService(Class<T> type) {
+    doWait();
     return context.getService(type);
   }
 
@@ -162,6 +166,18 @@ public class ZephyrCliEntryPoint implements EntryPoint {
       getInvoker().invoke(Parameters.of(arguments));
     } catch (Exception e) {
       log.log(Level.WARNING, "Encountered exception while trying to run command", e.getMessage());
+    }
+  }
+
+  /** wait for kernellauncher to start */
+  private void doWait() {
+    while (context == null) {
+      synchronized (this) {
+        try {
+          wait(200);
+        } catch (InterruptedException ex) {
+        }
+      }
     }
   }
 }

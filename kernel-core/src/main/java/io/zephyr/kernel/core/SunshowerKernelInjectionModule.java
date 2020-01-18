@@ -16,24 +16,11 @@ import lombok.val;
 @SuppressWarnings("PMD.UnusedPrivateMethod")
 public class SunshowerKernelInjectionModule {
 
-  //  @Provides
-  //  @Singleton
-  //  public WorkerPool workerPool() {
-  //    // TODO make kernel thread pool configurable
-  //    return new ExecutorWorkerPool(Executors.newFixedThreadPool(4));
-  //  }
-
   @Provides
   @Singleton
   public Scheduler<String> kernelScheduler(WorkerPool pool) {
     return new KernelScheduler<>(pool);
   }
-
-  //  @Provides
-  //  @Singleton
-  //  public ExecutorService executorService(KernelOptions options) {
-  //    return Executors.newFixedThreadPool(options.getConcurrency());
-  //  }
 
   @Provides
   @Singleton
