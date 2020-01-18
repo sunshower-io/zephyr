@@ -18,6 +18,11 @@ public class ExecutorWorkerPool implements WorkerPool {
   }
 
   @Override
+  public ExecutorService getKernelExecutor() {
+    return kernelExecutorService;
+  }
+
+  @Override
   public <T> Future<T> submit(Callable<T> value) {
     return executorService.submit(value);
   }

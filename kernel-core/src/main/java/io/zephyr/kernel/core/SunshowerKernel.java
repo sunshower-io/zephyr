@@ -12,7 +12,8 @@ import io.zephyr.kernel.concurrency.Process;
 import io.zephyr.kernel.core.actions.ModuleInstallationCompletionPhase;
 import io.zephyr.kernel.core.actions.WritePluginDescriptorPhase;
 import io.zephyr.kernel.core.lifecycle.DefaultKernelLifecycle;
-import io.zephyr.kernel.events.AbstractEventSource;
+import io.zephyr.kernel.events.*;
+import io.zephyr.kernel.events.EventListener;
 import io.zephyr.kernel.launch.KernelOptions;
 import io.zephyr.kernel.log.Logging;
 import io.zephyr.kernel.memento.Memento;
@@ -29,10 +30,7 @@ import java.util.concurrent.CompletionStage;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.inject.Inject;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.SneakyThrows;
-import lombok.val;
+import lombok.*;
 
 @SuppressWarnings({
   "PMD.AvoidUsingVolatile",
@@ -40,35 +38,43 @@ import lombok.val;
   "PMD.UnusedPrivateMethod",
   "PMD.AvoidInstantiatingObjectsInLoops"
 })
-public class SunshowerKernel extends AbstractEventSource implements Kernel {
+public class SunshowerKernel implements Kernel, EventSource {
 
   static final Logger log = Logging.get(SunshowerKernel.class);
 
   /** class fields */
   @Setter private static KernelOptions kernelOptions;
 
+  /** @return the kernel options used to start this instance. */
+  @NonNull
+  public static KernelOptions getKernelOptions() {
+    if (kernelOptions == null) {
+      throw new IllegalStateException("Error: KernelOptions are null--this is definitely a bug");
+    }
+    return kernelOptions;
+  }
+
   /** Instance fields */
   private volatile ClassLoader classLoader;
 
-  @Getter private final ModuleManager moduleManager;
-  @Getter @Setter private volatile FileSystem fileSystem;
-
   private final KernelLifecycle lifecycle;
   private final Scheduler<String> scheduler;
+  private final AsynchronousEventSource eventDispatcher;
+
+  /** accessable fields */
+  @Getter private final ModuleManager moduleManager;
+
   @Setter private ModuleClasspathManager moduleClasspathManager;
+
+  /** mutable fields */
+  @Getter @Setter private volatile FileSystem fileSystem;
 
   @Inject
   public SunshowerKernel(ModuleManager moduleManager, Scheduler<String> scheduler) {
     this.scheduler = scheduler;
     this.moduleManager = moduleManager;
     this.lifecycle = new DefaultKernelLifecycle(this, scheduler);
-  }
-
-  public static KernelOptions getKernelOptions() {
-    if (kernelOptions == null) {
-      throw new IllegalStateException("Error: KernelOptions are null--this is definitely a bug");
-    }
-    return kernelOptions;
+    this.eventDispatcher = new AsynchronousEventSource(scheduler.getKernelExecutor());
   }
 
   public static void setKernelOptions(KernelOptions options) {
@@ -105,6 +111,7 @@ public class SunshowerKernel extends AbstractEventSource implements Kernel {
   @Override
   @SneakyThrows
   public void start() {
+    eventDispatcher.start();
     lifecycle.start().toCompletableFuture().get();
   }
 
@@ -117,6 +124,7 @@ public class SunshowerKernel extends AbstractEventSource implements Kernel {
   @Override
   @SneakyThrows
   public void stop() {
+    eventDispatcher.stop();
     lifecycle.stop().toCompletableFuture().get();
   }
 
@@ -153,6 +161,37 @@ public class SunshowerKernel extends AbstractEventSource implements Kernel {
     return memento;
   }
 
+  @Override
+  public CompletionStage<Void> persistState() throws Exception {
+    val memento = save();
+    val file = memento.locate("kernel", getFileSystem());
+    Files.tryWrite(file, memento);
+    return CompletableFuture.completedFuture(null);
+  }
+
+  @Override
+  public CompletionStage<Void> restoreState() throws Exception {
+    val mementoProvider = Memento.loadProvider(getClassLoader());
+    val kernelMemento = mementoProvider.newMemento("kernel", "kernel", getFileSystem());
+    return doRestore(kernelMemento);
+  }
+
+  @Override
+  public <T> void addEventListener(EventListener<T> listener, EventType... types) {
+    eventDispatcher.addEventListener(listener, types);
+  }
+
+  @Override
+  public <T> void removeEventListener(EventListener<T> listener) {
+    eventDispatcher.removeEventListener(listener);
+  }
+
+  @Override
+  public <T> void dispatchEvent(EventType type, Event<T> event) {
+    eventDispatcher.dispatchEvent(type, event);
+  }
+
+  /** private methods */
   private void writePlugins(Memento pluginsMemento) {
     val plugins = moduleManager.getModules();
     for (val plugin : plugins) {
@@ -267,20 +306,5 @@ public class SunshowerKernel extends AbstractEventSource implements Kernel {
           Level.WARNING, "plugin.fs.hydration.failed", new Object[] {coordinate, ex.getMessage()});
       throw ex;
     }
-  }
-
-  @Override
-  public CompletionStage<Void> persistState() throws Exception {
-    val memento = save();
-    val file = memento.locate("kernel", getFileSystem());
-    Files.tryWrite(file, memento);
-    return CompletableFuture.completedFuture(null);
-  }
-
-  @Override
-  public CompletionStage<Void> restoreState() throws Exception {
-    val mementoProvider = Memento.loadProvider(getClassLoader());
-    val kernelMemento = mementoProvider.newMemento("kernel", "kernel", getFileSystem());
-    return doRestore(kernelMemento);
   }
 }

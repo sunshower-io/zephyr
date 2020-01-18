@@ -4,7 +4,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public interface EventType {
 
-  default int getId() {
+  int getId();
+
+  static int newId() {
     return instance.id();
   }
 

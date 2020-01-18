@@ -3,6 +3,7 @@ package io.zephyr.kernel.core;
 import dagger.BindsInstance;
 import dagger.Component;
 import io.zephyr.kernel.concurrency.ExecutorWorkerPool;
+import io.zephyr.kernel.concurrency.NamedThreadFactory;
 import io.zephyr.kernel.concurrency.WorkerPool;
 import io.zephyr.kernel.dependencies.DependencyGraph;
 import io.zephyr.kernel.launch.KernelOptions;
@@ -28,7 +29,9 @@ public interface SunshowerKernelConfiguration {
       return create(
           options,
           bootstrapClassloader,
-          new ExecutorWorkerPool(Executors.newFixedThreadPool(1), Executors.newFixedThreadPool(1)));
+          new ExecutorWorkerPool(
+              Executors.newFixedThreadPool(1),
+              Executors.newCachedThreadPool(new NamedThreadFactory("kernel"))));
     }
   }
 }

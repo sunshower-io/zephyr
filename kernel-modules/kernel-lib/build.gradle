@@ -17,7 +17,7 @@ dependencies {
      * Implementation dependencies
      */
     implementation project(':kernel-api')
-    implementation 'javax.inject:javax.inject'
+    compileOnly 'javax.inject:javax.inject'
 
     /**
      * Test Implementation Dependencies

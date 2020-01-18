@@ -1,6 +1,7 @@
 include(
         'kernel-modules:zephyr:zephyr-shell',
         'kernel-modules:zephyr:zephyr-banner',
+        'kernel-modules:zephyr:zephyr-logging',
 
         'kernel-gyre:gyre-api',
         'kernel-gyre:gyre-core',
