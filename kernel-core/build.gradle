@@ -1,3 +1,7 @@
+import java.nio.file.FileVisitResult
+import java.nio.file.Files
+import java.nio.file.attribute.BasicFileAttributes
+
 plugins {
     id 'net.nemerosa.versioning' version '2.8.2'
 }
@@ -52,10 +56,17 @@ dependencies {
             project(':kernel-modules:kernel-lib')
     ].each {
         bundle it
-        implementation it
+        compileOnly it
     }
 
 
+    [
+            'banner',
+            'logging',
+            'shell'
+    ].each {
+        bundle project(":kernel-modules:zephyr:zephyr-$it")
+    }
     /**
      * Test Dependencies
      */
@@ -113,5 +124,22 @@ application {
 
 startScripts {
     classpath = files("lib/*")
+}
+
+
+task copyBundles(type:Copy) {
+    destinationDir = file("$project.buildDir/bundle")
+    from(configurations.bundle)
+}
+
+distributions {
+    main {
+        contents {
+            from(copyBundles) {
+                into "lib"
+            }
+
+        }
+    }
 }
 
