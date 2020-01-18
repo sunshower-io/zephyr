@@ -27,7 +27,8 @@ class TopologyAwareParallelSchedulerTest {
     scope = Scope.root();
     scheduler =
         new TopologyAwareParallelScheduler<>(
-            new ExecutorWorkerPool(Executors.newFixedThreadPool(1)));
+            new ExecutorWorkerPool(
+                Executors.newFixedThreadPool(1), Executors.newFixedThreadPool(2)));
   }
 
   @Test
@@ -61,7 +62,9 @@ class TopologyAwareParallelSchedulerTest {
     List<String> results = new ArrayList<>();
 
     var scheduler =
-        new TopologyAwareParallelScheduler(new ExecutorWorkerPool(Executors.newFixedThreadPool(1)));
+        new TopologyAwareParallelScheduler(
+            new ExecutorWorkerPool(
+                Executors.newFixedThreadPool(1), Executors.newFixedThreadPool(2)));
 
     g.connect(
         new Task("a") {

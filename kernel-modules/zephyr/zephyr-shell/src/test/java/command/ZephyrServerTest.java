@@ -14,6 +14,7 @@ import io.zephyr.kernel.modules.shell.server.DaggerServerInjectionConfiguration;
 import io.zephyr.kernel.modules.shell.server.Server;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
+import java.util.Collections;
 import lombok.val;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,7 +48,7 @@ class ZephyrServerTest {
     kernelOptions.setHomeDirectory(Tests.createTemp());
 
     options.setPort(9999);
-    context = new DefaultCommandContext();
+    context = new DefaultCommandContext(Collections.emptyMap());
     RMI.getRegistry(options);
 
     invoker =

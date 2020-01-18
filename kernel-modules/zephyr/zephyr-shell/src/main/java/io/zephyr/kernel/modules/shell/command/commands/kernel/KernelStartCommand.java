@@ -1,5 +1,7 @@
 package io.zephyr.kernel.modules.shell.command.commands.kernel;
 
+import io.zephyr.kernel.concurrency.ExecutorWorkerPool;
+import io.zephyr.kernel.concurrency.WorkerPool;
 import io.zephyr.kernel.core.DaggerSunshowerKernelConfiguration;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.core.KernelEventTypes;
@@ -7,6 +9,7 @@ import io.zephyr.kernel.core.KernelLifecycle;
 import io.zephyr.kernel.events.Event;
 import io.zephyr.kernel.events.EventListener;
 import io.zephyr.kernel.events.EventType;
+import io.zephyr.kernel.extensions.EntryPoint;
 import io.zephyr.kernel.launch.KernelOptions;
 import io.zephyr.kernel.modules.shell.ShellOptions;
 import io.zephyr.kernel.modules.shell.command.DefaultCommand;
@@ -14,6 +17,7 @@ import io.zephyr.kernel.modules.shell.command.DefaultCommandContext;
 import io.zephyr.kernel.modules.shell.console.CommandContext;
 import io.zephyr.kernel.modules.shell.console.Console;
 import io.zephyr.kernel.modules.shell.console.Result;
+import java.util.concurrent.*;
 import lombok.AllArgsConstructor;
 import lombok.val;
 import picocli.CommandLine;
@@ -40,15 +44,16 @@ public class KernelStartCommand extends DefaultCommand {
       options.validate();
     }
 
-    val kernelOptions = new KernelOptions();
-    kernelOptions.setHomeDirectory(options.getHomeDirectory());
-
+    val kernelOptions = getKernelOptions(options);
     Kernel kernel = context.getService(Kernel.class);
 
     if (kernel == null) {
       kernel =
           DaggerSunshowerKernelConfiguration.factory()
-              .create(kernelOptions, ClassLoader.getSystemClassLoader())
+              .create(
+                  kernelOptions,
+                  ClassLoader.getSystemClassLoader(),
+                  createWorkerPool(kernelOptions, context))
               .kernel();
     }
     val listener = new KernelStartEventHandler(context);
@@ -73,6 +78,29 @@ public class KernelStartCommand extends DefaultCommand {
       kernel.removeEventListener(listener);
     }
     return Result.success();
+  }
+
+  private WorkerPool createWorkerPool(KernelOptions kernelOptions, CommandContext context) {
+    val kernelService =
+        (ExecutorService)
+            context.getLaunchContext().get(EntryPoint.ContextEntries.KERNEL_EXECUTOR_SERVICE);
+
+    val gyreService =
+        new ThreadPoolExecutor(
+            0, kernelOptions.getConcurrency(), 30L, TimeUnit.SECONDS, new SynchronousQueue<>());
+    return new ExecutorWorkerPool(gyreService, kernelService);
+  }
+
+  private KernelOptions getKernelOptions(ShellOptions options) {
+    val kernelOptions = new KernelOptions();
+    kernelOptions.setHomeDirectory(options.getHomeDirectory());
+    val cli = new CommandLine(kernelOptions).setUnmatchedArgumentsAllowed(true);
+    cli.parseArgs(arguments);
+
+    if (kernelOptions.getHomeDirectory() == null) {
+      kernelOptions.setHomeDirectory(options.getHomeDirectory());
+    }
+    return kernelOptions;
   }
 
   @AllArgsConstructor

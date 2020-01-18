@@ -69,7 +69,7 @@ public class KernelTestConfiguration {
 
   @Bean
   public WorkerPool workerPool() {
-    return new ExecutorWorkerPool(Executors.newFixedThreadPool(2));
+    return new ExecutorWorkerPool(Executors.newFixedThreadPool(2), Executors.newFixedThreadPool(2));
   }
 
   @Bean

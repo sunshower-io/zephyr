@@ -1,17 +1,5 @@
 package command.commands.plugin;
 
-// import io.sunshower.test.common.Tests;
-// import io.zephyr.kernel.launch.CommandTestCase;
-// import io.zephyr.kernel.launch.KernelLauncher;
-// import lombok.val;
-// import org.junit.jupiter.api.BeforeEach;
-// import org.junit.jupiter.api.Test;
-//
-// import java.io.File;
-// import java.util.UUID;
-//
-// import static org.junit.jupiter.api.Assertions.*;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.zephyr.kernel.modules.shell.ShellTestCase;

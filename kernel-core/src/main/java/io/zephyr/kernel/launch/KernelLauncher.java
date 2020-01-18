@@ -1,6 +1,7 @@
 package io.zephyr.kernel.launch;
 
 import io.zephyr.common.Options;
+import io.zephyr.kernel.concurrency.NamedThreadFactory;
 import io.zephyr.kernel.extensions.EntryPoint;
 import io.zephyr.kernel.extensions.EntryPointRegistry;
 import io.zephyr.kernel.extensions.PrioritizedExtension;
@@ -86,8 +87,8 @@ public class KernelLauncher implements EntryPoint, EntryPointRegistry {
   public void start() {
     int concurrency = getOptions().getKernelConcurrency();
     log.log(Level.INFO, "kernel.launcher.kernel.concurrency", concurrency);
-    executorService =
-        new ThreadPoolExecutor(0, concurrency, 60L, TimeUnit.SECONDS, new SynchronousQueue<>());
+    // we need fibers!
+    executorService = Executors.newCachedThreadPool(new NamedThreadFactory("kernel"));
   }
 
   @Override
