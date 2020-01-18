@@ -111,6 +111,7 @@ public class SunshowerKernel implements Kernel, EventSource {
   @Override
   @SneakyThrows
   public void start() {
+    eventDispatcher.start();
     lifecycle.start().toCompletableFuture().get();
   }
 
@@ -123,6 +124,7 @@ public class SunshowerKernel implements Kernel, EventSource {
   @Override
   @SneakyThrows
   public void stop() {
+    eventDispatcher.stop();
     lifecycle.stop().toCompletableFuture().get();
   }
 

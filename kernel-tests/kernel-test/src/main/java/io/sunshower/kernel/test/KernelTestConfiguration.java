@@ -3,10 +3,7 @@ package io.sunshower.kernel.test;
 import io.sunshower.test.common.Tests;
 import io.zephyr.cli.DefaultZephyr;
 import io.zephyr.cli.Zephyr;
-import io.zephyr.kernel.concurrency.ExecutorWorkerPool;
-import io.zephyr.kernel.concurrency.KernelScheduler;
-import io.zephyr.kernel.concurrency.Scheduler;
-import io.zephyr.kernel.concurrency.WorkerPool;
+import io.zephyr.kernel.concurrency.*;
 import io.zephyr.kernel.core.*;
 import io.zephyr.kernel.dependencies.DefaultDependencyGraph;
 import io.zephyr.kernel.dependencies.DependencyGraph;
@@ -69,7 +66,9 @@ public class KernelTestConfiguration {
 
   @Bean
   public WorkerPool workerPool() {
-    return new ExecutorWorkerPool(Executors.newFixedThreadPool(2), Executors.newFixedThreadPool(2));
+    return new ExecutorWorkerPool(
+        Executors.newFixedThreadPool(2),
+        Executors.newCachedThreadPool(new NamedThreadFactory("kernel")));
   }
 
   @Bean

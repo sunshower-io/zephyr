@@ -114,7 +114,6 @@ public class AsynchronousEventSource implements EventSource, Stoppable, Startabl
       synchronized (queueLock) {
         running = false;
         queueLock.notifyAll();
-        Thread.currentThread().interrupt();
       }
     }
   }
