@@ -29,6 +29,7 @@ publishing {
         }
     }
 }
+
 dependencies {
 
     /**
@@ -56,7 +57,7 @@ dependencies {
             project(':kernel-modules:kernel-lib')
     ].each {
         bundle it
-        compileOnly it
+        implementation it
     }
 
 
