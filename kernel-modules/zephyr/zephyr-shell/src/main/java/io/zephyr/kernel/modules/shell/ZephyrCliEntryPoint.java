@@ -41,7 +41,6 @@ public class ZephyrCliEntryPoint implements EntryPoint {
     arguments = (String[]) context.get(ContextEntries.ARGS);
     synchronized (this) {
       this.context = new DefaultCommandContext(context);
-      System.out.println("NOTIFY");
       notifyAll();
     }
   }
@@ -63,6 +62,7 @@ public class ZephyrCliEntryPoint implements EntryPoint {
 
   @Override
   public <T> boolean exports(Class<T> type) {
+    doWait();
     return context.getService(type) != null;
   }
 
