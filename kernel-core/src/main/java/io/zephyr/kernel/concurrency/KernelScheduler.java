@@ -1,5 +1,6 @@
 package io.zephyr.kernel.concurrency;
 
+import java.util.concurrent.ExecutorService;
 import javax.inject.Inject;
 
 public final class KernelScheduler<K> implements Scheduler<K> {
@@ -11,6 +12,11 @@ public final class KernelScheduler<K> implements Scheduler<K> {
   public KernelScheduler(WorkerPool pool) {
     this.workerPool = pool;
     this.scheduler = new TopologyAwareParallelScheduler<>(workerPool);
+  }
+
+  @Override
+  public ExecutorService getKernelExecutor() {
+    return workerPool.getKernelExecutor();
   }
 
   @Override

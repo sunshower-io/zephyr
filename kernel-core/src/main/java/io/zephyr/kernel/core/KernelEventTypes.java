@@ -1,6 +1,7 @@
 package io.zephyr.kernel.core;
 
 import io.zephyr.kernel.events.EventType;
+import lombok.Getter;
 
 public enum KernelEventTypes implements EventType {
 
@@ -17,4 +18,10 @@ public enum KernelEventTypes implements EventType {
   KERNEL_FILESYSTEM_CREATED,
   KERNEL_CLASSLOADER_CREATED,
   KERNEL_MODULE_LIST_READ;
+
+  @Getter private final int id;
+
+  KernelEventTypes() {
+    id = EventType.newId();
+  }
 }
