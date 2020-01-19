@@ -1,5 +1,6 @@
 package io.zephyr.kernel.modules.shell.command;
 
+import io.zephyr.kernel.log.Logging;
 import io.zephyr.kernel.misc.SuppressFBWarnings;
 import io.zephyr.kernel.modules.shell.console.Command;
 import io.zephyr.kernel.modules.shell.console.CommandContext;
@@ -8,6 +9,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.val;
 import picocli.CommandLine;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Getter
 @SuppressFBWarnings
@@ -19,6 +23,7 @@ public class CommandDelegate implements Runnable {
 
   @CommandLine.Unmatched private String[] arguments;
 
+  static final Logger log = Logging.get(CommandDelegate.class);
   private final DefaultHistory history;
   private final CommandContext context;
   private final CommandRegistry registry;
@@ -52,6 +57,7 @@ public class CommandDelegate implements Runnable {
     try {
       actualCommand.execute(context);
     } catch (Exception e) {
+      log.log(Level.WARNING, "command.delegate.execution.failed", e);
       commandLine.usage(System.out);
     }
     arguments = null;
