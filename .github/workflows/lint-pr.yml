@@ -27,4 +27,4 @@ jobs:
         uses: iyu/actions-milestone@v1
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
-          configuration-path: .github/workflows/_milestone_config.yml
+          configuration-path: .github/config/_milestone.yml
