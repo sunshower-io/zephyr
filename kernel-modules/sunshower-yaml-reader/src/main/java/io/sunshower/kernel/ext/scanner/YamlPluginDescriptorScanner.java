@@ -7,6 +7,7 @@ import io.zephyr.kernel.Module;
 import io.zephyr.kernel.core.ModuleCoordinate;
 import io.zephyr.kernel.core.ModuleDescriptor;
 import io.zephyr.kernel.core.ModuleScanner;
+import io.zephyr.kernel.log.Logging;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -38,9 +39,7 @@ public class YamlPluginDescriptorScanner implements ModuleScanner {
           "WEB-INF/classes/META-INF/plugin.yml",
           "BOOT-INF/classes/META-INF/plugin.yml");
 
-  static final Logger log =
-      Logger.getLogger(
-          YamlPluginDescriptorScanner.class.getName(), YamlPluginDescriptorScanner.class.getName());
+  static final Logger log = Logging.get(YamlPluginDescriptorScanner.class);
 
   /** plugin constants */
   static final String ROOT = "plugin";

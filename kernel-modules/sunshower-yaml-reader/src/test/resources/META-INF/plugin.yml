@@ -1,0 +1,14 @@
+plugin:
+  name: yaml-loader
+  group: io.sunshower
+  version: 1.0.0
+  order: 1
+  type: kernel-module
+  description: Enables kernel modules and plugins to implement their plugin configurations in YAML
+  dependencies:
+    - dependency:
+        type: library
+        required: true
+        group: io.sunshower.whatever
+        name: whatever
+        version: 1.0.0

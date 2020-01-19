@@ -17,6 +17,7 @@ import io.zephyr.kernel.status.StatusType;
 import java.io.File;
 import java.net.URL;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
@@ -48,7 +49,8 @@ public class ModuleScanPhase extends Task {
 
   private ModuleDescriptor scan(File downloaded, Scope context) {
     val kernel = context.<Kernel>get("SunshowerKernel");
-    val scanners = kernel.locateServices(ModuleScanner.class);
+    List<ModuleScanner> scanners = null;
+    scanners = kernel.locateServices(ModuleScanner.class);
     URL url = (URL) parameters().get(ModuleDownloadPhase.DOWNLOAD_URL);
     if (scanners.isEmpty()) {
       kernel.dispatchEvent(

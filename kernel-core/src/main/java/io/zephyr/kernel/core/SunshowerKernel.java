@@ -101,11 +101,21 @@ public class SunshowerKernel implements Kernel, EventSource {
   }
 
   @Override
+  @SuppressWarnings("PMD.DataflowAnomalyAnalysis")
   public <T> List<T> locateServices(Class<T> type) {
-    val result = new ArrayList<T>();
-    load(result, type, getClassLoader());
-
-    return result;
+    synchronized (this) {
+      val currentThread = Thread.currentThread();
+      val kernelClassloader = getClassLoader();
+      val currentContextClassloader = currentThread.getContextClassLoader();
+      try {
+        val result = new ArrayList<T>();
+        currentThread.setContextClassLoader(kernelClassloader);
+        load(result, type, getClassLoader());
+        return result;
+      } finally {
+        Thread.currentThread().setContextClassLoader(currentContextClassloader);
+      }
+    }
   }
 
   @Override

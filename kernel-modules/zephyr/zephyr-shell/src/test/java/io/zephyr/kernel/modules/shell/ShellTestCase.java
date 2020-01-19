@@ -1,6 +1,7 @@
 package io.zephyr.kernel.modules.shell;
 
 import io.sunshower.test.common.Tests;
+import io.zephyr.kernel.Lifecycle;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.core.KernelLifecycle;
@@ -9,6 +10,7 @@ import io.zephyr.kernel.launch.KernelLauncher;
 import io.zephyr.kernel.modules.shell.server.Server;
 import java.io.File;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.val;
@@ -127,7 +129,30 @@ public class ShellTestCase {
         .stream()
         .filter(t -> t.getCoordinate().getName().equals(name))
         .findAny()
-        .get();
+        .orElseThrow(() -> new NoSuchElementException("No plugin named " + name));
+  }
+
+  protected void startPlugins(String... plugins) {
+    val args = new StringBuilder();
+    args.append("plugin").append(" start ");
+    for (val pluginName : plugins) {
+      args.append(moduleNamed(pluginName).getCoordinate().toCanonicalForm()).append(" ");
+    }
+    runAsync(args.toString().split("\\s+"));
+  }
+
+  @SneakyThrows
+  protected void startAndWait(int expectedCount, String... plugins) {
+    startPlugins(plugins);
+    while (kernel
+            .getModuleManager()
+            .getModules()
+            .stream()
+            .filter(t -> t.getLifecycle().getState() == Lifecycle.State.Active)
+            .count()
+        != expectedCount) {
+      Thread.sleep(100);
+    }
   }
 
   @SneakyThrows

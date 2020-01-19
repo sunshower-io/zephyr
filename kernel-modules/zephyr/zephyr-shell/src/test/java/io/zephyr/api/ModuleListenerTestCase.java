@@ -98,6 +98,24 @@ public class ModuleListenerTestCase extends ShellTestCase {
         TestPlugins.TEST_PLUGIN_2);
   }
 
+  @Test
+  void ensureSuccessfullyStartingSinglePluginProducesSuccessEvent() {
+
+    installFully(StandardModules.YAML);
+    perform(
+        () -> {},
+        () -> {
+          kernel.addEventListener(
+              listener, ModuleEvents.STARTING, ModuleEvents.STARTED, ModuleEvents.START_FAILED);
+          startAndWait(2, "test-plugin-1", "test-plugin-2");
+          verify(listener, times(2)).onEvent(eq(ModuleEvents.STARTING), any());
+          verify(listener, times(2)).onEvent(eq(ModuleEvents.STARTED), any());
+          verify(listener, times(0)).onEvent(eq(ModuleEvents.START_FAILED), any());
+        },
+        TestPlugins.TEST_PLUGIN_1,
+        TestPlugins.TEST_PLUGIN_2);
+  }
+
   protected void perform(Runnable before, Runnable after, Installable... modules) {
     start();
     try {
