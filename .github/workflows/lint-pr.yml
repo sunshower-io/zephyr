@@ -1,7 +1,7 @@
 name: PR Linting
 on:
   pull_request:
-    types: [opened, reopened, edited]
+    types: [opened, reopened]
 
 #PRs should be assigned to author, contain a reference to an issue, and be added to the Zephyr project
 
@@ -27,8 +27,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_PROJECT_URL: https://github.com/sunshower-io/zephyr/projects/1
           GITHUB_PROJECT_COLUMN_NAME: Review in progress
-      - name: Add to Milestone
-        uses: iyu/actions-milestone@v1
-        with:
-          repo-token: "${{ secrets.GITHUB_TOKEN }}"
-          configuration-path: .github/config/_milestone.yml
+#      - name: Add to Milestone
+#        uses: iyu/actions-milestone@v1
+#        with:
+#          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+#          configuration-path: .github/config/_milestone.yml

@@ -14,10 +14,6 @@ jobs:
         uses: srggrs/assign-one-project-github-action@1.1.0
         with:
           project: 'https://github.com/sunshower-io/zephyr/projects/1'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_PROJECT_URL: https://github.com/sunshower-io/zephyr/projects/1
-          GITHUB_PROJECT_COLUMN_NAME: To do
       - name: Move new issues to "To do" column
         uses: docker://takanabe/github-actions-automate-projects:v0.0.1
         env:
