@@ -5,13 +5,12 @@ import io.zephyr.kernel.misc.SuppressFBWarnings;
 import io.zephyr.kernel.modules.shell.console.Command;
 import io.zephyr.kernel.modules.shell.console.CommandContext;
 import io.zephyr.kernel.modules.shell.console.CommandRegistry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.val;
 import picocli.CommandLine;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @Getter
 @SuppressFBWarnings
