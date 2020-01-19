@@ -11,8 +11,8 @@ import java.io.File;
 public class LogOptions extends AbstractValidatable<LogOptions> implements Options<LogOptions> {
 
     /**
-     * Specify the home directory for Sunshower.io. Sunshower data is stored here. For clustered
-     * Sunshower.io kernels, this should be a distributed directory unless a data-distribution module
+     * Specify the home directory for Zephyr. Zephyr logs are stored here. For clustered
+     * Zephyr kernels, this should be a distributed directory unless a data-distribution module
      * is installed
      */
     @Getter

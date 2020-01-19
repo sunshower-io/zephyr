@@ -4,6 +4,8 @@ import io.zephyr.kernel.Options;
 import io.zephyr.kernel.core.AbstractValidatable;
 import io.zephyr.kernel.misc.SuppressFBWarnings;
 import java.io.File;
+import java.util.logging.Level;
+
 import lombok.Getter;
 import lombok.Setter;
 import picocli.CommandLine;
@@ -49,6 +51,12 @@ public class KernelOptions extends AbstractValidatable<KernelOptions>
     type = Integer.class
   )
   private Integer kernelConcurrency = 2;
+
+  /** Specify logging level. Defaults to Level.WARNING */
+  @Getter
+  @Setter
+  @CommandLine.Option(names = {"-l", "--log-level"}, converter = LogLevelConverter.class)
+  private Level logLevel = Level.WARNING;
 
   public KernelOptions() {
     registerStep(KernelOptionsValidations.homeDirectory());
