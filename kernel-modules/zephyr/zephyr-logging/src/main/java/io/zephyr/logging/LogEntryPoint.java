@@ -1,16 +1,14 @@
 package io.zephyr.logging;
 
-
 import io.zephyr.common.Options;
 import io.zephyr.kernel.extensions.EntryPoint;
+import io.zephyr.kernel.log.Logging;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import io.zephyr.kernel.log.Logging;
 import lombok.val;
 
 public class LogEntryPoint implements EntryPoint {
