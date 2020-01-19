@@ -6,7 +6,6 @@ public enum StatusType {
   SUCCEEDED,
   WARNING;
 
-
   public Status unresolvable(String message) {
     return Status.unresolvable(this, message);
   }

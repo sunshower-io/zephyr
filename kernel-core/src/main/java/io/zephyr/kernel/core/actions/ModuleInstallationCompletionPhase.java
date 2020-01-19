@@ -8,14 +8,13 @@ import io.zephyr.kernel.concurrency.Task;
 import io.zephyr.kernel.core.*;
 import io.zephyr.kernel.events.Events;
 import io.zephyr.kernel.module.ModuleLifecycle;
+import io.zephyr.kernel.status.StatusType;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.FileSystem;
 import java.util.Set;
-
-import io.zephyr.kernel.status.StatusType;
 import lombok.val;
 
 public class ModuleInstallationCompletionPhase extends Task {

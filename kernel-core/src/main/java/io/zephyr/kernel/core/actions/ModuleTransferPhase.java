@@ -6,11 +6,11 @@ import io.zephyr.kernel.concurrency.Task;
 import io.zephyr.kernel.concurrency.TaskException;
 import io.zephyr.kernel.concurrency.TaskStatus;
 import io.zephyr.kernel.core.Kernel;
-import io.zephyr.kernel.core.KernelEventTypes;
 import io.zephyr.kernel.core.ModuleDescriptor;
 import io.zephyr.kernel.core.Plugins;
 import io.zephyr.kernel.events.Events;
 import io.zephyr.kernel.log.Logging;
+import io.zephyr.kernel.status.StatusType;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
@@ -18,8 +18,6 @@ import java.text.MessageFormat;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import io.zephyr.kernel.status.StatusType;
 import lombok.val;
 
 /**

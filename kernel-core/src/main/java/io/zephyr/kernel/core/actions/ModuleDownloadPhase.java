@@ -11,6 +11,7 @@ import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.events.Events;
 import io.zephyr.kernel.io.ChannelTransferListener;
 import io.zephyr.kernel.log.Logging;
+import io.zephyr.kernel.status.StatusType;
 import java.io.File;
 import java.net.URL;
 import java.nio.channels.ReadableByteChannel;
@@ -18,9 +19,6 @@ import java.nio.file.Path;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import io.zephyr.kernel.status.Status;
-import io.zephyr.kernel.status.StatusType;
 import lombok.AllArgsConstructor;
 import lombok.val;
 

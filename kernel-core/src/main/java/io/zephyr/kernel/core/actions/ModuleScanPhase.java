@@ -12,15 +12,14 @@ import io.zephyr.kernel.core.ModuleScanner;
 import io.zephyr.kernel.events.Events;
 import io.zephyr.kernel.log.Logging;
 import io.zephyr.kernel.module.ModuleInstallationRequest;
+import io.zephyr.kernel.status.Status;
+import io.zephyr.kernel.status.StatusType;
 import java.io.File;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
-
-import io.zephyr.kernel.status.Status;
-import io.zephyr.kernel.status.StatusType;
 import lombok.val;
 
 /**

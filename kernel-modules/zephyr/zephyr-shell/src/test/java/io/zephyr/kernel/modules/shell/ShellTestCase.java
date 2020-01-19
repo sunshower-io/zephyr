@@ -9,7 +9,6 @@ import io.zephyr.kernel.launch.KernelLauncher;
 import io.zephyr.kernel.modules.shell.server.Server;
 import java.io.File;
 import java.util.Map;
-
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.val;
@@ -122,7 +121,10 @@ public class ShellTestCase {
   }
 
   protected Module moduleNamed(String name) {
-    return kernel.getModuleManager().getModules().stream()
+    return kernel
+        .getModuleManager()
+        .getModules()
+        .stream()
         .filter(t -> t.getCoordinate().getName().equals(name))
         .findAny()
         .get();
