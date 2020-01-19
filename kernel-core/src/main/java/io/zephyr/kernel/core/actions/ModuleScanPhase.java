@@ -1,6 +1,7 @@
 package io.zephyr.kernel.core.actions;
 
 import io.sunshower.gyre.Scope;
+import io.zephyr.api.ModuleEvents;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.concurrency.Task;
 import io.zephyr.kernel.concurrency.TaskException;
@@ -8,6 +9,7 @@ import io.zephyr.kernel.concurrency.TaskStatus;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.core.ModuleDescriptor;
 import io.zephyr.kernel.core.ModuleScanner;
+import io.zephyr.kernel.events.Events;
 import io.zephyr.kernel.log.Logging;
 import io.zephyr.kernel.module.ModuleInstallationRequest;
 import java.io.File;
@@ -16,6 +18,9 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
+
+import io.zephyr.kernel.status.Status;
+import io.zephyr.kernel.status.StatusType;
 import lombok.val;
 
 /**
@@ -43,10 +48,13 @@ public class ModuleScanPhase extends Task {
   }
 
   private ModuleDescriptor scan(File downloaded, Scope context) {
-    val scanners = context.<Kernel>get("SunshowerKernel").locateServices(ModuleScanner.class);
+    val kernel = context.<Kernel>get("SunshowerKernel");
+    val scanners = kernel.locateServices(ModuleScanner.class);
     URL url = (URL) parameters().get(ModuleDownloadPhase.DOWNLOAD_URL);
     if (scanners.isEmpty()) {
-      // todo: add error message
+      kernel.dispatchEvent(
+          ModuleEvents.INSTALL_FAILED,
+          Events.createWithStatus(new Status(StatusType.FAILED, "No available scanners", false)));
       throw new TaskException(TaskStatus.UNRECOVERABLE);
     }
     val descriptor =
@@ -57,6 +65,9 @@ public class ModuleScanPhase extends Task {
       request.setCoordinate(result.getCoordinate());
       return result;
     } else {
+      kernel.dispatchEvent(
+          ModuleEvents.INSTALL_FAILED,
+          Events.createWithStatus(new Status(StatusType.FAILED, "no module descriptor", false)));
       throw new TaskException(TaskStatus.UNRECOVERABLE);
     }
   }

@@ -1,11 +1,15 @@
 package io.zephyr.kernel.core.actions;
 
 import io.sunshower.gyre.Scope;
+import io.zephyr.api.ModuleEvents;
 import io.zephyr.kernel.concurrency.Task;
 import io.zephyr.kernel.concurrency.TaskException;
 import io.zephyr.kernel.concurrency.TaskStatus;
+import io.zephyr.kernel.core.Kernel;
+import io.zephyr.kernel.core.KernelEventTypes;
 import io.zephyr.kernel.core.ModuleDescriptor;
 import io.zephyr.kernel.core.Plugins;
+import io.zephyr.kernel.events.Events;
 import io.zephyr.kernel.log.Logging;
 import java.io.File;
 import java.io.IOException;
@@ -14,6 +18,8 @@ import java.text.MessageFormat;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import io.zephyr.kernel.status.StatusType;
 import lombok.val;
 
 /**
@@ -45,6 +51,7 @@ public class ModuleTransferPhase extends Task {
     val fs = createFilesystem(scope);
     scope.set(MODULE_FILE_SYSTEM, fs);
 
+    val kernel = scope.<Kernel>get("SunshowerKernel");
     val assembly = fs.getPath("module.droplet").toFile();
     File file = scope.get(ModuleDownloadPhase.DOWNLOADED_FILE);
     val parent = assembly.getParentFile();
@@ -65,7 +72,10 @@ public class ModuleTransferPhase extends Task {
           MessageFormat.format(
               bundle.getString("transfer.file.failed"), assembly, file, ex.getMessage());
       log.log(Level.WARNING, message);
-
+      kernel.dispatchEvent(
+          ModuleEvents.INSTALL_FAILED,
+          Events.createWithStatus(
+              StatusType.FAILED.unresolvable("Failed to transfer module.  Reason: " + message)));
       throw new TaskException(ex, TaskStatus.UNRECOVERABLE);
     }
     return null;
@@ -73,25 +83,23 @@ public class ModuleTransferPhase extends Task {
 
   @SuppressWarnings("PMD.DataflowAnomalyAnalysis")
   private FileSystem createFilesystem(Scope scope) {
-    synchronized (this) {
-      ModuleDescriptor descriptor = scope.get(ModuleScanPhase.MODULE_DESCRIPTOR);
-      val coordinate = descriptor.getCoordinate();
-      try {
-        val result = Plugins.getFileSystem(coordinate);
-        val uri = result.fst;
-        val fs = result.snd;
-        log.log(Level.INFO, "transfer.uri", uri);
+    ModuleDescriptor descriptor = scope.get(ModuleScanPhase.MODULE_DESCRIPTOR);
+    val coordinate = descriptor.getCoordinate();
+    try {
+      val result = Plugins.getFileSystem(coordinate);
+      val uri = result.fst;
+      val fs = result.snd;
+      log.log(Level.INFO, "transfer.uri", uri);
 
-        log.log(
-            Level.INFO,
-            "transfer.uri.success",
-            new Object[] {uri, fs.getRootDirectories().iterator().next()});
-        return fs;
-      } catch (IOException ex) {
-        log.log(Level.WARNING, "transfer.uri.failure", ex.getMessage());
-        log.log(Level.FINE, "Error", ex);
-        throw new TaskException(ex, TaskStatus.UNRECOVERABLE);
-      }
+      log.log(
+          Level.INFO,
+          "transfer.uri.success",
+          new Object[] {uri, fs.getRootDirectories().iterator().next()});
+      return fs;
+    } catch (IOException ex) {
+      log.log(Level.WARNING, "transfer.uri.failure", ex.getMessage());
+      log.log(Level.FINE, "Error", ex);
+      throw new TaskException(ex, TaskStatus.UNRECOVERABLE);
     }
   }
 }

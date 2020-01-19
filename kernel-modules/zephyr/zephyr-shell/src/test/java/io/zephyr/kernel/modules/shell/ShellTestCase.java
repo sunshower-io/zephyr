@@ -9,6 +9,8 @@ import io.zephyr.kernel.launch.KernelLauncher;
 import io.zephyr.kernel.modules.shell.server.Server;
 import java.io.File;
 import java.util.Map;
+
+import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.val;
 import org.junit.jupiter.api.AfterEach;
@@ -53,6 +55,21 @@ public class ShellTestCase {
     }
   }
 
+  @AllArgsConstructor
+  public static final class FileInstallable implements Installable {
+    final File file;
+
+    @Override
+    public String getPath() {
+      return file.getAbsolutePath();
+    }
+
+    @Override
+    public String getAssembly() {
+      return getPath();
+    }
+  }
+
   public interface Installable {
     String getPath();
 
@@ -61,25 +78,51 @@ public class ShellTestCase {
     }
   }
 
+  protected final boolean installBase;
+
+  protected ShellTestCase(final boolean installBase) {
+    this.installBase = installBase;
+  }
+
+  protected ShellTestCase() {
+    this(true);
+  }
+
   @BeforeEach
-  void setUp() {
+  protected void setUp() {
     homeDirectory = Tests.createTemp();
-    startServer();
-    startKernel();
-    installKernelModules(StandardModules.YAML);
+    if (installBase) {
+      startServer();
+      startKernel();
+      installKernelModules(StandardModules.YAML);
+    }
   }
 
   @AfterEach
-  void tearDown() {
+  protected void tearDown() {
+    if (installBase) {
+      stopKernel();
+      stopServer();
+    }
+  }
+
+  protected void restart() {
+    stop();
+    start();
+  }
+
+  protected void start() {
+    startServer();
+    startKernel();
+  }
+
+  protected void stop() {
     stopKernel();
     stopServer();
   }
 
   protected Module moduleNamed(String name) {
-    return kernel
-        .getModuleManager()
-        .getModules()
-        .stream()
+    return kernel.getModuleManager().getModules().stream()
         .filter(t -> t.getCoordinate().getName().equals(name))
         .findAny()
         .get();
@@ -159,6 +202,12 @@ public class ShellTestCase {
 
   protected void run(String... args) {
     KernelLauncher.main(args);
+  }
+
+  protected void installFully(Installable... modules) {
+    start();
+    install(modules);
+    stop();
   }
 
   @SneakyThrows

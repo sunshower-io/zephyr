@@ -6,6 +6,7 @@ dependencies {
     api project(':kernel-api')
     [
             'org.mockito:mockito-core',
+            'org.mockito:mockito-junit-jupiter',
             "org.junit.jupiter:junit-jupiter-api",
             "org.junit.jupiter:junit-jupiter-engine",
     ].each {

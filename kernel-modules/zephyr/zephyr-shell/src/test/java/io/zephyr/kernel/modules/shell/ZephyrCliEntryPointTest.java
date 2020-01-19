@@ -11,12 +11,12 @@ import org.junit.jupiter.api.Test;
 class ZephyrCliEntryPointTest extends ShellTestCase {
 
   @BeforeEach
-  void setUp() {
+  protected void setUp() {
     homeDirectory = Tests.createTemp();
   }
 
   @AfterEach
-  void tearDown() {}
+  protected void tearDown() {}
 
   @RepeatedTest(2)
   void ensureServerLifecycleIsIdempotent() throws InterruptedException {

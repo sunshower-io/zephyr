@@ -19,12 +19,7 @@ public class ModuleUnpackPhase extends Task implements ModuleAssemblyExtractor.E
 
   static final Logger log;
   static final ResourceBundle bundle;
-
-  //  public static final String LIBRARY_DIRECTORIES = "MODULE_UNPACK_LIBRARIES";
-  //  public static final String INSTALLED_LIBRARIES = "MODULE_INSTALLED_LIBRARIES";
   public static final String MODULE_ASSEMBLY = "MODULE_RELEVANT_SEARCH_PATHS";
-  //  private static final Set<String> RESOURCE_DIRECTORIES =
-  //      Set.of("WEB-INF/classes/", "META-INF/", "BOOT-INF/classes", "BOOT-INF/classes/META-INF/");
 
   static {
     log = Logging.get(ModuleUnpackPhase.class);

@@ -1,13 +1,13 @@
 package io.zephyr.kernel.core.actions;
 
 import io.sunshower.gyre.Scope;
+import io.zephyr.api.ModuleEvents;
 import io.zephyr.common.io.Files;
 import io.zephyr.common.io.MonitorableChannels;
 import io.zephyr.kernel.concurrency.Task;
 import io.zephyr.kernel.concurrency.TaskException;
 import io.zephyr.kernel.concurrency.TaskStatus;
 import io.zephyr.kernel.core.Kernel;
-import io.zephyr.kernel.core.PluginEvents;
 import io.zephyr.kernel.events.Events;
 import io.zephyr.kernel.io.ChannelTransferListener;
 import io.zephyr.kernel.log.Logging;
@@ -18,6 +18,9 @@ import java.nio.file.Path;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import io.zephyr.kernel.status.Status;
+import io.zephyr.kernel.status.StatusType;
 import lombok.AllArgsConstructor;
 import lombok.val;
 
@@ -46,12 +49,21 @@ public class ModuleDownloadPhase extends Task implements ChannelTransferListener
   @Override
   public Task.TaskValue run(Scope scope) {
     URL downloadUrl = (URL) parameters().get(DOWNLOAD_URL);
-    scope
-        .<Kernel>get("SunshowerKernel")
-        .dispatchEvent(PluginEvents.PLUGIN_INSTALLATION_INITIATED, Events.create(downloadUrl));
-    scope.set(DOWNLOAD_URL, downloadUrl);
-    Path moduleDirectory = scope.get(TARGET_DIRECTORY);
-    downloadModule(downloadUrl, moduleDirectory, scope);
+    Kernel kernel = scope.get("SunshowerKernel");
+    try {
+
+      kernel.dispatchEvent(
+          ModuleEvents.INSTALLING,
+          Events.create(null, StatusType.PROGRESSING.resolvable("beginning module download")));
+      scope.set(DOWNLOAD_URL, downloadUrl);
+      Path moduleDirectory = scope.get(TARGET_DIRECTORY);
+      downloadModule(downloadUrl, moduleDirectory, scope);
+    } catch (Exception ex) {
+      kernel.dispatchEvent(
+          ModuleEvents.INSTALL_FAILED,
+          Events.create(null, StatusType.FAILED.unresolvable(ex.getMessage())));
+      throw new TaskException(ex, TaskStatus.UNRECOVERABLE);
+    }
     return null;
   }
 
@@ -74,7 +86,8 @@ public class ModuleDownloadPhase extends Task implements ChannelTransferListener
     final double progress;
   }
 
-  private void downloadModule(URL downloadUrl, Path moduleDirectory, Scope context) {
+  private void downloadModule(URL downloadUrl, Path moduleDirectory, Scope context)
+      throws Exception {
     val targetDirectory = getTargetDirectory(moduleDirectory, context);
     val targetFile = new File(targetDirectory, Files.getFileName(downloadUrl));
     this.targetFile.set(targetFile);
@@ -94,14 +107,10 @@ public class ModuleDownloadPhase extends Task implements ChannelTransferListener
   }
 
   @SuppressWarnings("PMD.UnusedPrivateMethod")
-  private void doTransfer(URL downloadUrl, File targetFile, Scope context) {
-    try {
-      val transfer = MonitorableChannels.transfer(downloadUrl, targetFile);
-      transfer.addListener(this);
-      transfer.call();
-      context.set(DOWNLOADED_FILE, targetFile);
-    } catch (Exception ex) {
-      throw new TaskException(ex, TaskStatus.UNRECOVERABLE);
-    }
+  private void doTransfer(URL downloadUrl, File targetFile, Scope context) throws Exception {
+    val transfer = MonitorableChannels.transfer(downloadUrl, targetFile);
+    transfer.addListener(this);
+    transfer.call();
+    context.set(DOWNLOADED_FILE, targetFile);
   }
 }

@@ -1,6 +1,7 @@
 package io.zephyr.kernel.core.actions;
 
 import io.sunshower.gyre.Scope;
+import io.zephyr.api.ModuleEvents;
 import io.zephyr.kernel.*;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.concurrency.Task;
@@ -13,6 +14,8 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.FileSystem;
 import java.util.Set;
+
+import io.zephyr.kernel.status.StatusType;
 import lombok.val;
 
 public class ModuleInstallationCompletionPhase extends Task {
@@ -55,11 +58,14 @@ public class ModuleInstallationCompletionPhase extends Task {
 
       if (descriptor.getType() == Module.Type.Plugin) {
         context.<Set<Module>>get(INSTALLED_PLUGINS).add(module);
-        kernel.dispatchEvent(PluginEvents.PLUGIN_INSTALLATION_COMPLETE, Events.create(module));
-
       } else {
         context.<Set<Module>>get(INSTALLED_KERNEL_MODULES).add(module);
       }
+      kernel.dispatchEvent(
+          ModuleEvents.INSTALLED,
+          Events.create(
+              module,
+              StatusType.SUCCEEDED.resolvable("Successfully installed plugin: " + descriptor)));
       return null;
     }
   }
