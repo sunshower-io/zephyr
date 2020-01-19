@@ -59,7 +59,7 @@ public class ZephyrServer implements Server {
       try {
         unregisterCommands();
       } catch (Exception ex) {
-        log.log(Level.WARNING, "Encountered exception", ex);
+        log.log(Level.WARNING, "zephyr.server.exception", ex);
       }
     }
   }
@@ -79,7 +79,7 @@ public class ZephyrServer implements Server {
             UnicastRemoteObject.unexportObject((Remote) result, true);
           }
         } catch (NoSuchObjectException ex) {
-          log.log(Level.INFO, "failed to unregister service");
+          log.log(Level.INFO, "zephyr.server.unregistered.failed");
         }
         log.log(Level.INFO, "zephyr.server.unregistered.service", name);
       }
@@ -87,7 +87,7 @@ public class ZephyrServer implements Server {
       try {
         UnicastRemoteObject.unexportObject(registry, true);
       } catch (NoSuchObjectException ex) {
-        log.log(Level.INFO, "Server not running");
+        log.log(Level.INFO, "zephyr.server.notrunning");
       }
     }
   }
