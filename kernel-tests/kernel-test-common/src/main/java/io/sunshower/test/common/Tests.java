@@ -12,13 +12,28 @@ public class Tests {
 
   public static File buildDirectory() {
     for (var file = current(); file != null; file = file.getParentFile()) {
-      val check = new File(file, "build");
-      if (check.exists() && check.isDirectory()) {
+      val check = checkDirs(file, "build", "out");
+
+      if (check != null) {
         return check.toPath().normalize().toFile();
       }
     }
     throw new NoSuchElementException(
         "No build directory found for : " + new File(".").getAbsolutePath());
+  }
+
+  static boolean checkDir(File parent, String fileName) {
+    val file = new File(parent, fileName);
+    return file.exists() && file.isDirectory();
+  }
+
+  static File checkDirs(File parent, String... args) {
+    for (val arg : args) {
+      if (checkDir(parent, arg)) {
+        return new File(parent, arg);
+      }
+    }
+    return null;
   }
 
   public static File rootDirectory() {

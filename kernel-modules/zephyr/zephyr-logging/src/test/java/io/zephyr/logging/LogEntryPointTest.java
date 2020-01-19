@@ -26,11 +26,15 @@ class LogEntryPointTest {
   @BeforeEach
   void setUp() {
     options = new KernelOptions();
-    options.setHomeDirectory(Tests.createTemp());
+    val homeDir = Tests.createTemp();
+
+    options.setHomeDirectory(homeDir);
     launcher = spy(KernelLauncher.class);
     given(launcher.getOptions()).willReturn(options);
     entryPoints = new EnumMap<>(EntryPoint.ContextEntries.class);
     entryPoints.put(EntryPoint.ContextEntries.ENTRY_POINTS, Collections.singletonList(launcher));
+    entryPoints.put(EntryPoint.ContextEntries.ARGS, new String[] {"-h", homeDir.getAbsolutePath()});
+
     logEntryPoint = new LogEntryPoint();
   }
 

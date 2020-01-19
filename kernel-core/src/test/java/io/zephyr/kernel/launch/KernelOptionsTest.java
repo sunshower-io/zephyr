@@ -18,16 +18,29 @@ class KernelOptionsTest {
 
     val options = Options.create(KernelOptions::new, context);
 
-    assertEquals(Level.WARNING, options.getLogLevel());
+    assertEquals(Level.WARNING, options.getLogLevel(), "Log level should be WARNING by default");
   }
 
   @Test
   void ensureLogLevelIsSettable() {
     val context = new EnumMap<>(EntryPoint.ContextEntries.class);
-    context.put(EntryPoint.ContextEntries.ARGS, new String[]{"-l", "info"});
+    context.put(EntryPoint.ContextEntries.ARGS, new String[] {"-l", "info"});
 
     val options = Options.create(KernelOptions::new, context);
 
-    assertEquals(Level.INFO, options.getLogLevel());
+    assertEquals(Level.INFO, options.getLogLevel(), "Log level should be settable");
+  }
+
+  @Test
+  void ensureLogLevelReturnsToWarningIfWonkyArgs() {
+    val context = new EnumMap<>(EntryPoint.ContextEntries.class);
+    context.put(EntryPoint.ContextEntries.ARGS, new String[] {"-l", "boop"});
+
+    val options = Options.create(KernelOptions::new, context);
+
+    assertEquals(
+        Level.WARNING,
+        options.getLogLevel(),
+        "Log level should be WARNING if an invalid level is given");
   }
 }
