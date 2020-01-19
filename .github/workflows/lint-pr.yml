@@ -17,6 +17,10 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           bodyContains: 'https://github.com/sunshower-io/zephyr/issues/'
+      - name: Add to board
+        uses: srggrs/assign-one-project-github-action@1.1.0
+        with:
+          project: 'https://github.com/sunshower-io/zephyr/projects/1'
       - name: Add New PRs to "Review in progress" column
         uses: docker://takanabe/github-actions-automate-projects:v0.0.1
         env:
