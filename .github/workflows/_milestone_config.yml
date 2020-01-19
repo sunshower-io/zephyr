@@ -1,0 +1,5 @@
+base-branch:
+  - "1.0"
+
+head-branch:
+  - "1.0"
