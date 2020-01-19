@@ -30,7 +30,10 @@ public class KernelOptions extends AbstractValidatable<KernelOptions>
    */
   @Getter
   @Setter
-  @CommandLine.Option(names = {"-h", "--home-directory"})
+  @CommandLine.Option(
+    names = {"-h", "--home-directory"},
+    defaultValue = "zephyr"
+  )
   private File homeDirectory;
 
   /** Specify the maximum number of threads the Sunshower Kernel may start for gyre */
