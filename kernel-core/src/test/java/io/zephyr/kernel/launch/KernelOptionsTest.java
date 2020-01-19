@@ -43,4 +43,27 @@ class KernelOptionsTest {
         options.getLogLevel(),
         "Log level should be WARNING if an invalid level is given");
   }
+
+  @Test
+  void ensureHomeDirectoryIsZephyrByDefault() {
+    val context = new EnumMap<>(EntryPoint.ContextEntries.class);
+    context.put(EntryPoint.ContextEntries.ARGS, new String[0]);
+
+    val options = Options.create(KernelOptions::new, context);
+
+    assertEquals(
+        "zephyr",
+        options.getHomeDirectory().getName(),
+        "Home directory should be ZEPHYR by default");
+  }
+
+  @Test
+  void ensureHomeDirectoryCanBeSet() {
+    val context = new EnumMap<>(EntryPoint.ContextEntries.class);
+    context.put(EntryPoint.ContextEntries.ARGS, new String[] {"-h", "boop"});
+
+    val options = Options.create(KernelOptions::new, context);
+
+    assertEquals("boop", options.getHomeDirectory().getName(), "Home directory should be settable");
+  }
 }
