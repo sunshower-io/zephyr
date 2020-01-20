@@ -79,6 +79,9 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable {
     } finally {
       lock.unlock();
     }
+    if(lock.getHoldCount() != 0) {
+      log.warning("lock held " + lock.getHoldCount());
+    }
   }
 
   @Override
@@ -86,8 +89,8 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable {
     lock.lock();
     try {
       val thread = new Thread(this, "module-" + module.getCoordinate().toCanonicalForm());
-      thread.start();
       moduleThread.set(thread);
+      thread.start();
       try {
         moduleCondition.await();
       } catch (InterruptedException ex) {
@@ -95,6 +98,9 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable {
       }
     } finally {
       lock.unlock();
+    }
+    if(lock.getHoldCount() != 0) {
+      log.warning("lock held " + lock.getHoldCount());
     }
   }
 
@@ -177,6 +183,7 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable {
       val loader = module.getModuleClasspath().resolveServiceLoader(PluginActivator.class);
       kernel.getModuleManager().getModuleLoader().check(module);
       val ctx = kernel.createContext(module);
+      moduleThread.get().setContextClassLoader(module.getClassLoader());
       for (val activator : loader) {
         try {
           activator.start(ctx);
@@ -236,6 +243,7 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable {
           }
           ((DefaultModule) module).setActivator(null);
           module.getFileSystem().close();
+          moduleThread.get().setContextClassLoader(null);
         } catch (Exception ex) {
           module.getLifecycle().setState(Lifecycle.State.Failed);
           throw new PluginException(ex);

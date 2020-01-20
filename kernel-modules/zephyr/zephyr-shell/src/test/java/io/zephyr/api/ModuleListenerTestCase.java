@@ -110,6 +110,26 @@ public class ModuleListenerTestCase extends ShellTestCase {
   }
 
   @Test
+  void ensureSuccessfullyStartingMultiplePluginProducesSuccessEvent() {
+
+    installFully(StandardModules.YAML);
+    perform(
+        () -> {},
+        () -> {
+          kernel.addEventListener(
+              listener, ModuleEvents.STARTING, ModuleEvents.STARTED, ModuleEvents.START_FAILED);
+          startAndWait(4, "test-plugin-1", "test-plugin-2", "spring-plugin", "spring-plugin-dep");
+          verify(listener, times(4)).onEvent(eq(ModuleEvents.STARTING), any());
+          verify(listener, times(4)).onEvent(eq(ModuleEvents.STARTED), any());
+          verify(listener, times(0)).onEvent(eq(ModuleEvents.START_FAILED), any());
+        },
+        TestPlugins.TEST_PLUGIN_1,
+        TestPlugins.TEST_PLUGIN_2,
+        TestPlugins.TEST_PLUGIN_SPRING,
+        TestPlugins.TEST_PLUGIN_SPRING_DEP);
+  }
+
+  @Test
   void ensureSuccessfullyStartingSinglePluginProducesSuccessEvent() {
 
     installFully(StandardModules.YAML);
