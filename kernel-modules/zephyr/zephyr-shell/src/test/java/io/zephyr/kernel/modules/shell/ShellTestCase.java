@@ -126,7 +126,10 @@ public class ShellTestCase {
   }
 
   protected Module moduleNamed(String name) {
-    return kernel.getModuleManager().getModules().stream()
+    return kernel
+        .getModuleManager()
+        .getModules()
+        .stream()
         .filter(t -> t.getCoordinate().getName().equals(name))
         .findAny()
         .orElseThrow(() -> new NoSuchElementException("No plugin named " + name));
@@ -144,7 +147,10 @@ public class ShellTestCase {
   @SneakyThrows
   protected void startAndWait(int expectedCount, String... plugins) {
     startPlugins(plugins);
-    while (kernel.getModuleManager().getModules().stream()
+    while (kernel
+            .getModuleManager()
+            .getModules()
+            .stream()
             .filter(t -> t.getLifecycle().getState() == Lifecycle.State.Active)
             .count()
         != expectedCount) {
