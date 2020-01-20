@@ -3,6 +3,7 @@ package io.zephyr.kernel.core;
 import static java.lang.String.format;
 
 import io.sunshower.gyre.*;
+import io.zephyr.api.ModuleEvents;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.concurrency.Process;
 import io.zephyr.kernel.concurrency.TaskBuilder;
@@ -64,7 +65,7 @@ final class DefaultModuleInstallationStatusGroup implements ModuleInstallationSt
   @Override
   public CompletionStage<Process<String>> commit() {
     logProcess(process);
-    kernel.dispatchEvent(PluginEvents.PLUGIN_SET_INSTALLATION_INITIATED, Events.create(this));
+    kernel.dispatchEvent(ModuleEvents.PLUGIN_SET_INSTALLATION_INITIATED, Events.create(this));
     return kernel.getScheduler().submit(process);
   }
 

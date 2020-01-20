@@ -87,7 +87,6 @@ public class KernelLauncher implements EntryPoint, EntryPointRegistry {
   public void start() {
     int concurrency = getOptions().getKernelConcurrency();
     log.log(Level.INFO, "kernel.launcher.kernel.concurrency", concurrency);
-    // we need fibers!
     executorService = Executors.newCachedThreadPool(new NamedThreadFactory("kernel"));
   }
 

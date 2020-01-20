@@ -1,6 +1,7 @@
 package io.zephyr.kernel.modules.shell;
 
 import io.sunshower.test.common.Tests;
+import io.zephyr.kernel.Lifecycle;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.core.KernelLifecycle;
@@ -9,6 +10,8 @@ import io.zephyr.kernel.launch.KernelLauncher;
 import io.zephyr.kernel.modules.shell.server.Server;
 import java.io.File;
 import java.util.Map;
+import java.util.NoSuchElementException;
+import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.val;
 import org.junit.jupiter.api.AfterEach;
@@ -25,7 +28,10 @@ public class ShellTestCase {
 
   public enum TestPlugins implements Installable {
     TEST_PLUGIN_1("kernel-tests:test-plugins:test-plugin-1"),
-    TEST_PLUGIN_2("kernel-tests:test-plugins:test-plugin-2");
+    TEST_PLUGIN_2("kernel-tests:test-plugins:test-plugin-2"),
+    TEST_PLUGIN_3("kernel-tests:test-plugins:test-plugin-3"),
+    TEST_PLUGIN_SPRING("kernel-tests:test-plugins:test-plugin-spring"),
+    TEST_PLUGIN_SPRING_DEP("kernel-tests:test-plugins:test-plugin-spring-dep");
 
     final String path;
 
@@ -53,6 +59,21 @@ public class ShellTestCase {
     }
   }
 
+  @AllArgsConstructor
+  public static final class FileInstallable implements Installable {
+    final File file;
+
+    @Override
+    public String getPath() {
+      return file.getAbsolutePath();
+    }
+
+    @Override
+    public String getAssembly() {
+      return getPath();
+    }
+  }
+
   public interface Installable {
     String getPath();
 
@@ -61,16 +82,45 @@ public class ShellTestCase {
     }
   }
 
+  protected final boolean installBase;
+
+  protected ShellTestCase(final boolean installBase) {
+    this.installBase = installBase;
+  }
+
+  protected ShellTestCase() {
+    this(true);
+  }
+
   @BeforeEach
-  void setUp() {
+  protected void setUp() {
     homeDirectory = Tests.createTemp();
-    startServer();
-    startKernel();
-    installKernelModules(StandardModules.YAML);
+    if (installBase) {
+      startServer();
+      startKernel();
+      installKernelModules(StandardModules.YAML);
+    }
   }
 
   @AfterEach
-  void tearDown() {
+  protected void tearDown() {
+    if (installBase) {
+      stopKernel();
+      stopServer();
+    }
+  }
+
+  protected void restart() {
+    stop();
+    start();
+  }
+
+  protected void start() {
+    startServer();
+    startKernel();
+  }
+
+  protected void stop() {
     stopKernel();
     stopServer();
   }
@@ -82,7 +132,30 @@ public class ShellTestCase {
         .stream()
         .filter(t -> t.getCoordinate().getName().equals(name))
         .findAny()
-        .get();
+        .orElseThrow(() -> new NoSuchElementException("No plugin named " + name));
+  }
+
+  protected void startPlugins(String... plugins) {
+    val args = new StringBuilder();
+    args.append("plugin").append(" start ");
+    for (val pluginName : plugins) {
+      args.append(moduleNamed(pluginName).getCoordinate().toCanonicalForm()).append(" ");
+    }
+    runAsync(args.toString().split("\\s+"));
+  }
+
+  @SneakyThrows
+  protected void startAndWait(int expectedCount, String... plugins) {
+    startPlugins(plugins);
+    while (kernel
+            .getModuleManager()
+            .getModules()
+            .stream()
+            .filter(t -> t.getLifecycle().getState() == Lifecycle.State.Active)
+            .count()
+        != expectedCount) {
+      Thread.sleep(200);
+    }
   }
 
   @SneakyThrows
@@ -94,14 +167,14 @@ public class ShellTestCase {
             });
     serverThread.start();
     while ((launcher = KernelLauncher.getInstance()) == null) {
-      Thread.sleep(100);
+      Thread.sleep(200);
     }
 
     while ((server = launcher.resolveService(Server.class)) == null) {
-      Thread.sleep(100);
+      Thread.sleep(200);
     }
     while (!server.isRunning()) {
-      Thread.sleep(100);
+      Thread.sleep(200);
     }
   }
 
@@ -126,10 +199,10 @@ public class ShellTestCase {
     }
     runAsync("kernel", "start", "-h", homeDirectory.getAbsolutePath());
     while ((kernel = launcher.resolveService(Kernel.class)) == null) {
-      Thread.sleep(100);
+      Thread.sleep(200);
     }
     while (kernel.getLifecycle().getState() != KernelLifecycle.State.Running) {
-      Thread.sleep(100);
+      Thread.sleep(200);
     }
     System.out.println("Successfully started kernel");
   }
@@ -140,7 +213,7 @@ public class ShellTestCase {
     runAsync("kernel", "stop");
     if (kernel != null) {
       while (kernel.getLifecycle().getState() != KernelLifecycle.State.Stopped) {
-        Thread.sleep(100);
+        Thread.sleep(200);
       }
     }
     System.out.println("Kernel stopped");
@@ -151,7 +224,7 @@ public class ShellTestCase {
     checkServer();
     runAsync("server", "stop");
     while (server.isRunning()) {
-      Thread.sleep(100);
+      Thread.sleep(200);
     }
     System.out.println("Stopped server");
     launcher = null;
@@ -159,6 +232,12 @@ public class ShellTestCase {
 
   protected void run(String... args) {
     KernelLauncher.main(args);
+  }
+
+  protected void installFully(Installable... modules) {
+    start();
+    install(modules);
+    stop();
   }
 
   @SneakyThrows
@@ -176,7 +255,7 @@ public class ShellTestCase {
   protected void installAndWaitForModuleCount(int count, Installable... modules) {
     install(modules);
     while (kernel.getModuleManager().getModules().size() < count) {
-      Thread.sleep(100);
+      Thread.sleep(200);
     }
   }
 

@@ -4,6 +4,7 @@ import java.util.concurrent.*;
 
 @SuppressWarnings("PMD.DoNotUseThreads")
 public class ExecutorWorkerPool implements WorkerPool {
+
   final ExecutorService executorService;
   final ExecutorService kernelExecutorService;
 

@@ -87,7 +87,7 @@ public class KernelStartCommand extends DefaultCommand {
 
     val gyreService =
         new ThreadPoolExecutor(
-            0, kernelOptions.getConcurrency(), 30L, TimeUnit.SECONDS, new SynchronousQueue<>());
+            0, kernelOptions.getConcurrency(), 30L, TimeUnit.SECONDS, new LinkedTransferQueue<>());
     return new ExecutorWorkerPool(gyreService, kernelService);
   }
 

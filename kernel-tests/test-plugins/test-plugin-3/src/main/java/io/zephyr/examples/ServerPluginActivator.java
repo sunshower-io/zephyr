@@ -8,7 +8,7 @@ public class ServerPluginActivator implements PluginActivator {
 
   @Override
   public void initialize(PluginContext ctx) throws Exception {
-    serverRequirement = ctx.createRequirement(Requirements.create(TranslationService.class));
+    //    serverRequirement = ctx.createRequirement(Requirements.create(TranslationService.class));
   }
 
   @Override
@@ -16,6 +16,6 @@ public class ServerPluginActivator implements PluginActivator {
 
   @Override
   public void stop(PluginContext context) throws Exception {
-    serverRequirement.close();
+    //    serverRequirement.close();
   }
 }

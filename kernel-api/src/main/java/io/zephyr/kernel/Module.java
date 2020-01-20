@@ -13,6 +13,8 @@ import lombok.val;
 
 public interface Module extends Comparable<Module>, Originator {
 
+  TaskQueue getTaskQueue();
+
   enum Type {
     Plugin,
     KernelModule;

@@ -28,4 +28,12 @@ public class Status {
   public StatusException toException() {
     return new StatusException(this);
   }
+
+  public static Status resolvable(StatusType type, String message) {
+    return new Status(type, message, true);
+  }
+
+  public static Status unresolvable(StatusType type, String message) {
+    return new Status(type, message, false);
+  }
 }

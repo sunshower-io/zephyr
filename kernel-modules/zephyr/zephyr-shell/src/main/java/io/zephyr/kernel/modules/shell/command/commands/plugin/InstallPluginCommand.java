@@ -1,10 +1,10 @@
 package io.zephyr.kernel.modules.shell.command.commands.plugin;
 
-import static io.zephyr.kernel.core.PluginEvents.*;
+import static io.zephyr.api.ModuleEvents.*;
 
+import io.zephyr.api.ModuleEvents;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.core.Kernel;
-import io.zephyr.kernel.core.PluginEvents;
 import io.zephyr.kernel.events.Event;
 import io.zephyr.kernel.events.EventListener;
 import io.zephyr.kernel.events.EventType;
@@ -49,9 +49,9 @@ public class InstallPluginCommand extends AbstractCommand {
     val listener = new PluginInstallationListener(console);
     kernel.addEventListener(
         listener,
-        PLUGIN_INSTALLATION_INITIATED,
-        PLUGIN_INSTALLATION_FAILED,
-        PLUGIN_INSTALLATION_COMPLETE,
+        INSTALLING,
+        INSTALL_FAILED,
+        INSTALLED,
         PLUGIN_SET_INSTALLATION_COMPLETE,
         PLUGIN_SET_INSTALLATION_INITIATED);
 
@@ -115,20 +115,20 @@ public class InstallPluginCommand extends AbstractCommand {
     @Override
     public void onEvent(EventType type, Event<Object> event) {
 
-      val pluginEvent = (PluginEvents) type;
+      val pluginEvent = (ModuleEvents) type;
       switch (pluginEvent) {
         case PLUGIN_SET_INSTALLATION_INITIATED:
           console.successln("Successfully scheduled plugin installation set");
           break;
-        case PLUGIN_INSTALLATION_COMPLETE:
+        case INSTALLED:
           val module = (Module) event.getTarget();
           console.successln(
               "Successfully installed plugin '%s'", module.getCoordinate().toCanonicalForm());
           break;
-        case PLUGIN_INSTALLATION_INITIATED:
+        case INSTALLING:
           console.successln("Beginning download of plugin at '%s'", event.getTarget());
           break;
-        case PLUGIN_INSTALLATION_FAILED:
+        case INSTALL_FAILED:
           console.errorln("Failed to install plugin '%s'", event.getTarget());
           break;
         case PLUGIN_SET_INSTALLATION_COMPLETE:
