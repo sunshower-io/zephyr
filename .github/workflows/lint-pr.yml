@@ -1,0 +1,37 @@
+name: PR Linting
+on:
+  pull_request:
+    types: [opened, reopened]
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+#PRs should be assigned to author, contain a reference to an issue, and be added to the Zephyr project
+
+jobs:
+  lintPR:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: samspills/assign-pr-to-author@v1.0
+        with:
+          repo-token: '${{ secrets.GITHUB_TOKEN }}'
+      - name: Check PR for Issue
+        uses: JJ/github-pr-contains-action@releases/v0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          bodyContains: 'https://github.com/sunshower-io/zephyr/issues/'
+      - name: Add to board
+        uses: srggrs/assign-one-project-github-action@1.1.0
+        with:
+          project: 'https://github.com/sunshower-io/zephyr/projects/1'
+      - name: Add New PRs to "Review in progress" column
+        uses: docker://takanabe/github-actions-automate-projects:v0.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_PROJECT_URL: https://github.com/sunshower-io/zephyr/projects/1
+          GITHUB_PROJECT_COLUMN_NAME: Review in progress
+#      - name: Add to Milestone
+#        uses: iyu/actions-milestone@v1
+#        with:
+#          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+#          configuration-path: .github/config/_milestone.yml

@@ -93,9 +93,11 @@ public class KernelStartCommand extends DefaultCommand {
 
   private KernelOptions getKernelOptions(ShellOptions options) {
     val kernelOptions = new KernelOptions();
-    kernelOptions.setHomeDirectory(options.getHomeDirectory());
-    val cli = new CommandLine(kernelOptions).setUnmatchedArgumentsAllowed(true);
-    cli.parseArgs(arguments);
+
+    if (arguments != null) {
+      val cli = new CommandLine(kernelOptions).setUnmatchedArgumentsAllowed(true);
+      cli.parseArgs(arguments);
+    }
 
     if (kernelOptions.getHomeDirectory() == null) {
       kernelOptions.setHomeDirectory(options.getHomeDirectory());
