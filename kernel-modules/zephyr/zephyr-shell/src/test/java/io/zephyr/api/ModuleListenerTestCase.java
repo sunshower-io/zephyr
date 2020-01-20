@@ -9,6 +9,7 @@ import io.zephyr.kernel.modules.shell.ShellTestCase;
 import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -151,7 +152,7 @@ public class ModuleListenerTestCase extends ShellTestCase {
     start();
     try {
       before.run();
-      install(modules);
+      installAndWaitForModuleCount(modules.length, modules);
       restart();
       after.run();
     } finally {

@@ -38,15 +38,17 @@ public class WritePluginDescriptorPhase extends Task {
   public TaskValue run(Scope scope) {
     final Set<Module> installedPlugins =
         scope.get(ModuleInstallationCompletionPhase.INSTALLED_PLUGINS);
+    val kernel = scope.<SunshowerKernel>get("SunshowerKernel");
 
     if (installedPlugins == null || installedPlugins.isEmpty()) {
       log.log(Level.INFO, "plugin.phase.noplugins");
+      kernel.dispatchEvent(
+          ModuleEvents.PLUGIN_SET_INSTALLATION_COMPLETE,
+          Events.create(scope.get(ModuleInstallationCompletionPhase.INSTALLED_KERNEL_MODULES)));
       return null;
     }
 
     log.log(Level.INFO, "plugin.phase.writingplugins", installedPlugins.size());
-
-    val kernel = scope.<SunshowerKernel>get("SunshowerKernel");
 
     val moduleManager = kernel.getModuleManager();
 

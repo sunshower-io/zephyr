@@ -126,10 +126,7 @@ public class ShellTestCase {
   }
 
   protected Module moduleNamed(String name) {
-    return kernel
-        .getModuleManager()
-        .getModules()
-        .stream()
+    return kernel.getModuleManager().getModules().stream()
         .filter(t -> t.getCoordinate().getName().equals(name))
         .findAny()
         .orElseThrow(() -> new NoSuchElementException("No plugin named " + name));
@@ -147,14 +144,11 @@ public class ShellTestCase {
   @SneakyThrows
   protected void startAndWait(int expectedCount, String... plugins) {
     startPlugins(plugins);
-    while (kernel
-            .getModuleManager()
-            .getModules()
-            .stream()
+    while (kernel.getModuleManager().getModules().stream()
             .filter(t -> t.getLifecycle().getState() == Lifecycle.State.Active)
             .count()
         != expectedCount) {
-      Thread.sleep(100);
+      Thread.sleep(200);
     }
   }
 
@@ -167,14 +161,14 @@ public class ShellTestCase {
             });
     serverThread.start();
     while ((launcher = KernelLauncher.getInstance()) == null) {
-      Thread.sleep(100);
+      Thread.sleep(200);
     }
 
     while ((server = launcher.resolveService(Server.class)) == null) {
-      Thread.sleep(100);
+      Thread.sleep(200);
     }
     while (!server.isRunning()) {
-      Thread.sleep(100);
+      Thread.sleep(200);
     }
   }
 
@@ -199,10 +193,10 @@ public class ShellTestCase {
     }
     runAsync("kernel", "start", "-h", homeDirectory.getAbsolutePath());
     while ((kernel = launcher.resolveService(Kernel.class)) == null) {
-      Thread.sleep(100);
+      Thread.sleep(200);
     }
     while (kernel.getLifecycle().getState() != KernelLifecycle.State.Running) {
-      Thread.sleep(100);
+      Thread.sleep(200);
     }
     System.out.println("Successfully started kernel");
   }
@@ -213,7 +207,7 @@ public class ShellTestCase {
     runAsync("kernel", "stop");
     if (kernel != null) {
       while (kernel.getLifecycle().getState() != KernelLifecycle.State.Stopped) {
-        Thread.sleep(100);
+        Thread.sleep(200);
       }
     }
     System.out.println("Kernel stopped");
@@ -224,7 +218,7 @@ public class ShellTestCase {
     checkServer();
     runAsync("server", "stop");
     while (server.isRunning()) {
-      Thread.sleep(100);
+      Thread.sleep(200);
     }
     System.out.println("Stopped server");
     launcher = null;
@@ -255,7 +249,7 @@ public class ShellTestCase {
   protected void installAndWaitForModuleCount(int count, Installable... modules) {
     install(modules);
     while (kernel.getModuleManager().getModules().size() < count) {
-      Thread.sleep(100);
+      Thread.sleep(200);
     }
   }
 
