@@ -7,6 +7,8 @@ import static org.mockito.Mockito.verify;
 
 import io.zephyr.kernel.modules.shell.ShellTestCase;
 import java.io.File;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -14,6 +16,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 public class ModuleListenerTestCase extends ShellTestCase {
+
+  static {
+    Logger logger;
+    for (logger = Logger.getLogger(ModuleListenerTestCase.class.getName());
+        logger.getParent() != null;
+        logger = logger.getParent()) {}
+
+    logger.setLevel(Level.SEVERE);
+  }
 
   @Mock protected ModuleListener listener;
 

@@ -38,6 +38,7 @@ public class DefaultModule implements Module, Comparable<Module>, Originator {
 
   private Set<Library> libraries;
   private Set<Dependency> dependencies;
+  private volatile TaskQueue taskQueue;
 
   public DefaultModule(
       int order,
@@ -347,5 +348,14 @@ public class DefaultModule implements Module, Comparable<Module>, Originator {
 
   public void setContext(PluginContext ctx) {
     this.context = ctx;
+  }
+
+  public void setTaskQueue(TaskQueue taskQueue) {
+    this.taskQueue = taskQueue;
+  }
+
+  @Override
+  public TaskQueue getTaskQueue() {
+    return taskQueue;
   }
 }

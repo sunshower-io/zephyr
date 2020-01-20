@@ -25,6 +25,11 @@ public class MockModule implements Module {
   }
 
   @Override
+  public TaskQueue getTaskQueue() {
+    return null;
+  }
+
+  @Override
   public ModuleClasspath getModuleClasspath() {
     return null;
   }
