@@ -79,9 +79,7 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable {
     } finally {
       lock.unlock();
     }
-    if(lock.getHoldCount() != 0) {
-      log.warning("lock held " + lock.getHoldCount());
-    }
+    checkLock();
   }
 
   @Override
@@ -99,8 +97,14 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable {
     } finally {
       lock.unlock();
     }
-    if(lock.getHoldCount() != 0) {
-      log.warning("lock held " + lock.getHoldCount());
+    checkLock();
+  }
+
+  private void checkLock() {
+    if (lock.getHoldCount() != 0) {
+      if (log.isLoggable(Level.WARNING)) {
+        log.warning("lock held " + lock.getHoldCount());
+      }
     }
   }
 
