@@ -1,7 +1,7 @@
 package io.zephyr.spring.web;
 
-import io.zephyr.PluginActivator;
-import io.zephyr.PluginContext;
+import io.zephyr.api.PluginActivator;
+import io.zephyr.api.ModuleContext;
 import io.zephyr.spring.web.controllers.HelloController;
 import lombok.val;
 import org.springframework.boot.WebApplicationType;
@@ -15,7 +15,7 @@ public class SpringWebInitiator implements PluginActivator {
   private ConfigurableApplicationContext applicationContext;
 
   @Override
-  public void start(PluginContext context) {
+  public void start(ModuleContext context) {
     val module = context.getModule();
     applicationContext =
         new SpringApplicationBuilder(SpringWebInitiator.class)
@@ -25,7 +25,7 @@ public class SpringWebInitiator implements PluginActivator {
   }
 
   @Override
-  public void stop(PluginContext context) {
+  public void stop(ModuleContext context) {
     applicationContext.close();
   }
 }

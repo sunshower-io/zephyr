@@ -1,7 +1,7 @@
 package io.zephyr.spring.web;
 
-import io.zephyr.PluginActivator;
-import io.zephyr.PluginContext;
+import io.zephyr.api.PluginActivator;
+import io.zephyr.api.ModuleContext;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -13,7 +13,7 @@ public class SpringWebInitiator implements PluginActivator {
   private ConfigurableApplicationContext applicationContext;
 
   @Override
-  public void start(PluginContext context) {
+  public void start(ModuleContext context) {
     applicationContext =
         new SpringApplicationBuilder(SpringWebInitiator.class)
             .web(WebApplicationType.SERVLET)
@@ -22,7 +22,7 @@ public class SpringWebInitiator implements PluginActivator {
   }
 
   @Override
-  public void stop(PluginContext context) {
+  public void stop(ModuleContext context) {
     applicationContext.close();
   }
 }

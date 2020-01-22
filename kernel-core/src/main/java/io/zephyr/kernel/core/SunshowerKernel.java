@@ -1,6 +1,6 @@
 package io.zephyr.kernel.core;
 
-import io.zephyr.PluginContext;
+import io.zephyr.api.ModuleContext;
 import io.zephyr.common.io.Files;
 import io.zephyr.kernel.Coordinate;
 import io.zephyr.kernel.KernelModuleEntry;
@@ -149,7 +149,7 @@ public class SunshowerKernel implements Kernel, EventSource {
   }
 
   @Override
-  public PluginContext createContext(Module module) {
+  public ModuleContext createContext(Module module) {
     val ctx = new DefaultPluginContext(module, this);
     ((DefaultModule) module).setContext(ctx);
     return ctx;

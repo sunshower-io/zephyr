@@ -1,6 +1,6 @@
 package io.zephyr.kernel.core;
 
-import io.zephyr.PluginContext;
+import io.zephyr.api.ModuleContext;
 import io.zephyr.kernel.KernelModuleEntry;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.concurrency.Scheduler;
@@ -34,5 +34,5 @@ public interface Kernel extends EventSource, Originator, Caretaker {
 
   Scheduler<String> getScheduler();
 
-  PluginContext createContext(Module module);
+  ModuleContext createContext(Module module);
 }

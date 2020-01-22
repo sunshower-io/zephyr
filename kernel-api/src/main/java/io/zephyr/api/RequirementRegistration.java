@@ -1,4 +1,4 @@
-package io.zephyr;
+package io.zephyr.api;
 
 import io.zephyr.kernel.events.EventSource;
 import java.io.Closeable;

@@ -13,7 +13,10 @@ class ListPluginCommandTest extends ShellTestCase {
   void ensurePluginsAreInstalledCorrectly() {
     installAndWaitForModuleCount(2, TestPlugins.TEST_PLUGIN_1, TestPlugins.TEST_PLUGIN_2);
     val modulesNamed =
-        kernel.getModuleManager().getModules().stream()
+        kernel
+            .getModuleManager()
+            .getModules()
+            .stream()
             .filter(
                 t -> {
                   val coord = t.getCoordinate();

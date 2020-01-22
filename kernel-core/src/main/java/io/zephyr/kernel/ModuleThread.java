@@ -1,11 +1,11 @@
 package io.zephyr.kernel;
 
-import io.zephyr.PluginActivator;
-import io.zephyr.api.ModuleEvents;
-import io.zephyr.api.Startable;
-import io.zephyr.api.Stoppable;
+import io.zephyr.api.*;
 import io.zephyr.kernel.core.DefaultModule;
 import io.zephyr.kernel.core.Kernel;
+import io.zephyr.kernel.events.Event;
+import io.zephyr.kernel.events.EventListener;
+import io.zephyr.kernel.events.EventType;
 import io.zephyr.kernel.events.Events;
 import io.zephyr.kernel.misc.SuppressFBWarnings;
 import io.zephyr.kernel.status.Status;
@@ -146,6 +146,10 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable {
       try {
         lock.lock();
         queueCondition.await();
+        while (!taskQueue.isEmpty()) {
+          val runnable = taskQueue.take();
+          runnable.run();
+        }
       } catch (InterruptedException ex) {
         log.log(Level.INFO, "module interrupted", ex);
       } finally {
@@ -259,6 +263,7 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable {
       }
     }
   }
+
 
   static final class TaskQueueRunnable extends CompletableFuture<Void> implements Runnable {
 
