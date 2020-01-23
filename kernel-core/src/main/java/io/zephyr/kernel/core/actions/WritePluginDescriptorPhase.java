@@ -16,6 +16,7 @@ import io.zephyr.kernel.core.SunshowerKernel;
 import io.zephyr.kernel.dependencies.CyclicDependencyException;
 import io.zephyr.kernel.dependencies.DependencyGraph;
 import io.zephyr.kernel.dependencies.UnresolvedDependencyException;
+import io.zephyr.kernel.events.EventType;
 import io.zephyr.kernel.events.Events;
 import io.zephyr.kernel.log.Logging;
 import java.util.*;
@@ -41,11 +42,8 @@ public class WritePluginDescriptorPhase extends Task {
         scope.get(ModuleInstallationCompletionPhase.INSTALLED_PLUGINS);
     val kernel = scope.<SunshowerKernel>get("SunshowerKernel");
 
+    handleKernelModules(scope, kernel);
     if (installedPlugins == null || installedPlugins.isEmpty()) {
-      log.log(Level.INFO, "plugin.phase.noplugins");
-      kernel.dispatchEvent(
-          ModulePhaseEvents.MODULE_SET_INSTALLATION_COMPLETED,
-          Events.create(scope.get(ModuleInstallationCompletionPhase.INSTALLED_KERNEL_MODULES)));
       return null;
     }
 
@@ -66,6 +64,21 @@ public class WritePluginDescriptorPhase extends Task {
         ModulePhaseEvents.MODULE_SET_INSTALLATION_COMPLETED, Events.create(installedPlugins));
 
     return null;
+  }
+
+  private void handleKernelModules(Scope scope, SunshowerKernel kernel) {
+    log.log(Level.INFO, "plugin.phase.noplugins");
+    final Set<Module> installedKernelModules =
+        scope.get(ModuleInstallationCompletionPhase.INSTALLED_KERNEL_MODULES);
+    if (installedKernelModules != null) {
+      for (val module : installedKernelModules) {
+        kernel.dispatchEvent(ModuleEvents.INSTALLED, Events.create(module));
+      }
+    }
+
+    kernel.dispatchEvent(
+        ModulePhaseEvents.MODULE_SET_INSTALLATION_COMPLETED,
+        Events.create(scope.get(ModuleInstallationCompletionPhase.INSTALLED_KERNEL_MODULES)));
   }
 
   private void resolvePlugins(

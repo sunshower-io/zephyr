@@ -81,7 +81,6 @@ public class WriteKernelModuleListPhase extends Task {
           outputStream.write(entry.toString());
           outputStream.write("\n");
           entries.add(entry);
-          kernel.dispatchEvent(ModuleEvents.INSTALLED, Events.create(entry));
         }
       }
     } catch (IOException ex) {
