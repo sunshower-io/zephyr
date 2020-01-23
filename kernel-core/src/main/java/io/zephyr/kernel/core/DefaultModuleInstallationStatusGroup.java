@@ -71,22 +71,12 @@ final class DefaultModuleInstallationStatusGroup implements ModuleInstallationSt
 
     kernel.addEventListener(
         listener,
+        EventListener.Options.REMOVE_AFTER_DISPATCH,
         MODULE_DOWNLOAD_FAILED,
         MODULE_SCAN_FAILED,
         MODULE_TRANSFER_FAILED,
         MODULE_ASSEMBLY_EXTRACTION_FAILED,
         MODULE_FILESYSTEM_CREATION_FAILED);
-
-    //    val completionListener =
-    //        new EventListener<Object>() {
-    //
-    //          @Override
-    //          public void onEvent(EventType type, Event<Object> event) {
-    //            kernel.removeEventListener(this);
-    //            kernel.removeEventListener(listener);
-    //          }
-    //        };
-    //    kernel.addEventListener(completionListener, MODULE_SET_INSTALLATION_COMPLETED);
   }
 
   @Override
