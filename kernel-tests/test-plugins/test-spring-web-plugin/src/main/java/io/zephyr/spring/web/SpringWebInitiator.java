@@ -1,7 +1,7 @@
 package io.zephyr.spring.web;
 
-import io.zephyr.api.PluginActivator;
 import io.zephyr.api.ModuleContext;
+import io.zephyr.api.PluginActivator;
 import io.zephyr.spring.web.controllers.HelloController;
 import lombok.val;
 import org.springframework.boot.WebApplicationType;

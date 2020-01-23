@@ -1,7 +1,7 @@
 package plugin1;
 
-import io.zephyr.api.PluginActivator;
 import io.zephyr.api.ModuleContext;
+import io.zephyr.api.PluginActivator;
 
 public class Test implements PluginActivator {
   @Override

@@ -16,7 +16,6 @@ import io.zephyr.kernel.core.SunshowerKernel;
 import io.zephyr.kernel.dependencies.CyclicDependencyException;
 import io.zephyr.kernel.dependencies.DependencyGraph;
 import io.zephyr.kernel.dependencies.UnresolvedDependencyException;
-import io.zephyr.kernel.events.EventType;
 import io.zephyr.kernel.events.Events;
 import io.zephyr.kernel.log.Logging;
 import java.util.*;
