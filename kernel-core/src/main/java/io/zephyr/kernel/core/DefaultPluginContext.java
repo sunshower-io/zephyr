@@ -2,8 +2,6 @@ package io.zephyr.kernel.core;
 
 import io.zephyr.api.*;
 import io.zephyr.kernel.Module;
-import io.zephyr.kernel.ModuleThread;
-
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -39,6 +37,6 @@ public class DefaultPluginContext implements ModuleContext {
   @Override
   public ModuleTracker createModuleTracker(Predicate<Module> filter) {
     return null;
-//    return (ModuleThread) module.getTaskQueue();
+    //    return (ModuleThread) module.getTaskQueue();
   }
 }

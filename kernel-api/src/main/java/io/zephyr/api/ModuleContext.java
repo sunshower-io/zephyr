@@ -21,5 +21,6 @@ public interface ModuleContext {
    */
   List<Module> getModules(Predicate<Module> filter);
 
+  /** */
   ModuleTracker createModuleTracker(Predicate<Module> filter);
 }

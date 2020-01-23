@@ -2,8 +2,8 @@ package io.zephyr.kernel.core;
 
 import static io.zephyr.kernel.memento.Mementos.writeCoordinate;
 
-import io.zephyr.api.PluginActivator;
 import io.zephyr.api.ModuleContext;
+import io.zephyr.api.PluginActivator;
 import io.zephyr.kernel.*;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.memento.Memento;
@@ -32,7 +32,7 @@ public class DefaultModule implements Module, Comparable<Module>, Originator {
   private Lifecycle lifecycle;
 
   private ModuleContext context;
-  private ModuleLoader  moduleLoader;
+  private ModuleLoader moduleLoader;
   private PluginActivator activator;
   private ModuleClasspath moduleClasspath;
 

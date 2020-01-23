@@ -1,7 +1,6 @@
 package io.zephyr.kernel.core.actions;
 
 import io.sunshower.gyre.Scope;
-import io.zephyr.api.ModuleEvents;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.concurrency.Task;
 import io.zephyr.kernel.concurrency.TaskException;
@@ -17,7 +16,6 @@ import io.zephyr.kernel.status.StatusType;
 import java.io.File;
 import java.net.URL;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
@@ -30,7 +28,7 @@ import lombok.val;
  * current file-type 3. Applies that scanner to the file to produce a Coordinate 4. Puts that
  * coordinate into the context for further processing
  */
-@SuppressWarnings({"PMD.DataflowAnomalyAnalysis", "PMD.UseVarargs"})
+@SuppressWarnings({"PMD.DataflowAnomalyAnalysis", "PMD.UseVarargs", "PMD.UnusedPrivateMethod"})
 public class ModuleScanPhase extends Task {
   public static final String MODULE_DESCRIPTOR = "MODULE_SCAN_MODULE_DESCRIPTOR";
   public static final String SCANNED_PLUGINS = "SCANNNED_PLUGINS";
@@ -49,13 +47,13 @@ public class ModuleScanPhase extends Task {
 
   private ModuleDescriptor scan(File downloaded, Scope context) {
     val kernel = context.<Kernel>get("SunshowerKernel");
-    List<ModuleScanner> scanners = null;
-    scanners = kernel.locateServices(ModuleScanner.class);
-    URL url = (URL) parameters().get(ModuleDownloadPhase.DOWNLOAD_URL);
+    fireScanInitiated(downloaded, kernel);
+
+    val scanners = kernel.locateServices(ModuleScanner.class);
+    val url = (URL) parameters().get(ModuleDownloadPhase.DOWNLOAD_URL);
+
     if (scanners.isEmpty()) {
-      kernel.dispatchEvent(
-          ModuleEvents.INSTALL_FAILED,
-          Events.createWithStatus(new Status(StatusType.FAILED, "No available scanners", false)));
+      fireScanFailed(kernel, downloaded, "No available scanners");
       throw new TaskException(TaskStatus.UNRECOVERABLE);
     }
     val descriptor =
@@ -64,11 +62,11 @@ public class ModuleScanPhase extends Task {
       val request = (ModuleInstallationRequest) parameters().get(ModuleInstallationRequest.class);
       val result = descriptor.get();
       request.setCoordinate(result.getCoordinate());
+
+      fireScanComplete(kernel, result);
       return result;
     } else {
-      kernel.dispatchEvent(
-          ModuleEvents.INSTALL_FAILED,
-          Events.createWithStatus(new Status(StatusType.FAILED, "no module descriptor", false)));
+      fireScanFailed(kernel, downloaded, "no module descriptor found");
       throw new TaskException(TaskStatus.UNRECOVERABLE);
     }
   }
@@ -85,5 +83,27 @@ public class ModuleScanPhase extends Task {
       context.computeIfAbsent(ModuleScanPhase.SCANNED_PLUGINS, new HashSet<>()).add(result);
     }
     return null;
+  }
+
+  private void fireScanComplete(Kernel kernel, ModuleDescriptor result) {
+    kernel.dispatchEvent(
+        ModulePhaseEvents.MODULE_SCAN_COMPLETED,
+        Events.create(
+            result,
+            StatusType.PROGRESSING.resolvable(
+                "Successfully discovered " + result.getCoordinate())));
+  }
+
+  private void fireScanFailed(Kernel kernel, File downloaded, String reason) {
+    kernel.dispatchEvent(
+        ModulePhaseEvents.MODULE_SCAN_FAILED,
+        Events.create(downloaded, new Status(StatusType.FAILED, reason, false)));
+  }
+
+  private void fireScanInitiated(File downloaded, Kernel kernel) {
+    kernel.dispatchEvent(
+        ModulePhaseEvents.MODULE_SCAN_INITIATED,
+        Events.create(
+            downloaded, StatusType.PROGRESSING.resolvable("Scanning file: " + downloaded)));
   }
 }

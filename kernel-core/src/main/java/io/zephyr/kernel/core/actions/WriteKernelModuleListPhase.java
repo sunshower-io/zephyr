@@ -1,12 +1,14 @@
 package io.zephyr.kernel.core.actions;
 
 import io.sunshower.gyre.Scope;
+import io.zephyr.api.ModuleEvents;
 import io.zephyr.kernel.KernelModuleEntry;
 import io.zephyr.kernel.Library;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.concurrency.Task;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.core.KernelException;
+import io.zephyr.kernel.events.Events;
 import io.zephyr.kernel.log.Logging;
 import io.zephyr.kernel.misc.SuppressFBWarnings;
 import io.zephyr.kernel.module.ModuleListParser;
@@ -45,7 +47,7 @@ public class WriteKernelModuleListPhase extends Task {
     Set<KernelModuleEntry> entries = readEntries(fs);
 
     val file = fs.getPath("modules.list");
-    writeModule(file, descriptors, entries);
+    writeModules(kernel, file, descriptors, entries);
 
     return null;
   }
@@ -56,7 +58,8 @@ public class WriteKernelModuleListPhase extends Task {
 
   @SuppressFBWarnings
   @SuppressWarnings({"PMD.AvoidInstantiatingObjectsInLoops", "PMD.UnusedPrivateMethod"})
-  private void writeModule(Path file, Collection<Module> modules, Set<KernelModuleEntry> entries) {
+  private void writeModules(
+      Kernel kernel, Path file, Collection<Module> modules, Set<KernelModuleEntry> entries) {
     try (val outputStream =
         new BufferedWriter(
             new OutputStreamWriter(
@@ -78,6 +81,7 @@ public class WriteKernelModuleListPhase extends Task {
           outputStream.write(entry.toString());
           outputStream.write("\n");
           entries.add(entry);
+          kernel.dispatchEvent(ModuleEvents.INSTALLED, Events.create(entry));
         }
       }
     } catch (IOException ex) {

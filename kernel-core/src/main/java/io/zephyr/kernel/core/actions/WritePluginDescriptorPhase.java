@@ -10,6 +10,7 @@ import io.zephyr.kernel.Lifecycle;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.concurrency.Task;
 import io.zephyr.kernel.core.DefaultModule;
+import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.core.ModuleManager;
 import io.zephyr.kernel.core.SunshowerKernel;
 import io.zephyr.kernel.dependencies.CyclicDependencyException;
@@ -43,7 +44,7 @@ public class WritePluginDescriptorPhase extends Task {
     if (installedPlugins == null || installedPlugins.isEmpty()) {
       log.log(Level.INFO, "plugin.phase.noplugins");
       kernel.dispatchEvent(
-          ModuleEvents.PLUGIN_SET_INSTALLATION_COMPLETE,
+          ModulePhaseEvents.MODULE_SET_INSTALLATION_COMPLETED,
           Events.create(scope.get(ModuleInstallationCompletionPhase.INSTALLED_KERNEL_MODULES)));
       return null;
     }
@@ -56,27 +57,29 @@ public class WritePluginDescriptorPhase extends Task {
 
     val dependencyGraph = moduleManager.getDependencyGraph();
 
-    checkForUnresolvedDependencies(dependencyGraph, installedPlugins);
-    checkForCyclicDependencies(dependencyGraph, installedPlugins);
-    resolvePlugins(moduleManager, installedPlugins);
+    checkForUnresolvedDependencies(kernel, dependencyGraph, installedPlugins);
+    checkForCyclicDependencies(kernel, dependencyGraph, installedPlugins);
 
     saveAll(kernel, installedPlugins);
+    resolvePlugins(kernel, moduleManager, installedPlugins);
     kernel.dispatchEvent(
-        ModuleEvents.PLUGIN_SET_INSTALLATION_COMPLETE, Events.create(installedPlugins));
+        ModulePhaseEvents.MODULE_SET_INSTALLATION_COMPLETED, Events.create(installedPlugins));
 
     return null;
   }
 
-  private void resolvePlugins(ModuleManager moduleManager, Set<Module> installedPlugins) {
+  private void resolvePlugins(
+      Kernel kernel, ModuleManager moduleManager, Set<Module> installedPlugins) {
     for (val module : installedPlugins) {
       val defaultModule = (DefaultModule) module;
       moduleManager.getModuleLoader().install(defaultModule);
       module.getLifecycle().setState(Lifecycle.State.Resolved);
+      kernel.dispatchEvent(ModuleEvents.INSTALLED, Events.create(module));
     }
   }
 
   private void checkForCyclicDependencies(
-      DependencyGraph dependencyGraph, Set<Module> installedPlugins) {
+      Kernel kernel, DependencyGraph dependencyGraph, Set<Module> installedPlugins) {
     val prospective = dependencyGraph.clone();
     prospective.addAll(installedPlugins);
     val partition = prospective.computeCycles();
@@ -85,7 +88,7 @@ public class WritePluginDescriptorPhase extends Task {
       for (val cycle : partition.getElements()) {
         if (cycle.isCyclic()) {
           ex.addComponent(cycle);
-          updateComponents(installedPlugins, ex, cycle);
+          updateComponents(kernel, installedPlugins, ex, cycle);
         }
       }
 
@@ -97,32 +100,52 @@ public class WritePluginDescriptorPhase extends Task {
   }
 
   private void updateComponents(
+      Kernel kernel,
       Set<Module> installedPlugins,
       CyclicDependencyException ex,
       Component<DirectedGraph.Edge<Coordinate>, Coordinate> cycle) {
     for (val el : cycle.getElements()) {
       val coord = el.getSnd();
       for (val plugin : installedPlugins) {
-        checkClose(ex, coord, plugin);
+        handleCycle(kernel, ex, coord, plugin, cycle);
       }
     }
   }
 
-  private void checkClose(CyclicDependencyException ex, Coordinate coord, Module plugin) {
+  private void handleCycle(
+      Kernel kernel,
+      CyclicDependencyException ex,
+      Coordinate coord,
+      Module plugin,
+      Component<DirectedGraph.Edge<Coordinate>, Coordinate> cycle) {
     if (coord.equals(plugin.getCoordinate())) {
-      val fs = plugin.getFileSystem();
-      if (fs != null) {
-        try {
-          fs.close();
-        } catch (Exception x) {
-          ex.addSuppressed(x);
-        }
+      fireCyclicDependencyFailure(kernel, coord, cycle);
+      checkClose(ex, plugin);
+    }
+  }
+
+  private void fireCyclicDependencyFailure(
+      Kernel kernel,
+      Coordinate coord,
+      Component<DirectedGraph.Edge<Coordinate>, Coordinate> cycle) {
+    kernel.dispatchEvent(
+        ModuleEvents.INSTALL_FAILED,
+        Events.create(new DependencyGraph.CyclicDependencySet(coord, cycle)));
+  }
+
+  private void checkClose(CyclicDependencyException ex, Module plugin) {
+    val fs = plugin.getFileSystem();
+    if (fs != null) {
+      try {
+        fs.close();
+      } catch (Exception x) {
+        ex.addSuppressed(x);
       }
     }
   }
 
   private void checkForUnresolvedDependencies(
-      DependencyGraph dependencyGraph, Collection<Module> installedPlugins) {
+      Kernel kernel, DependencyGraph dependencyGraph, Collection<Module> installedPlugins) {
     val results = dependencyGraph.getUnresolvedDependencies(installedPlugins);
     val unsatisfied = new HashSet<DependencyGraph.UnsatisfiedDependencySet>();
     for (val unresolvedDependency : results) {
@@ -146,8 +169,16 @@ public class WritePluginDescriptorPhase extends Task {
     }
 
     if (!unsatisfied.isEmpty()) {
+      fireUnresolvedDependencies(kernel, unsatisfied);
       log.warning("plugin.phase.unresolveddependencies");
       throw new UnresolvedDependencyException("unresolved dependencies detected", unsatisfied);
+    }
+  }
+
+  private void fireUnresolvedDependencies(
+      Kernel kernel, Set<DependencyGraph.UnsatisfiedDependencySet> unsatisfied) {
+    for (val unsatisfiedDependencySet : unsatisfied) {
+      kernel.dispatchEvent(ModuleEvents.INSTALL_FAILED, Events.create(unsatisfiedDependencySet));
     }
   }
 
@@ -157,6 +188,7 @@ public class WritePluginDescriptorPhase extends Task {
       try {
         val pmemento = plugin.save();
         Files.tryWrite(pmemento.locate("plugin", pfs), pmemento);
+
       } catch (Exception e) {
         log.log(Level.WARNING, "failed to write descriptor", e);
       }

@@ -1,7 +1,6 @@
 package io.zephyr.kernel.core.actions;
 
 import io.sunshower.gyre.Scope;
-import io.zephyr.api.ModuleEvents;
 import io.zephyr.common.io.Files;
 import io.zephyr.common.io.MonitorableChannels;
 import io.zephyr.kernel.concurrency.Task;
@@ -50,16 +49,13 @@ public class ModuleDownloadPhase extends Task implements ChannelTransferListener
     Kernel kernel = scope.get("SunshowerKernel");
     try {
 
-      kernel.dispatchEvent(
-          ModuleEvents.INSTALLING,
-          Events.create(null, StatusType.PROGRESSING.resolvable("beginning module download")));
+      fireDownloadInitiated(downloadUrl, kernel);
       scope.set(DOWNLOAD_URL, downloadUrl);
       Path moduleDirectory = scope.get(TARGET_DIRECTORY);
       downloadModule(downloadUrl, moduleDirectory, scope);
+      fireDownloadCompleted(downloadUrl, kernel);
     } catch (Exception ex) {
-      kernel.dispatchEvent(
-          ModuleEvents.INSTALL_FAILED,
-          Events.create(null, StatusType.FAILED.unresolvable(ex.getMessage())));
+      fireDownloadFailed(downloadUrl, kernel, ex);
       throw new TaskException(ex, TaskStatus.UNRECOVERABLE);
     }
     return null;
@@ -110,5 +106,24 @@ public class ModuleDownloadPhase extends Task implements ChannelTransferListener
     transfer.addListener(this);
     transfer.call();
     context.set(DOWNLOADED_FILE, targetFile);
+  }
+
+  private void fireDownloadFailed(URL downloadUrl, Kernel kernel, Exception ex) {
+    kernel.dispatchEvent(
+        ModulePhaseEvents.MODULE_DOWNLOAD_FAILED,
+        Events.create(downloadUrl, StatusType.FAILED.unresolvable(ex.getMessage())));
+  }
+
+  private void fireDownloadCompleted(URL downloadUrl, Kernel kernel) {
+    kernel.dispatchEvent(
+        ModulePhaseEvents.MODULE_DOWNLOAD_COMPLETED,
+        Events.create(
+            downloadUrl, StatusType.PROGRESSING.resolvable(downloadUrl.toExternalForm())));
+  }
+
+  private void fireDownloadInitiated(URL downloadUrl, Kernel kernel) {
+    kernel.dispatchEvent(
+        ModulePhaseEvents.MODULE_DOWNLOAD_INITIATED,
+        Events.create(downloadUrl, StatusType.PROGRESSING.resolvable("beginning module download")));
   }
 }

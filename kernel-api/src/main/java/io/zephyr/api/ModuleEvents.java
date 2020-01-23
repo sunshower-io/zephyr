@@ -6,10 +6,6 @@ import lombok.Getter;
 /** */
 public enum ModuleEvents implements EventType {
 
-  /** lifecycle for plugin collection events. These are generally interal */
-  PLUGIN_SET_INSTALLATION_INITIATED,
-  PLUGIN_SET_INSTALLATION_COMPLETE,
-
   /** Dispatched when a plugin install process begins */
   INSTALLING,
 
