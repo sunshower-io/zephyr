@@ -43,7 +43,7 @@ public class SunshowerKernel implements Kernel, EventSource {
   static final Logger log = Logging.get(SunshowerKernel.class);
 
   /** class fields */
-  @Setter private static KernelOptions kernelOptions;
+  private static KernelOptions kernelOptions;
 
   /** @return the kernel options used to start this instance. */
   @NonNull
@@ -187,8 +187,18 @@ public class SunshowerKernel implements Kernel, EventSource {
   }
 
   @Override
+  public boolean listensFor(EventType... types) {
+    return eventDispatcher.listensFor(types);
+  }
+
+  @Override
   public <T> void addEventListener(EventListener<T> listener, EventType... types) {
     eventDispatcher.addEventListener(listener, types);
+  }
+
+  @Override
+  public <T> void addEventListener(EventListener<T> listener, int options, EventType... types) {
+    eventDispatcher.addEventListener(listener, options, types);
   }
 
   @Override

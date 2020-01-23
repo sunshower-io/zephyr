@@ -16,6 +16,11 @@ public class AsynchronousModuleThreadTracker implements ModuleTracker {
   final TaskQueue taskQueue;
 
   @Override
+  public boolean listensFor(EventType... types) {
+    return false;
+  }
+
+  @Override
   public <T> void addEventListener(EventListener<T> listener, EventType... types) {
 
     class DelegatingEventListener<T> implements EventListener<T> {
@@ -32,6 +37,9 @@ public class AsynchronousModuleThreadTracker implements ModuleTracker {
     val delegate = new DelegatingEventListener<>();
     kernel.addEventListener(delegate, types);
   }
+
+  @Override
+  public <T> void addEventListener(EventListener<T> listener, int options, EventType... types) {}
 
   @Override
   public <T> void removeEventListener(EventListener<T> listener) {}

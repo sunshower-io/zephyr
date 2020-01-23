@@ -68,6 +68,7 @@ final class DefaultModuleInstallationStatusGroup implements ModuleInstallationSt
             kernel.dispatchEvent(ModuleEvents.INSTALL_FAILED, event);
           }
         };
+
     kernel.addEventListener(
         listener,
         MODULE_DOWNLOAD_FAILED,
