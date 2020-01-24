@@ -22,7 +22,9 @@ public class PluginStopTask extends Task {
     val module = manager.getModule(coordinate);
     scope.set(PluginRemoveTask.MODULE_COORDINATE, coordinate);
     val taskQueue = module.getTaskQueue();
-    taskQueue.stop();
+    if (taskQueue != null) { // may not have been started yet
+      taskQueue.stop();
+    }
     return null;
   }
 }

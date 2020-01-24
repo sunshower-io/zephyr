@@ -1,8 +1,10 @@
 package io.sunshower.kernel.test;
 
 import io.sunshower.test.common.Tests;
+import io.zephyr.api.ModuleContext;
 import io.zephyr.cli.Zephyr;
 import io.zephyr.kernel.Coordinate;
+import io.zephyr.kernel.ModuleThread;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.module.ModuleInstallationGroup;
 import io.zephyr.kernel.module.ModuleInstallationRequest;
@@ -103,7 +105,9 @@ public class KernelExtension
     try {
       Object testInstance = context.getRequiredTestInstance();
       Method testMethod = context.getRequiredTestMethod();
-      getTestContextManager(context).beforeTestMethod(testInstance, testMethod);
+      val ctxmgr = getTestContextManager(context);
+      ctxmgr.beforeTestMethod(testInstance, testMethod);
+      ctxmgr.getTestContext().getApplicationContext().getBean(ModuleThread.class).start();
     } finally {
       doCleanMethod(context, Clean.Mode.Before);
     }
@@ -130,7 +134,10 @@ public class KernelExtension
       Object testInstance = context.getRequiredTestInstance();
       Method testMethod = context.getRequiredTestMethod();
       Throwable testException = context.getExecutionException().orElse(null);
-      getTestContextManager(context).afterTestMethod(testInstance, testMethod, testException);
+      val ctxmgr = getTestContextManager(context);
+      ctxmgr.afterTestMethod(testInstance, testMethod, testException);
+      ctxmgr.getTestContext().getApplicationContext().getBean(ModuleThread.class).stop();
+
     } finally {
       doCleanMethod(context, Clean.Mode.After);
     }
@@ -222,9 +229,7 @@ public class KernelExtension
       throws Exception {
     val zephyr = ctx.getBean(Zephyr.class);
     val coords =
-        zephyr
-            .getPluginCoordinates()
-            .stream()
+        zephyr.getPluginCoordinates().stream()
             .map(Coordinate::toCanonicalForm)
             .collect(Collectors.toSet());
     zephyr.remove(coords);

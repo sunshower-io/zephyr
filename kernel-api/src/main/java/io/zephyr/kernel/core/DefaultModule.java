@@ -19,7 +19,7 @@ import java.util.Set;
 import lombok.SneakyThrows;
 import lombok.val;
 
-public class DefaultModule implements Module, Comparable<Module>, Originator {
+public class DefaultModule extends AbstractModule implements Module, Comparable<Module>, Originator {
   private int order;
   private Type type;
 
@@ -31,8 +31,6 @@ public class DefaultModule implements Module, Comparable<Module>, Originator {
   private FileSystem fileSystem;
   private Lifecycle lifecycle;
 
-  private ModuleContext context;
-  private ModuleLoader moduleLoader;
   private PluginActivator activator;
   private ModuleClasspath moduleClasspath;
 
@@ -346,9 +344,6 @@ public class DefaultModule implements Module, Comparable<Module>, Originator {
     return "Module{" + getCoordinate() + "}";
   }
 
-  public void setContext(ModuleContext ctx) {
-    this.context = ctx;
-  }
 
   public void setTaskQueue(TaskQueue taskQueue) {
     this.taskQueue = taskQueue;

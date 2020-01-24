@@ -6,6 +6,8 @@ import java.util.function.Predicate;
 
 public interface ModuleContext {
 
+  <T> Predicate<T> createFilter(Query<T> query);
+
   <T> CapabilityRegistration<T> provide(CapabilityDefinition<T> capability);
 
   <T> RequirementRegistration<T> createRequirement(Requirement<T> requirement);

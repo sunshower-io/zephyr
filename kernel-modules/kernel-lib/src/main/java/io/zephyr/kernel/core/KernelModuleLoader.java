@@ -34,9 +34,11 @@ public final class KernelModuleLoader extends ModuleLoader
   public void install(Module module) {
     val coordinate = module.getCoordinate();
     val id = coordinate.toCanonicalForm();
-    val loader = new UnloadableKernelModuleLoader(new KernelModuleFinder(module, this, kernel));
-    ((DefaultModule) module).setModuleLoader(loader);
-    moduleLoaders.put(id, loader);
+    if (module instanceof AbstractModule) {
+      val loader = new UnloadableKernelModuleLoader(new KernelModuleFinder(module, this, kernel));
+      ((AbstractModule) module).setModuleLoader(loader);
+      moduleLoaders.put(id, loader);
+    }
   }
 
   @Override
