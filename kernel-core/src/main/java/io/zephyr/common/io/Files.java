@@ -4,9 +4,9 @@ import io.zephyr.kernel.memento.Memento;
 import io.zephyr.kernel.misc.SuppressFBWarnings;
 import java.io.*;
 import java.net.URL;
-import java.nio.file.AccessDeniedException;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
+
 import lombok.NonNull;
 import lombok.val;
 
@@ -117,5 +117,24 @@ public class Files {
       memento.write(output);
       output.flush();
     }
+  }
+
+  public static void deleteTree(File directory) throws IOException {
+    java.nio.file.Files.walkFileTree(
+        directory.toPath(),
+        new SimpleFileVisitor<Path>() {
+          @Override
+          public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
+              throws IOException {
+            java.nio.file.Files.delete(file);
+            return FileVisitResult.CONTINUE;
+          }
+
+          @Override
+          public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+            java.nio.file.Files.delete(dir);
+            return FileVisitResult.CONTINUE;
+          }
+        });
   }
 }
