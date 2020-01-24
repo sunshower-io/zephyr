@@ -2,13 +2,11 @@ package io.sunshower.kernel.test;
 
 import io.sunshower.test.common.Tests;
 import io.zephyr.cli.Zephyr;
-import io.zephyr.common.io.Files;
 import io.zephyr.kernel.Coordinate;
 import io.zephyr.kernel.ModuleThread;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.module.ModuleInstallationGroup;
 import io.zephyr.kernel.module.ModuleInstallationRequest;
-
 import java.io.File;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
@@ -85,7 +83,7 @@ public class KernelExtension
       // meh
     }
     File kernelRoot = ctx.getBean(File.class);
-    Files.deleteTree(kernelRoot);
+    //    Files.deleteTree(kernelRoot);
 
     try {
       ctxManager.afterTestClass();
@@ -233,7 +231,9 @@ public class KernelExtension
       throws Exception {
     val zephyr = ctx.getBean(Zephyr.class);
     val coords =
-        zephyr.getPluginCoordinates().stream()
+        zephyr
+            .getPluginCoordinates()
+            .stream()
             .map(Coordinate::toCanonicalForm)
             .collect(Collectors.toSet());
     zephyr.remove(coords);
