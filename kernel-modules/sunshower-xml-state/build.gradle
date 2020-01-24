@@ -1,0 +1,15 @@
+apply plugin: 'war'
+apply plugin: 'pmd'
+apply plugin: 'java'
+apply plugin: 'java-library'
+apply plugin: 'com.github.spotbugs'
+dependencies {
+
+    implementation project(':kernel-api')
+    implementation project(':kernel-core')
+    implementation 'com.thoughtworks.xstream:xstream'
+    implementation project(':kernel-modules:kernel-lib')
+
+
+    testImplementation project(':kernel-tests:kernel-test')
+}

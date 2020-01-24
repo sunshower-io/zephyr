@@ -1,0 +1,7 @@
+1:io.sunshower:sunshower-whatever:1.0.0-SNAPSHOT[lib/dapper,frapper,dapper]
+2:frapper:dapper:1.0
+1:hello-world:thisisatest:version.p13.R[lib,not/here/are/you?,coolbeans]
+1:hello-world:thisisatest:version.p13.R[lib,not/here/are/you?,coolbeans]
+2:frapper:dapper:1.0
+
+

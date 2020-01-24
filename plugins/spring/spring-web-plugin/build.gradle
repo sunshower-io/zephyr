@@ -1,0 +1,17 @@
+apply plugin: 'war'
+apply plugin: 'java-library'
+
+dependencies {
+    compileOnly project(':kernel-api')
+    api("org.springframework.boot:spring-boot-starter-web")
+    api("org.springframework.boot:spring-boot-starter-undertow")
+    testImplementation project(":kernel-tests:kernel-test")
+
+}
+
+configurations {
+    all {
+        exclude group: "org.springframework.boot", module: "spring-boot-starter-tomcat"
+    }
+}
+

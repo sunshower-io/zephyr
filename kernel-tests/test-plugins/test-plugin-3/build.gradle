@@ -1,0 +1,5 @@
+apply plugin: 'war'
+
+dependencies {
+    compileOnly project(':kernel-api')
+}

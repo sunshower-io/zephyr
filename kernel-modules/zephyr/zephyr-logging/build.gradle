@@ -1,0 +1,18 @@
+apply plugin: 'java'
+apply plugin: 'java-library'
+dependencies {
+
+    [
+            'info.picocli:picocli',
+            project(':kernel-api'),
+            project(':kernel-core')
+    ].each {
+        implementation it
+    }
+
+    [
+            project(':kernel-tests:kernel-test-common')
+    ].each {
+        testImplementation it
+    }
+}

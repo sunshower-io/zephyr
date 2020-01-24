@@ -1,0 +1,20 @@
+apply plugin: 'java'
+apply plugin: 'java-library'
+
+dependencies {
+
+    api project(':kernel-api')
+    api project(':kernel-modules:kernel-lib')
+    api project(':kernel-modules:synchronous-api')
+    api 'javax.inject:javax.inject'
+    api project (':kernel-tests:kernel-test-common')
+    [
+            "org.springframework:spring-beans",
+            "org.springframework:spring-test",
+            "org.springframework:spring-context",
+    ].each {
+        api it
+    }
+
+    api project(':kernel-core')
+}

@@ -1,0 +1,2 @@
+io.zephyr.kernel.module.DefaultJarModuleAssemblyExtractor
+io.zephyr.kernel.module.WarModuleAssemblyExtractor

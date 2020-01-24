@@ -1,0 +1,10 @@
+apply plugin: 'java'
+
+dependencies {
+
+    testImplementation project(':kernel-core')
+    testImplementation project(':kernel-tests:kernel-test')
+    testImplementation project(':kernel-modules:kernel-lib')
+    testImplementation project(':kernel-modules:sunshower-spring')
+    testImplementation project(':kernel-modules:sunshower-yaml-reader')
+}

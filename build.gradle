@@ -1,0 +1,124 @@
+plugins {
+    id 'pmd'
+    id 'maven-publish'
+    id "com.diffplug.gradle.spotless" version "$spotlessPluginVersion" apply true
+    id 'com.github.spotbugs' version "$spotbugsPluginVersion" apply false
+    id "org.springframework.boot" version "$springBootPluginVersion" apply false
+    id "io.spring.dependency-management" version "$dependencyManagementPluginVersion" apply false
+}
+
+allprojects {
+    apply plugin: 'maven-publish'
+    apply plugin: "io.spring.dependency-management"
+    apply plugin: "com.diffplug.gradle.spotless"
+
+    dependencyManagement {
+        imports {
+            mavenBom "io.zephyr:bom-imported:$project.version"
+        }
+    }
+
+
+    repositories {
+        jcenter()
+        mavenLocal()
+        mavenCentral()
+    }
+
+    publishing {
+        repositories {
+            maven {
+                credentials {
+                    username "$mavenRepositoryUsername"
+                    password "$mavenRepositoryPassword"
+                }
+                url "$mavenRepositoryUrl"
+            }
+        }
+    }
+
+}
+
+subprojects {
+
+
+    plugins.withType(WarPlugin) {
+
+
+        configurations {
+            plugin {
+                transitive = false
+                extendsFrom implementation
+            }
+        }
+
+
+        tasks.withType(com.github.spotbugs.SpotBugsTask) {
+            reports {
+                xml.enabled = false
+                html.enabled = true
+            }
+        }
+        pmd {
+            ruleSets = [
+                    "${project.rootDir}/check/pmd/rules/errorprone.xml",
+                    "category/java/multithreading.xml",
+                    "category/java/bestpractices.xml",
+                    "category/java/performance.xml"
+            ]
+
+        }
+
+        publishing {
+            publications {
+                webArchive(MavenPublication) {
+                    from components.web
+                }
+            }
+        }
+    }
+
+
+
+    plugins.withType(JavaPlugin) {
+        publishing {
+            publications {
+                mavenJava(MavenPublication) {
+                    from components.java
+                }
+            }
+        }
+        tasks.withType(com.github.spotbugs.SpotBugsTask) {
+            reports {
+                xml.enabled = false
+                html.enabled = true
+            }
+        }
+        pmd {
+            ruleSets = [
+                    "${project.rootDir}/check/pmd/rules/errorprone.xml",
+                    "category/java/multithreading.xml",
+                    "category/java/bestpractices.xml",
+                    "category/java/performance.xml"
+            ]
+
+        }
+
+        test {
+            useJUnitPlatform()
+        }
+        spotless {
+            java {
+                googleJavaFormat('1.1')
+            }
+        }
+
+        project.dependencies {
+            compileOnly 'org.projectlombok:lombok'
+            testCompileOnly 'org.projectlombok:lombok'
+            annotationProcessor 'org.projectlombok:lombok'
+            testAnnotationProcessor 'org.projectlombok:lombok'
+        }
+    }
+
+}
