@@ -27,8 +27,8 @@ public class AsynchronousModuleThreadTracker implements ModuleTracker, EventList
     this.kernel = kernel;
     this.filter = filter;
     this.taskQueue = taskQueue;
-    this.tracked = new ArrayList<>(0);
     this.delegatedEventSource = new ModuleThreadEventSource();
+    this.tracked = new ArrayList<>(0);
   }
 
   @Override
@@ -70,21 +70,33 @@ public class AsynchronousModuleThreadTracker implements ModuleTracker, EventList
 
   @Override
   public List<Module> getTracked() {
-    synchronized (tracked) {
-      return Collections.unmodifiableList(tracked);
-    }
+    return Collections.unmodifiableList(tracked);
   }
 
   @Override
   public int getTrackedCount() {
-    synchronized (tracked) {
-      return tracked.size();
+    return tracked.size();
+  }
+
+  @Override
+  public void waitUntil(Predicate<List<Module>> condition) {
+    for (; ; ) {
+      synchronized (tracked) {
+        if (condition.test(tracked)) {
+          return;
+        }
+        try {
+          tracked.wait();
+        } catch (InterruptedException ex) {
+        }
+      }
     }
   }
 
   private void track(Module module) {
     synchronized (tracked) {
       tracked.add(module);
+      tracked.notifyAll();
     }
   }
 
@@ -101,8 +113,8 @@ public class AsynchronousModuleThreadTracker implements ModuleTracker, EventList
     @Override
     public void run() {
       if (filter.test(event.getTarget())) {
-        dispatchEvent(type, event);
         track(event.getTarget());
+        dispatchEvent(type, event);
       }
     }
   }

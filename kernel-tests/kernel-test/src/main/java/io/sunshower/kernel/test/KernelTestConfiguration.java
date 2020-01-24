@@ -50,6 +50,11 @@ public class KernelTestConfiguration {
   }
 
   @Bean
+  public ModuleLifecycleManager moduleLifecycleManager(final Zephyr zephyr) {
+    return new ModuleLifecycleManager(zephyr);
+  }
+
+  @Bean
   public File kernelRootDirectory() {
     return Tests.createTemp();
   }
