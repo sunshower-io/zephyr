@@ -18,8 +18,13 @@ import javax.inject.Inject;
 import lombok.val;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+import org.springframework.test.annotation.DirtiesContext;
 
 @ZephyrTest
+@DirtiesContext(
+  classMode = DirtiesContext.ClassMode.AFTER_CLASS,
+  hierarchyMode = DirtiesContext.HierarchyMode.EXHAUSTIVE
+)
 public class ModuleTrackerTest {
 
   @Inject private Zephyr zephyr;

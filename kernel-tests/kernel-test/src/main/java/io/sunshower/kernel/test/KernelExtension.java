@@ -2,7 +2,6 @@ package io.sunshower.kernel.test;
 
 import io.sunshower.test.common.Tests;
 import io.zephyr.cli.Zephyr;
-import io.zephyr.common.io.Files;
 import io.zephyr.kernel.Coordinate;
 import io.zephyr.kernel.ModuleThread;
 import io.zephyr.kernel.core.Kernel;
@@ -84,7 +83,7 @@ public class KernelExtension
       // meh
     }
     File kernelRoot = ctx.getBean(File.class);
-    Files.deleteTree(kernelRoot);
+    //    Files.deleteTree(kernelRoot);
 
     try {
       ctxManager.afterTestClass();
