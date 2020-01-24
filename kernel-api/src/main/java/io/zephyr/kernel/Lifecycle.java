@@ -12,11 +12,11 @@ public interface Lifecycle {
   enum State {
     Installed(0),
     Resolved(1),
-    Uninstalled(2),
+    Uninstalled(-1),
     Starting(3),
     Active(4),
     Stopping(5),
-    Failed(-1);
+    Failed(-2);
 
     final int value;
 

@@ -1,7 +1,7 @@
 package io.zephyr.kernel;
 
-import io.zephyr.PluginActivator;
-import io.zephyr.PluginContext;
+import io.zephyr.api.ModuleContext;
+import io.zephyr.api.PluginActivator;
 import io.zephyr.kernel.core.ModuleClasspath;
 import io.zephyr.kernel.memento.Originator;
 import java.nio.file.FileSystem;
@@ -74,5 +74,5 @@ public interface Module extends Comparable<Module>, Originator {
     return getCoordinate().compareTo(m.getCoordinate());
   }
 
-  PluginContext getContext();
+  ModuleContext getContext();
 }

@@ -1,5 +1,6 @@
 package io.zephyr.kernel.core;
 
+import static io.zephyr.kernel.core.actions.ModulePhaseEvents.*;
 import static java.lang.String.format;
 
 import io.sunshower.gyre.*;
@@ -10,6 +11,9 @@ import io.zephyr.kernel.concurrency.TaskBuilder;
 import io.zephyr.kernel.concurrency.Tasks;
 import io.zephyr.kernel.core.actions.*;
 import io.zephyr.kernel.core.lifecycle.KernelModuleListReadPhase;
+import io.zephyr.kernel.events.Event;
+import io.zephyr.kernel.events.EventListener;
+import io.zephyr.kernel.events.EventType;
 import io.zephyr.kernel.events.Events;
 import io.zephyr.kernel.log.Logging;
 import io.zephyr.kernel.module.ModuleInstallationGroup;
@@ -37,14 +41,14 @@ final class DefaultModuleInstallationStatusGroup implements ModuleInstallationSt
     this.kernel = kernel;
     this.installationGroup = toInstall;
 
+    addModuleLifecycleDelegateListeners(kernel);
+
     val context = Scope.root();
     context.set("SunshowerKernel", kernel);
     context.set(ModuleDownloadPhase.TARGET_DIRECTORY, kernel.getFileSystem().getPath("downloads"));
 
     context.set(ModuleInstallationCompletionPhase.INSTALLED_PLUGINS, new HashSet<Module>());
-    context.set(
-        ModuleInstallationCompletionPhase.INSTALLED_KERNEL_MODULES,
-        new HashSet<java.lang.Module>());
+    context.set(ModuleInstallationCompletionPhase.INSTALLED_KERNEL_MODULES, new HashSet<Module>());
 
     val procBuilder = Tasks.newProcess("module:install").withContext(context);
     val taskBuilder =
@@ -56,16 +60,29 @@ final class DefaultModuleInstallationStatusGroup implements ModuleInstallationSt
     this.process = taskBuilder.create();
   }
 
-  private void logProcess(Process<String> process) {
-    if (log.isLoggable(Level.FINEST)) {
-      log.log(Level.FINEST, "status.primary.installation.process", process.getExecutionGraph());
-    }
+  private void addModuleLifecycleDelegateListeners(Kernel kernel) {
+    val listener =
+        new EventListener<Object>() {
+          @Override
+          public void onEvent(EventType type, Event<Object> event) {
+            kernel.dispatchEvent(ModuleEvents.INSTALL_FAILED, event);
+          }
+        };
+
+    kernel.addEventListener(
+        listener,
+        EventListener.Options.REMOVE_AFTER_DISPATCH,
+        MODULE_DOWNLOAD_FAILED,
+        MODULE_SCAN_FAILED,
+        MODULE_TRANSFER_FAILED,
+        MODULE_ASSEMBLY_EXTRACTION_FAILED,
+        MODULE_FILESYSTEM_CREATION_FAILED);
   }
 
   @Override
   public CompletionStage<Process<String>> commit() {
     logProcess(process);
-    kernel.dispatchEvent(ModuleEvents.PLUGIN_SET_INSTALLATION_INITIATED, Events.create(this));
+    kernel.dispatchEvent(ModulePhaseEvents.MODULE_SET_INSTALLATION_INITIATED, Events.create(this));
     return kernel.getScheduler().submit(process);
   }
 
@@ -136,6 +153,12 @@ final class DefaultModuleInstallationStatusGroup implements ModuleInstallationSt
 
       /** Write kernel list */
       taskBuilder.task(writeModuleList).dependsOn(installModuleName);
+    }
+  }
+
+  private void logProcess(Process<String> process) {
+    if (log.isLoggable(Level.FINEST)) {
+      log.log(Level.FINEST, "status.primary.installation.process", process.getExecutionGraph());
     }
   }
 }

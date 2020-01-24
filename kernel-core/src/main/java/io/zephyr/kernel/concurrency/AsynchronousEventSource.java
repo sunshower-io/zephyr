@@ -35,9 +35,21 @@ public class AsynchronousEventSource implements EventSource, Stoppable, Startabl
   }
 
   @Override
-  public <T> void addEventListener(EventListener<T> listener, EventType... types) {
+  public boolean listensFor(EventType... types) {
     synchronized (source) {
-      source.addEventListener(listener, types);
+      return source.listensFor(types);
+    }
+  }
+
+  @Override
+  public <T> void addEventListener(EventListener<T> listener, EventType... types) {
+    addEventListener(listener, EventListener.Options.NONE, types);
+  }
+
+  @Override
+  public <T> void addEventListener(EventListener<T> listener, int options, EventType... types) {
+    synchronized (source) {
+      source.addEventListener(listener, options, types);
     }
   }
 

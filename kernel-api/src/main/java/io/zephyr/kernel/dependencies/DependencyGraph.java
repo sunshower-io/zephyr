@@ -1,5 +1,6 @@
 package io.zephyr.kernel.dependencies;
 
+import io.sunshower.gyre.Component;
 import io.sunshower.gyre.DirectedGraph;
 import io.sunshower.gyre.Graph;
 import io.sunshower.gyre.Partition;
@@ -36,6 +37,13 @@ public interface DependencyGraph extends Iterable<Module> {
     }
   }
 
+  @Getter
+  @AllArgsConstructor
+  final class CyclicDependencySet {
+    final Coordinate source;
+    final Component<DirectedGraph.Edge<Coordinate>, Coordinate> cycles;
+  }
+
   /** @return the size of this graph */
   int size();
 
@@ -57,7 +65,6 @@ public interface DependencyGraph extends Iterable<Module> {
   /**
    * @param coordinate the coordinate to resolve
    * @return the module (if it exists).
-   * @throws io.sunshower.kernel.NoSuchModuleException if the module does not exist in this graph
    */
   Module get(Coordinate coordinate);
 

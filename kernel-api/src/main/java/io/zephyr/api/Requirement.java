@@ -1,3 +1,3 @@
-package io.zephyr;
+package io.zephyr.api;
 
 public interface Requirement<T> {}

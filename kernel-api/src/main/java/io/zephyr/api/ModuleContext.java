@@ -1,14 +1,16 @@
-package io.zephyr;
+package io.zephyr.api;
 
 import io.zephyr.kernel.Module;
 import java.util.List;
 import java.util.function.Predicate;
 
-public interface PluginContext {
+public interface ModuleContext {
 
-  <T> RequirementRegistration<T> createRequirement(Requirement<T> requirement);
+  <T> Predicate<T> createFilter(Query<T> query);
 
   <T> CapabilityRegistration<T> provide(CapabilityDefinition<T> capability);
+
+  <T> RequirementRegistration<T> createRequirement(Requirement<T> requirement);
 
   /** @return the current module */
   Module getModule();
@@ -20,4 +22,7 @@ public interface PluginContext {
    * @return the modules matching the provided filter
    */
   List<Module> getModules(Predicate<Module> filter);
+
+  /** */
+  ModuleTracker createModuleTracker(Predicate<Module> filter);
 }

@@ -1,21 +1,23 @@
 package io.zephyr.examples;
 
-import io.zephyr.*;
+import io.zephyr.api.ModuleContext;
+import io.zephyr.api.PluginActivator;
+import io.zephyr.api.RequirementRegistration;
 
 public class ServerPluginActivator implements PluginActivator {
 
   private RequirementRegistration<TranslationService> serverRequirement;
 
   @Override
-  public void initialize(PluginContext ctx) throws Exception {
+  public void initialize(ModuleContext ctx) throws Exception {
     //    serverRequirement = ctx.createRequirement(Requirements.create(TranslationService.class));
   }
 
   @Override
-  public void start(PluginContext context) throws Exception {}
+  public void start(ModuleContext context) throws Exception {}
 
   @Override
-  public void stop(PluginContext context) throws Exception {
+  public void stop(ModuleContext context) throws Exception {
     //    serverRequirement.close();
   }
 }

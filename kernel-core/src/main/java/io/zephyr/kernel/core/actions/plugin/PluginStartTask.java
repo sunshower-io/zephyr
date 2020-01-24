@@ -4,6 +4,7 @@ import io.sunshower.gyre.Scope;
 import io.zephyr.kernel.Coordinate;
 import io.zephyr.kernel.ModuleThread;
 import io.zephyr.kernel.concurrency.Task;
+import io.zephyr.kernel.core.AbstractModule;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.core.ModuleManager;
 import java.util.logging.Logger;
@@ -31,7 +32,9 @@ public class PluginStartTask extends Task {
   })
   public TaskValue run(Scope scope) {
     val module = manager.getModule(coordinate);
-    new ModuleThread(module, kernel).start();
+    val thread = new ModuleThread(module, kernel);
+    ((AbstractModule) module).setTaskQueue(thread);
+    thread.start();
     return null;
   }
 }

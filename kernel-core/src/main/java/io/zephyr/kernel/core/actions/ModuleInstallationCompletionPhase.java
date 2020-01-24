@@ -17,6 +17,7 @@ import java.nio.file.FileSystem;
 import java.util.Set;
 import lombok.val;
 
+@SuppressWarnings("PMD.UnusedPrivateMethod")
 public class ModuleInstallationCompletionPhase extends Task {
 
   public static final String INSTALLED_PLUGINS = "INSTALLED_PLUGINS";
@@ -39,7 +40,7 @@ public class ModuleInstallationCompletionPhase extends Task {
       final Assembly assembly = context.get(ModuleUnpackPhase.MODULE_ASSEMBLY);
       //      final Set<Library> libraries = context.get(ModuleUnpackPhase.INSTALLED_LIBRARIES);
 
-      DefaultModule module =
+      val module =
           new DefaultModule(
               descriptor.getOrder(),
               descriptor.getType(),
@@ -61,7 +62,7 @@ public class ModuleInstallationCompletionPhase extends Task {
         context.<Set<Module>>get(INSTALLED_KERNEL_MODULES).add(module);
       }
       kernel.dispatchEvent(
-          ModuleEvents.INSTALLED,
+          ModuleEvents.INSTALLING,
           Events.create(
               module,
               StatusType.SUCCEEDED.resolvable("Successfully installed plugin: " + descriptor)));
@@ -71,7 +72,7 @@ public class ModuleInstallationCompletionPhase extends Task {
 
   private Lifecycle createLifecycle(Module module) {
     val lifecycle = new ModuleLifecycle(module);
-    lifecycle.setState(Lifecycle.State.Installed);
+    lifecycle.setState(Lifecycle.State.Uninstalled);
     return lifecycle;
   }
 

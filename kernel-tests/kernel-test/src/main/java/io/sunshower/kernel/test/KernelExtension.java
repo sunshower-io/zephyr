@@ -3,9 +3,11 @@ package io.sunshower.kernel.test;
 import io.sunshower.test.common.Tests;
 import io.zephyr.cli.Zephyr;
 import io.zephyr.kernel.Coordinate;
+import io.zephyr.kernel.ModuleThread;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.module.ModuleInstallationGroup;
 import io.zephyr.kernel.module.ModuleInstallationRequest;
+import java.io.File;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -80,6 +82,8 @@ public class KernelExtension
     } catch (Exception ex) {
       // meh
     }
+    File kernelRoot = ctx.getBean(File.class);
+    //    Files.deleteTree(kernelRoot);
 
     try {
       ctxManager.afterTestClass();
@@ -103,7 +107,9 @@ public class KernelExtension
     try {
       Object testInstance = context.getRequiredTestInstance();
       Method testMethod = context.getRequiredTestMethod();
-      getTestContextManager(context).beforeTestMethod(testInstance, testMethod);
+      val ctxmgr = getTestContextManager(context);
+      ctxmgr.beforeTestMethod(testInstance, testMethod);
+      ctxmgr.getTestContext().getApplicationContext().getBean(ModuleThread.class).start();
     } finally {
       doCleanMethod(context, Clean.Mode.Before);
     }
@@ -130,7 +136,10 @@ public class KernelExtension
       Object testInstance = context.getRequiredTestInstance();
       Method testMethod = context.getRequiredTestMethod();
       Throwable testException = context.getExecutionException().orElse(null);
-      getTestContextManager(context).afterTestMethod(testInstance, testMethod, testException);
+      val ctxmgr = getTestContextManager(context);
+      ctxmgr.afterTestMethod(testInstance, testMethod, testException);
+      ctxmgr.getTestContext().getApplicationContext().getBean(ModuleThread.class).stop();
+
     } finally {
       doCleanMethod(context, Clean.Mode.After);
     }

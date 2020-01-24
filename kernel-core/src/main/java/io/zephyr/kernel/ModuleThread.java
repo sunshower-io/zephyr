@@ -1,9 +1,7 @@
 package io.zephyr.kernel;
 
-import io.zephyr.PluginActivator;
-import io.zephyr.api.ModuleEvents;
-import io.zephyr.api.Startable;
-import io.zephyr.api.Stoppable;
+import io.zephyr.api.*;
+import io.zephyr.kernel.core.AbstractModule;
 import io.zephyr.kernel.core.DefaultModule;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.events.Events;
@@ -50,7 +48,6 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable {
     if (module.getType() == Module.Type.KernelModule) {
       throw new IllegalStateException("Error: cannot create a module thread for a kernel module");
     }
-    ((DefaultModule) module).setTaskQueue(this);
     this.kernel = kernel;
     this.module = module;
     this.lock = new ReentrantLock();
@@ -143,9 +140,13 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable {
   public void run() {
     performStart();
     while (running.get()) {
+      lock.lock();
       try {
-        lock.lock();
         queueCondition.await();
+        while (!taskQueue.isEmpty()) {
+          val runnable = taskQueue.take();
+          runnable.run();
+        }
       } catch (InterruptedException ex) {
         log.log(Level.INFO, "module interrupted", ex);
       } finally {
@@ -224,7 +225,7 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable {
             module, StatusType.FAILED.unresolvable(FAILURE_TEMPLATE, coordinate, ex.getMessage())));
     module.getLifecycle().setState(Lifecycle.State.Failed);
     log.log(Level.WARNING, FAILURE_TEMPLATE, new Object[] {coordinate, ex.getMessage()});
-    log.log(Level.INFO, "Reason: ", ex);
+    log.log(Level.FINE, "Reason: ", ex);
   }
 
   private void doStop() {
@@ -245,7 +246,7 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable {
           if (activator != null) {
             module.getActivator().stop(module.getContext());
           }
-          ((DefaultModule) module).setActivator(null);
+          ((AbstractModule) module).setActivator(null);
           module.getFileSystem().close();
           moduleThread.get().setContextClassLoader(null);
         } catch (Exception ex) {

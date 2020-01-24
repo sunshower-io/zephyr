@@ -1,4 +1,4 @@
-package io.zephyr;
+package io.zephyr.api;
 
 public class Requirements {
   public static <T> Requirement<T> create(RequirementDefinition<T> requirement) {

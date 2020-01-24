@@ -2,8 +2,8 @@ package io.zephyr.kernel.core;
 
 import static io.zephyr.kernel.memento.Mementos.writeCoordinate;
 
-import io.zephyr.PluginActivator;
-import io.zephyr.PluginContext;
+import io.zephyr.api.ModuleContext;
+import io.zephyr.api.PluginActivator;
 import io.zephyr.kernel.*;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.memento.Memento;
@@ -19,7 +19,8 @@ import java.util.Set;
 import lombok.SneakyThrows;
 import lombok.val;
 
-public class DefaultModule implements Module, Comparable<Module>, Originator {
+public class DefaultModule extends AbstractModule
+    implements Module, Comparable<Module>, Originator {
   private int order;
   private Type type;
 
@@ -31,8 +32,6 @@ public class DefaultModule implements Module, Comparable<Module>, Originator {
   private FileSystem fileSystem;
   private Lifecycle lifecycle;
 
-  private PluginContext context;
-  private ModuleLoader moduleLoader;
   private PluginActivator activator;
   private ModuleClasspath moduleClasspath;
 
@@ -221,7 +220,7 @@ public class DefaultModule implements Module, Comparable<Module>, Originator {
   }
 
   @Override
-  public PluginContext getContext() {
+  public ModuleContext getContext() {
     return context;
   }
 
@@ -344,10 +343,6 @@ public class DefaultModule implements Module, Comparable<Module>, Originator {
   @Override
   public String toString() {
     return "Module{" + getCoordinate() + "}";
-  }
-
-  public void setContext(PluginContext ctx) {
-    this.context = ctx;
   }
 
   public void setTaskQueue(TaskQueue taskQueue) {
