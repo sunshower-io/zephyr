@@ -34,4 +34,13 @@ public class ModuleTrackerTest {
     zephyr.install(ProjectPlugins.TEST_PLUGIN_1.getUrl());
     verify(moduleListener, times(1)).onEvent(eq(ModuleEvents.INSTALLED), any());
   }
+
+  @Test
+  void ensureInstallingModuleDoesNotCallModuleEventWhenFilteredOnNone() {
+    moduleContext
+        .createModuleTracker(t -> false)
+        .addEventListener(moduleListener, ModuleEvents.INSTALLED);
+    zephyr.install(ProjectPlugins.TEST_PLUGIN_1.getUrl());
+    verify(moduleListener, times(0)).onEvent(eq(ModuleEvents.INSTALLED), any());
+  }
 }
