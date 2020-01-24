@@ -31,6 +31,7 @@ public final class KernelModuleLoader extends ModuleLoader
   }
 
   @Override
+  @SuppressWarnings("PMD.DataflowAnomalyAnalysis")
   public void install(Module module) {
     val coordinate = module.getCoordinate();
     val id = coordinate.toCanonicalForm();

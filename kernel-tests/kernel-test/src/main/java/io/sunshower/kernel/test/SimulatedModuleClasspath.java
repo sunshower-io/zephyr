@@ -2,7 +2,6 @@ package io.sunshower.kernel.test;
 
 import io.zephyr.kernel.core.ModuleClasspath;
 import io.zephyr.kernel.core.ModuleLoader;
-
 import java.util.ServiceLoader;
 
 public class SimulatedModuleClasspath implements ModuleClasspath {

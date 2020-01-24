@@ -1,7 +1,6 @@
 package io.sunshower.kernel.test;
 
 import io.sunshower.test.common.Tests;
-import io.zephyr.api.ModuleContext;
 import io.zephyr.cli.Zephyr;
 import io.zephyr.kernel.Coordinate;
 import io.zephyr.kernel.ModuleThread;
@@ -229,7 +228,9 @@ public class KernelExtension
       throws Exception {
     val zephyr = ctx.getBean(Zephyr.class);
     val coords =
-        zephyr.getPluginCoordinates().stream()
+        zephyr
+            .getPluginCoordinates()
+            .stream()
             .map(Coordinate::toCanonicalForm)
             .collect(Collectors.toSet());
     zephyr.remove(coords);

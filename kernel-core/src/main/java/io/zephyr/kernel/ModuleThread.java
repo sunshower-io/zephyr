@@ -225,7 +225,7 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable {
             module, StatusType.FAILED.unresolvable(FAILURE_TEMPLATE, coordinate, ex.getMessage())));
     module.getLifecycle().setState(Lifecycle.State.Failed);
     log.log(Level.WARNING, FAILURE_TEMPLATE, new Object[] {coordinate, ex.getMessage()});
-    log.log(Level.INFO, "Reason: ", ex);
+    log.log(Level.FINE, "Reason: ", ex);
   }
 
   private void doStop() {

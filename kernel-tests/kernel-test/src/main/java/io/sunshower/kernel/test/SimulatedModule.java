@@ -1,7 +1,9 @@
 package io.sunshower.kernel.test;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+
 import io.sunshower.test.common.Tests;
-import io.zephyr.api.ModuleContext;
 import io.zephyr.api.PluginActivator;
 import io.zephyr.kernel.*;
 import io.zephyr.kernel.Module;
@@ -11,20 +13,15 @@ import io.zephyr.kernel.core.ModuleCoordinate;
 import io.zephyr.kernel.core.ModuleSource;
 import io.zephyr.kernel.memento.Memento;
 import io.zephyr.kernel.module.ModuleLifecycle;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.SneakyThrows;
-import org.springframework.context.ApplicationContext;
-
 import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.ServiceLoader;
 import java.util.Set;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.SneakyThrows;
+import org.springframework.context.ApplicationContext;
 
 /** this module simulates an actual module, but uses the test classpath instead */
 public class SimulatedModule extends AbstractModule implements Module {
@@ -108,7 +105,6 @@ public class SimulatedModule extends AbstractModule implements Module {
   }
 
   @Override
-
   public FileSystem getFileSystem() {
     return spy(FileSystem.class);
   }
@@ -143,4 +139,7 @@ public class SimulatedModule extends AbstractModule implements Module {
 
   @Override
   public void setActivator(PluginActivator o) {}
+
+  @Override
+  public void setTaskQueue(TaskQueue thread) {}
 }

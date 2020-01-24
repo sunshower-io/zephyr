@@ -19,7 +19,8 @@ import java.util.Set;
 import lombok.SneakyThrows;
 import lombok.val;
 
-public class DefaultModule extends AbstractModule implements Module, Comparable<Module>, Originator {
+public class DefaultModule extends AbstractModule
+    implements Module, Comparable<Module>, Originator {
   private int order;
   private Type type;
 
@@ -343,7 +344,6 @@ public class DefaultModule extends AbstractModule implements Module, Comparable<
   public String toString() {
     return "Module{" + getCoordinate() + "}";
   }
-
 
   public void setTaskQueue(TaskQueue taskQueue) {
     this.taskQueue = taskQueue;

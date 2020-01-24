@@ -3,7 +3,6 @@ package io.zephyr.kernel;
 import io.zephyr.api.ModuleTracker;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.events.*;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;

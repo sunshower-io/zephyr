@@ -4,7 +4,6 @@ import io.zephyr.api.*;
 import io.zephyr.kernel.AsynchronousModuleThreadTracker;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.ModuleThread;
-
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -12,8 +11,6 @@ public class DefaultPluginContext implements ModuleContext {
 
   final Module module;
   final Kernel kernel;
-
-  private volatile ModuleTracker moduleTracker;
 
   public DefaultPluginContext(final Module module, final Kernel kernel) {
     this.module = module;

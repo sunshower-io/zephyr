@@ -1,5 +1,10 @@
 package io.sunshower.kernel.core;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
 import io.sunshower.kernel.test.ZephyrTest;
 import io.zephyr.api.ModuleContext;
 import io.zephyr.api.ModuleEvents;
@@ -7,15 +12,9 @@ import io.zephyr.cli.Zephyr;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.events.EventListener;
+import javax.inject.Inject;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-
-import javax.inject.Inject;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 @ZephyrTest
 public class ModuleTrackerTest {

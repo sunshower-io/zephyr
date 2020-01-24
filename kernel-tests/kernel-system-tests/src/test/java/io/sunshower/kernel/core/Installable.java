@@ -1,11 +1,10 @@
 package io.sunshower.kernel.core;
 
 import io.sunshower.test.common.Tests;
-import lombok.SneakyThrows;
-
 import java.io.File;
 import java.net.URI;
 import java.net.URL;
+import lombok.SneakyThrows;
 
 public interface Installable {
   String getPath();
