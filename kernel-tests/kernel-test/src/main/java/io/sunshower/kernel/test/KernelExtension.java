@@ -8,7 +8,6 @@ import io.zephyr.kernel.ModuleThread;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.module.ModuleInstallationGroup;
 import io.zephyr.kernel.module.ModuleInstallationRequest;
-
 import java.io.File;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
@@ -233,7 +232,9 @@ public class KernelExtension
       throws Exception {
     val zephyr = ctx.getBean(Zephyr.class);
     val coords =
-        zephyr.getPluginCoordinates().stream()
+        zephyr
+            .getPluginCoordinates()
+            .stream()
             .map(Coordinate::toCanonicalForm)
             .collect(Collectors.toSet());
     zephyr.remove(coords);
