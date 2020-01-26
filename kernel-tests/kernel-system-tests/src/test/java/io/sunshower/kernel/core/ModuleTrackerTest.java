@@ -18,13 +18,12 @@ import io.zephyr.kernel.events.EventListener;
 import javax.inject.Inject;
 import lombok.SneakyThrows;
 import lombok.val;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 
 @ZephyrTest
-@Clean(value = Clean.Mode.After, context = Clean.Context.Method)
+@Clean(value = Clean.Mode.Before, context = Clean.Context.Method)
 public class ModuleTrackerTest {
 
   @Inject private Zephyr zephyr;
@@ -96,12 +95,8 @@ public class ModuleTrackerTest {
     }
   }
 
-  static final ArgumentMatcher<Event<Module>> moduleMatcher(Module target) {
-    return arg -> arg.getTarget().equals(target);
-  }
-
-  @SneakyThrows
   @Test
+  @SneakyThrows
   void ensureEventsAreProperlyDiscriminatedOnByType() {
     try (val tracker = moduleContext.createModuleTracker(t -> true)) {
       tracker.addEventListener(moduleListener, ModuleEvents.STARTED);
@@ -123,5 +118,9 @@ public class ModuleTrackerTest {
       tracker.waitUntil(t -> !t.isEmpty());
       assertEquals(1, tracker.getTrackedCount(), "must have one tracked modules");
     }
+  }
+
+  static final ArgumentMatcher<Event<Module>> moduleMatcher(Module target) {
+    return arg -> arg.getTarget().equals(target);
   }
 }
