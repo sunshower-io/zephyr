@@ -1,0 +1,7 @@
+
+dependencies {
+
+    implementation 'org.mvel:mvel2'
+    implementation project(':kernel-api')
+
+}

@@ -1,6 +1,8 @@
-package io.zephyr.kernel;
+package io.zephyr.kernel.concurrency;
 
 import io.zephyr.api.*;
+import io.zephyr.kernel.*;
+import io.zephyr.kernel.Module;
 import io.zephyr.kernel.core.AbstractModule;
 import io.zephyr.kernel.core.DefaultModule;
 import io.zephyr.kernel.core.Kernel;

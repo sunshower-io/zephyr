@@ -1,7 +1,6 @@
 package io.zephyr.kernel.extensions;
 
 import io.zephyr.api.Query;
-
 import java.util.function.Predicate;
 
 public interface ExpressionLanguageExtension {

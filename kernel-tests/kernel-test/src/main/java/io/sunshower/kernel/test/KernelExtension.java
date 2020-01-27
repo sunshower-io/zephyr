@@ -3,7 +3,7 @@ package io.sunshower.kernel.test;
 import io.sunshower.test.common.Tests;
 import io.zephyr.cli.Zephyr;
 import io.zephyr.kernel.Coordinate;
-import io.zephyr.kernel.ModuleThread;
+import io.zephyr.kernel.concurrency.ModuleThread;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.module.ModuleInstallationGroup;
 import io.zephyr.kernel.module.ModuleInstallationRequest;

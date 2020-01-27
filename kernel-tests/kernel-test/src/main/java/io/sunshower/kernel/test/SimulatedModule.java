@@ -7,6 +7,7 @@ import io.sunshower.test.common.Tests;
 import io.zephyr.api.PluginActivator;
 import io.zephyr.kernel.*;
 import io.zephyr.kernel.Module;
+import io.zephyr.kernel.concurrency.ModuleThread;
 import io.zephyr.kernel.core.AbstractModule;
 import io.zephyr.kernel.core.ModuleClasspath;
 import io.zephyr.kernel.core.ModuleCoordinate;
