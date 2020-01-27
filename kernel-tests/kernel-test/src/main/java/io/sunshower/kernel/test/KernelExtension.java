@@ -231,9 +231,7 @@ public class KernelExtension
       throws Exception {
     val zephyr = ctx.getBean(Zephyr.class);
     val coords =
-        zephyr
-            .getPluginCoordinates()
-            .stream()
+        zephyr.getPluginCoordinates().stream()
             .map(Coordinate::toCanonicalForm)
             .collect(Collectors.toSet());
     zephyr.remove(coords);
@@ -255,14 +253,22 @@ public class KernelExtension
       prepped.commit().toCompletableFuture().get();
 
       if (restoreState) {
+        System.out.println("Saving kernel state...");
         kernel.persistState().toCompletableFuture().get();
+        System.out.println("Successfully restored kernel state...");
       }
 
       kernel.stop();
 
       kernel.start();
       if (restoreState) {
-        kernel.restoreState().toCompletableFuture().get();
+        try {
+          System.out.println("Restoring kernel state...");
+          kernel.restoreState().toCompletableFuture().get();
+          System.out.println("Successfully restored kernel state");
+        } catch (Exception ex) {
+          System.out.println("Failed to restore kernel state.  Reason: " + ex.getMessage());
+        }
       }
     }
   }
