@@ -1,0 +1,12 @@
+
+apply plugin: 'war'
+apply plugin: 'java'
+apply plugin: 'java-library'
+dependencies {
+
+    implementation 'org.mvel:mvel2'
+    compileOnly project(':kernel-api')
+
+    testImplementation project(':kernel-tests:kernel-test-common')
+
+}
