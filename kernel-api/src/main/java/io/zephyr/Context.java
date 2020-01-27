@@ -1,6 +1,7 @@
 package io.zephyr;
 
 import io.zephyr.api.ServiceReference;
+import io.zephyr.kernel.Module;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
