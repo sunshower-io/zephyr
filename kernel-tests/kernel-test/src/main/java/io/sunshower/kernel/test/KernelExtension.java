@@ -257,7 +257,7 @@ public class KernelExtension
       if (restoreState) {
         System.out.println("Saving kernel state...");
         kernel.persistState().toCompletableFuture().get();
-        System.out.println("Successfully restored kernel state...");
+        System.out.println("Successfully saved kernel state...");
       }
 
       kernel.stop();
