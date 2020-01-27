@@ -4,7 +4,7 @@ import io.zephyr.api.Query;
 import java.util.function.Predicate;
 import org.mvel2.MVEL;
 
-public class ExecutableStatementPredicate<T> implements Predicate<T> {
+final class ExecutableStatementPredicate<T> implements Predicate<T> {
 
   private final Query<T> query;
   private volatile Boolean cached;
