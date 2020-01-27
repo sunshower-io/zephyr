@@ -7,7 +7,6 @@ import io.zephyr.kernel.ModuleThread;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.module.ModuleInstallationGroup;
 import io.zephyr.kernel.module.ModuleInstallationRequest;
-import java.io.File;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -82,8 +81,6 @@ public class KernelExtension
     } catch (Exception ex) {
       // meh
     }
-    File kernelRoot = ctx.getBean(File.class);
-    //    Files.deleteTree(kernelRoot);
 
     try {
       ctxManager.afterTestClass();
@@ -180,7 +177,10 @@ public class KernelExtension
   }
 
   private static ExtensionContext.Store getStore(ExtensionContext context) {
-    return context.getRoot().getStore(NAMESPACE);
+    return context
+        .getRoot()
+        .getStore(
+            ExtensionContext.Namespace.create(context.getRequiredTestClass().getCanonicalName()));
   }
 
   private void extractModules(ExtensionContext context, ExtensionContext.Store store)
@@ -255,14 +255,22 @@ public class KernelExtension
       prepped.commit().toCompletableFuture().get();
 
       if (restoreState) {
+        System.out.println("Saving kernel state...");
         kernel.persistState().toCompletableFuture().get();
+        System.out.println("Successfully restored kernel state...");
       }
 
       kernel.stop();
 
       kernel.start();
       if (restoreState) {
-        kernel.restoreState().toCompletableFuture().get();
+        try {
+          System.out.println("Restoring kernel state...");
+          kernel.restoreState().toCompletableFuture().get();
+          System.out.println("Successfully restored kernel state");
+        } catch (Exception ex) {
+          System.out.println("Failed to restore kernel state.  Reason: " + ex.getMessage());
+        }
       }
     }
   }

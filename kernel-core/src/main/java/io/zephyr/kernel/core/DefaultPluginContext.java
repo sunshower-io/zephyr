@@ -45,6 +45,6 @@ public class DefaultPluginContext implements ModuleContext {
   @Override
   public ModuleTracker createModuleTracker(Predicate<Module> filter) {
     return new AsynchronousModuleThreadTracker(
-        kernel, (ModuleThread) module.getTaskQueue(), filter);
+        kernel, module, (ModuleThread) module.getTaskQueue(), filter);
   }
 }
