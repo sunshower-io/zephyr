@@ -1,0 +1,7 @@
+plugin:
+  name: mvel-expression-lang
+  group: io.sunshower.el
+  version: 1.0.0
+  order: 1
+  type: kernel-module
+  description: Adds MVEL to available languages

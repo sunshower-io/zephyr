@@ -131,6 +131,12 @@ public class DefaultZephyr implements Zephyr {
     }
   }
 
+  @Override
+  public void restart() {
+    shutdown();
+    startup();
+  }
+
   private void changeLifecycle(Collection<String> pluginCoords, ModuleLifecycle.Actions action)
       throws ExecutionException, InterruptedException {
     val group = new ModuleLifecycleChangeGroup();
