@@ -1,19 +1,17 @@
 package io.sunshower.kernel.core;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+
 import io.sunshower.kernel.test.ZephyrTest;
 import io.zephyr.api.ModuleEvents;
 import io.zephyr.cli.Zephyr;
-import io.zephyr.kernel.Lifecycle;
 import io.zephyr.kernel.core.Kernel;
-import javax.inject.Inject;
-
 import io.zephyr.kernel.core.KernelLifecycle;
 import io.zephyr.kernel.events.EventListener;
+import javax.inject.Inject;
 import lombok.val;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
 
 @ZephyrTest
 class SunshowerKernelSystemTest {
@@ -48,10 +46,10 @@ class SunshowerKernelSystemTest {
   void ensureListenerCountIsZeroAfterKernelModuleInstallation() throws InterruptedException {
     kernel.start();
     val listener = mock(EventListener.class);
-    kernel.addEventListener(listener, EventListener.Options.REMOVE_AFTER_DISPATCH, ModuleEvents.INSTALLED);
+    kernel.addEventListener(
+        listener, EventListener.Options.REMOVE_AFTER_DISPATCH, ModuleEvents.INSTALLED);
     zephyr.install(StandardModules.YAML.getUrl());
     assertEquals(0, kernel.getListenerCount(), "must have no listeners");
     kernel.stop();
-
   }
 }

@@ -239,7 +239,6 @@ public class KernelExtension
 
     zephyr.stop(coords);
 
-
     zephyr.remove(coords);
     kernel.persistState().toCompletableFuture().get();
 

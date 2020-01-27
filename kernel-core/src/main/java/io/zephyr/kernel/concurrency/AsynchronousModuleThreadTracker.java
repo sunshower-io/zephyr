@@ -9,7 +9,6 @@ import io.zephyr.kernel.events.*;
 import io.zephyr.kernel.events.EventListener;
 import java.util.*;
 import java.util.function.Predicate;
-
 import lombok.AllArgsConstructor;
 import lombok.val;
 
@@ -120,7 +119,7 @@ public class AsynchronousModuleThreadTracker implements ModuleTracker, EventList
       stop();
       eventSets.clear();
     }
-//    kernel.removeEventListener(this);
+    //    kernel.removeEventListener(this);
   }
 
   @Override

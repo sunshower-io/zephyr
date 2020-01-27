@@ -1,6 +1,3 @@
 package io.zephyr.api;
 
-public interface ServiceTracker extends Tracker<ServiceReference<?>> {
-
-
-}
+public interface ServiceTracker extends Tracker<ServiceReference<?>> {}

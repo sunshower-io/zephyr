@@ -5,7 +5,6 @@ import io.zephyr.api.ServiceTracker;
 import io.zephyr.kernel.events.Event;
 import io.zephyr.kernel.events.EventListener;
 import io.zephyr.kernel.events.EventType;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Predicate;
@@ -15,9 +14,7 @@ public class AsynchronousServiceTracker implements ServiceTracker {
   public void close() {}
 
   @Override
-  public void stop() {
-
-  }
+  public void stop() {}
 
   @Override
   public List<ServiceReference<?>> getTracked() {
@@ -55,7 +52,5 @@ public class AsynchronousServiceTracker implements ServiceTracker {
   public <T> void dispatchEvent(EventType type, Event<T> event) {}
 
   @Override
-  public void start() {
-
-  }
+  public void start() {}
 }

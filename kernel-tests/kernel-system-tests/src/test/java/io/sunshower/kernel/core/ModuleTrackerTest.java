@@ -14,13 +14,11 @@ import io.zephyr.api.ModuleEvents;
 import io.zephyr.api.Queries;
 import io.zephyr.cli.Zephyr;
 import io.zephyr.kernel.Module;
-import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.events.Event;
 import io.zephyr.kernel.events.EventListener;
 import javax.inject.Inject;
 import lombok.SneakyThrows;
 import lombok.val;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
@@ -29,7 +27,6 @@ import org.mockito.Mock;
 @Clean(value = Clean.Mode.After, context = Clean.Context.Method)
 public class ModuleTrackerTest {
 
-  @Inject private Kernel kernel;
   @Inject private Zephyr zephyr;
   @Inject private ModuleContext moduleContext;
 
