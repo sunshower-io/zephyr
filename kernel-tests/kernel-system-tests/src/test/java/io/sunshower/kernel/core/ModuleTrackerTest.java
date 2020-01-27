@@ -132,6 +132,7 @@ public class ModuleTrackerTest {
       tracker.addEventListener(moduleListener, ModuleEvents.INSTALLED);
       assertEquals(0, tracker.getTrackedCount(), "must have no tracked modules");
       zephyr.install(ProjectPlugins.TEST_PLUGIN_1.getUrl());
+      tracker.waitUntil(t -> !t.isEmpty());
       assertEquals(1, tracker.getTrackedCount(), "must have one tracked modules");
     }
   }
