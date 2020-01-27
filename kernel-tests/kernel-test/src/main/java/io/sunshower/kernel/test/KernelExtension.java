@@ -236,6 +236,10 @@ public class KernelExtension
             .stream()
             .map(Coordinate::toCanonicalForm)
             .collect(Collectors.toSet());
+
+    zephyr.stop(coords);
+
+
     zephyr.remove(coords);
     kernel.persistState().toCompletableFuture().get();
 

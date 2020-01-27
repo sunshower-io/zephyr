@@ -187,6 +187,11 @@ public class SunshowerKernel implements Kernel, EventSource {
   }
 
   @Override
+  public int getListenerCount() {
+    return eventDispatcher.getListenerCount();
+  }
+
+  @Override
   public boolean listensFor(EventType... types) {
     return eventDispatcher.listensFor(types);
   }

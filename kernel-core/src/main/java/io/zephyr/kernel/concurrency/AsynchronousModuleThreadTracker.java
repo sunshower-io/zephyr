@@ -9,6 +9,8 @@ import io.zephyr.kernel.events.*;
 import io.zephyr.kernel.events.EventListener;
 import java.util.*;
 import java.util.function.Predicate;
+
+import lombok.AllArgsConstructor;
 import lombok.val;
 
 @SuppressWarnings({
@@ -30,6 +32,7 @@ public class AsynchronousModuleThreadTracker implements ModuleTracker, EventList
   final EventSource delegatedEventSource;
 
   final Runnable existingModuleDispatchTask;
+  private final List<EventSetTracker> eventSets;
   private final List<ModuleEventDispatchState> tracked;
 
   public AsynchronousModuleThreadTracker(
@@ -40,7 +43,8 @@ public class AsynchronousModuleThreadTracker implements ModuleTracker, EventList
     this.taskQueue = taskQueue;
     this.delegatedEventSource = new ModuleThreadEventSource();
     this.tracked = new ArrayList<>(0);
-    existingModuleDispatchTask = new ExistingModuleDispatchTask();
+    this.eventSets = new ArrayList<>(0);
+    this.existingModuleDispatchTask = new ExistingModuleDispatchTask();
   }
 
   @Override
@@ -49,21 +53,43 @@ public class AsynchronousModuleThreadTracker implements ModuleTracker, EventList
   }
 
   @Override
+  public int getListenerCount() {
+    return delegatedEventSource.getListenerCount();
+  }
+
+  @Override
   public boolean listensFor(EventType... types) {
     return delegatedEventSource.listensFor(types);
   }
 
+  @AllArgsConstructor
+  final class EventSetTracker {
+    final int options;
+    final EventType[] types;
+    final EventListener<?> listener;
+
+    void start() {
+      delegatedEventSource.addEventListener(listener, options, types);
+      kernel.addEventListener(AsynchronousModuleThreadTracker.this, types);
+    }
+
+    void stop() {
+      delegatedEventSource.removeEventListener(listener);
+      removeEventListener(listener);
+      kernel.removeEventListener(AsynchronousModuleThreadTracker.this);
+    }
+  }
+
   @Override
   public <T> void addEventListener(EventListener<T> listener, EventType... types) {
-    delegatedEventSource.addEventListener(listener, types);
-    kernel.addEventListener(this, types);
-    fireExistingModuleEvents();
+    addEventListener(listener, Options.NONE, types);
   }
 
   @Override
   public <T> void addEventListener(EventListener<T> listener, int options, EventType... types) {
-    delegatedEventSource.addEventListener(listener, options, types);
-    kernel.addEventListener(this, options, types);
+    val tracker = new EventSetTracker(options, types, listener);
+    eventSets.add(tracker);
+    tracker.start();
     fireExistingModuleEvents();
   }
 
@@ -73,7 +99,13 @@ public class AsynchronousModuleThreadTracker implements ModuleTracker, EventList
 
   @Override
   public <T> void removeEventListener(EventListener<T> listener) {
-    delegatedEventSource.removeEventListener(listener);
+    val iter = eventSets.iterator();
+    while (iter.hasNext()) {
+      val next = iter.next();
+      if (next.listener == listener) {
+        iter.remove();
+      }
+    }
   }
 
   @Override
@@ -83,7 +115,32 @@ public class AsynchronousModuleThreadTracker implements ModuleTracker, EventList
 
   @Override
   public void close() {
-    kernel.removeEventListener(this);
+
+    synchronized (eventSets) {
+      stop();
+      eventSets.clear();
+    }
+//    kernel.removeEventListener(this);
+  }
+
+  @Override
+  public void stop() {
+    synchronized (eventSets) {
+      val iter = eventSets.stream().iterator();
+      while (iter.hasNext()) {
+        iter.next().stop();
+      }
+    }
+  }
+
+  @Override
+  public void start() {
+    synchronized (eventSets) {
+      val iter = eventSets.stream().iterator();
+      while (iter.hasNext()) {
+        iter.next().start();
+      }
+    }
   }
 
   @Override

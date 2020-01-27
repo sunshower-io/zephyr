@@ -11,10 +11,7 @@ import io.zephyr.kernel.concurrency.TaskBuilder;
 import io.zephyr.kernel.concurrency.Tasks;
 import io.zephyr.kernel.core.actions.*;
 import io.zephyr.kernel.core.lifecycle.KernelModuleListReadPhase;
-import io.zephyr.kernel.events.Event;
-import io.zephyr.kernel.events.EventListener;
-import io.zephyr.kernel.events.EventType;
-import io.zephyr.kernel.events.Events;
+import io.zephyr.kernel.events.*;
 import io.zephyr.kernel.log.Logging;
 import io.zephyr.kernel.module.ModuleInstallationGroup;
 import io.zephyr.kernel.module.ModuleInstallationRequest;
@@ -26,6 +23,7 @@ import java.util.Set;
 import java.util.concurrent.CompletionStage;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import lombok.val;
 
 @SuppressWarnings({"PMD.UnusedPrivateMethod", "PMD.AvoidInstantiatingObjectsInLoops"})
@@ -35,13 +33,14 @@ final class DefaultModuleInstallationStatusGroup implements ModuleInstallationSt
 
   final Kernel kernel;
   private final Process<String> process;
+  private final EventListener<Object> listener;
   private final ModuleInstallationGroup installationGroup;
 
   public DefaultModuleInstallationStatusGroup(ModuleInstallationGroup toInstall, Kernel kernel) {
     this.kernel = kernel;
     this.installationGroup = toInstall;
 
-    addModuleLifecycleDelegateListeners(kernel);
+    this.listener = addModuleLifecycleDelegateListeners(kernel);
 
     val context = Scope.root();
     context.set("SunshowerKernel", kernel);
@@ -60,7 +59,7 @@ final class DefaultModuleInstallationStatusGroup implements ModuleInstallationSt
     this.process = taskBuilder.create();
   }
 
-  private void addModuleLifecycleDelegateListeners(Kernel kernel) {
+  private EventListener<Object> addModuleLifecycleDelegateListeners(Kernel kernel) {
     val listener =
         new EventListener<Object>() {
           @Override
@@ -77,13 +76,21 @@ final class DefaultModuleInstallationStatusGroup implements ModuleInstallationSt
         MODULE_TRANSFER_FAILED,
         MODULE_ASSEMBLY_EXTRACTION_FAILED,
         MODULE_FILESYSTEM_CREATION_FAILED);
+    return listener;
   }
 
   @Override
   public CompletionStage<Process<String>> commit() {
     logProcess(process);
     kernel.dispatchEvent(ModulePhaseEvents.MODULE_SET_INSTALLATION_INITIATED, Events.create(this));
-    return kernel.getScheduler().submit(process);
+    return kernel
+        .getScheduler()
+        .submit(process)
+        .thenApply(
+            t -> {
+              kernel.removeEventListener(this.listener);
+              return t;
+            });
   }
 
   @Override

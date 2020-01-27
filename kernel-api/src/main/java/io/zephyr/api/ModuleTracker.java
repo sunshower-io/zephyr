@@ -6,13 +6,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Predicate;
 
-public interface ModuleTracker extends EventSource, AutoCloseable {
+public interface ModuleTracker extends Tracker<Module>, EventSource, AutoCloseable {
 
-  void close();
-
-  List<Module> getTracked();
-
-  int getTrackedCount();
-
-  void waitUntil(Predicate<? super Collection<Module>> condition);
 }
