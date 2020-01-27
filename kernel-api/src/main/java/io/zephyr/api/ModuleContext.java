@@ -25,4 +25,6 @@ public interface ModuleContext {
 
   /** */
   ModuleTracker createModuleTracker(Predicate<Module> filter);
+
+  ModuleTracker createModuleTracker(Query<Module> filter );
 }

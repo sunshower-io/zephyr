@@ -11,4 +11,11 @@ public class Context<S> {
 
   private final Module module;
   private final ServiceReference<S> service;
+
+  @SuppressWarnings("unchecked")
+  public static final <S> Context<S> empty() {
+    return (Context<S>) EMPTY;
+  }
+
+  static final Context<?> EMPTY = new Context<>(null, null);
 }

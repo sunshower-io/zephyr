@@ -76,6 +76,11 @@ public class DefaultPluginContext implements ModuleContext {
         kernel, module, (ModuleThread) module.getTaskQueue(), filter);
   }
 
+  @Override
+  public ModuleTracker createModuleTracker(Query<Module> filter) {
+    return createModuleTracker(createFilter(filter));
+  }
+
   private <T> ExpressionLanguageExtension resolveModuleExpressionLanguageExtension(Query<T> query) {
     if (log.isLoggable(Level.FINE)) {
       log.log(Level.FINE, "el.locating.evaluator.modules");
