@@ -10,11 +10,20 @@ import io.zephyr.kernel.dependencies.DependencyGraph;
 import io.zephyr.kernel.launch.KernelOptions;
 import java.util.ServiceLoader;
 import javax.inject.Singleton;
+
+import io.zephyr.kernel.service.DefaultServiceRegistry;
+import io.zephyr.api.ServiceRegistry;
 import lombok.val;
 
 @Module
 @SuppressWarnings("PMD.UnusedPrivateMethod")
 public class SunshowerKernelInjectionModule {
+
+  @Provides
+  @Singleton
+  public ServiceRegistry serviceRegistry() {
+    return new DefaultServiceRegistry();
+  }
 
   @Provides
   @Singleton
@@ -34,10 +43,11 @@ public class SunshowerKernelInjectionModule {
       ModuleManager moduleManager,
       DependencyGraph graph,
       KernelOptions options,
+      ServiceRegistry registry,
       ClassLoader classLoader,
       Scheduler<String> scheduler) {
     SunshowerKernel.setKernelOptions(options);
-    val kernel = new SunshowerKernel(moduleManager, scheduler);
+    val kernel = new SunshowerKernel(moduleManager, registry, scheduler);
     val classpathManager = moduleClasspathManager(graph, classLoader, kernel);
     kernel.setModuleClasspathManager(classpathManager);
     moduleManager.initialize(kernel);

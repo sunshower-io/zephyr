@@ -30,6 +30,8 @@ import java.util.concurrent.CompletionStage;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.inject.Inject;
+
+import io.zephyr.api.ServiceRegistry;
 import lombok.*;
 
 @SuppressWarnings({
@@ -59,6 +61,7 @@ public class SunshowerKernel implements Kernel, EventSource {
 
   private final KernelLifecycle lifecycle;
   private final Scheduler<String> scheduler;
+  private final ServiceRegistry serviceRegistry;
   private final AsynchronousEventSource eventDispatcher;
 
   /** accessable fields */
@@ -70,8 +73,10 @@ public class SunshowerKernel implements Kernel, EventSource {
   @Getter @Setter private volatile FileSystem fileSystem;
 
   @Inject
-  public SunshowerKernel(ModuleManager moduleManager, Scheduler<String> scheduler) {
+  public SunshowerKernel(
+      ModuleManager moduleManager, ServiceRegistry registry, Scheduler<String> scheduler) {
     this.scheduler = scheduler;
+    this.serviceRegistry = registry;
     this.moduleManager = moduleManager;
     this.lifecycle = new DefaultKernelLifecycle(this, scheduler);
     this.eventDispatcher = new AsynchronousEventSource(scheduler.getKernelExecutor());
@@ -79,6 +84,11 @@ public class SunshowerKernel implements Kernel, EventSource {
 
   public static void setKernelOptions(KernelOptions options) {
     kernelOptions = options;
+  }
+
+  @Override
+  public ServiceRegistry getServiceRegistry() {
+    return serviceRegistry;
   }
 
   @Override
@@ -121,6 +131,7 @@ public class SunshowerKernel implements Kernel, EventSource {
   @Override
   @SneakyThrows
   public void start() {
+    serviceRegistry.initialize(this);
     eventDispatcher.start();
     lifecycle.start().toCompletableFuture().get();
   }
@@ -136,6 +147,7 @@ public class SunshowerKernel implements Kernel, EventSource {
   public void stop() {
     eventDispatcher.stop();
     lifecycle.stop().toCompletableFuture().get();
+    serviceRegistry.close();
   }
 
   @Override

@@ -21,6 +21,8 @@ import java.net.URI;
 import java.nio.file.FileSystems;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
+
+import io.zephyr.api.ServiceRegistry;
 import lombok.val;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -53,7 +55,8 @@ class KernelStartProcessTest {
         new KernelScheduler<>(
             new ExecutorWorkerPool(
                 Executors.newFixedThreadPool(2), Executors.newFixedThreadPool(2)));
-    kernel = spy(new SunshowerKernel(mock(ModuleManager.class), scheduler));
+    kernel =
+        spy(new SunshowerKernel(mock(ModuleManager.class), mock(ServiceRegistry.class), scheduler));
     kernel.setModuleClasspathManager(mock(ModuleClasspathManager.class));
     context.set("SunshowerKernel", kernel);
   }

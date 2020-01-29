@@ -7,10 +7,13 @@ import io.zephyr.kernel.concurrency.Scheduler;
 import io.zephyr.kernel.events.EventSource;
 import io.zephyr.kernel.memento.Caretaker;
 import io.zephyr.kernel.memento.Originator;
+import io.zephyr.api.ServiceRegistry;
 import java.nio.file.FileSystem;
 import java.util.List;
 
 public interface Kernel extends EventSource, Originator, Caretaker {
+
+  ServiceRegistry getServiceRegistry();
 
   List<KernelModuleEntry> getKernelModules();
 

@@ -4,6 +4,7 @@ import static io.sunshower.test.common.Tests.relativeToProjectBuild;
 import static org.junit.jupiter.api.Assertions.*;
 
 import io.sunshower.test.common.Tests;
+import io.zephyr.kernel.KernelTestCase;
 import io.zephyr.kernel.Lifecycle;
 import io.zephyr.kernel.launch.KernelOptions;
 import io.zephyr.kernel.misc.SuppressFBWarnings;
@@ -30,33 +31,7 @@ import org.junit.jupiter.api.Test;
   "PMD.JUnitAssertionsShouldIncludeMessage",
   "PMD.JUnitTestContainsTooManyAsserts"
 })
-public class SunshowerKernelTest {
-
-  private Kernel kernel;
-  private File yamlModule;
-  private File springPlugin;
-  private SunshowerKernelConfiguration cfg;
-
-  @BeforeEach
-  void setUp() {
-    val options = new KernelOptions();
-    options.setHomeDirectory(Tests.createTemp());
-    SunshowerKernel.setKernelOptions(options);
-
-    cfg =
-        DaggerSunshowerKernelConfiguration.factory()
-            .create(options, ClassLoader.getSystemClassLoader());
-    kernel = cfg.kernel();
-  }
-
-  @AfterEach
-  void tearDown() throws IOException {
-    try {
-      FileSystems.getFileSystem(URI.create("droplet://kernel")).close();
-    } catch (Exception ex) {
-      log.info(ex.getMessage());
-    }
-  }
+public class SunshowerKernelTest extends KernelTestCase {
 
   @Test
   void ensureKernelIsCreated() {
@@ -225,10 +200,7 @@ public class SunshowerKernelTest {
   private void request(String pluginName, ModuleLifecycle.Actions action) {
 
     val plugin =
-        kernel
-            .getModuleManager()
-            .getModules()
-            .stream()
+        kernel.getModuleManager().getModules().stream()
             .filter(t -> t.getCoordinate().getName().equals(pluginName))
             .findFirst()
             .get();

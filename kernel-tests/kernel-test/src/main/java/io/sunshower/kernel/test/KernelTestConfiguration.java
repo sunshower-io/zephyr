@@ -17,6 +17,9 @@ import io.zephyr.kernel.launch.KernelOptions;
 import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import io.zephyr.kernel.service.DefaultServiceRegistry;
+import io.zephyr.api.ServiceRegistry;
 import lombok.val;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -113,10 +116,15 @@ public class KernelTestConfiguration {
   }
 
   @Bean
-  public Kernel kernel(ModuleManager moduleManager, Scheduler<String> scheduler) {
-
-    val result = new SunshowerKernel(moduleManager, scheduler);
+  public Kernel kernel(
+      ModuleManager moduleManager, ServiceRegistry registry, Scheduler<String> scheduler) {
+    val result = new SunshowerKernel(moduleManager, registry, scheduler);
     moduleManager.initialize(result);
     return result;
+  }
+
+  @Bean
+  public ServiceRegistry serviceRegistry() {
+    return new DefaultServiceRegistry();
   }
 }

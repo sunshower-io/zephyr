@@ -24,7 +24,17 @@ public interface ModuleContext {
   List<Module> getModules(Predicate<Module> filter);
 
   /** */
-  ModuleTracker createModuleTracker(Predicate<Module> filter);
+  ModuleTracker trackModules(Predicate<Module> filter);
 
-  ModuleTracker createModuleTracker(Query<Module> filter);
+  ModuleTracker trackModules(Query<Module> filter);
+
+  ServiceTracker trackServices(Query<ServiceReference<?>> filter);
+
+  ServiceTracker trackServices(Predicate<ServiceReference<?>> filter);
+
+  <T> ServiceRegistration<T> register(ServiceDefinition<T> definition);
+
+  <T> List<ServiceReference<T>> getReferences(Class<T> type);
+
+  <T> List<ServiceReference<T>> getReferences(Query<ServiceDefinition<T>> query);
 }

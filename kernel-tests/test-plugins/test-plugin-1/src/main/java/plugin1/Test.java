@@ -14,7 +14,7 @@ public class Test implements PluginActivator {
   @Override
   public void start(ModuleContext context) {
     System.out.println("Plugin1 starting...");
-    moduleTracker = context.createModuleTracker(t -> true);
+    moduleTracker = context.trackModules(t -> true);
     moduleTracker.addEventListener(
         new EventListener<Object>() {
           @Override

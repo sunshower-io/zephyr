@@ -71,14 +71,39 @@ public class DefaultPluginContext implements ModuleContext {
   }
 
   @Override
-  public ModuleTracker createModuleTracker(Predicate<Module> filter) {
+  public ModuleTracker trackModules(Predicate<Module> filter) {
     return new AsynchronousModuleThreadTracker(
         kernel, module, (ModuleThread) module.getTaskQueue(), filter);
   }
 
   @Override
-  public ModuleTracker createModuleTracker(Query<Module> filter) {
-    return createModuleTracker(createFilter(filter));
+  public ModuleTracker trackModules(Query<Module> filter) {
+    return trackModules(createFilter(filter));
+  }
+
+  @Override
+  public ServiceTracker trackServices(Query<ServiceReference<?>> filter) {
+    return null;
+  }
+
+  @Override
+  public ServiceTracker trackServices(Predicate<ServiceReference<?>> filter) {
+    return null;
+  }
+
+  @Override
+  public <T> ServiceRegistration<T> register(ServiceDefinition<T> definition) {
+    return null;
+  }
+
+  @Override
+  public <T> List<ServiceReference<T>> getReferences(Class<T> type) {
+    return null;
+  }
+
+  @Override
+  public <T> List<ServiceReference<T>> getReferences(Query<ServiceDefinition<T>> query) {
+    return null;
   }
 
   private <T> ExpressionLanguageExtension resolveModuleExpressionLanguageExtension(Query<T> query) {
