@@ -1,15 +1,28 @@
 package io.zephyr.kernel.concurrency;
 
+import io.zephyr.api.ServiceEvents;
 import io.zephyr.api.ServiceReference;
 import io.zephyr.api.ServiceTracker;
+import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.events.Event;
 import io.zephyr.kernel.events.EventListener;
 import io.zephyr.kernel.events.EventType;
+import lombok.AllArgsConstructor;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Predicate;
 
-public class AsynchronousServiceTracker implements ServiceTracker {
+public class AsynchronousServiceTracker implements ServiceTracker, EventListener<ServiceReference<?>> {
+  final Kernel kernel;
+  final Predicate<ServiceReference<?>> predicate;
+
+  public AsynchronousServiceTracker(Kernel kernel, Predicate<ServiceReference<?>> filter) {
+    this.kernel = kernel;
+    this.predicate = filter;
+
+  }
+
   @Override
   public void close() {}
 
@@ -52,5 +65,27 @@ public class AsynchronousServiceTracker implements ServiceTracker {
   public <T> void dispatchEvent(EventType type, Event<T> event) {}
 
   @Override
-  public void start() {}
+  public void start() {
+    kernel.addEventListener(this, ServiceEvents.REGISTERED, ServiceEvents.UNREGISTERED);
+
+  }
+
+  @Override
+  public void onEvent(EventType type, Event<ServiceReference<?>> event) {
+
+  }
+
+  @AllArgsConstructor
+  final class ServiceEventListenerDispatchTask implements Runnable {
+    final EventType type;
+    final ServiceReference<?> reference;
+
+    @Override
+    public void run() {
+      if(predicate.test(reference)) {
+
+      }
+
+    }
+  }
 }

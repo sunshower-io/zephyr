@@ -45,6 +45,7 @@ class KernelServiceRegistryTest extends KernelTestCase {
     super.setUp();
     kernel.start();
     registry = kernel.getServiceRegistry();
+    given(module.getTaskQueue()).willReturn(taskQueue);
   }
 
   @Override
@@ -60,7 +61,6 @@ class KernelServiceRegistryTest extends KernelTestCase {
 
   @Test
   void ensureRegistryDispatchesCorrectEventForServiceRegistration() {
-    given(module.getTaskQueue()).willReturn(taskQueue);
     registerListener(listener, ServiceEvents.REGISTERED);
     registry.register(
         module, new DefaultServiceDefinition<>(String.class, "hello-service", "whatever"));
@@ -69,7 +69,6 @@ class KernelServiceRegistryTest extends KernelTestCase {
 
   @Test
   void ensureRegistryDispatchesCorrectEventForServiceRegistrationAndUnregistration() {
-    given(module.getTaskQueue()).willReturn(taskQueue);
     registerListener(listener, ServiceEvents.REGISTERED, ServiceEvents.UNREGISTERED);
 
     val registration =
@@ -81,7 +80,6 @@ class KernelServiceRegistryTest extends KernelTestCase {
 
   @Test
   void ensureRegistryIsEmptyAfterFinalServiceUnregistration() {
-    given(module.getTaskQueue()).willReturn(taskQueue);
     registerListener(listener, ServiceEvents.REGISTERED, ServiceEvents.UNREGISTERED);
 
     val registration =
@@ -93,6 +91,46 @@ class KernelServiceRegistryTest extends KernelTestCase {
     registration.dispose();
 
     assertTrue(kserviceReg.registries.isEmpty(), "must have no registered services");
+  }
+
+  @Test
+  void ensureModuleServiceRegistryRemovesServiceUponDisposal() {
+
+    registerListener(listener, ServiceEvents.REGISTERED, ServiceEvents.UNREGISTERED);
+
+    val registration =
+        registry.register(
+            module, new DefaultServiceDefinition<>(String.class, "hello-service", "whatever"));
+
+    registry.register(
+        module, new DefaultServiceDefinition<>(String.class, "world-service", "whatever2"));
+    val kserviceReg = (KernelServiceRegistry) registry;
+    val moduleRegistry = kserviceReg.registries.values().iterator().next();
+    assertEquals(2, moduleRegistry.registrations.size(), "must have 2 registrations");
+
+    registration.dispose();
+
+    assertEquals(1, moduleRegistry.registrations.size(), "must have 1 registration");
+  }
+
+  @Test
+  void ensureModuleDisposalRemovesCorrectService() {
+
+    registerListener(listener, ServiceEvents.REGISTERED, ServiceEvents.UNREGISTERED);
+
+    val registration =
+            registry.register(
+                    module, new DefaultServiceDefinition<>(String.class, "hello-service", "whatever"));
+
+    val reg2 = registry.register(
+            module, new DefaultServiceDefinition<>(String.class, "world-service", "whatever2"));
+    val kserviceReg = (KernelServiceRegistry) registry;
+    val moduleRegistry = kserviceReg.registries.values().iterator().next();
+    assertEquals(2, moduleRegistry.registrations.size(), "must have 2 registrations");
+
+    registration.dispose();
+    assertTrue(moduleRegistry.registrations.contains(reg2), "must remove correct registration");
+
   }
 
   private void registerListener(EventListener<?> listener, EventType... types) {

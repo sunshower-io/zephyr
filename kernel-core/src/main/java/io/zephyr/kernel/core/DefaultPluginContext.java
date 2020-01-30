@@ -5,6 +5,7 @@ import io.zephyr.kernel.Lifecycle;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.ModuleException;
 import io.zephyr.kernel.concurrency.AsynchronousModuleThreadTracker;
+import io.zephyr.kernel.concurrency.AsynchronousServiceTracker;
 import io.zephyr.kernel.concurrency.ModuleThread;
 import io.zephyr.kernel.extensions.ExpressionLanguageExtension;
 import io.zephyr.kernel.log.Logging;
@@ -83,12 +84,13 @@ public class DefaultPluginContext implements ModuleContext {
 
   @Override
   public ServiceTracker trackServices(Query<ServiceReference<?>> filter) {
-    return null;
+    val predicate = createFilter(filter);
+    return trackServices(predicate);
   }
 
   @Override
   public ServiceTracker trackServices(Predicate<ServiceReference<?>> filter) {
-    return null;
+    return new AsynchronousServiceTracker(kernel, filter);
   }
 
   @Override
