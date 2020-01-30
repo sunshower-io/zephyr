@@ -1,9 +1,6 @@
 package plugin1;
 
-import io.zephyr.api.ModuleContext;
-import io.zephyr.api.ModuleEvents;
-import io.zephyr.api.ModuleTracker;
-import io.zephyr.api.PluginActivator;
+import io.zephyr.api.*;
 import io.zephyr.kernel.events.Event;
 import io.zephyr.kernel.events.EventListener;
 import io.zephyr.kernel.events.EventType;

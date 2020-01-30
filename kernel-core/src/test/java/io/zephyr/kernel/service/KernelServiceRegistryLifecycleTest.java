@@ -1,13 +1,14 @@
 package io.zephyr.kernel.service;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import io.zephyr.kernel.KernelTestCase;
 import lombok.val;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-
-public class DefaultServiceRegistryLifecycleTest extends KernelTestCase {
+@SuppressWarnings("PMD.JUnitTestContainsTooManyAsserts")
+public class KernelServiceRegistryLifecycleTest extends KernelTestCase {
 
   @Test
   void ensureRegistryIsSetOnKernel() {

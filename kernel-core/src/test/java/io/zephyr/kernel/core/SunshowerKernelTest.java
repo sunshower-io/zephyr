@@ -3,21 +3,15 @@ package io.zephyr.kernel.core;
 import static io.sunshower.test.common.Tests.relativeToProjectBuild;
 import static org.junit.jupiter.api.Assertions.*;
 
-import io.sunshower.test.common.Tests;
 import io.zephyr.kernel.KernelTestCase;
 import io.zephyr.kernel.Lifecycle;
-import io.zephyr.kernel.launch.KernelOptions;
 import io.zephyr.kernel.misc.SuppressFBWarnings;
 import io.zephyr.kernel.module.*;
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.nio.file.FileSystems;
 import lombok.SneakyThrows;
 import lombok.extern.java.Log;
 import lombok.val;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
@@ -200,7 +194,10 @@ public class SunshowerKernelTest extends KernelTestCase {
   private void request(String pluginName, ModuleLifecycle.Actions action) {
 
     val plugin =
-        kernel.getModuleManager().getModules().stream()
+        kernel
+            .getModuleManager()
+            .getModules()
+            .stream()
             .filter(t -> t.getCoordinate().getName().equals(pluginName))
             .findFirst()
             .get();

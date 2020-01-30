@@ -7,7 +7,6 @@ public enum ServiceEvents implements EventType {
   REGISTERED,
   UNREGISTERED;
 
-
   @Getter private final int id;
 
   ServiceEvents() {

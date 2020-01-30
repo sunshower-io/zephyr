@@ -5,6 +5,7 @@ import static org.mockito.Mockito.mock;
 import io.sunshower.test.common.Tests;
 import io.zephyr.api.ModuleContext;
 import io.zephyr.api.PluginActivator;
+import io.zephyr.api.ServiceRegistry;
 import io.zephyr.cli.DefaultZephyr;
 import io.zephyr.cli.Zephyr;
 import io.zephyr.kernel.Module;
@@ -14,12 +15,10 @@ import io.zephyr.kernel.core.*;
 import io.zephyr.kernel.dependencies.DefaultDependencyGraph;
 import io.zephyr.kernel.dependencies.DependencyGraph;
 import io.zephyr.kernel.launch.KernelOptions;
+import io.zephyr.kernel.service.KernelServiceRegistry;
 import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import io.zephyr.kernel.service.DefaultServiceRegistry;
-import io.zephyr.api.ServiceRegistry;
 import lombok.val;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -125,6 +124,6 @@ public class KernelTestConfiguration {
 
   @Bean
   public ServiceRegistry serviceRegistry() {
-    return new DefaultServiceRegistry();
+    return new KernelServiceRegistry();
   }
 }

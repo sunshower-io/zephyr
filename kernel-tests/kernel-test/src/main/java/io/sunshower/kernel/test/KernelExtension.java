@@ -33,7 +33,6 @@ public class KernelExtension
         AfterTestExecutionCallback,
         ParameterResolver {
 
-
   @Override
   public void beforeAll(ExtensionContext context) throws Exception {
 

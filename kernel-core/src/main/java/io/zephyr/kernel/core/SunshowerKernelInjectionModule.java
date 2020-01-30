@@ -2,17 +2,16 @@ package io.zephyr.kernel.core;
 
 import dagger.Module;
 import dagger.Provides;
+import io.zephyr.api.ServiceRegistry;
 import io.zephyr.kernel.concurrency.KernelScheduler;
 import io.zephyr.kernel.concurrency.Scheduler;
 import io.zephyr.kernel.concurrency.WorkerPool;
 import io.zephyr.kernel.dependencies.DefaultDependencyGraph;
 import io.zephyr.kernel.dependencies.DependencyGraph;
 import io.zephyr.kernel.launch.KernelOptions;
+import io.zephyr.kernel.service.KernelServiceRegistry;
 import java.util.ServiceLoader;
 import javax.inject.Singleton;
-
-import io.zephyr.kernel.service.DefaultServiceRegistry;
-import io.zephyr.api.ServiceRegistry;
 import lombok.val;
 
 @Module
@@ -22,7 +21,7 @@ public class SunshowerKernelInjectionModule {
   @Provides
   @Singleton
   public ServiceRegistry serviceRegistry() {
-    return new DefaultServiceRegistry();
+    return new KernelServiceRegistry();
   }
 
   @Provides

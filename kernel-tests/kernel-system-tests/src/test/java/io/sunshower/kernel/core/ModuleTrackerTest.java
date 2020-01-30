@@ -126,8 +126,7 @@ public class ModuleTrackerTest {
     installExpressionLanguage();
 
     try (val tracker =
-        moduleContext.trackModules(
-            m -> m.getCoordinate().getName().equals("test-plugin-1"))) {
+        moduleContext.trackModules(m -> m.getCoordinate().getName().equals("test-plugin-1"))) {
 
       tracker.addEventListener(moduleListener, ModuleEvents.INSTALLED);
       assertEquals(0, tracker.getTrackedCount(), "must have no tracked modules");

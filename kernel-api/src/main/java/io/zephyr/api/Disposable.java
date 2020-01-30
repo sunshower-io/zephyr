@@ -6,5 +6,6 @@ public interface Disposable extends AutoCloseable {
     dispose();
   }
 
+  /** close this and release any resources associated with it */
   void dispose();
 }

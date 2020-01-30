@@ -1,6 +1,7 @@
 package io.zephyr.kernel.core;
 
 import io.zephyr.api.ModuleContext;
+import io.zephyr.api.ServiceRegistry;
 import io.zephyr.common.io.Files;
 import io.zephyr.kernel.Coordinate;
 import io.zephyr.kernel.KernelModuleEntry;
@@ -30,8 +31,6 @@ import java.util.concurrent.CompletionStage;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.inject.Inject;
-
-import io.zephyr.api.ServiceRegistry;
 import lombok.*;
 
 @SuppressWarnings({

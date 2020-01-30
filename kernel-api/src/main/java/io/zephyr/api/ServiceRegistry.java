@@ -1,5 +1,6 @@
 package io.zephyr.api;
 
+import io.zephyr.kernel.Module;
 import io.zephyr.kernel.core.Kernel;
 
 public interface ServiceRegistry extends AutoCloseable {
@@ -10,7 +11,7 @@ public interface ServiceRegistry extends AutoCloseable {
 
   Kernel getKernel();
 
-  <T> ServiceRegistration<T> register(ServiceDefinition<T> definition);
+  <T> ServiceRegistration<T> register(Module module, ServiceDefinition<T> definition);
 
   <T> void unregister(ServiceRegistration<T> definition);
 }

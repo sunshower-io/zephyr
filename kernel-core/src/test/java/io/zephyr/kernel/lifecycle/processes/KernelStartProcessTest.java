@@ -4,6 +4,7 @@ import static org.mockito.Mockito.*;
 
 import io.sunshower.gyre.Scope;
 import io.sunshower.test.common.Tests;
+import io.zephyr.api.ServiceRegistry;
 import io.zephyr.kernel.concurrency.ExecutorWorkerPool;
 import io.zephyr.kernel.concurrency.KernelScheduler;
 import io.zephyr.kernel.concurrency.Scheduler;
@@ -21,8 +22,6 @@ import java.net.URI;
 import java.nio.file.FileSystems;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
-
-import io.zephyr.api.ServiceRegistry;
 import lombok.val;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
