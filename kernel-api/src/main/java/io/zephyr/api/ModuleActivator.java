@@ -4,7 +4,7 @@ package io.zephyr.api;
  * All exceptions must be handled by the kernel, which is why we do not restrict the exception type
  * to KernelException.
  */
-public interface PluginActivator {
+public interface ModuleActivator {
 
   default void initialize(ModuleContext ctx) throws Exception {}
 

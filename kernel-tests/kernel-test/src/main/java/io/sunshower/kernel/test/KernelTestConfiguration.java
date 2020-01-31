@@ -3,8 +3,9 @@ package io.sunshower.kernel.test;
 import static org.mockito.Mockito.mock;
 
 import io.sunshower.test.common.Tests;
+import io.zephyr.api.ModuleActivator;
 import io.zephyr.api.ModuleContext;
-import io.zephyr.api.PluginActivator;
+import io.zephyr.api.ServiceRegistry;
 import io.zephyr.cli.DefaultZephyr;
 import io.zephyr.cli.Zephyr;
 import io.zephyr.kernel.Module;
@@ -14,6 +15,7 @@ import io.zephyr.kernel.core.*;
 import io.zephyr.kernel.dependencies.DefaultDependencyGraph;
 import io.zephyr.kernel.dependencies.DependencyGraph;
 import io.zephyr.kernel.launch.KernelOptions;
+import io.zephyr.kernel.service.KernelServiceRegistry;
 import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -33,8 +35,8 @@ public class KernelTestConfiguration {
   }
 
   @Bean
-  public PluginActivator testPluginActivator() {
-    return mock(PluginActivator.class);
+  public ModuleActivator testPluginActivator() {
+    return mock(ModuleActivator.class);
   }
 
   @Bean
@@ -113,10 +115,15 @@ public class KernelTestConfiguration {
   }
 
   @Bean
-  public Kernel kernel(ModuleManager moduleManager, Scheduler<String> scheduler) {
-
-    val result = new SunshowerKernel(moduleManager, scheduler);
+  public Kernel kernel(
+      ModuleManager moduleManager, ServiceRegistry registry, Scheduler<String> scheduler) {
+    val result = new SunshowerKernel(moduleManager, registry, scheduler);
     moduleManager.initialize(result);
     return result;
+  }
+
+  @Bean
+  public ServiceRegistry serviceRegistry() {
+    return new KernelServiceRegistry();
   }
 }

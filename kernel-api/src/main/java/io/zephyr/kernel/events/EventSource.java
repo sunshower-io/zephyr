@@ -2,6 +2,8 @@ package io.zephyr.kernel.events;
 
 public interface EventSource {
 
+  int getListenerCount();
+
   boolean listensFor(EventType... types);
 
   <T> void addEventListener(EventListener<T> listener, EventType... types);

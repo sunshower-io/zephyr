@@ -33,9 +33,6 @@ public class KernelExtension
         AfterTestExecutionCallback,
         ParameterResolver {
 
-  private static final ExtensionContext.Namespace NAMESPACE =
-      ExtensionContext.Namespace.create(KernelExtension.class);
-
   @Override
   public void beforeAll(ExtensionContext context) throws Exception {
 
@@ -236,6 +233,9 @@ public class KernelExtension
             .stream()
             .map(Coordinate::toCanonicalForm)
             .collect(Collectors.toSet());
+
+    zephyr.stop(coords);
+
     zephyr.remove(coords);
     kernel.persistState().toCompletableFuture().get();
 

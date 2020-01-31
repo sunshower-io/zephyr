@@ -12,6 +12,17 @@ public class AbstractEventSource implements EventSource {
   }
 
   @Override
+  public int getListenerCount() {
+    synchronized (listeners) {
+      int count = 0;
+      for (val entry : listeners.values()) {
+        count += entry.size();
+      }
+      return count;
+    }
+  }
+
+  @Override
   public boolean listensFor(EventType... types) {
     synchronized (listeners) {
       return listeners.containsKey(createKey(types));

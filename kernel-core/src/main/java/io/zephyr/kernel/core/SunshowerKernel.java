@@ -1,6 +1,7 @@
 package io.zephyr.kernel.core;
 
 import io.zephyr.api.ModuleContext;
+import io.zephyr.api.ServiceRegistry;
 import io.zephyr.common.io.Files;
 import io.zephyr.kernel.Coordinate;
 import io.zephyr.kernel.KernelModuleEntry;
@@ -59,6 +60,7 @@ public class SunshowerKernel implements Kernel, EventSource {
 
   private final KernelLifecycle lifecycle;
   private final Scheduler<String> scheduler;
+  private final ServiceRegistry serviceRegistry;
   private final AsynchronousEventSource eventDispatcher;
 
   /** accessable fields */
@@ -70,8 +72,10 @@ public class SunshowerKernel implements Kernel, EventSource {
   @Getter @Setter private volatile FileSystem fileSystem;
 
   @Inject
-  public SunshowerKernel(ModuleManager moduleManager, Scheduler<String> scheduler) {
+  public SunshowerKernel(
+      ModuleManager moduleManager, ServiceRegistry registry, Scheduler<String> scheduler) {
     this.scheduler = scheduler;
+    this.serviceRegistry = registry;
     this.moduleManager = moduleManager;
     this.lifecycle = new DefaultKernelLifecycle(this, scheduler);
     this.eventDispatcher = new AsynchronousEventSource(scheduler.getKernelExecutor());
@@ -79,6 +83,11 @@ public class SunshowerKernel implements Kernel, EventSource {
 
   public static void setKernelOptions(KernelOptions options) {
     kernelOptions = options;
+  }
+
+  @Override
+  public ServiceRegistry getServiceRegistry() {
+    return serviceRegistry;
   }
 
   @Override
@@ -121,6 +130,7 @@ public class SunshowerKernel implements Kernel, EventSource {
   @Override
   @SneakyThrows
   public void start() {
+    serviceRegistry.initialize(this);
     eventDispatcher.start();
     lifecycle.start().toCompletableFuture().get();
   }
@@ -136,6 +146,7 @@ public class SunshowerKernel implements Kernel, EventSource {
   public void stop() {
     eventDispatcher.stop();
     lifecycle.stop().toCompletableFuture().get();
+    serviceRegistry.close();
   }
 
   @Override
@@ -184,6 +195,11 @@ public class SunshowerKernel implements Kernel, EventSource {
     val mementoProvider = Memento.loadProvider(getClassLoader());
     val kernelMemento = mementoProvider.newMemento("kernel", "kernel", getFileSystem());
     return doRestore(kernelMemento);
+  }
+
+  @Override
+  public int getListenerCount() {
+    return eventDispatcher.getListenerCount();
   }
 
   @Override

@@ -1,9 +1,9 @@
 package io.sunshower.kernel.test;
 
+import io.zephyr.api.ModuleActivator;
 import io.zephyr.api.ModuleContext;
-import io.zephyr.api.PluginActivator;
 
-public class TestPluginActivator implements PluginActivator {
+public class TestPluginActivator implements ModuleActivator {
   @Override
   public void start(ModuleContext context) throws Exception {}
 

@@ -35,6 +35,11 @@ public class AsynchronousEventSource implements EventSource, Stoppable, Startabl
   }
 
   @Override
+  public int getListenerCount() {
+    return source.getListenerCount();
+  }
+
+  @Override
   public boolean listensFor(EventType... types) {
     synchronized (source) {
       return source.listensFor(types);
