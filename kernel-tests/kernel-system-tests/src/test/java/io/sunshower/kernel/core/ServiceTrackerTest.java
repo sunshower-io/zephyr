@@ -8,6 +8,7 @@ import io.sunshower.kernel.test.Clean;
 import io.sunshower.kernel.test.ModuleLifecycleManager;
 import io.sunshower.kernel.test.ZephyrTest;
 import io.zephyr.api.ModuleContext;
+import io.zephyr.api.Queries;
 import io.zephyr.api.ServiceEvents;
 import io.zephyr.cli.Zephyr;
 import io.zephyr.kernel.events.EventListener;
@@ -31,6 +32,21 @@ public class ServiceTrackerTest {
   @Test
   void ensureTrackingServiceProducesServiceInInstalledTestPlugin() {
     val tracker = context.trackServices(t -> true);
+    tracker.addEventListener(listener, ServiceEvents.REGISTERED);
+    zephyr.install(ProjectPlugins.TEST_PLUGIN_2.getUrl(), ProjectPlugins.TEST_PLUGIN_1.getUrl());
+    lifecycleManager.start(t -> t.getCoordinate().getName().contains("2"));
+    tracker.waitUntil(t -> t.size() > 0);
+    verify(listener).onEvent(eq(ServiceEvents.REGISTERED), any());
+    tracker.close();
+  }
+
+  @Test
+  void ensureTrackingServiceProducesServiceInInstalledTestPluginWithMVELFilter() {
+    zephyr.install(StandardModules.MVEL.getUrl());
+    zephyr.restart();
+
+    val tracker =
+        context.trackServices(Queries.create("mvel", "value.definition.name contains 'class'"));
     tracker.addEventListener(listener, ServiceEvents.REGISTERED);
     zephyr.install(ProjectPlugins.TEST_PLUGIN_2.getUrl(), ProjectPlugins.TEST_PLUGIN_1.getUrl());
     lifecycleManager.start(t -> t.getCoordinate().getName().contains("2"));
