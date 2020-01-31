@@ -205,8 +205,8 @@ public abstract class AbstractAsynchronousObjectTracker<T> implements Tracker<T>
       val target = event.getTarget();
       if (!(target == host || isTracked(type, target))) {
         if (filter.test(target)) {
-          dispatchEvent(type, event);
           track(type, target);
+          dispatchEvent(type, event);
         }
       }
     }
