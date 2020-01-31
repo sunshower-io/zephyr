@@ -74,10 +74,10 @@ public class DefaultModuleManager implements ModuleManager, EventSource {
   }
 
   @Override
-  public List<Module> getModules(Lifecycle.State resolved) {
+  public List<Module> getModules(Lifecycle.State state) {
     val results = new ArrayList<Module>();
     for (val module : dependencyGraph) {
-      if (module.getLifecycle().getState() == resolved) {
+      if (module.getLifecycle().getState() == state) {
         results.add(module);
       }
     }

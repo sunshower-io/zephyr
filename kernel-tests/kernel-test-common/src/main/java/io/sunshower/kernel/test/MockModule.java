@@ -1,7 +1,7 @@
 package io.sunshower.kernel.test;
 
+import io.zephyr.api.ModuleActivator;
 import io.zephyr.api.ModuleContext;
-import io.zephyr.api.PluginActivator;
 import io.zephyr.kernel.*;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.core.ModuleClasspath;
@@ -70,7 +70,7 @@ public class MockModule implements Module {
   }
 
   @Override
-  public PluginActivator getActivator() {
+  public ModuleActivator getActivator() {
     return null;
   }
 

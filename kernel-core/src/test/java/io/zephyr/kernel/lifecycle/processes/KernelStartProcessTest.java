@@ -4,6 +4,7 @@ import static org.mockito.Mockito.*;
 
 import io.sunshower.gyre.Scope;
 import io.sunshower.test.common.Tests;
+import io.zephyr.api.ServiceRegistry;
 import io.zephyr.kernel.concurrency.ExecutorWorkerPool;
 import io.zephyr.kernel.concurrency.KernelScheduler;
 import io.zephyr.kernel.concurrency.Scheduler;
@@ -53,7 +54,8 @@ class KernelStartProcessTest {
         new KernelScheduler<>(
             new ExecutorWorkerPool(
                 Executors.newFixedThreadPool(2), Executors.newFixedThreadPool(2)));
-    kernel = spy(new SunshowerKernel(mock(ModuleManager.class), scheduler));
+    kernel =
+        spy(new SunshowerKernel(mock(ModuleManager.class), mock(ServiceRegistry.class), scheduler));
     kernel.setModuleClasspathManager(mock(ModuleClasspathManager.class));
     context.set("SunshowerKernel", kernel);
   }

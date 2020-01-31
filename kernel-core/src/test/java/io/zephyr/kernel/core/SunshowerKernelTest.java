@@ -3,20 +3,15 @@ package io.zephyr.kernel.core;
 import static io.sunshower.test.common.Tests.relativeToProjectBuild;
 import static org.junit.jupiter.api.Assertions.*;
 
-import io.sunshower.test.common.Tests;
+import io.zephyr.kernel.KernelTestCase;
 import io.zephyr.kernel.Lifecycle;
-import io.zephyr.kernel.launch.KernelOptions;
 import io.zephyr.kernel.misc.SuppressFBWarnings;
 import io.zephyr.kernel.module.*;
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.nio.file.FileSystems;
 import lombok.SneakyThrows;
 import lombok.extern.java.Log;
 import lombok.val;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
@@ -30,33 +25,7 @@ import org.junit.jupiter.api.Test;
   "PMD.JUnitAssertionsShouldIncludeMessage",
   "PMD.JUnitTestContainsTooManyAsserts"
 })
-public class SunshowerKernelTest {
-
-  private Kernel kernel;
-  private File yamlModule;
-  private File springPlugin;
-  private SunshowerKernelConfiguration cfg;
-
-  @BeforeEach
-  void setUp() {
-    val options = new KernelOptions();
-    options.setHomeDirectory(Tests.createTemp());
-    SunshowerKernel.setKernelOptions(options);
-
-    cfg =
-        DaggerSunshowerKernelConfiguration.factory()
-            .create(options, ClassLoader.getSystemClassLoader());
-    kernel = cfg.kernel();
-  }
-
-  @AfterEach
-  void tearDown() throws IOException {
-    try {
-      FileSystems.getFileSystem(URI.create("droplet://kernel")).close();
-    } catch (Exception ex) {
-      log.info(ex.getMessage());
-    }
-  }
+public class SunshowerKernelTest extends KernelTestCase {
 
   @Test
   void ensureKernelIsCreated() {

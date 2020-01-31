@@ -11,6 +11,7 @@ import io.sunshower.kernel.test.ModuleLifecycleManager;
 import io.sunshower.kernel.test.ZephyrTest;
 import io.zephyr.api.ModuleContext;
 import io.zephyr.api.ModuleEvents;
+import io.zephyr.api.Queries;
 import io.zephyr.cli.Zephyr;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.events.Event;
@@ -23,7 +24,7 @@ import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 
 @ZephyrTest
-@Clean(value = Clean.Mode.Before, context = Clean.Context.Method)
+@Clean(value = Clean.Mode.After, context = Clean.Context.Method)
 public class ModuleTrackerTest {
 
   @Inject private Zephyr zephyr;
@@ -34,7 +35,7 @@ public class ModuleTrackerTest {
 
   @Test
   void ensureInstallingModuleProducesModuleEventWhenFilteredOnAll() {
-    try (val tracker = moduleContext.createModuleTracker(t -> true)) {
+    try (val tracker = moduleContext.trackModules(t -> true)) {
       tracker.addEventListener(moduleListener, ModuleEvents.INSTALLED);
       zephyr.install(ProjectPlugins.TEST_PLUGIN_1.getUrl());
       verify(moduleListener, times(1)).onEvent(eq(ModuleEvents.INSTALLED), any());
@@ -43,7 +44,7 @@ public class ModuleTrackerTest {
 
   @Test
   void ensureInstallingModuleDoesNotCallModuleEventWhenFilteredOnNone() {
-    try (val tracker = moduleContext.createModuleTracker(t -> false)) {
+    try (val tracker = moduleContext.trackModules(t -> false)) {
       tracker.addEventListener(moduleListener, ModuleEvents.INSTALLED);
       zephyr.install(ProjectPlugins.TEST_PLUGIN_1.getUrl());
       verify(moduleListener, times(0)).onEvent(eq(ModuleEvents.INSTALLED), any());
@@ -53,7 +54,7 @@ public class ModuleTrackerTest {
   @Test
   void ensureStartingModuleWorksAndProducesStartedEvent() {
 
-    try (val tracker = moduleContext.createModuleTracker(t -> true)) {
+    try (val tracker = moduleContext.trackModules(t -> true)) {
       tracker.addEventListener(moduleListener, ModuleEvents.INSTALLED, ModuleEvents.STARTED);
       zephyr.install(ProjectPlugins.TEST_PLUGIN_1.getUrl());
       lifecycleManager.start(ModuleFilters.named("test-plugin-1"));
@@ -68,7 +69,7 @@ public class ModuleTrackerTest {
     zephyr.install(ProjectPlugins.TEST_PLUGIN_1.getUrl());
     lifecycleManager.start(t -> true);
 
-    try (val tracker = moduleContext.createModuleTracker(t -> true)) {
+    try (val tracker = moduleContext.trackModules(t -> true)) {
       tracker.addEventListener(moduleListener, ModuleEvents.INSTALLED);
       zephyr.install(ProjectPlugins.TEST_PLUGIN_2.getUrl());
       verify(moduleListener, times(2)).onEvent(eq(ModuleEvents.INSTALLED), any());
@@ -84,7 +85,7 @@ public class ModuleTrackerTest {
     zephyr.install(ProjectPlugins.TEST_PLUGIN_1.getUrl());
     lifecycleManager.start(t -> true);
 
-    try (val tracker = moduleContext.createModuleTracker(t -> true)) {
+    try (val tracker = moduleContext.trackModules(t -> true)) {
       tracker.addEventListener(moduleListener, ModuleEvents.INSTALLED);
       zephyr.install(ProjectPlugins.TEST_PLUGIN_2.getUrl());
       verify(moduleListener, times(2)).onEvent(eq(ModuleEvents.INSTALLED), any());
@@ -98,7 +99,7 @@ public class ModuleTrackerTest {
   @Test
   @SneakyThrows
   void ensureEventsAreProperlyDiscriminatedOnByType() {
-    try (val tracker = moduleContext.createModuleTracker(t -> true)) {
+    try (val tracker = moduleContext.trackModules(t -> true)) {
       tracker.addEventListener(moduleListener, ModuleEvents.STARTED);
       zephyr.install(ProjectPlugins.TEST_PLUGIN_1.getUrl());
       lifecycleManager.start(ModuleFilters.named("test-plugin-1"));
@@ -110,7 +111,7 @@ public class ModuleTrackerTest {
 
   @Test
   void ensureEventListenerTracksCorrectModules() {
-    try (val tracker = moduleContext.createModuleTracker(t -> true)) {
+    try (val tracker = moduleContext.trackModules(t -> true)) {
       tracker.addEventListener(moduleListener, ModuleEvents.STARTED);
       assertEquals(0, tracker.getTrackedCount(), "must have no tracked modules");
       zephyr.install(ProjectPlugins.TEST_PLUGIN_1.getUrl());
@@ -118,6 +119,42 @@ public class ModuleTrackerTest {
       tracker.waitUntil(t -> !t.isEmpty());
       assertEquals(1, tracker.getTrackedCount(), "must have one tracked modules");
     }
+  }
+
+  @Test
+  void ensureEventTrackerListenerTracksCorrectModulesUsingPredicate() {
+    installExpressionLanguage();
+
+    try (val tracker =
+        moduleContext.trackModules(m -> m.getCoordinate().getName().equals("test-plugin-1"))) {
+
+      tracker.addEventListener(moduleListener, ModuleEvents.INSTALLED);
+      assertEquals(0, tracker.getTrackedCount(), "must have no tracked modules");
+      zephyr.install(ProjectPlugins.TEST_PLUGIN_1.getUrl());
+      tracker.waitUntil(t -> !t.isEmpty());
+      assertEquals(1, tracker.getTrackedCount(), "must have one tracked modules");
+    }
+  }
+
+  @Test
+  void ensureEventTrackerListenerTracksCorrectModulesUsingMVEL() {
+    installExpressionLanguage();
+    try (val tracker =
+        moduleContext.trackModules(
+            Queries.create("mvel", "value.coordinate.name == 'test-plugin-1'"))) {
+      tracker.addEventListener(moduleListener, ModuleEvents.INSTALLED);
+      assertEquals(0, tracker.getTrackedCount(), "must have no tracked modules");
+      zephyr.install(ProjectPlugins.TEST_PLUGIN_1.getUrl());
+      tracker.waitUntil(t -> !t.isEmpty());
+      assertEquals(1, tracker.getTrackedCount(), "must have one tracked modules");
+    }
+  }
+
+  private void installExpressionLanguage() {
+    zephyr.install(StandardModules.YAML.getUrl());
+    zephyr.restart();
+    zephyr.install(StandardModules.MVEL.getUrl());
+    zephyr.restart();
   }
 
   static final ArgumentMatcher<Event<Module>> moduleMatcher(Module target) {

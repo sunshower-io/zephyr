@@ -1,20 +1,17 @@
 package plugin1;
 
-import io.zephyr.api.ModuleContext;
-import io.zephyr.api.ModuleEvents;
-import io.zephyr.api.ModuleTracker;
-import io.zephyr.api.PluginActivator;
+import io.zephyr.api.*;
 import io.zephyr.kernel.events.Event;
 import io.zephyr.kernel.events.EventListener;
 import io.zephyr.kernel.events.EventType;
 
-public class Test implements PluginActivator {
+public class Test implements ModuleActivator {
   private ModuleTracker moduleTracker;
 
   @Override
   public void start(ModuleContext context) {
     System.out.println("Plugin1 starting...");
-    moduleTracker = context.createModuleTracker(t -> true);
+    moduleTracker = context.trackModules(t -> true);
     moduleTracker.addEventListener(
         new EventListener<Object>() {
           @Override

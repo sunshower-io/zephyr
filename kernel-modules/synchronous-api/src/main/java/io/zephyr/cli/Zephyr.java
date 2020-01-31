@@ -34,4 +34,6 @@ public interface Zephyr {
   void shutdown();
 
   void startup();
+
+  void restart();
 }

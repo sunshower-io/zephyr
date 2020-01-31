@@ -1,13 +1,13 @@
 package io.sunshower.spring;
 
+import io.zephyr.api.ModuleActivator;
 import io.zephyr.api.ModuleContext;
-import io.zephyr.api.PluginActivator;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class TestPlugin implements PluginActivator {
+public class TestPlugin implements ModuleActivator {
 
   private ConfigurableApplicationContext context;
 

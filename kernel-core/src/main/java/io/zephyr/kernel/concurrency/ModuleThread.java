@@ -1,6 +1,8 @@
-package io.zephyr.kernel;
+package io.zephyr.kernel.concurrency;
 
 import io.zephyr.api.*;
+import io.zephyr.kernel.*;
+import io.zephyr.kernel.Module;
 import io.zephyr.kernel.core.AbstractModule;
 import io.zephyr.kernel.core.DefaultModule;
 import io.zephyr.kernel.core.Kernel;
@@ -13,8 +15,6 @@ import java.util.ServiceConfigurationError;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import lombok.val;
@@ -35,12 +35,8 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable {
   final Module module;
 
   final Kernel kernel;
-  /** we need fairness here */
-  final ReentrantLock lock;
 
   final AtomicBoolean running;
-  final Condition queueCondition;
-  final Condition moduleCondition;
   final BlockingQueue<Runnable> taskQueue;
   final AtomicReference<Thread> moduleThread;
 
@@ -50,57 +46,43 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable {
     }
     this.kernel = kernel;
     this.module = module;
-    this.lock = new ReentrantLock();
-    this.queueCondition = lock.newCondition();
-    this.moduleCondition = lock.newCondition();
     this.moduleThread = new AtomicReference<>();
     this.taskQueue = new LinkedBlockingQueue<>();
     this.running = new AtomicBoolean(false);
   }
 
+  final Object queueLock = new Object();
+  final Object moduleLock = new Object();
+
   @Override
   public void stop() {
-    lock.lock();
-    try {
+    synchronized (queueLock) {
       running.set(false);
-      queueCondition.signalAll();
+      queueLock.notifyAll();
       while (running.get()) {
         try {
-          moduleCondition.await(100, TimeUnit.MILLISECONDS);
+          synchronized (moduleLock) {
+            moduleLock.wait(100);
+          }
         } catch (InterruptedException ex) {
           log.log(Level.INFO, "interrupted", ex);
           break;
         }
       }
       doStop();
-    } finally {
-      lock.unlock();
     }
-    checkLock();
   }
 
   @Override
   public void start() {
-    lock.lock();
-    try {
+    synchronized (moduleLock) {
       val thread = new Thread(this, "module-" + module.getCoordinate().toCanonicalForm());
       moduleThread.set(thread);
       thread.start();
       try {
-        moduleCondition.await();
+        moduleLock.wait();
       } catch (InterruptedException ex) {
         log.log(Level.INFO, "module thread interrupted", ex);
-      }
-    } finally {
-      lock.unlock();
-    }
-    checkLock();
-  }
-
-  private void checkLock() {
-    if (lock.getHoldCount() != 0) {
-      if (log.isLoggable(Level.WARNING)) {
-        log.warning("lock held " + lock.getHoldCount());
       }
     }
   }
@@ -112,27 +94,21 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable {
 
   @Override
   public <T> CompletionStage<T> schedule(Callable<T> task) {
-    lock.lock();
-    try {
+    synchronized (queueLock) {
       val result = new TaskQueueCallable<>(task);
       taskQueue.offer(result);
-      queueCondition.signalAll();
+      queueLock.notifyAll();
       return result;
-    } finally {
-      lock.unlock();
     }
   }
 
   @Override
   public CompletionStage<Void> schedule(Runnable task) {
-    lock.lock();
-    try {
+    synchronized (queueLock) {
       val result = new TaskQueueRunnable(task);
       taskQueue.offer(task);
-      queueCondition.signalAll();
+      queueLock.notifyAll();
       return result;
-    } finally {
-      lock.unlock();
     }
   }
 
@@ -140,42 +116,35 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable {
   public void run() {
     performStart();
     while (running.get()) {
-      lock.lock();
       try {
-        queueCondition.await();
+        synchronized (queueLock) {
+          queueLock.wait(100);
+        }
         while (!taskQueue.isEmpty()) {
           val runnable = taskQueue.take();
           runnable.run();
         }
       } catch (InterruptedException ex) {
         log.log(Level.INFO, "module interrupted", ex);
-      } finally {
-        lock.unlock();
       }
     }
     finalizeModule();
   }
 
   private void finalizeModule() {
-    lock.lock();
-    try {
-      moduleCondition.signalAll();
-    } finally {
-      lock.unlock();
+    synchronized (moduleLock) {
+      moduleLock.notifyAll();
     }
   }
 
   private void performStart() {
-    lock.lock();
-    try {
+    synchronized (moduleLock) {
       running.set(true);
       try {
         doStart();
       } finally { // don't hang if an exception is thrown
-        moduleCondition.signalAll();
+        moduleLock.notifyAll();
       }
-    } finally {
-      lock.unlock();
     }
   }
 
@@ -185,7 +154,7 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable {
     val currentState = module.getLifecycle().getState();
     if (!currentState.isAtLeast(Lifecycle.State.Active)) {
       module.getLifecycle().setState(Lifecycle.State.Starting);
-      val loader = module.getModuleClasspath().resolveServiceLoader(PluginActivator.class);
+      val loader = module.getModuleClasspath().resolveServiceLoader(ModuleActivator.class);
       kernel.getModuleManager().getModuleLoader().check(module);
       val ctx = kernel.createContext(module);
       moduleThread.get().setContextClassLoader(module.getClassLoader());
@@ -193,6 +162,7 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable {
         try {
           activator.start(ctx);
           ((DefaultModule) module).setActivator(activator);
+          break;
         } catch (Exception | ServiceConfigurationError | LinkageError ex) {
           handleFailure(coordinate, ex);
           return;

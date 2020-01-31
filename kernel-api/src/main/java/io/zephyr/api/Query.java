@@ -1,14 +1,17 @@
 package io.zephyr.api;
 
+import io.zephyr.Context;
+import lombok.Getter;
+
 public class Query<T> {
 
-  private final String query;
-  private final Object context;
-  private final String language;
+  @Getter private final String query;
+  @Getter private final String language;
+  @Getter private final Context<T> context;
 
-  public Query(final String query, final String language, final Object context) {
+  public Query(final String query, final String language, final Context<T> context) {
     this.query = query;
-    this.language = language;
     this.context = context;
+    this.language = language;
   }
 }

@@ -4,9 +4,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 
 import io.sunshower.test.common.Tests;
-import io.zephyr.api.PluginActivator;
+import io.zephyr.api.ModuleActivator;
 import io.zephyr.kernel.*;
 import io.zephyr.kernel.Module;
+import io.zephyr.kernel.concurrency.ModuleThread;
 import io.zephyr.kernel.core.AbstractModule;
 import io.zephyr.kernel.core.ModuleClasspath;
 import io.zephyr.kernel.core.ModuleCoordinate;
@@ -95,8 +96,8 @@ public class SimulatedModule extends AbstractModule implements Module {
   }
 
   @Override
-  public PluginActivator getActivator() {
-    return applicationContext.getBean(PluginActivator.class);
+  public ModuleActivator getActivator() {
+    return applicationContext.getBean(ModuleActivator.class);
   }
 
   @Override
@@ -138,7 +139,7 @@ public class SimulatedModule extends AbstractModule implements Module {
   public void restore(Memento memento) {}
 
   @Override
-  public void setActivator(PluginActivator o) {}
+  public void setActivator(ModuleActivator o) {}
 
   @Override
   public void setTaskQueue(TaskQueue thread) {}

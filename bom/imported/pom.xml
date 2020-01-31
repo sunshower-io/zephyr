@@ -24,6 +24,7 @@
         Compile Dependency Version
         -->
         <dagger.version>2.24</dagger.version>
+        <mvel.version>2.4.5.Final</mvel.version>
         <picocli.version>4.0.4</picocli.version>
         <lombok.version>1.18.10</lombok.version>
         <yamlbeans.version>1.13</yamlbeans.version>
@@ -40,6 +41,11 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.mvel</groupId>
+                <artifactId>mvel2</artifactId>
+                <version>${mvel.version}</version>
+            </dependency>
 
 
             <dependency>
