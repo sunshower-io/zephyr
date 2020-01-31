@@ -9,6 +9,7 @@ import io.zephyr.kernel.concurrency.AsynchronousServiceTracker;
 import io.zephyr.kernel.concurrency.ModuleThread;
 import io.zephyr.kernel.extensions.ExpressionLanguageExtension;
 import io.zephyr.kernel.log.Logging;
+import io.zephyr.kernel.service.DefaultServiceDefinition;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
@@ -16,8 +17,6 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import io.zephyr.kernel.service.DefaultServiceDefinition;
 import lombok.val;
 
 @SuppressWarnings("PMD.UnusedPrivateMethod")

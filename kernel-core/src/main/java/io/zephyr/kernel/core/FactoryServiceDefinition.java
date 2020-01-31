@@ -1,8 +1,6 @@
 package io.zephyr.kernel.core;
 
 import io.zephyr.api.ServiceDefinition;
-import io.zephyr.api.ServiceRegistration;
-
 import java.util.function.Supplier;
 
 public class FactoryServiceDefinition<T> implements ServiceDefinition<T> {

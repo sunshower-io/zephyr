@@ -59,7 +59,9 @@ public class KernelServiceRegistry implements ServiceRegistry {
 
       module
           .getTaskQueue()
-          .schedule(new ServiceEventDispatchTask(ServiceEvents.REGISTERED, registration));
+          .schedule(
+              new ServiceEventDispatchTask(ServiceEvents.REGISTERED, registration.getReference()));
+
       return registration;
     }
   }
@@ -97,16 +99,18 @@ public class KernelServiceRegistry implements ServiceRegistry {
       }
       module
           .getTaskQueue()
-          .schedule(new ServiceEventDispatchTask(ServiceEvents.UNREGISTERED, registration));
+          .schedule(
+              new ServiceEventDispatchTask(
+                  ServiceEvents.UNREGISTERED, registration.getReference()));
     }
   }
 
   final class ServiceEventDispatchTask implements Runnable {
 
     private final EventType type;
-    private final ServiceRegistration<?> registration;
+    private final ServiceReference<?> registration;
 
-    ServiceEventDispatchTask(EventType type, ServiceRegistration<?> registration) {
+    ServiceEventDispatchTask(EventType type, ServiceReference<?> registration) {
       this.type = type;
       this.registration = registration;
     }
