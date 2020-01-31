@@ -82,15 +82,7 @@ public class DefaultPluginContext implements ModuleContext {
   }
 
   @Override
-  public ModuleTracker trackModules(
-      Query //  "PMD.DataflowAnomalyAnalysis",
-              //  "PMD.CompareObjectsWithEquals",
-              //  "PMD.DoNotUseThreads",
-              //  "PMD.AvoidInstantiatingObjectsInLoops",
-              //  "PMD.UnusedPrivateMethod"
-              <
-              Module>
-          filter) {
+  public ModuleTracker trackModules(Query<Module> filter) {
     return trackModules(createFilter(filter));
   }
 
