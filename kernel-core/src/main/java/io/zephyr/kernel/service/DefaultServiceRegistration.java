@@ -24,6 +24,11 @@ public class DefaultServiceRegistration<T> implements ServiceRegistration<T> {
   }
 
   @Override
+  public <S> boolean provides(Class<S> type) {
+    return definition.getType().equals(type);
+  }
+
+  @Override
   public void dispose() {
     registry.unregister(this);
   }

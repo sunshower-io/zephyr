@@ -7,17 +7,12 @@ import io.zephyr.kernel.Module;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.events.*;
 import io.zephyr.kernel.events.EventListener;
-import java.util.*;
 import java.util.function.Predicate;
-import lombok.AllArgsConstructor;
 import lombok.val;
 
 @SuppressWarnings({
-  "PMD.DataflowAnomalyAnalysis",
-  "PMD.CompareObjectsWithEquals",
   "PMD.DoNotUseThreads",
   "PMD.AvoidInstantiatingObjectsInLoops",
-  "PMD.UnusedPrivateMethod"
 })
 public class AsynchronousModuleThreadTracker extends AbstractAsynchronousObjectTracker<Module>
     implements ModuleTracker, EventListener<Module> {

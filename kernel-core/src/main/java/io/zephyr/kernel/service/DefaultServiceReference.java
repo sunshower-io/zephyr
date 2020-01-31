@@ -30,6 +30,11 @@ public class DefaultServiceReference<T> implements ServiceReference<T> {
   }
 
   @Override
+  public ServiceDefinition<T> getDefinition() {
+    return definition;
+  }
+
+  @Override
   public boolean isAssignableTo(Module module, String className) {
     try {
       val clazz = Class.forName(className, false, module.getClassLoader());

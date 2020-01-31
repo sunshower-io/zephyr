@@ -36,5 +36,5 @@ public interface ModuleContext {
 
   <T> List<ServiceReference<T>> getReferences(Class<T> type);
 
-  <T> List<ServiceReference<T>> getReferences(Query<ServiceDefinition<T>> query);
+  List<ServiceReference<?>> getReferences(Query<ServiceDefinition<?>> query);
 }

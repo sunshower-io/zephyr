@@ -14,4 +14,6 @@ public interface ServiceRegistry extends AutoCloseable {
   <T> ServiceRegistration<T> register(Module module, ServiceDefinition<T> definition);
 
   <T> void unregister(ServiceRegistration<T> definition);
+
+  ServiceRegistrationSet getRegistrations(Module module);
 }

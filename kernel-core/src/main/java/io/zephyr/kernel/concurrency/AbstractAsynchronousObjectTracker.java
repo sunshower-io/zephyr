@@ -2,17 +2,18 @@ package io.zephyr.kernel.concurrency;
 
 import io.zephyr.api.Tracker;
 import io.zephyr.kernel.Module;
+import io.zephyr.kernel.TaskQueue;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.events.*;
-import lombok.AllArgsConstructor;
-import lombok.val;
-
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Predicate;
+import lombok.AllArgsConstructor;
+import lombok.val;
 
+@SuppressWarnings({"PMD.DoNotUseThreads"})
 public abstract class AbstractAsynchronousObjectTracker<T> implements Tracker<T>, EventListener<T> {
 
   /** immutable state */
@@ -20,7 +21,7 @@ public abstract class AbstractAsynchronousObjectTracker<T> implements Tracker<T>
 
   final Kernel kernel;
 
-  final ModuleThread taskQueue;
+  final TaskQueue taskQueue;
   final Predicate<T> filter;
   final EventSource delegatedEventSource;
 
@@ -29,7 +30,7 @@ public abstract class AbstractAsynchronousObjectTracker<T> implements Tracker<T>
   private final List<ObjectEventDispatchState<T>> tracked;
 
   public AbstractAsynchronousObjectTracker(
-      Kernel kernel, Module host, ModuleThread taskQueue, Predicate<T> filter) {
+      Kernel kernel, Module host, TaskQueue taskQueue, Predicate<T> filter) {
     this.host = host;
     this.kernel = kernel;
     this.filter = filter;
@@ -76,12 +77,12 @@ public abstract class AbstractAsynchronousObjectTracker<T> implements Tracker<T>
   }
 
   @Override
-  public <T> void addEventListener(EventListener<T> listener, EventType... types) {
+  public <U> void addEventListener(EventListener<U> listener, EventType... types) {
     addEventListener(listener, Options.NONE, types);
   }
 
   @Override
-  public <T> void addEventListener(EventListener<T> listener, int options, EventType... types) {
+  public <U> void addEventListener(EventListener<U> listener, int options, EventType... types) {
     val tracker = new EventSetTracker(options, types, listener);
     eventSets.add(tracker);
     tracker.start();
@@ -93,7 +94,7 @@ public abstract class AbstractAsynchronousObjectTracker<T> implements Tracker<T>
   }
 
   @Override
-  public <T> void removeEventListener(EventListener<T> listener) {
+  public <U> void removeEventListener(EventListener<U> listener) {
     val iter = eventSets.iterator();
     while (iter.hasNext()) {
       val next = iter.next();
@@ -104,7 +105,7 @@ public abstract class AbstractAsynchronousObjectTracker<T> implements Tracker<T>
   }
 
   @Override
-  public <T> void dispatchEvent(EventType type, Event<T> event) {
+  public <U> void dispatchEvent(EventType type, Event<U> event) {
     delegatedEventSource.dispatchEvent(type, event);
   }
 
@@ -168,6 +169,7 @@ public abstract class AbstractAsynchronousObjectTracker<T> implements Tracker<T>
     }
   }
 
+  @SuppressWarnings("PMD.DataflowAnomalyAnalysis")
   private void track(EventType events, T object) {
     synchronized (tracked) {
       boolean found = false;
@@ -198,6 +200,7 @@ public abstract class AbstractAsynchronousObjectTracker<T> implements Tracker<T>
     }
 
     @Override
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     public void run() {
       val target = event.getTarget();
       if (!(target == host || isTracked(type, target))) {

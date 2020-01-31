@@ -1,9 +1,6 @@
 package io.zephyr.kernel.service;
 
-import io.zephyr.api.ServiceDefinition;
-import io.zephyr.api.ServiceEvents;
-import io.zephyr.api.ServiceRegistration;
-import io.zephyr.api.ServiceRegistry;
+import io.zephyr.api.*;
 import io.zephyr.kernel.Coordinate;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.core.Kernel;
@@ -12,6 +9,7 @@ import io.zephyr.kernel.events.Events;
 import io.zephyr.kernel.log.Logging;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.logging.Logger;
 import lombok.NonNull;
 import lombok.val;
@@ -69,6 +67,18 @@ public class KernelServiceRegistry implements ServiceRegistry {
   @Override
   public <T> void unregister(ServiceRegistration<T> definition) {
     definition.dispose();
+  }
+
+  @Override
+  public ServiceRegistrationSet getRegistrations(Module module) {
+    synchronized (registries) {
+      val coordinate = module.getCoordinate();
+      val result = registries.get(coordinate);
+      if (result == null) {
+        throw new NoSuchElementException("No module with identifier: " + coordinate);
+      }
+      return result;
+    }
   }
 
   void notifyServiceUnregistered(ServiceRegistration<?> registration) {

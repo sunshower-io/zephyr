@@ -9,6 +9,7 @@ import io.zephyr.kernel.concurrency.AsynchronousServiceTracker;
 import io.zephyr.kernel.concurrency.ModuleThread;
 import io.zephyr.kernel.extensions.ExpressionLanguageExtension;
 import io.zephyr.kernel.log.Logging;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
 import java.util.function.Predicate;
@@ -22,6 +23,7 @@ public class DefaultPluginContext implements ModuleContext {
   final Module module;
   final Kernel kernel;
 
+  static final Object lock = new Object();
   static final Logger log = Logging.get(DefaultPluginContext.class);
 
   public DefaultPluginContext(final Module module, final Kernel kernel) {
@@ -78,7 +80,15 @@ public class DefaultPluginContext implements ModuleContext {
   }
 
   @Override
-  public ModuleTracker trackModules(Query<Module> filter) {
+  public ModuleTracker trackModules(
+      Query //  "PMD.DataflowAnomalyAnalysis",
+              //  "PMD.CompareObjectsWithEquals",
+              //  "PMD.DoNotUseThreads",
+              //  "PMD.AvoidInstantiatingObjectsInLoops",
+              //  "PMD.UnusedPrivateMethod"
+              <
+              Module>
+          filter) {
     return trackModules(createFilter(filter));
   }
 
@@ -90,22 +100,50 @@ public class DefaultPluginContext implements ModuleContext {
 
   @Override
   public ServiceTracker trackServices(Predicate<ServiceReference<?>> filter) {
-    return new AsynchronousServiceTracker(kernel, filter);
+    return new AsynchronousServiceTracker(kernel, module, module.getTaskQueue(), filter);
   }
 
   @Override
   public <T> ServiceRegistration<T> register(ServiceDefinition<T> definition) {
-    return null;
+    return kernel.getServiceRegistry().register(module, definition);
   }
 
   @Override
+  @SuppressWarnings({"unchecked", "PMD.DataflowAnomalyAnalysis"})
   public <T> List<ServiceReference<T>> getReferences(Class<T> type) {
-    return null;
+    synchronized (lock) {
+      val moduleManager = kernel.getModuleManager();
+      val serviceRegistry = kernel.getServiceRegistry();
+      val result = new ArrayList<ServiceReference<T>>();
+      for (val module : moduleManager.getModules(Lifecycle.State.Active)) {
+        for (val registration : serviceRegistry.getRegistrations(module)) {
+          if (registration.provides(type)) {
+            result.add((ServiceReference<T>) registration.getReference());
+          }
+        }
+      }
+      return result;
+    }
   }
 
   @Override
-  public <T> List<ServiceReference<T>> getReferences(Query<ServiceDefinition<T>> query) {
-    return null;
+  @SuppressWarnings({"PMD.DataflowAnomalyAnalysis"})
+  public List<ServiceReference<?>> getReferences(Query<ServiceDefinition<?>> query) {
+    synchronized (lock) {
+      val predicate = createFilter(query);
+      val moduleManager = kernel.getModuleManager();
+      val serviceRegistry = kernel.getServiceRegistry();
+      val result = new ArrayList<ServiceReference<?>>();
+      for (val module : moduleManager.getModules(Lifecycle.State.Active)) {
+        for (val registration : serviceRegistry.getRegistrations(module)) {
+          val ref = registration.getReference();
+          if (predicate.test(ref.getDefinition())) {
+            result.add(registration.getReference());
+          }
+        }
+      }
+      return result;
+    }
   }
 
   private <T> ExpressionLanguageExtension resolveModuleExpressionLanguageExtension(Query<T> query) {

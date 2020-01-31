@@ -9,5 +9,7 @@ public interface ServiceReference<S> {
 
   List<Module> getDependentModules();
 
+  ServiceDefinition<S> getDefinition();
+
   boolean isAssignableTo(Module module, String className);
 }

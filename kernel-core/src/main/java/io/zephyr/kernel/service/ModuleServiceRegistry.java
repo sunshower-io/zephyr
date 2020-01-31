@@ -1,12 +1,14 @@
 package io.zephyr.kernel.service;
 
 import io.zephyr.api.ServiceRegistration;
+import io.zephyr.api.ServiceRegistrationSet;
 import io.zephyr.kernel.Module;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import lombok.val;
 
-final class ModuleServiceRegistry {
+final class ModuleServiceRegistry implements ServiceRegistrationSet {
   final Module module;
   final KernelServiceRegistry registry;
   final List<ServiceRegistration<?>> registrations;
@@ -35,5 +37,10 @@ final class ModuleServiceRegistry {
         }
       }
     }
+  }
+
+  @Override
+  public Collection<ServiceRegistration<?>> getRegistrations() {
+    return registrations;
   }
 }
