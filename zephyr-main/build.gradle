@@ -1,0 +1,81 @@
+plugins {
+    id 'net.nemerosa.versioning' version '2.8.2'
+}
+
+apply plugin: 'pmd'
+apply plugin: 'java'
+apply plugin: 'application'
+apply plugin: 'java-library'
+apply plugin: 'com.github.spotbugs'
+
+
+dependencies {
+
+    [
+            project(':kernel-api'),
+            project(':kernel-core')
+
+    ].each {
+        implementation it
+    }
+
+    [
+            project(':kernel-tests:kernel-test-common')
+    ].each {
+        testImplementation it
+    }
+
+
+    [
+            'banner',
+            'logging',
+            'shell'
+    ].each {
+        implementation project(":kernel-modules:zephyr:zephyr-$it")
+    }
+
+    testImplementation project(path: ':kernel-core', configuration: 'tests')
+}
+
+
+application {
+    applicationName = 'zephyr'
+    mainClassName = 'io.zephyr.kernel.launch.KernelLauncher'
+}
+
+
+startScripts {
+    classpath = files("lib/*")
+}
+
+
+jar {
+    manifest {
+        attributes(
+                'Kernel-Version': project.version,
+                'Built-By': System.properties['user.name'],
+                'Build-Timestamp': new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(new Date()),
+                'Build-Revision': versioning.info.commit,
+                'Created-By': "Gradle ${gradle.gradleVersion}",
+                'Build-Jdk':
+                        "${System.properties['java.version']} (${System.properties['java.vendor']} ${System.properties['java.vm.version']})"
+                ,
+                'Build-OS':
+                        "${System.properties['os.name']} ${System.properties['os.arch']} ${System.properties['os.version']}"
+        )
+    }
+}
+
+publishing {
+    publications {
+
+        applicationTar(MavenPublication) {
+            from components.java
+            artifact source: distTar, classifier: 'tar', extension: 'tar'
+        }
+        applicationZip(MavenPublication) {
+            from components.java
+            artifact source: distZip, classifier: 'zip', extension: 'zip'
+        }
+    }
+}

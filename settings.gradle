@@ -1,4 +1,6 @@
 include(
+        'zephyr-main',
+
         'kernel-modules:zephyr:zephyr-mvel',
         'kernel-modules:zephyr:zephyr-shell',
         'kernel-modules:zephyr:zephyr-banner',
