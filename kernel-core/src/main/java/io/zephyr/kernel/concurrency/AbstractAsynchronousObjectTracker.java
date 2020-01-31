@@ -158,11 +158,11 @@ public abstract class AbstractAsynchronousObjectTracker<T> implements Tracker<T>
   public void waitUntil(Predicate<? super Collection<T>> condition) {
     for (; ; ) {
       synchronized (tracked) {
-        if (condition.test(getTracked())) {
-          return;
-        }
         try {
-          tracked.wait();
+          while (!condition.test(getTracked())) {
+            tracked.wait(100);
+          }
+          return;
         } catch (InterruptedException ex) {
         }
       }
