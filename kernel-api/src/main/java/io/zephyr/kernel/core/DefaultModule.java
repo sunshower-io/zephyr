@@ -3,7 +3,7 @@ package io.zephyr.kernel.core;
 import static io.zephyr.kernel.memento.Mementos.writeCoordinate;
 
 import io.zephyr.api.ModuleContext;
-import io.zephyr.api.PluginActivator;
+import io.zephyr.api.ModuleActivator;
 import io.zephyr.kernel.*;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.memento.Memento;
@@ -32,7 +32,7 @@ public class DefaultModule extends AbstractModule
   private FileSystem fileSystem;
   private Lifecycle lifecycle;
 
-  private PluginActivator activator;
+  private ModuleActivator activator;
   private ModuleClasspath moduleClasspath;
 
   private Set<Library> libraries;
@@ -77,11 +77,11 @@ public class DefaultModule extends AbstractModule
   }
 
   @Override
-  public PluginActivator getActivator() {
+  public ModuleActivator getActivator() {
     return activator;
   }
 
-  public void setActivator(PluginActivator activator) {
+  public void setActivator(ModuleActivator activator) {
     this.activator = activator;
   }
 

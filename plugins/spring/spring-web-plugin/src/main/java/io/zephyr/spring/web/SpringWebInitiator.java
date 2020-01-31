@@ -1,7 +1,7 @@
 package io.zephyr.spring.web;
 
 import io.zephyr.api.ModuleContext;
-import io.zephyr.api.PluginActivator;
+import io.zephyr.api.ModuleActivator;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -9,7 +9,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.io.DefaultResourceLoader;
 
 @SpringBootApplication
-public class SpringWebInitiator implements PluginActivator {
+public class SpringWebInitiator implements ModuleActivator {
   private ConfigurableApplicationContext applicationContext;
 
   @Override

@@ -1,7 +1,7 @@
 package io.zephyr.spring.web;
 
 import io.zephyr.api.ModuleContext;
-import io.zephyr.api.PluginActivator;
+import io.zephyr.api.ModuleActivator;
 import io.zephyr.spring.web.controllers.HelloController;
 import lombok.val;
 import org.springframework.boot.WebApplicationType;
@@ -11,7 +11,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.io.DefaultResourceLoader;
 
 @SpringBootApplication(scanBasePackageClasses = HelloController.class)
-public class SpringWebInitiator implements PluginActivator {
+public class SpringWebInitiator implements ModuleActivator {
   private ConfigurableApplicationContext applicationContext;
 
   @Override

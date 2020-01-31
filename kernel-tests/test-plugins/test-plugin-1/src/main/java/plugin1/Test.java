@@ -5,7 +5,7 @@ import io.zephyr.kernel.events.Event;
 import io.zephyr.kernel.events.EventListener;
 import io.zephyr.kernel.events.EventType;
 
-public class Test implements PluginActivator {
+public class Test implements ModuleActivator {
   private ModuleTracker moduleTracker;
 
   @Override
