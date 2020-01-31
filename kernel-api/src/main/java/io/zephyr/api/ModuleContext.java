@@ -3,6 +3,7 @@ package io.zephyr.api;
 import io.zephyr.kernel.Module;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public interface ModuleContext {
 
@@ -33,6 +34,14 @@ public interface ModuleContext {
   ServiceTracker trackServices(Predicate<ServiceReference<?>> filter);
 
   <T> ServiceRegistration<T> register(ServiceDefinition<T> definition);
+
+  <T> ServiceRegistration<T> register(Class<T> type, String name, T value);
+
+  <T> ServiceRegistration<T> register(Class<T> type, T value);
+
+  <T> ServiceRegistration<T> register(Class<T> type, String name, Supplier<T> factory);
+
+  <T> ServiceRegistration<T> register(Class<T> type, Supplier<T> factory);
 
   <T> List<ServiceReference<T>> getReferences(Class<T> type);
 

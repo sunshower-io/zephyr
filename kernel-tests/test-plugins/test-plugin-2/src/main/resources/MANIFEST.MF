@@ -1,7 +1,0 @@
-group: sunshower.io
-name: test-plugin-2
-version: 1.0.0-SNAPSHOT
-
-
-
-

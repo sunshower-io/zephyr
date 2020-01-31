@@ -13,8 +13,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import io.zephyr.kernel.service.DefaultServiceDefinition;
 import lombok.val;
 
 @SuppressWarnings("PMD.UnusedPrivateMethod")
@@ -106,6 +109,26 @@ public class DefaultPluginContext implements ModuleContext {
   @Override
   public <T> ServiceRegistration<T> register(ServiceDefinition<T> definition) {
     return kernel.getServiceRegistry().register(module, definition);
+  }
+
+  @Override
+  public <T> ServiceRegistration<T> register(Class<T> type, String name, T value) {
+    return register(new DefaultServiceDefinition<>(type, name, value));
+  }
+
+  @Override
+  public <T> ServiceRegistration<T> register(Class<T> type, T value) {
+    return register(new DefaultServiceDefinition<>(type, value));
+  }
+
+  @Override
+  public <T> ServiceRegistration<T> register(Class<T> type, String name, Supplier<T> factory) {
+    return register(new FactoryServiceDefinition<T>(type, name, factory));
+  }
+
+  @Override
+  public <T> ServiceRegistration<T> register(Class<T> type, Supplier<T> factory) {
+    return register(new FactoryServiceDefinition<T>(type, factory));
   }
 
   @Override
