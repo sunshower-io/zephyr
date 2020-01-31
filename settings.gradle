@@ -1,5 +1,6 @@
 include(
         'zephyr-main',
+        'kernel-modules:zephyr:directory-scanner',
 
         'kernel-modules:zephyr:zephyr-mvel',
         'kernel-modules:zephyr:zephyr-shell',

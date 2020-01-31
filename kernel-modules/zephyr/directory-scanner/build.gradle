@@ -1,0 +1,12 @@
+apply plugin: 'java'
+
+dependencies {
+    [
+
+            'info.picocli:picocli',
+            project(':kernel-core'),
+            project(':kernel-api')
+    ].each {
+        implementation it
+    }
+}
