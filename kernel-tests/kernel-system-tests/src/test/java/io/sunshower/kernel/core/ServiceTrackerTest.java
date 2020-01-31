@@ -2,6 +2,7 @@ package io.sunshower.kernel.core;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 
 import io.sunshower.kernel.test.Clean;
@@ -52,7 +53,7 @@ public class ServiceTrackerTest {
     zephyr.install(ProjectPlugins.TEST_PLUGIN_2.getUrl(), ProjectPlugins.TEST_PLUGIN_1.getUrl());
     lifecycleManager.start(t -> t.getCoordinate().getName().contains("2"));
     tracker.waitUntil(t -> t.size() > 0);
-    verify(listener).onEvent(eq(ServiceEvents.REGISTERED), any());
+    verify(listener, timeout(1000)).onEvent(eq(ServiceEvents.REGISTERED), any());
     tracker.close();
 
     lifecycleManager.remove(t -> true);
