@@ -16,13 +16,22 @@ public class ModuleLifecycleManager {
 
   public void start(Predicate<Module> modules) {
     val matching =
-        zephyr
-            .getPlugins()
-            .stream()
+        zephyr.getPlugins().stream()
             .filter(modules)
             .map(Module::getCoordinate)
             .map(Coordinate::toCanonicalForm)
             .collect(Collectors.toList());
     zephyr.start(matching);
+  }
+
+  public void remove(Predicate<Module> o) {
+
+    val matching =
+        zephyr.getPlugins().stream()
+            .filter(o)
+            .map(Module::getCoordinate)
+            .map(Coordinate::toCanonicalForm)
+            .collect(Collectors.toList());
+    zephyr.remove(matching);
   }
 }
