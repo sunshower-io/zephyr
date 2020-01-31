@@ -1,7 +1,7 @@
 package io.zephyr.kernel;
 
-import io.zephyr.api.ModuleContext;
 import io.zephyr.api.ModuleActivator;
+import io.zephyr.api.ModuleContext;
 import io.zephyr.kernel.core.ModuleClasspath;
 import io.zephyr.kernel.memento.Originator;
 import java.nio.file.FileSystem;

@@ -1,7 +1,7 @@
 package io.sunshower.spring;
 
-import io.zephyr.api.ModuleContext;
 import io.zephyr.api.ModuleActivator;
+import io.zephyr.api.ModuleContext;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;

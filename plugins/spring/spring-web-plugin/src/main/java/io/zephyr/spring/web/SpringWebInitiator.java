@@ -1,7 +1,7 @@
 package io.zephyr.spring.web;
 
-import io.zephyr.api.ModuleContext;
 import io.zephyr.api.ModuleActivator;
+import io.zephyr.api.ModuleContext;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;

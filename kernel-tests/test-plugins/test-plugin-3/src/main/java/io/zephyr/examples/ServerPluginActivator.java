@@ -1,7 +1,7 @@
 package io.zephyr.examples;
 
-import io.zephyr.api.ModuleContext;
 import io.zephyr.api.ModuleActivator;
+import io.zephyr.api.ModuleContext;
 import io.zephyr.api.RequirementRegistration;
 
 public class ServerPluginActivator implements ModuleActivator {

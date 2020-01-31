@@ -1,7 +1,7 @@
 package testproject2;
 
-import io.zephyr.api.ModuleContext;
 import io.zephyr.api.ModuleActivator;
+import io.zephyr.api.ModuleContext;
 import lombok.val;
 
 public class Test implements ModuleActivator {

@@ -3,8 +3,8 @@ package io.sunshower.kernel.test;
 import static org.mockito.Mockito.mock;
 
 import io.sunshower.test.common.Tests;
-import io.zephyr.api.ModuleContext;
 import io.zephyr.api.ModuleActivator;
+import io.zephyr.api.ModuleContext;
 import io.zephyr.api.ServiceRegistry;
 import io.zephyr.cli.DefaultZephyr;
 import io.zephyr.cli.Zephyr;

@@ -1,7 +1,7 @@
 package io.zephyr.kernel.core;
 
-import io.zephyr.api.ModuleContext;
 import io.zephyr.api.ModuleActivator;
+import io.zephyr.api.ModuleContext;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.TaskQueue;
 import lombok.Getter;

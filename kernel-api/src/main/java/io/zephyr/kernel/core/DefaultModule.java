@@ -2,8 +2,8 @@ package io.zephyr.kernel.core;
 
 import static io.zephyr.kernel.memento.Mementos.writeCoordinate;
 
-import io.zephyr.api.ModuleContext;
 import io.zephyr.api.ModuleActivator;
+import io.zephyr.api.ModuleContext;
 import io.zephyr.kernel.*;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.memento.Memento;
