@@ -29,7 +29,8 @@ dependencies {
     [
             'banner',
             'logging',
-            'shell'
+            'shell',
+            'directory-scanner'
     ].each {
         implementation project(":kernel-modules:zephyr:zephyr-$it")
     }

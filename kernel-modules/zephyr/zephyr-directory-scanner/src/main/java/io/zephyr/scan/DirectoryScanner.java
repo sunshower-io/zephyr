@@ -10,11 +10,15 @@ import io.zephyr.kernel.extensions.EntryPoint;
 import io.zephyr.kernel.extensions.EntryPointRegistry;
 import io.zephyr.kernel.log.Logging;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.*;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import lombok.val;
 
 public class DirectoryScanner implements EntryPoint {
@@ -39,30 +43,32 @@ public class DirectoryScanner implements EntryPoint {
       return;
     }
 
-    val epoints = registry.getEntryPoints(this::exportsKernel);
-
-    if (epoints.isEmpty()) {
-      log.log(Level.WARNING, "scanner.entrypoint.nokernel");
-    }
-
-    val kernel = epoints.iterator().next().getService(Kernel.class);
-    val zephyr = new DefaultZephyr(kernel);
-
-    running = true;
     try {
-      doRun(kernel, zephyr);
+      val epoints = registry.getEntryPoints(this::exportsKernel);
 
-    } catch (IOException ex) {
+      if (epoints.isEmpty()) {
+        log.log(Level.WARNING, "scanner.entrypoint.nokernel");
+      }
+
+      val kernel = epoints.iterator().next().getService(Kernel.class);
+      val zephyr = new DefaultZephyr(kernel);
+
+      running = true;
+      doRun(kernel, zephyr);
+    } catch (Exception ex) {
+      running = false;
       log.log(Level.WARNING, "scanner.entrypoint.scanfailed", ex);
     }
   }
 
   private void doRun(Kernel kernel, Zephyr zephyr) throws IOException {
     fileSystem = kernel.getFileSystem();
-    watchService = fileSystem.newWatchService();
-    registerKeys(watchService);
 
-    watch(zephyr, watchService);
+    if (options != null && options.isScan()) {
+      watchService = fileSystem.newWatchService();
+      registerKeys(zephyr, watchService);
+      watch(zephyr, watchService);
+    }
   }
 
   private void watch(Zephyr zephyr, WatchService watchService) {
@@ -83,27 +89,51 @@ public class DirectoryScanner implements EntryPoint {
     }
   }
 
-  private void registerKeys(WatchService watchService) throws IOException {
+  private void registerKeys(Zephyr zephyr, WatchService watchService) throws IOException {
     val paths = options.getDirectories();
     if (paths == null || paths.length == 0) {
-      register(fileSystem.getPath("deployments"), watchService);
+      register(zephyr, fileSystem.getPath("deployments"), watchService);
       return;
     } else {
       for (val path : paths) {
-        register(Path.of(path), watchService);
+        register(zephyr, Path.of(path), watchService);
       }
     }
   }
 
-  private void register(Path path, WatchService watchService) throws IOException {
+  private void register(Zephyr zephyr, Path path, WatchService watchService) throws IOException {
     log.log(Level.INFO, "scanner.watching.path", path);
     val key = path.register(watchService, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
     keys.put(key, path);
+
+    if (options.isInstallOnStart()) {
+      val file = path.toFile();
+      val files = file.listFiles();
+      if (files != null) {
+        val installables =
+            Arrays.stream(files)
+                .map(
+                    t -> {
+                      try {
+                        return t.getAbsoluteFile().toURI().toURL();
+                      } catch (MalformedURLException ex) {
+                        log.log(Level.WARNING, "scanner.directory.scan.failed", ex);
+                        return null;
+                      }
+                    })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        zephyr.install(installables);
+      }
+    }
   }
 
   public void stop() {
+
     try {
-      watchService.close();
+      if (watchService != null) {
+        watchService.close();
+      }
     } catch (IOException e) {
       log.log(Level.WARNING, "scanner.watchservice.close.failed", e);
     } finally {

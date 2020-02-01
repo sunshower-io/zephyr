@@ -1,11 +1,11 @@
 include(
         'zephyr-main',
-        'kernel-modules:zephyr:directory-scanner',
 
         'kernel-modules:zephyr:zephyr-mvel',
         'kernel-modules:zephyr:zephyr-shell',
         'kernel-modules:zephyr:zephyr-banner',
         'kernel-modules:zephyr:zephyr-logging',
+        'kernel-modules:zephyr:zephyr-directory-scanner',
 
         'kernel-gyre:gyre-api',
         'kernel-gyre:gyre-core',

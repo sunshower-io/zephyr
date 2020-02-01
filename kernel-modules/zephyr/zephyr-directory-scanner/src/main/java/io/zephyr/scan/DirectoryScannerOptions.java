@@ -16,6 +16,14 @@ public class DirectoryScannerOptions implements Options<DirectoryScannerOptions>
   )
   private String[] directories;
 
+  @Getter
+  @CommandLine.Option(names = {"--scan"})
+  private boolean scan;
+
+  @Getter
+  @CommandLine.Option(names = {"-install-on-start"})
+  private boolean installOnStart = true;
+
   @Override
   public DirectoryScannerOptions getTarget() {
     return this;

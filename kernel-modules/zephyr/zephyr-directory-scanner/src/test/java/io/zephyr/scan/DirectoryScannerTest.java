@@ -62,6 +62,9 @@ class DirectoryScannerTest {
   void ensureKernelDefaultDeploymentDirectoryIsScannedForRemovals() {
     val file = createFile();
     kernel.addEventListener(eventListener, ModuleEvents.REMOVED, ModuleEvents.INSTALLED);
+
+    context.put(EntryPoint.ContextEntries.ARGS, new String[] {"--scan"});
+    scanner.initialize(context);
     val latch = new CyclicBarrier(1);
     watch(latch);
     val installable = ProjectPlugins.TEST_PLUGIN_1.getFile();
@@ -102,6 +105,8 @@ class DirectoryScannerTest {
   void ensureKernelDefaultDeploymentDirectoryIsScanned() {
     val file = createFile();
     kernel.addEventListener(eventListener, ModuleEvents.INSTALLING);
+    context.put(EntryPoint.ContextEntries.ARGS, new String[] {"--scan"});
+    scanner.initialize(context);
     val latch = new CyclicBarrier(1);
     watch(latch);
     val installable = ProjectPlugins.TEST_PLUGIN_1.getFile();
