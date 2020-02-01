@@ -53,5 +53,7 @@ include(
         /**
          * official plugins
          */
-        'plugins:spring:spring-web-plugin'
+        'plugins:spring:spring-web-plugin',
+
+        'tools:gradle-plugin'
 )

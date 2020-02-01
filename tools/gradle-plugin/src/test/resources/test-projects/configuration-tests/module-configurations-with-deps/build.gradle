@@ -1,0 +1,12 @@
+plugins {
+    id 'io.zephyr.gradle'
+
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    zephyrModule "org.jboss.modules:jboss-modules:1.9.2.Final"
+}

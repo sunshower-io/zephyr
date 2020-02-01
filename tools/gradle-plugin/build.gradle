@@ -1,0 +1,7 @@
+plugins {
+    id 'java-gradle-plugin'
+}
+
+dependencies {
+    testImplementation project(':kernel-tests:kernel-test-common')
+}
