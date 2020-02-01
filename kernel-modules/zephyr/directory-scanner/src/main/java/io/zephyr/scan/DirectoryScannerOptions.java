@@ -11,8 +11,9 @@ public class DirectoryScannerOptions implements Options<DirectoryScannerOptions>
 
   @Getter
   @CommandLine.Option(
-      split = ",",
-      names = {"scan", "s"})
+    split = ",",
+    names = {"-w", "--watch"}
+  )
   private String[] directories;
 
   @Override

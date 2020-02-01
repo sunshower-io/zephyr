@@ -34,7 +34,8 @@ public class ServiceTrackerTest {
   void ensureTrackingServiceProducesServiceInInstalledTestPlugin() {
     val tracker = context.trackServices(t -> true);
     tracker.addEventListener(listener, ServiceEvents.REGISTERED);
-    zephyr.install(ProjectPlugins.TEST_PLUGIN_2.getUrl(), ProjectPlugins.TEST_PLUGIN_1.getUrl());
+    zephyr.install(ProjectPlugins.TEST_PLUGIN_1.getUrl());
+    zephyr.install(ProjectPlugins.TEST_PLUGIN_2.getUrl());
     lifecycleManager.start(t -> t.getCoordinate().getName().contains("2"));
     tracker.waitUntil(t -> t.size() > 0);
     verify(listener).onEvent(eq(ServiceEvents.REGISTERED), any());
@@ -50,7 +51,8 @@ public class ServiceTrackerTest {
     val tracker =
         context.trackServices(Queries.create("mvel", "value.definition.name contains 'class'"));
     tracker.addEventListener(listener, ServiceEvents.REGISTERED);
-    zephyr.install(ProjectPlugins.TEST_PLUGIN_2.getUrl(), ProjectPlugins.TEST_PLUGIN_1.getUrl());
+    zephyr.install(ProjectPlugins.TEST_PLUGIN_1.getUrl());
+    zephyr.install(ProjectPlugins.TEST_PLUGIN_2.getUrl());
     lifecycleManager.start(t -> t.getCoordinate().getName().contains("2"));
     tracker.waitUntil(t -> t.size() > 0);
     verify(listener, timeout(1000)).onEvent(eq(ServiceEvents.REGISTERED), any());

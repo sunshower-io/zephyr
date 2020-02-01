@@ -40,7 +40,12 @@ public enum ModuleEvents implements EventType {
   STOP_FAILED,
 
   /** Dispatched when a plugin has successfully stopped */
-  STOPPED;
+  STOPPED,
+
+  /** dispatched when a plugin is scheduled for deletion */
+  REMOVING,
+  /** dispatched when a plugin is removed */
+  REMOVED;
 
   @Getter private final int id;
 

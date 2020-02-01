@@ -71,7 +71,7 @@ public class KernelTestConfiguration {
 
   @Bean
   public Zephyr zephyr(Kernel kernel) {
-    return new DefaultZephyr(null, kernel);
+    return new DefaultZephyr(kernel);
   }
 
   @Bean

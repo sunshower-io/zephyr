@@ -1,5 +1,19 @@
 apply plugin: 'java'
 
+configurations {
+    tests {
+        extendsFrom(testRuntime)
+    }
+}
+
+task testArtifact(type: Jar) {
+    archiveClassifier = 'tests'
+    from sourceSets.test.output
+
+}
+artifacts {
+    tests testArtifact
+}
 dependencies {
 
     testImplementation project(':kernel-core')
@@ -8,3 +22,4 @@ dependencies {
     testImplementation project(':kernel-modules:sunshower-spring')
     testImplementation project(':kernel-modules:sunshower-yaml-reader')
 }
+
