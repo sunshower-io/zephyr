@@ -8,7 +8,7 @@ public class DevelopmentPlugin implements Plugin<Project> {
   static final String[] configurations = {
     "zephyrModule" // creates the default module configuration
     ,
-    "zephyrDevModule" // creates the default development modules configuration
+    "zephyrDevelopmentModule" // creates the default development modules configuration
     ,
     "zephyrKernelModule" // creates the default kernel modules configuration
   };

@@ -1,5 +1,8 @@
 package io.zephyr.gradle;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.io.File;
 import lombok.val;
 import org.gradle.api.Project;
 import org.gradle.testfixtures.ProjectBuilder;
@@ -8,17 +11,13 @@ import org.gradle.testkit.runner.GradleRunner;
 import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 public class DevelopmentPluginTest {
 
   @Test
   void ensureDevelopmentPluginProvidesModulesConfiguration() {
     Project project = ProjectBuilder.builder().build();
     project.getPluginManager().apply("io.zephyr.gradle");
-    val cfg = project.getConfigurations().getByName("modules");
+    val cfg = project.getConfigurations().getByName("zephyrModule");
 
     assertEquals("zephyrModule", cfg.getName(), "must have correct name");
     assertEquals(0, cfg.getDependencies().size(), "must have no dependencies");
@@ -28,7 +27,7 @@ public class DevelopmentPluginTest {
   void ensureDevelopmentPluginProvidesDevModulesConfiguration() {
     Project project = ProjectBuilder.builder().build();
     project.getPluginManager().apply("io.zephyr.gradle");
-    val cfg = project.getConfigurations().getByName("devModules");
+    val cfg = project.getConfigurations().getByName("zephyrDevelopmentModule");
 
     assertEquals("zephyrDevelopmentModule", cfg.getName(), "must have correct name");
     assertEquals(0, cfg.getDependencies().size(), "must have no dependencies");
@@ -37,9 +36,10 @@ public class DevelopmentPluginTest {
   @Test
   void ensureDevelopmentPluginSuppliesDependenciesWhenAdded() {
 
-    final BuildResult build = GradleRunner.create()
+    final BuildResult build =
+        GradleRunner.create()
             .withProjectDir(
-                    resources("test-projects/configuration-tests/module-configurations-with-deps"))
+                resources("test-projects/configuration-tests/module-configurations-with-deps"))
             .withPluginClasspath()
             .withDebug(true)
             .withArguments("zephyrDev")

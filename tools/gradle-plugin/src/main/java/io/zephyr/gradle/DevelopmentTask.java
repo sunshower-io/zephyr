@@ -10,7 +10,7 @@ public class DevelopmentTask extends DefaultTask {
   public void perform() {
     val project = getProject();
     for (val cfg : project.getConfigurations()) {
-      for(val artifact : cfg.getResolvedConfiguration().getResolvedArtifacts()) {
+      for (val artifact : cfg.getResolvedConfiguration().getResolvedArtifacts()) {
         System.out.println(artifact.getFile());
       }
       for (val dep : cfg.getDependencies()) {
