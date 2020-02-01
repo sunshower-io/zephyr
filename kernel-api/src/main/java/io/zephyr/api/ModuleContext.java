@@ -7,6 +7,8 @@ import java.util.function.Supplier;
 
 public interface ModuleContext {
 
+  <T> T unwrap(Class<T> type);
+
   <T> Predicate<T> createFilter(Query<T> query);
 
   <T> CapabilityRegistration<T> provide(CapabilityDefinition<T> capability);

@@ -8,6 +8,9 @@ apply plugin: 'application'
 apply plugin: 'java-library'
 apply plugin: 'com.github.spotbugs'
 
+configurations {
+    plugin
+}
 
 dependencies {
 
@@ -35,6 +38,13 @@ dependencies {
         implementation project(":kernel-modules:zephyr:zephyr-$it")
     }
 
+
+    [
+            'directory-scanner'
+    ].each {
+        plugin project(":kernel-modules:zephyr:zephyr-$it")
+    }
+
     testImplementation project(path: ':kernel-core', configuration: 'tests')
 }
 
@@ -44,6 +54,13 @@ application {
     mainClassName = 'io.zephyr.kernel.launch.KernelLauncher'
 }
 
+task extractPlugins(type: Copy)  {
+    
+    from configurations.plugin
+    into "${projectDir}/zephyr/kernel/deployments"
+}
+
+build.dependsOn extractPlugins
 
 startScripts {
     classpath = files("lib/*")
