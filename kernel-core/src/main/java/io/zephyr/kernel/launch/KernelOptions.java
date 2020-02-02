@@ -38,6 +38,7 @@ public class KernelOptions extends AbstractValidatable<KernelOptions>
 
   /** Specify the maximum number of threads the Sunshower Kernel may start for gyre */
   @Getter
+  @Setter
   @CommandLine.Option(
     names = {"-c", "--max-concurrency"},
     defaultValue = "8",
@@ -47,6 +48,7 @@ public class KernelOptions extends AbstractValidatable<KernelOptions>
 
   /** Specify the maximum number of threads the Sunshower Kernel may start for kernel use */
   @Getter
+  @Setter
   @CommandLine.Option(
     names = {"-k", "--kernel-concurrency"},
     defaultValue = "2",

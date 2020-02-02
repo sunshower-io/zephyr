@@ -9,13 +9,15 @@ public class DevelopmentTask extends DefaultTask {
   @TaskAction
   public void perform() {
     val project = getProject();
+
+//    val kernel = createKernel();
     for (val cfg : project.getConfigurations()) {
       for (val artifact : cfg.getResolvedConfiguration().getResolvedArtifacts()) {
-        System.out.println(artifact.getFile());
-      }
-      for (val dep : cfg.getDependencies()) {
-        System.out.println(dep);
+
+
       }
     }
   }
+
+
 }

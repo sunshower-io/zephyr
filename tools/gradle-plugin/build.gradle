@@ -3,5 +3,6 @@ plugins {
 }
 
 dependencies {
+    implementation project(':')
     testImplementation project(':kernel-tests:kernel-test-common')
 }
