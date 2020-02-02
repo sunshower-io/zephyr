@@ -6,7 +6,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "io.zephyr:gradle-plugin:2.0.0-SNAPSHOT"
+        classpath "io.zephyr:synchronous-api:2.0.0-SNAPSHOT"
     }
 }
 
