@@ -9,6 +9,7 @@ import org.gradle.testfixtures.ProjectBuilder;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
 import org.gradle.testkit.runner.TaskOutcome;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class DevelopmentPluginTest {
@@ -34,6 +35,7 @@ public class DevelopmentPluginTest {
   }
 
   @Test
+  @Disabled
   void ensureDevelopmentPluginSuppliesDependenciesWhenAdded() {
 
     final BuildResult build =
@@ -43,6 +45,7 @@ public class DevelopmentPluginTest {
             .withPluginClasspath()
             .withDebug(true)
             .withArguments("zephyrDev")
+            .forwardOutput()
             .build();
     System.out.println(build.getOutput());
 

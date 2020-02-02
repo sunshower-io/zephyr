@@ -5,11 +5,10 @@ import io.zephyr.kernel.concurrency.NamedThreadFactory;
 import io.zephyr.kernel.concurrency.WorkerPool;
 import io.zephyr.kernel.core.DaggerSunshowerKernelConfiguration;
 import io.zephyr.kernel.launch.KernelOptions;
-import lombok.AllArgsConstructor;
-import lombok.val;
-
 import java.io.File;
 import java.util.concurrent.Executors;
+import lombok.AllArgsConstructor;
+import lombok.val;
 
 final class builders {
 

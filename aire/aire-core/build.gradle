@@ -1,0 +1,16 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+    dependencies {
+        classpath "io.zephyr:gradle-plugin:2.0.0-SNAPSHOT"
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'io.zephyr.gradle'
+
+dependencies {
+    zephyrModule project(':kernel-modules:synchronous-api')
+}

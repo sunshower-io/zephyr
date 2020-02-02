@@ -1,4 +1,3 @@
 package io.zephyr.cli;
 
-public interface BuilderWithUserThreads extends Creator {
-}
+public interface BuilderWithUserThreads extends Creator {}

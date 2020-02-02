@@ -1,8 +1,43 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        jcenter()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath "io.zephyr:gradle-plugin:2.0.0-SNAPSHOT"
+    }
+}
+
 plugins {
+
+    id 'java'
+    id 'java-library'
     id 'java-gradle-plugin'
 }
 
+
 dependencies {
-    implementation project(':')
-    testImplementation project(':kernel-tests:kernel-test-common')
+    compileOnly gradleApi()
+    [
+        project(':kernel-modules:synchronous-api')
+    ].each {
+        api it
+        apiElements it
+        runtimeElements it
+        runtimeClasspath it
+        compileClasspath it
+        implementation it
+        compile it
+    }
+//    api(project(':kernel-modules:synchronous-api')) {
+////        exclude(group: 'io.zephyr', module: 'kernel-lib')
+//    }
+    testImplementation(project(':kernel-tests:kernel-test-common')) {
+//        exclude(group: 'io.zephyr', module: 'kernel-lib')
+
+    }
+
 }
+
