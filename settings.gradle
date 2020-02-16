@@ -1,24 +1,12 @@
 
-//pluginManagement {
-//
-//    plugins {
-//        id 'io.zephyr.gradle' version "2.0.0-SNAPSHOT"
-//
-//    }
-//
-//    resolutionStrategy {
-//        eachPlugin {
-//            if(requested.id.namespace == 'io.zephyr.gradle') {
-//                useModule("io.zephyr:gradle-plugin:2.0.0-SNAPSHOT")
-//            }
-//        }
-//    }
-//    repositories {
-//        gradlePluginPortal()
-//        mavenLocal()
-//        mavenCentral()
-//    }
-//}
+pluginManagement {
+    repositories {
+        jcenter()
+        mavenLocal()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
 include(
 
         'aire:aire-core',

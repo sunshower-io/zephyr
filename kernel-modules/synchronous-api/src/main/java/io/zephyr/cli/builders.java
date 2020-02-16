@@ -10,6 +10,7 @@ import java.util.concurrent.Executors;
 import lombok.AllArgsConstructor;
 import lombok.val;
 
+@SuppressWarnings("PMD.UseProperClassLoader")
 final class builders {
 
   static class Builder implements ZephyrBuilder {
@@ -62,7 +63,7 @@ final class builders {
 
       val kernel =
           DaggerSunshowerKernelConfiguration.factory()
-              .create(options(), ClassLoader.getSystemClassLoader(), workerPool())
+              .create(options(), getClass().getClassLoader(), workerPool())
               .kernel();
       return new DefaultZephyr(kernel);
     }
@@ -87,7 +88,7 @@ final class builders {
     options.setHomeDirectory(homeDirectory);
     val kernel =
         DaggerSunshowerKernelConfiguration.factory()
-            .create(options, ClassLoader.getSystemClassLoader(), workerPool())
+            .create(options, Zephyr.class.getClassLoader(), workerPool())
             .kernel();
     return new DefaultZephyr(kernel);
   }

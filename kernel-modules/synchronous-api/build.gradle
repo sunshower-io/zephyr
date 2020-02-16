@@ -27,6 +27,7 @@ dependencies {
 }
 
 war {
+    archiveClassifier = "km"
     manifest {
         attributes(
                 "type": "kernel-module",
