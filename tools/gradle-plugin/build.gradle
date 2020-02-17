@@ -35,6 +35,7 @@ dependencies {
             ":kernel-api",
             ":kernel-core",
             ":kernel-gyre:gyre-api",
+            ":kernel-modules:synchronous-api",
             ":kernel-modules:kernel-lib"
     ].each {
         implementation(project(it))
