@@ -25,10 +25,18 @@ public class DevelopmentTask extends DefaultTask {
     val project = getProject();
     val zephyr =
         Zephyr.builder().homeDirectory(randomDir(project)).create(getClass().getClassLoader());
-    val urls = collectUrls(project);
-    zephyr.startup();
+
+    installKernelModules(zephyr, project);
+    val urls = collectUrls(project, "zephyrModule");
     zephyr.install(urls);
     start(zephyr, urls);
+  }
+
+  private void installKernelModules(Zephyr zephyr, Project project) throws MalformedURLException {
+    val urls = collectUrls(project, "zephyrKernelModule");
+    zephyr.startup();
+    zephyr.install(urls);
+    zephyr.restart();
   }
 
   private void start(Zephyr zephyr, Set<URL> urls) {
@@ -50,11 +58,11 @@ public class DevelopmentTask extends DefaultTask {
     }
   }
 
-  private Set<URL> collectUrls(Project project) throws MalformedURLException {
+  private Set<URL> collectUrls(Project project, String configuration) throws MalformedURLException {
     val urls = new HashSet<URL>();
 
     for (val cfg : project.getConfigurations()) {
-      if (DevelopmentPlugin.isPluginConfiguration(cfg.getName()) && cfg.isCanBeResolved()) {
+      if (cfg.getName().equals(configuration)) {
         for (val artifact : cfg.getResolvedConfiguration().getResolvedArtifacts()) {
           urls.add(artifact.getFile().toURI().toURL());
         }

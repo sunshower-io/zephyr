@@ -14,7 +14,15 @@ apply plugin: 'io.zephyr.gradle'
 
 
 dependencies {
-    zephyrModule 'io.zephyr:sunshower-yaml-reader:2.0.0-SNAPSHOT@war'
+    zephyrKernelModule 'io.zephyr:sunshower-yaml-reader:2.0.0-SNAPSHOT@war'
+
+
+    zephyrModule 'io.zephyr:spring-web-plugin:2.0.0-SNAPSHOT@war'
+    zephyrModule 'io.zephyr:sunshower-spring:2.0.0-SNAPSHOT@war'
+    zephyrModule 'io.zephyr:test-plugin-spring:2.0.0-SNAPSHOT@war'
+
+
+
 //    [
 //            project(':plugins:spring:spring-web-plugin'),
 //            project(':kernel-modules:sunshower-spring'),
