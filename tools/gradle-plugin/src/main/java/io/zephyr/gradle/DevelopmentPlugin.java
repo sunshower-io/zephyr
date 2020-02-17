@@ -13,6 +13,15 @@ public class DevelopmentPlugin implements Plugin<Project> {
     "zephyrKernelModule" // creates the default kernel modules configuration
   };
 
+  public static boolean isPluginConfiguration(String cfg) {
+    for (val pluginConfiguration : configurations) {
+      if (pluginConfiguration.equals(cfg)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   @Override
   public void apply(Project project) {
     createConfiguration(project);

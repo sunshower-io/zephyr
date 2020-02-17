@@ -33,7 +33,9 @@ public class DefaultZephyr implements Zephyr {
   }
 
   @Override
-  public void install(Collection<URL> urls) {}
+  public void install(Collection<URL> urls) {
+    install(urls.toArray(new URL[urls.size()]));
+  }
 
   @Override
   public void install(URL... urls) {

@@ -31,8 +31,9 @@ final class builders {
     }
 
     @Override
-    public Zephyr create() {
-      return builders.create(homeDirectory);
+    public Zephyr create(ClassLoader classLoader) {
+
+      return builders.create(homeDirectory, classLoader);
     }
   }
 
@@ -47,8 +48,8 @@ final class builders {
     }
 
     @Override
-    public Zephyr create() {
-      return builders.create(homeDirectory);
+    public Zephyr create(ClassLoader classLoader) {
+      return builders.create(homeDirectory, classLoader);
     }
   }
 
@@ -59,11 +60,11 @@ final class builders {
     final File homeDirectory;
 
     @Override
-    public Zephyr create() {
+    public Zephyr create(ClassLoader classLoader) {
 
       val kernel =
           DaggerSunshowerKernelConfiguration.factory()
-              .create(options(), getClass().getClassLoader(), workerPool())
+              .create(options(), classLoader, workerPool())
               .kernel();
       return new DefaultZephyr(kernel);
     }
@@ -83,12 +84,12 @@ final class builders {
     return new ExecutorWorkerPool(userFactory, kernelFactory);
   }
 
-  static Zephyr create(File homeDirectory) {
+  static Zephyr create(File homeDirectory, ClassLoader classLoader) {
     val options = new KernelOptions();
     options.setHomeDirectory(homeDirectory);
     val kernel =
         DaggerSunshowerKernelConfiguration.factory()
-            .create(options, Zephyr.class.getClassLoader(), workerPool())
+            .create(options, classLoader, workerPool())
             .kernel();
     return new DefaultZephyr(kernel);
   }

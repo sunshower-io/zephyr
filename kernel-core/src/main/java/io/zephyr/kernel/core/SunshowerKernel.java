@@ -73,12 +73,20 @@ public class SunshowerKernel implements Kernel, EventSource {
 
   @Inject
   public SunshowerKernel(
-      ModuleManager moduleManager, ServiceRegistry registry, Scheduler<String> scheduler) {
+      ModuleManager moduleManager,
+      ServiceRegistry registry,
+      Scheduler<String> scheduler,
+      ClassLoader parentClassloader) {
     this.scheduler = scheduler;
     this.serviceRegistry = registry;
     this.moduleManager = moduleManager;
-    this.lifecycle = new DefaultKernelLifecycle(this, scheduler);
+    this.lifecycle = new DefaultKernelLifecycle(this, scheduler, parentClassloader);
     this.eventDispatcher = new AsynchronousEventSource(scheduler.getKernelExecutor());
+  }
+
+  public SunshowerKernel(
+      ModuleManager moduleManager, ServiceRegistry registry, Scheduler<String> scheduler) {
+    this(moduleManager, registry, scheduler, Thread.currentThread().getContextClassLoader());
   }
 
   public static void setKernelOptions(KernelOptions options) {
@@ -334,7 +342,7 @@ public class SunshowerKernel implements Kernel, EventSource {
 
   private FileSystem hydrateFilesystem(Coordinate coordinate) throws IOException {
     try {
-      val result = Plugins.getFileSystem(coordinate);
+      val result = Plugins.getFileSystem(coordinate, this);
       log.log(Level.INFO, "plugin.fs.hydration.succeeded", new Object[] {coordinate, result.fst});
       return result.snd;
     } catch (IOException ex) {

@@ -30,15 +30,28 @@ import lombok.val;
 })
 public class DefaultKernelLifecycle implements KernelLifecycle {
 
-  private final AtomicReference<State> state;
+  /** mutable state */
   private SunshowerKernel kernel;
+
   private Scheduler<String> scheduler;
 
+  /** immutable state */
+  private final AtomicReference<State> state;
+
+  private final ClassLoader parentClassloader;
+
   @Inject
-  public DefaultKernelLifecycle(SunshowerKernel kernel, Scheduler<String> scheduler) {
+  public DefaultKernelLifecycle(
+      SunshowerKernel kernel, Scheduler<String> scheduler, ClassLoader parent) {
     this.kernel = kernel;
+    this.parentClassloader = parent;
     this.scheduler = scheduler;
     this.state = new AtomicReference<>(State.Stopped);
+  }
+
+  @Override
+  public ClassLoader getLaunchClassloader() {
+    return parentClassloader;
   }
 
   @Override

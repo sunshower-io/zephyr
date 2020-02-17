@@ -41,7 +41,7 @@ public class PluginRemoveTask extends Task {
     val moduleName = coordinate.getName();
     log.log(Level.INFO, "plugin.remove.starting", new Object[] {moduleName});
     try {
-      val fs = Plugins.getFileSystem(coordinate);
+      val fs = Plugins.getFileSystem(coordinate, kernel);
       val visitor = new DeleteVisitor();
       for (val path : fs.getSnd().getRootDirectories()) {
         Files.walkFileTree(path, visitor);

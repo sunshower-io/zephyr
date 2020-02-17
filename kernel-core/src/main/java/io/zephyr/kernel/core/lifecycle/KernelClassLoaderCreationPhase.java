@@ -32,7 +32,8 @@ public class KernelClassLoaderCreationPhase extends Task {
 
     try {
       URL[] url = readUrls(entries);
-      val loader = new KernelClassloader(url, ClassLoader.getSystemClassLoader(), entries);
+      val loader =
+          new KernelClassloader(url, kernel.getLifecycle().getLaunchClassloader(), entries);
       kernel.setClassLoader(loader);
     } catch (MalformedURLException ex) {
       throw new TaskException(ex, TaskStatus.UNRECOVERABLE);

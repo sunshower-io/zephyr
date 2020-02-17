@@ -14,7 +14,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import lombok.val;
 
-@SuppressWarnings("PMD.AvoidPrintStackTrace")
+@SuppressWarnings({"PMD.AvoidPrintStackTrace", "PMD.UseProperClassLoader"})
 public class KernelFilesystemCreatePhase extends Task {
 
   static final Logger log = Logging.get(KernelFilesystemCreatePhase.class, "KernelLifecycle");
@@ -36,7 +36,9 @@ public class KernelFilesystemCreatePhase extends Task {
       try {
         fs = FileSystems.getFileSystem(URI.create(FILE_SYSTEM_ROOT));
       } catch (Exception ex) {
-        fs = FileSystems.newFileSystem(URI.create(FILE_SYSTEM_ROOT), Collections.emptyMap());
+        fs =
+            FileSystems.newFileSystem(
+                URI.create(FILE_SYSTEM_ROOT), Collections.emptyMap(), getClass().getClassLoader());
       }
 
       kernel.setFileSystem(fs);

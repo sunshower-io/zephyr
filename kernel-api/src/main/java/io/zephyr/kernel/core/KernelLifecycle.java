@@ -5,6 +5,8 @@ import java.util.concurrent.CompletionStage;
 
 public interface KernelLifecycle {
 
+  ClassLoader getLaunchClassloader();
+
   enum State {
     Error(-1),
     Stopped(0),

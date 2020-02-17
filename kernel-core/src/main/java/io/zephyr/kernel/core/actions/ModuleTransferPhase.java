@@ -86,7 +86,7 @@ public class ModuleTransferPhase extends Task {
     dispatchEvent(kernel, descriptor, ModulePhaseEvents.MODULE_FILESYSTEM_CREATION_INITIATED);
     val coordinate = descriptor.getCoordinate();
     try {
-      val result = Plugins.getFileSystem(coordinate);
+      val result = Plugins.getFileSystem(coordinate, kernel);
       val uri = result.fst;
       val fs = result.snd;
       log.log(Level.INFO, "transfer.uri", uri);

@@ -5,12 +5,25 @@ buildscript {
     }
     dependencies {
         classpath "io.zephyr:gradle-plugin:2.0.0-SNAPSHOT"
-
     }
-    
+
 }
 
-apply plugin:  'io.zephyr.gradle'
+apply plugin: 'java'
+apply plugin: 'io.zephyr.gradle'
+
+
+dependencies {
+    zephyrModule 'io.zephyr:sunshower-yaml-reader:2.0.0-SNAPSHOT@war'
+//    [
+//            project(':plugins:spring:spring-web-plugin'),
+//            project(':kernel-modules:sunshower-spring'),
+//            project(':kernel-modules:sunshower-yaml-reader'),
+//            project(':kernel-tests:test-plugins:test-plugin-spring')
+//    ].each {
+//        zephyrModule it
+//    }
+}
 
 
 
