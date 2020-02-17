@@ -1,5 +1,6 @@
 apply plugin: 'war'
-apply plugin: 'java-library'
+apply plugin: 'java'
+//apply plugin: 'java-library'
 dependencies {
 
     [
@@ -7,9 +8,23 @@ dependencies {
             'spring-core',
             'spring-context'
     ].each {
-        api "org.springframework:$it"
+        implementation "org.springframework:$it"
     }
 
-    api project(':kernel-api')
-    api project(':kernel-modules:kernel-lib')
+    compileOnly project(':kernel-api')
+    compileOnly project(':kernel-modules:kernel-lib')
 }
+
+//war {
+//    manifest {
+//        attributes(
+//                "type": "kernel-module",
+//                "composite": true,
+//                "group": project.group,
+//                "name": project.name,
+//                "version": project.version,
+//                "protected": false
+//        )
+//
+//    }
+//}

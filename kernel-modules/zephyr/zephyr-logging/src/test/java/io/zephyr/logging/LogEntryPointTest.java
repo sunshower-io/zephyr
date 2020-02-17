@@ -6,7 +6,6 @@ import static org.mockito.Mockito.spy;
 
 import io.sunshower.test.common.Tests;
 import io.zephyr.kernel.extensions.EntryPoint;
-import io.zephyr.kernel.launch.KernelLauncher;
 import io.zephyr.kernel.launch.KernelOptions;
 import java.util.Collections;
 import java.util.EnumMap;

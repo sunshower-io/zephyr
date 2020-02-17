@@ -2006,26 +2006,6 @@ Class c = String.class;
         </example>
     </rule>
 
-    <rule name="InvalidSlf4jMessageFormat"
-          language="java"
-          since="5.5.0"
-          message="Invalid message format"
-          class="net.sourceforge.pmd.lang.java.rule.errorprone.InvalidSlf4jMessageFormatRule"
-          externalInfoUrl="${pmd.website.baseurl}/pmd_rules_java_errorprone.html#invalidslf4jmessageformat">
-        <description>
-            Check for messages in slf4j and log4j2 (since 6.19.0) loggers with non matching number of arguments and
-            placeholders.
-        </description>
-        <priority>5</priority>
-        <example>
-            <![CDATA[
-LOGGER.error("forget the arg {}");
-LOGGER.error("too many args {}", "arg1", "arg2");
-LOGGER.error("param {}", "arg1", new IllegalStateException("arg")); //The exception is shown separately, so is correct.
-]]>
-        </example>
-    </rule>
-
     <rule name="JumbledIncrementer"
           language="java"
           since="1.0"

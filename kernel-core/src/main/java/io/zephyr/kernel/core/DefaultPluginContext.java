@@ -38,6 +38,12 @@ public class DefaultPluginContext implements ModuleContext {
     return null;
   }
 
+  @Override
+  @SuppressWarnings("unchecked")
+  public <T> T unwrap(Class<T> type) {
+    return (T) kernel;
+  }
+
   /**
    * this resolves an expression language as follows:
    *

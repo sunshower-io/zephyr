@@ -3,6 +3,7 @@ package io.zephyr.kernel.concurrency;
 import java.util.concurrent.ExecutorService;
 import javax.inject.Inject;
 
+@SuppressWarnings("PMD.DoNotUseThreads")
 public final class KernelScheduler<K> implements Scheduler<K> {
 
   final WorkerPool workerPool;

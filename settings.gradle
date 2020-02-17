@@ -1,8 +1,22 @@
+
+pluginManagement {
+    repositories {
+        jcenter()
+        mavenLocal()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
 include(
+
+
+
+        'zephyr-main',
         'kernel-modules:zephyr:zephyr-mvel',
         'kernel-modules:zephyr:zephyr-shell',
         'kernel-modules:zephyr:zephyr-banner',
         'kernel-modules:zephyr:zephyr-logging',
+        'kernel-modules:zephyr:zephyr-directory-scanner',
 
         'kernel-gyre:gyre-api',
         'kernel-gyre:gyre-core',
@@ -50,5 +64,8 @@ include(
         /**
          * official plugins
          */
-        'plugins:spring:spring-web-plugin'
+        'plugins:spring:spring-web-plugin',
+
+        'tools:gradle-plugin'
 )
+

@@ -7,6 +7,7 @@ import java.net.URI;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystemNotFoundException;
 import java.nio.file.FileSystems;
+import java.nio.file.ProviderNotFoundException;
 import java.util.Collections;
 import lombok.val;
 
@@ -15,7 +16,7 @@ public class Plugins {
   static final String FILE_SYSTEM_URI_TEMPLATE = "droplet://%s.%s?version=%s";
 
   @SuppressWarnings({"PMD.CloseResource", "PMD.DataflowAnomalyAnalysis"})
-  public static final Pair<String, FileSystem> getFileSystem(Coordinate coordinate)
+  public static final Pair<String, FileSystem> getFileSystem(Coordinate coordinate, Kernel kernel)
       throws IOException {
     val uri =
         String.format(
@@ -26,8 +27,10 @@ public class Plugins {
     FileSystem fs;
     try {
       fs = FileSystems.getFileSystem(URI.create(uri));
-    } catch (FileSystemNotFoundException ex) {
-      fs = FileSystems.newFileSystem(URI.create(uri), Collections.emptyMap());
+    } catch (FileSystemNotFoundException | ProviderNotFoundException ex) {
+      fs =
+          FileSystems.newFileSystem(
+              URI.create(uri), Collections.emptyMap(), kernel.getClassLoader());
     }
     return Pair.of(uri, fs);
   }

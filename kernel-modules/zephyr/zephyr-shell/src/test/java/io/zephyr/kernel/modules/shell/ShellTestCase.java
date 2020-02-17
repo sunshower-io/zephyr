@@ -255,7 +255,7 @@ public class ShellTestCase {
   protected void installAndWaitForModuleCount(int count, Installable... modules) {
     install(modules);
     while (kernel.getModuleManager().getModules().size() < count) {
-      Thread.sleep(200);
+      Thread.sleep(150);
     }
   }
 

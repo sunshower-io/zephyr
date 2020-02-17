@@ -1,34 +1,27 @@
-import java.nio.file.FileVisitResult
-import java.nio.file.Files
-import java.nio.file.attribute.BasicFileAttributes
-
 plugins {
     id 'net.nemerosa.versioning' version '2.8.2'
 }
 
 apply plugin: 'pmd'
 apply plugin: 'java'
-apply plugin: 'application'
 apply plugin: 'java-library'
 apply plugin: 'com.github.spotbugs'
 
 configurations {
-    bundle
-}
-
-publishing {
-    publications {
-
-        applicationTar(MavenPublication) {
-            from components.java
-            artifact source: distTar, classifier: 'tar', extension: 'tar'
-        }
-        applicationZip(MavenPublication) {
-            from components.java
-            artifact source: distZip, classifier: 'zip', extension: 'zip'
-        }
+    tests {
+        extendsFrom(testRuntime)
     }
 }
+
+task testArtifact(type: Jar) {
+    archiveClassifier = 'tests'
+    from sourceSets.test.output
+
+}
+artifacts {
+    tests testArtifact
+}
+
 
 dependencies {
 
@@ -56,18 +49,10 @@ dependencies {
             project(':kernel-gyre:gyre-api'),
             project(':kernel-modules:kernel-lib')
     ].each {
-        bundle it
         implementation it
     }
 
 
-    [
-            'banner',
-            'logging',
-            'shell'
-    ].each {
-        bundle project(":kernel-modules:zephyr:zephyr-$it")
-    }
     /**
      * Test Dependencies
      */
@@ -99,48 +84,5 @@ dependencies {
 
     annotationProcessor 'com.google.dagger:dagger-compiler'
 
-}
-jar {
-    manifest {
-        attributes(
-                'Kernel-Version': project.version,
-                'Built-By': System.properties['user.name'],
-                'Build-Timestamp': new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(new Date()),
-                'Build-Revision': versioning.info.commit,
-                'Created-By': "Gradle ${gradle.gradleVersion}",
-                'Build-Jdk':
-                        "${System.properties['java.version']} (${System.properties['java.vendor']} ${System.properties['java.vm.version']})"
-                ,
-                'Build-OS':
-                        "${System.properties['os.name']} ${System.properties['os.arch']} ${System.properties['os.version']}"
-        )
-    }
-}
-
-application {
-    applicationName = 'zephyr'
-    mainClassName = 'io.zephyr.kernel.launch.KernelLauncher'
-}
-
-
-startScripts {
-    classpath = files("lib/*")
-}
-
-
-task copyBundles(type:Copy) {
-    destinationDir = file("$project.buildDir/bundle")
-    from(configurations.bundle)
-}
-
-distributions {
-    main {
-        contents {
-            from(copyBundles) {
-                into "lib"
-            }
-
-        }
-    }
 }
 

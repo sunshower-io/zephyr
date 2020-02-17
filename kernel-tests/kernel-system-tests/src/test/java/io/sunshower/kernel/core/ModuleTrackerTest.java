@@ -105,7 +105,7 @@ public class ModuleTrackerTest {
       lifecycleManager.start(ModuleFilters.named("test-plugin-1"));
       tracker.waitUntil(t -> !t.isEmpty());
       verify(moduleListener, times(0)).onEvent(eq(ModuleEvents.INSTALLED), any());
-      verify(moduleListener, times(1)).onEvent(eq(ModuleEvents.STARTED), any());
+      verify(moduleListener, timeout(1000)).onEvent(eq(ModuleEvents.STARTED), any());
     }
   }
 

@@ -1,0 +1,27 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+    dependencies {
+        classpath "io.zephyr:gradle-plugin:2.0.0-SNAPSHOT"
+    }
+
+}
+
+apply plugin: 'java'
+apply plugin: 'io.zephyr.gradle'
+
+
+dependencies {
+    zephyrKernelModule 'io.zephyr:sunshower-yaml-reader:2.0.0-SNAPSHOT@war'
+
+
+    zephyrModule 'io.zephyr:spring-web-plugin:2.0.0-SNAPSHOT@war'
+    zephyrModule 'io.zephyr:sunshower-spring:2.0.0-SNAPSHOT@war'
+    zephyrModule 'io.zephyr:test-plugin-spring:2.0.0-SNAPSHOT@war'
+    zephyrModule 'io.zephyr:test-spring-web-plugin:2.0.0-SNAPSHOT@war'
+}
+
+
+

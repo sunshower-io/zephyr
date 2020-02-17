@@ -44,17 +44,17 @@ public class ModuleFileSystem extends FileSystem implements Closeable {
 
   @Override
   public boolean isOpen() {
-    return false;
+    return FileSystems.getDefault().isOpen();
   }
 
   @Override
   public boolean isReadOnly() {
-    return false;
+    return FileSystems.getDefault().isReadOnly();
   }
 
   @Override
   public String getSeparator() {
-    return null;
+    return File.separator;
   }
 
   @Override
@@ -64,12 +64,12 @@ public class ModuleFileSystem extends FileSystem implements Closeable {
 
   @Override
   public Iterable<FileStore> getFileStores() {
-    return null;
+    return FileSystems.getDefault().getFileStores();
   }
 
   @Override
   public Set<String> supportedFileAttributeViews() {
-    return null;
+    return FileSystems.getDefault().supportedFileAttributeViews();
   }
 
   @Override
@@ -84,16 +84,16 @@ public class ModuleFileSystem extends FileSystem implements Closeable {
 
   @Override
   public PathMatcher getPathMatcher(String syntaxAndPattern) {
-    return null;
+    return FileSystems.getDefault().getPathMatcher(syntaxAndPattern);
   }
 
   @Override
   public UserPrincipalLookupService getUserPrincipalLookupService() {
-    return null;
+    return FileSystems.getDefault().getUserPrincipalLookupService();
   }
 
   @Override
   public WatchService newWatchService() throws IOException {
-    return null;
+    return FileSystems.getDefault().newWatchService();
   }
 }

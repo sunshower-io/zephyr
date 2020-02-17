@@ -1,0 +1,51 @@
+
+//buildscript {
+//    repositories {
+//        mavenLocal()
+//        mavenCentral()
+//    }
+//
+//    dependencies {
+//        classpath "io.zephyr:synchronous-api:2.0.0-SNAPSHOT"
+//    }
+//}
+//
+plugins {
+
+    id 'java'
+    id 'java-library'
+    id 'java-gradle-plugin'
+}
+
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+dependencies {
+    api gradleApi()
+    implementation localGroovy()
+
+    implementation "info.picocli:picocli:4.2.0"
+    implementation "com.google.dagger:dagger:2.26"
+    implementation "com.github.zafarkhaja:java-semver:0.9.0"
+    implementation "org.jboss.modules:jboss-modules:1.9.2.Final"
+
+    [
+            ":kernel-api",
+            ":kernel-core",
+            ":kernel-gyre:gyre-api",
+            ":kernel-modules:synchronous-api",
+            ":kernel-modules:kernel-lib"
+    ].each {
+        implementation(project(it))
+    }
+
+    implementation "io.zephyr:kernel-lib:${project.version}@jar"
+    implementation "io.zephyr:synchronous-api:${project.version}@jar"
+
+
+    testImplementation project(':kernel-tests:kernel-test-common')
+
+}
+

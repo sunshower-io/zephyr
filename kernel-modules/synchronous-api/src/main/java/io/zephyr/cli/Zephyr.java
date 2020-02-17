@@ -9,6 +9,10 @@ import java.util.List;
 
 public interface Zephyr {
 
+  static ZephyrBuilder builder() {
+    return new builders.Builder();
+  }
+
   void install(Collection<URL> urls);
 
   void install(URL... urls);

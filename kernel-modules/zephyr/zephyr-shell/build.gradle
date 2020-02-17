@@ -16,6 +16,7 @@ dependencies {
 
     [
 
+            project(':zephyr-main'),
             project(':kernel-tests:kernel-test-common')
     ].each {
         testImplementation it

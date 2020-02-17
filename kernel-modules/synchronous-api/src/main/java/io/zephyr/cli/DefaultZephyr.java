@@ -24,18 +24,18 @@ import lombok.val;
 public class DefaultZephyr implements Zephyr {
   static final Logger log = Logger.getLogger(Zephyr.class.getName());
   /** The module that this zephyr instance is called from */
-  private final Module module;
 
   /** the underlying kernel instance */
   private final Kernel kernel;
 
-  public DefaultZephyr(final Module module, final Kernel kernel) {
-    this.module = module;
+  public DefaultZephyr(final Kernel kernel) {
     this.kernel = kernel;
   }
 
   @Override
-  public void install(Collection<URL> urls) {}
+  public void install(Collection<URL> urls) {
+    install(urls.toArray(new URL[urls.size()]));
+  }
 
   @Override
   public void install(URL... urls) {
@@ -75,6 +75,7 @@ public class DefaultZephyr implements Zephyr {
   @Override
   public void remove(Collection<String> pluginCoords) {
     try {
+      changeLifecycle(pluginCoords, ModuleLifecycle.Actions.Stop);
       changeLifecycle(pluginCoords, ModuleLifecycle.Actions.Delete);
     } catch (Exception ex) {
       log.log(Level.INFO, "Operation failed:", ex.getMessage());
