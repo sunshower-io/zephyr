@@ -20,17 +20,7 @@ dependencies {
     zephyrModule 'io.zephyr:spring-web-plugin:2.0.0-SNAPSHOT@war'
     zephyrModule 'io.zephyr:sunshower-spring:2.0.0-SNAPSHOT@war'
     zephyrModule 'io.zephyr:test-plugin-spring:2.0.0-SNAPSHOT@war'
-
-
-
-//    [
-//            project(':plugins:spring:spring-web-plugin'),
-//            project(':kernel-modules:sunshower-spring'),
-//            project(':kernel-modules:sunshower-yaml-reader'),
-//            project(':kernel-tests:test-plugins:test-plugin-spring')
-//    ].each {
-//        zephyrModule it
-//    }
+    zephyrModule 'io.zephyr:test-spring-web-plugin:2.0.0-SNAPSHOT@war'
 }
 
 

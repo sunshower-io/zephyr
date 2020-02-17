@@ -10,6 +10,7 @@ import java.util.concurrent.Executors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+@SuppressWarnings("PMD.DoNotUseThreads")
 class AsynchronousEventSourceTest {
 
   private ExecutorService executorService;

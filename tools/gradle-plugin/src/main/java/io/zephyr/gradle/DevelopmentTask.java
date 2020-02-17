@@ -21,7 +21,7 @@ import org.gradle.api.tasks.TaskAction;
 public class DevelopmentTask extends DefaultTask {
 
   @TaskAction
-  public void perform() throws MalformedURLException, FileNotFoundException {
+  public void perform() throws MalformedURLException, FileNotFoundException, InterruptedException {
     val project = getProject();
     val zephyr =
         Zephyr.builder().homeDirectory(randomDir(project)).create(getClass().getClassLoader());
@@ -30,6 +30,11 @@ public class DevelopmentTask extends DefaultTask {
     val urls = collectUrls(project, "zephyrModule");
     zephyr.install(urls);
     start(zephyr, urls);
+
+    Runtime.getRuntime().addShutdownHook(new Thread(zephyr::shutdown));
+    synchronized (this) {
+      wait();
+    }
   }
 
   private void installKernelModules(Zephyr zephyr, Project project) throws MalformedURLException {
