@@ -20,15 +20,6 @@ jobs:
         java-version: 12
     - name: Install Maven Dependencies
       run: mvn install -f bom
-
-    - name: Build Plugin with gradle
-      uses: eskatos/gradle-command-action@v1
-      env:
-        JAVA_TOOL_OPTIONS: -Duser.language=en -Duser.country=US
-
-      with:
-        gradle-version: 6.0.1
-        arguments: clean build pTML -p tools/gradle-plugin -PmavenRepositoryUsername=${{secrets.MAVEN_REPOSITORY_USERNAME}} -PmavenRepositoryPassword=${{secrets.MAVEN_REPOSITORY_PASSWORD}} -PmavenRepositoryUrl=${{secrets.MAVEN_REPOSITORY_URL}} --stacktrace
     - name: Build with Gradle
       uses: eskatos/gradle-command-action@v1
       env:

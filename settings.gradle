@@ -9,7 +9,6 @@ pluginManagement {
 }
 include(
 
-//        'aire:aire-core',
 
 
         'zephyr-main',
