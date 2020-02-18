@@ -30,7 +30,7 @@ public final class ManifestModuleScanner implements ModuleScanner {
 
   @Override
   public Optional<ModuleDescriptor> scan(File file, URL source) {
-    if (!file.exists()) {
+    if (file == null || !file.exists()) {
       return Optional.empty();
     }
 

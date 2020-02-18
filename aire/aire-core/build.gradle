@@ -10,28 +10,43 @@ buildscript {
 
 plugins {
     id 'com.vaadin' version '0.5.0'
-    id 'org.springframework.boot'
+//    id 'org.springframework.boot'
 }
-
+apply plugin: 'war'
 apply plugin: 'java'
 apply plugin: 'io.zephyr.gradle'
 
 
 dependencies {
 
-    implementation project(':kernel-api')
+    compileOnly project(':kernel-api')
 
     zephyrKernelModule 'io.zephyr:sunshower-yaml-reader:2.0.0-SNAPSHOT@war'
+//    zephyrKernelModule 'io.zephyr:sunshower-spring:2.0.0-SNAPSHOT@war'
 
 
     zephyrModule 'io.zephyr:spring-web-plugin:2.0.0-SNAPSHOT@war'
     zephyrModule 'io.zephyr:sunshower-spring:2.0.0-SNAPSHOT@war'
-    zephyrModule 'io.zephyr:test-plugin-spring:2.0.0-SNAPSHOT@war'
-    zephyrModule 'io.zephyr:test-spring-web-plugin:2.0.0-SNAPSHOT@war'
+//    zephyrModule 'io.zephyr:test-plugin-spring:2.0.0-SNAPSHOT@war'
+//    zephyrModule 'io.zephyr:test-spring-web-plugin:2.0.0-SNAPSHOT@war'
 
+    implementation("org.springframework.boot:spring-boot-starter-undertow")
 
     implementation 'com.vaadin:vaadin-spring-boot-starter'
 }
 
 
 
+//dependencies {
+//    compileOnly project(':kernel-api')
+//    api("org.springframework.boot:spring-boot-starter-web")
+//    api("org.springframework.boot:spring-boot-starter-undertow")
+//    testImplementation project(":kernel-tests:kernel-test")
+//
+//}
+//
+configurations {
+    all {
+        exclude group: "org.springframework.boot", module: "spring-boot-starter-tomcat"
+    }
+}

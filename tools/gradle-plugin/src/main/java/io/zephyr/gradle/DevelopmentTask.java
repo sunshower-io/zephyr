@@ -17,7 +17,10 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.Project;
 import org.gradle.api.logging.LogLevel;
 import org.gradle.api.logging.Logger;
+import org.gradle.api.plugins.WarPlugin;
 import org.gradle.api.tasks.TaskAction;
+import org.gradle.api.tasks.bundling.Jar;
+import org.gradle.api.tasks.bundling.War;
 
 public class DevelopmentTask extends DefaultTask {
 
@@ -26,8 +29,12 @@ public class DevelopmentTask extends DefaultTask {
     val project = getProject();
     val zephyr =
         Zephyr.builder().homeDirectory(randomDir(project)).create(getClass().getClassLoader());
+
+    Runtime.getRuntime().addShutdownHook(new Thread(() -> shutDown(zephyr)));
     installKernelModules(zephyr, project);
     val urls = collectUrls(project, "zephyrModule");
+
+    collectSelf(project, urls);
     zephyr.install(urls);
     start(zephyr, urls);
     DevelopmentPlugin.setInstance(zephyr);
@@ -38,7 +45,6 @@ public class DevelopmentTask extends DefaultTask {
   }
 
   private void shutDown(Zephyr zephyr) {
-    System.out.println("Shutting down");
     getLogger().log(LogLevel.INFO, "Shutting down plugin...");
     val plugins = zephyr.getPlugins(Lifecycle.State.Active);
     zephyr.stop(
@@ -87,6 +93,42 @@ public class DevelopmentTask extends DefaultTask {
     }
     logUrls(urls);
     return urls;
+  }
+
+  private void collectSelf(Project project, Set<URL> urls) {
+    val plugins = project.getPlugins();
+
+    //    plugins.withType(
+    //        JavaPlugin.class,
+    //        javaPlugin -> {
+    //          project.getTasks().withType(Jar.class).configureEach(jar -> add(jar, urls));
+    //        });
+    //
+    plugins.withType(
+        WarPlugin.class,
+        javaPlugin -> {
+          project.getTasks().withType(War.class).configureEach(jar -> add(jar, urls));
+        });
+  }
+
+  private void add(Jar jar, Set<URL> urls) {
+
+    val archive = jar.getArchiveFile();
+    if (archive.isPresent()) {
+      val file = archive.get().getAsFile();
+      try {
+        val url = file.toURI().toURL();
+        getLogger().info("Successfully resolved plugin {} for deployment", file.getAbsolutePath());
+        urls.add(url);
+      } catch (MalformedURLException ex) {
+        getLogger()
+            .log(
+                LogLevel.ERROR,
+                "Failed to resolve file {}.  Reason: {}",
+                file.getAbsolutePath(),
+                ex.getMessage());
+      }
+    }
   }
 
   private void logUrls(HashSet<URL> urls) {
