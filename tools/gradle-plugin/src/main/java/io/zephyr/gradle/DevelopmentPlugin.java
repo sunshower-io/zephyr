@@ -1,5 +1,7 @@
 package io.zephyr.gradle;
 
+import io.zephyr.cli.Zephyr;
+import java.util.concurrent.atomic.AtomicReference;
 import lombok.val;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
@@ -12,6 +14,24 @@ public class DevelopmentPlugin implements Plugin<Project> {
     ,
     "zephyrKernelModule" // creates the default kernel modules configuration
   };
+
+  static final AtomicReference<Zephyr> instance;
+
+  static {
+    instance = new AtomicReference<>();
+  }
+
+  public static void setInstance(Zephyr zephyr) {
+    instance.set(zephyr);
+  }
+
+  public static Zephyr getInstance() {
+    val result = instance.get();
+    if (result == null) {
+      throw new IllegalStateException("Attempting to retrieve zephyr when no task has started one");
+    }
+    return result;
+  }
 
   public static boolean isPluginConfiguration(String cfg) {
     for (val pluginConfiguration : configurations) {
@@ -29,7 +49,9 @@ public class DevelopmentPlugin implements Plugin<Project> {
   }
 
   private void registerTasks(Project project) {
-    project.getTasks().create("zephyrDev", DevelopmentTask.class);
+    val devTask = project.getTasks().create("zephyrDev", DevelopmentTask.class);
+    val shutdownTask = project.getTasks().create("zephyrStop", ShutdownTask.class);
+    devTask.finalizedBy("zephyrStop");
   }
 
   private void createConfiguration(Project project) {

@@ -2,6 +2,7 @@ package io.zephyr.gradle;
 
 import io.zephyr.cli.Zephyr;
 import io.zephyr.kernel.Coordinate;
+import io.zephyr.kernel.Lifecycle;
 import io.zephyr.kernel.Module;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -25,16 +26,27 @@ public class DevelopmentTask extends DefaultTask {
     val project = getProject();
     val zephyr =
         Zephyr.builder().homeDirectory(randomDir(project)).create(getClass().getClassLoader());
-
     installKernelModules(zephyr, project);
     val urls = collectUrls(project, "zephyrModule");
     zephyr.install(urls);
     start(zephyr, urls);
+    DevelopmentPlugin.setInstance(zephyr);
 
-    Runtime.getRuntime().addShutdownHook(new Thread(zephyr::shutdown));
     synchronized (this) {
       wait();
     }
+  }
+
+  private void shutDown(Zephyr zephyr) {
+    System.out.println("Shutting down");
+    getLogger().log(LogLevel.INFO, "Shutting down plugin...");
+    val plugins = zephyr.getPlugins(Lifecycle.State.Active);
+    zephyr.stop(
+        plugins
+            .stream()
+            .map(t -> t.getCoordinate().toCanonicalForm())
+            .collect(Collectors.toList()));
+    getLogger().log(LogLevel.INFO, "Successfully shut down plugins");
   }
 
   private void installKernelModules(Zephyr zephyr, Project project) throws MalformedURLException {

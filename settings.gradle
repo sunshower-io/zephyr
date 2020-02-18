@@ -10,6 +10,7 @@ pluginManagement {
 include(
 
 
+        'aire:aire-core',
 
         'zephyr-main',
         'kernel-modules:zephyr:zephyr-mvel',
