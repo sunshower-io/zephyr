@@ -1,0 +1,11 @@
+apply plugin: 'java'
+
+
+dependencies {
+    compileOnly project(':kernel-api')
+
+    testImplementation project(':kernel-tests:kernel-test')
+    testImplementation project(':kernel-tests:kernel-test-common');
+
+}
+
