@@ -17,9 +17,24 @@ public class DevelopmentPlugin implements Plugin<Project> {
   };
 
   static final AtomicReference<Zephyr> instance;
+  static final AtomicReference<InstanceList> instanceList;
 
   static {
     instance = new AtomicReference<>();
+    instanceList = new AtomicReference<>();
+  }
+
+  public static InstanceList getInstanceList() {
+    val result = instanceList.get();
+    if (result == null) {
+      throw new IllegalStateException("Error: instance list has not been created yet.");
+    }
+
+    return result;
+  }
+
+  public static void setInstanceList(InstanceList list) {
+    instanceList.set(list);
   }
 
   public static void setInstance(Zephyr zephyr) {
@@ -56,6 +71,7 @@ public class DevelopmentPlugin implements Plugin<Project> {
     val tasks = project.getTasks();
     val devTask = tasks.create("zephyrDev", DevelopmentTask.class);
     tasks.create("zephyrStop", ShutdownTask.class);
+    tasks.create("zephyrConnect", ZephyrConnectTask.class);
     devTask.finalizedBy("zephyrStop");
   }
 

@@ -6,6 +6,7 @@ import io.zephyr.kernel.Lifecycle;
 import io.zephyr.kernel.Module;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashSet;
@@ -25,7 +26,7 @@ import org.gradle.api.tasks.bundling.War;
 public class DevelopmentTask extends DefaultTask {
 
   @TaskAction
-  public void perform() throws MalformedURLException, FileNotFoundException, InterruptedException {
+  public void perform() throws IOException, InterruptedException {
     val project = getProject();
     val zephyr =
         Zephyr.builder().homeDirectory(randomDir(project)).create(getClass().getClassLoader());
@@ -141,10 +142,14 @@ public class DevelopmentTask extends DefaultTask {
     }
   }
 
-  private File randomDir(Project project) throws FileNotFoundException {
+  private File randomDir(Project project) throws IOException {
     val buildDir = project.getBuildDir();
     val zephyrDir = new File(buildDir, "zephyr_tmp");
-    val result = new File(zephyrDir, UUID.randomUUID().toString());
+    val instanceList = new InstanceList(zephyrDir);
+    DevelopmentPlugin.setInstanceList(instanceList);
+    val dir = UUID.randomUUID().toString();
+    val result = new File(zephyrDir, dir);
+    instanceList.save(new InstanceList.Instance(dir));
 
     val logger = getLogger();
     createIfNecessary(result, logger);

@@ -50,6 +50,7 @@ public class SunshowerKernelInjectionModule {
     val classpathManager = moduleClasspathManager(graph, classLoader, kernel);
     kernel.setModuleClasspathManager(classpathManager);
     moduleManager.initialize(kernel);
+    Framework.setInstance(kernel);
     return kernel;
   }
 
