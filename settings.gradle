@@ -10,6 +10,7 @@ pluginManagement {
 include(
 
         'plugins:barometer',
+        'plugins:spring:spring-embedded-plugin',
 
         'aire:aire-core',
 

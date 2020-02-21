@@ -1,7 +1,0 @@
-plugin:
-  name: aire-core
-  group: io.zephyr.aire
-  version: 1.0.0
-  order: 1
-  type: plugin
-  description: Aire Core

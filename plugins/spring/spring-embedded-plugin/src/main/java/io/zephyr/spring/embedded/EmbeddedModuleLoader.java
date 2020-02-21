@@ -1,15 +1,15 @@
-package io.sunshower.kernel.test;
+package io.zephyr.spring.embedded;
 
 import io.zephyr.kernel.Coordinate;
 import io.zephyr.kernel.core.ModuleClasspath;
 import io.zephyr.kernel.core.ModuleLoader;
 
-public class SimulatedModuleLoader implements ModuleLoader {
+public class EmbeddedModuleLoader implements ModuleLoader {
 
   final ModuleClasspath classpath;
 
-  public SimulatedModuleLoader() {
-    classpath = new SimulatedModuleClasspath(this);
+  public EmbeddedModuleLoader() {
+    classpath = new EmbeddedModuleClasspath(this);
   }
 
   @Override

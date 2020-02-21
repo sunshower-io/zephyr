@@ -1,9 +1,5 @@
-package io.sunshower.kernel.test;
+package io.zephyr.spring.embedded;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-
-import io.sunshower.test.common.Tests;
 import io.zephyr.api.ModuleActivator;
 import io.zephyr.kernel.*;
 import io.zephyr.kernel.Module;
@@ -25,7 +21,7 @@ import lombok.SneakyThrows;
 import org.springframework.context.ApplicationContext;
 
 /** this module simulates an actual module, but uses the test classpath instead */
-public class SimulatedModule extends AbstractModule implements Module {
+public class EmbeddedModule extends AbstractModule implements Module {
 
   /** immmutable state */
   final Memento memento;
@@ -33,19 +29,22 @@ public class SimulatedModule extends AbstractModule implements Module {
   final Module.Type type;
   final Lifecycle lifecycle;
   final Coordinate coordinate;
-  final SimulatedModuleLoader loader;
+  final FileSystem fileSystem;
+  final EmbeddedModuleLoader loader;
   private final ApplicationContext applicationContext;
 
   /** mutable state */
   @Getter @Setter private ModuleThread thread;
 
-  public SimulatedModule(Module.Type type, ApplicationContext context) {
+  public EmbeddedModule(
+      Module.Type type, ApplicationContext context, Memento memento, FileSystem fileSystem) {
     this.type = type;
+    this.memento = memento;
+    this.fileSystem = fileSystem;
     this.applicationContext = context;
-    this.memento = mock(Memento.class);
     this.lifecycle = new ModuleLifecycle(this);
     this.lifecycle.setState(Lifecycle.State.Installed);
-    this.loader = new SimulatedModuleLoader();
+    this.loader = new EmbeddedModuleLoader();
     this.coordinate = ModuleCoordinate.create("test", "test", "1.0.0-SNAPSHOT");
   }
 
@@ -76,7 +75,8 @@ public class SimulatedModule extends AbstractModule implements Module {
 
   @Override
   public Path getModuleDirectory() {
-    return Tests.buildDirectory().toPath();
+    return null;
+    //    return Tests.buildDirectory().toPath();
   }
 
   @Override
@@ -107,7 +107,7 @@ public class SimulatedModule extends AbstractModule implements Module {
 
   @Override
   public FileSystem getFileSystem() {
-    return spy(FileSystem.class);
+    return fileSystem;
   }
 
   @Override

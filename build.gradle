@@ -80,7 +80,6 @@ subprojects {
     }
 
 
-
     plugins.withType(JavaPlugin) {
         publishing {
             publications {
