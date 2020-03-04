@@ -9,6 +9,7 @@
     </properties>
     <modules>
         <module>imported</module>
+        <module>exported</module>
     </modules>
 
 </project>

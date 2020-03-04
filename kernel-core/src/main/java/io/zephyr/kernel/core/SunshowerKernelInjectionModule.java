@@ -10,7 +10,6 @@ import io.zephyr.kernel.dependencies.DefaultDependencyGraph;
 import io.zephyr.kernel.dependencies.DependencyGraph;
 import io.zephyr.kernel.launch.KernelOptions;
 import io.zephyr.kernel.service.KernelServiceRegistry;
-import java.util.ServiceLoader;
 import javax.inject.Singleton;
 import lombok.val;
 
@@ -47,7 +46,7 @@ public class SunshowerKernelInjectionModule {
       Scheduler<String> scheduler) {
     SunshowerKernel.setKernelOptions(options);
     val kernel = new SunshowerKernel(moduleManager, registry, scheduler, classLoader);
-    val classpathManager = moduleClasspathManager(graph, classLoader, kernel);
+    val classpathManager = Plugins.moduleClasspathManager(graph, classLoader, kernel);
     kernel.setModuleClasspathManager(classpathManager);
     moduleManager.initialize(kernel);
     Framework.setInstance(kernel);
@@ -58,15 +57,5 @@ public class SunshowerKernelInjectionModule {
   @Singleton
   public ModuleManager pluginManager(DependencyGraph dependencyGraph) {
     return new DefaultModuleManager(dependencyGraph);
-  }
-
-  private ModuleClasspathManager moduleClasspathManager(
-      DependencyGraph graph, ClassLoader classLoader, Kernel kernel) {
-    val result =
-        ServiceLoader.load(ModuleClasspathManagerProvider.class, classLoader)
-            .findFirst()
-            .get()
-            .create(graph, kernel);
-    return result;
   }
 }

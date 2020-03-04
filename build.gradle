@@ -133,3 +133,4 @@ subprojects {
 build.dependsOn assemble
 
 defaultTasks 'clean', 'assemble', 'build', 'spotlessApply', 'publishToMavenLocal'
+

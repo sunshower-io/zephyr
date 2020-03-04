@@ -4,6 +4,7 @@ import io.zephyr.api.ModuleContext;
 import io.zephyr.api.ServiceRegistry;
 import io.zephyr.kernel.KernelModuleEntry;
 import io.zephyr.kernel.Module;
+import io.zephyr.kernel.VolatileStorage;
 import io.zephyr.kernel.concurrency.Scheduler;
 import io.zephyr.kernel.events.EventSource;
 import io.zephyr.kernel.memento.Caretaker;
@@ -12,6 +13,8 @@ import java.nio.file.FileSystem;
 import java.util.List;
 
 public interface Kernel extends EventSource, Originator, Caretaker {
+
+  VolatileStorage getVolatileStorage();
 
   ServiceRegistry getServiceRegistry();
 
@@ -37,5 +40,5 @@ public interface Kernel extends EventSource, Originator, Caretaker {
 
   Scheduler<String> getScheduler();
 
-  ModuleContext createContext(Module module);
+  ModuleContext createContext(Module module, VolatileStorage delegate);
 }

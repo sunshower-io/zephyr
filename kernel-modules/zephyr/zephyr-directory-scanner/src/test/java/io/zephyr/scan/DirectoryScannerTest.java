@@ -28,7 +28,7 @@ import org.springframework.test.context.ContextConfiguration;
 
 @ZephyrTest
 @ContextConfiguration(
-  classes = {DirectoryScannerTestConfiguration.class, KernelTestConfiguration.class}
+  classes = {KernelTestConfiguration.class, DirectoryScannerTestConfiguration.class}
 )
 class DirectoryScannerTest {
 

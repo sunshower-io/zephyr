@@ -25,15 +25,21 @@ import org.springframework.context.annotation.Configuration;
 public class EmbeddedSpringConfiguration {
 
   @Bean
-  public ModuleContext moduleContext(Module module, Kernel kernel) {
-    val ctx = new DefaultPluginContext(module, kernel);
+  public ModuleContext moduleContext(Module module, Kernel kernel, ModuleThread thread) {
+    val ctx = new DefaultPluginContext(module, kernel, thread);
     ((EmbeddedModule) module).setContext(ctx);
     return ctx;
   }
 
   @Bean
-  public Module embeddedModule(ApplicationContext context, Memento memento, FileSystem fileSystem) {
-    return new EmbeddedModule(Module.Type.Plugin, context, memento, fileSystem);
+  public Module embeddedModule(
+      ApplicationContext context,
+      Memento memento,
+      ModuleDescriptor descriptor,
+      FileSystem fileSystem,
+      ModuleClasspath classpath) {
+    return new EmbeddedModule(
+        Module.Type.Plugin, context, memento, classpath, fileSystem, descriptor);
   }
 
   @Bean
@@ -59,13 +65,6 @@ public class EmbeddedSpringConfiguration {
   @Bean
   public DependencyGraph dependencyGraph() {
     return new DefaultDependencyGraph();
-  }
-
-  @Bean
-  public ModuleClasspathManager moduleClasspathManager(DependencyGraph graph, Kernel kernel) {
-    val result = new KernelModuleLoader(graph, kernel);
-    ((SunshowerKernel) kernel).setModuleClasspathManager(result);
-    return result;
   }
 
   @Bean
@@ -101,6 +100,7 @@ public class EmbeddedSpringConfiguration {
       ModuleManager moduleManager, ServiceRegistry registry, Scheduler<String> scheduler) {
     val result = new SunshowerKernel(moduleManager, registry, scheduler);
     moduleManager.initialize(result);
+    Framework.setInstance(result);
     return result;
   }
 

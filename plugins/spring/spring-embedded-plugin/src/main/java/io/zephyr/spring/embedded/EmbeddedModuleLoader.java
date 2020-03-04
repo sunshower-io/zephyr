@@ -8,8 +8,8 @@ public class EmbeddedModuleLoader implements ModuleLoader {
 
   final ModuleClasspath classpath;
 
-  public EmbeddedModuleLoader() {
-    classpath = new EmbeddedModuleClasspath(this);
+  public EmbeddedModuleLoader(ClassLoader loader) {
+    classpath = new EmbeddedModuleClasspath(this, loader);
   }
 
   @Override

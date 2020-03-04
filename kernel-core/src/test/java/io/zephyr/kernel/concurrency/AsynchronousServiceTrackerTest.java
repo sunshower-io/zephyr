@@ -1,10 +1,10 @@
 package io.zephyr.kernel.concurrency;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 import io.zephyr.api.ServiceEvents;
+import io.zephyr.kernel.VolatileStorage;
 import io.zephyr.kernel.service.DefaultServiceDefinition;
 import io.zephyr.kernel.service.ServiceRegistryTestCase;
 import lombok.val;
@@ -18,7 +18,7 @@ class AsynchronousServiceTrackerTest extends ServiceRegistryTestCase {
 
   @Test
   void ensureRegisteringServiceDispatchesRegisteredEvent() {
-    val ctx = kernel.createContext(module);
+    val ctx = kernel.createContext(module, mock(VolatileStorage.class));
     val tracker = ctx.trackServices(t -> true);
     tracker.addEventListener(listener, ServiceEvents.REGISTERED);
     listeners.add(listener);

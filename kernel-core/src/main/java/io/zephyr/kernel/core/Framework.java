@@ -12,6 +12,10 @@ public class Framework {
     instance = new AtomicReference<>();
   }
 
+  public static boolean isInitialized() {
+    return instance.get() != null;
+  }
+
   public static void setInstance(Kernel instance) {
     Framework.instance.set(instance);
   }

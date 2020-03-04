@@ -1,11 +1,12 @@
 package io.zephyr.api;
 
 import io.zephyr.kernel.Module;
+import io.zephyr.kernel.VolatileStorage;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-public interface ModuleContext {
+public interface ModuleContext extends VolatileStorage {
 
   <T> T unwrap(Class<T> type);
 

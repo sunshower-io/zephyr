@@ -6,14 +6,21 @@ import java.util.ServiceLoader;
 
 public class EmbeddedModuleClasspath implements ModuleClasspath {
   final ModuleLoader moduleLoader;
+  final ClassLoader delegateClassloader;
 
-  public EmbeddedModuleClasspath(final ModuleLoader moduleLoader) {
+  public EmbeddedModuleClasspath(
+      final ModuleLoader moduleLoader, final ClassLoader delegateClassloader) {
     this.moduleLoader = moduleLoader;
+    this.delegateClassloader = delegateClassloader;
+  }
+
+  public EmbeddedModuleClasspath(final ModuleLoader loader) {
+    this(loader, ClassLoader.getSystemClassLoader());
   }
 
   @Override
   public ClassLoader getClassLoader() {
-    return ClassLoader.getSystemClassLoader();
+    return delegateClassloader;
   }
 
   @Override

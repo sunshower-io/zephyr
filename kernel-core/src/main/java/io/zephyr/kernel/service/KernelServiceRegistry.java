@@ -9,7 +9,6 @@ import io.zephyr.kernel.events.Events;
 import io.zephyr.kernel.log.Logging;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.logging.Logger;
 import lombok.NonNull;
 import lombok.val;
@@ -75,11 +74,7 @@ public class KernelServiceRegistry implements ServiceRegistry {
   public ServiceRegistrationSet getRegistrations(Module module) {
     synchronized (registries) {
       val coordinate = module.getCoordinate();
-      val result = registries.get(coordinate);
-      if (result == null) {
-        throw new NoSuchElementException("No module with identifier: " + coordinate);
-      }
-      return result;
+      return registries.get(coordinate);
     }
   }
 

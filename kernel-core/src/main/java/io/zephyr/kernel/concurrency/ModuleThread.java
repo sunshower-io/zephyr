@@ -4,13 +4,13 @@ import io.zephyr.api.*;
 import io.zephyr.kernel.*;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.core.AbstractModule;
-import io.zephyr.kernel.core.DefaultModule;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.events.Events;
 import io.zephyr.kernel.misc.SuppressFBWarnings;
 import io.zephyr.kernel.status.Status;
 import io.zephyr.kernel.status.StatusType;
 import java.io.IOException;
+import java.util.Map;
 import java.util.ServiceConfigurationError;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -27,7 +27,7 @@ import lombok.val;
   "PMD.DataflowAnomalyAnalysis"
 })
 @SuppressFBWarnings
-public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable {
+public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable, VolatileStorage {
 
   static final Logger log = Logger.getLogger("ModuleThread");
   static final String FAILURE_TEMPLATE = "Failed to start plugin ''{0}''.  Reason: ''{1}''";
@@ -39,6 +39,7 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable {
   final AtomicBoolean running;
   final BlockingQueue<Runnable> taskQueue;
   final AtomicReference<Thread> moduleThread;
+  final InheritableThreadLocal<Map<Object, Object>> context;
 
   public ModuleThread(final Module module, final Kernel kernel) {
     if (module.getType() == Module.Type.KernelModule) {
@@ -49,6 +50,8 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable {
     this.moduleThread = new AtomicReference<>();
     this.taskQueue = new LinkedBlockingQueue<>();
     this.running = new AtomicBoolean(false);
+    this.context = new InheritableThreadLocal<>();
+    context.set(new ConcurrentHashMap<>());
   }
 
   final Object queueLock = new Object();
@@ -156,12 +159,12 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable {
       module.getLifecycle().setState(Lifecycle.State.Starting);
       val loader = module.getModuleClasspath().resolveServiceLoader(ModuleActivator.class);
       kernel.getModuleManager().getModuleLoader().check(module);
-      val ctx = kernel.createContext(module);
+      val ctx = kernel.createContext(module, this);
       moduleThread.get().setContextClassLoader(module.getClassLoader());
       for (val activator : loader) {
         try {
           activator.start(ctx);
-          ((DefaultModule) module).setActivator(activator);
+          ((AbstractModule) module).setActivator(activator);
           break;
         } catch (Exception | ServiceConfigurationError | LinkageError ex) {
           handleFailure(coordinate, ex);
@@ -214,11 +217,13 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable {
         val activator = module.getActivator();
         try {
           if (activator != null) {
-            module.getActivator().stop(module.getContext());
+            activator.stop(module.getContext());
           }
           ((AbstractModule) module).setActivator(null);
           module.getFileSystem().close();
-          moduleThread.get().setContextClassLoader(null);
+          if (moduleThread.get() != null) {
+            moduleThread.get().setContextClassLoader(null);
+          }
         } catch (Exception ex) {
           module.getLifecycle().setState(Lifecycle.State.Failed);
           throw new PluginException(ex);
@@ -227,8 +232,37 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable {
         if (module.getLifecycle().getState() != Lifecycle.State.Failed) {
           module.getLifecycle().setState(Lifecycle.State.Resolved);
         }
+        context.set(null);
       }
     }
+  }
+
+  @Override
+  @SuppressWarnings("unchecked")
+  public <K, V> V get(K key) {
+    synchronized (context) {
+      return (V) context.get().get(key);
+    }
+  }
+
+  @Override
+  @SuppressWarnings("unchecked")
+  public <K, V> V set(K key, V value) {
+    synchronized (context) {
+      return (V) context.get().put(key, value);
+    }
+  }
+
+  @Override
+  public <K> boolean contains(K key) {
+    synchronized (context) {
+      return context.get().containsKey(key);
+    }
+  }
+
+  @Override
+  public void clear() {
+    context.get().clear();
   }
 
   static final class TaskQueueRunnable extends CompletableFuture<Void> implements Runnable {
