@@ -1,7 +1,10 @@
 package io.sunshower.gyre;
 
 import lombok.val;
+
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -34,6 +37,29 @@ class CompactTrieMapTest {
   }
 
   @Test
+  void ensureRemovingAllElementsWorks() {
+    List<String> keys = new ArrayList<>();
+    for (int i = 0; i < 20; i++) {
+      val path = randomPath(10);
+      map.put(path, i);
+      keys.add(path);
+    }
+
+    for (val k : keys) {
+      val v = map.get(k);
+      int size = map.size();
+      assertEquals(v, map.remove(k));
+      assertEquals(size - 1, map.size());
+    }
+    assertTrue(map.isEmpty());
+  }
+
+  @Test
+  void ensureRemovingNonExistingObjectProducesNull() {
+    assertNull(map.remove(randomPath(100)));
+  }
+
+  @Test
   void ensureValueIteratorWorks() {
 
     for (int i = 0; i < 20; i++) {
@@ -46,13 +72,12 @@ class CompactTrieMapTest {
     val values = map.values();
     val viter = values.iterator();
     int count = 0;
-    while(viter.hasNext()) {
+    while (viter.hasNext()) {
       val next = viter.next();
       assertTrue(values.contains(next));
-      count ++;
+      count++;
     }
     assertEquals(21, count);
-
   }
 
   @Test
@@ -127,7 +152,6 @@ class CompactTrieMapTest {
 
     val children = map.level("hello:world:what:up");
     assertEquals(children.size(), 100);
-
   }
 
   @Test
