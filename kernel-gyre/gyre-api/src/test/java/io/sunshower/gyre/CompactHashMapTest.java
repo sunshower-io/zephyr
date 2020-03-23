@@ -1,13 +1,15 @@
 package io.sunshower.gyre;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.util.HashSet;
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class CompactHashMapTest {
   Map<Integer, Integer> map;
@@ -26,6 +28,20 @@ class CompactHashMapTest {
     for (int i = 0; i < 100; i++) {
       assertEquals(i + 1, map.get(i));
     }
+  }
+
+  @Test
+  void ensureResizingFromZeroLengthWorks() {
+    val map = new CompactHashMap<String, String>(0);
+    map.put("1", "2");
+  }
+
+  @Test
+  void ensureKeysetWorks() {
+    val map = new CompactHashMap<String, String>(0);
+    map.put("hello", "world");
+    map.put("sup", "world");
+    assertEquals(map.keySet(), Set.of("hello", "sup"));
   }
 
   @Test
@@ -50,6 +66,53 @@ class CompactHashMapTest {
     assertFalse(ks.hasNext());
   }
 
+  @Test
+  void ensureContainsWorksAfterRemoval() {
+    map.put(1, 1);
+    assertTrue(map.containsKey(1));
+    map.remove(1);
+    assertFalse(map.containsKey(1));
+  }
+
+  @Test
+  void ensureContainsKeyFunctionsForCollision() {
+    val fst = new Collider(1);
+    val snd = new Collider(2);
+    val map = new CompactHashMap<Collider, String>();
+    map.put(fst, "hello");
+    map.put(snd, "world");
+
+    assertTrue(map.containsKey(fst));
+    assertTrue(map.containsKey(snd));
+
+    map.remove(snd);
+    assertTrue(map.containsKey(fst));
+    assertFalse(map.containsKey(snd));
+  }
+
+  @Test
+  void ensureInsertingAMillionElementsWorks() {
+    long t1 = System.currentTimeMillis();
+    int size = 10000000;
+    val map = new CompactHashMap<>(10);
+    for (int i = 0; i < size; i++) {
+      map.put(i, i + 1);
+    }
+    System.out.println(map.size());
+    long t2 = System.currentTimeMillis();
+
+    System.out.println("Elapsed time: " + (t2 - t1));
+
+    val nmap = new HashMap<Integer, Integer>();
+
+    t1 = System.currentTimeMillis();
+    for (int i = 0; i < size; i++) {
+      nmap.put(i, i + 1);
+    }
+    t2 = System.currentTimeMillis();
+
+    System.out.println("Elapsed time: " + (t2 - t1));
+  }
 
   @Test
   void ensureKeyIteratorWorksForMultipleValues() {
@@ -57,10 +120,38 @@ class CompactHashMapTest {
     map.put(2, 3);
     val ks = map.keySet().iterator();
     val set = new HashSet<>();
-    while(ks.hasNext()) {
+    while (ks.hasNext()) {
       set.add(ks.next());
     }
     assertTrue(set.contains(1));
     assertTrue(set.contains(2));
+  }
+
+  static class Collider {
+    int value;
+
+    Collider(int value) {
+      this.value = value;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      if (obj == this) {
+        return true;
+      }
+      if (obj == null) {
+        return false;
+      }
+
+      if (obj.getClass().equals(Collider.class)) {
+        return ((Collider) obj).value == value;
+      }
+      return false;
+    }
   }
 }

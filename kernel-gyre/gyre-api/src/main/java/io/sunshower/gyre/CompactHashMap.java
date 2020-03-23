@@ -1,8 +1,7 @@
 package io.sunshower.gyre;
 
-import lombok.val;
-
 import java.util.*;
+import lombok.val;
 
 @SuppressWarnings("unchecked")
 public class CompactHashMap<K, V> implements Map<K, V> {
@@ -50,9 +49,26 @@ public class CompactHashMap<K, V> implements Map<K, V> {
 
   @Override
   public boolean containsKey(Object key) {
-
     val hashCode = codeFor(key);
-    return table[hashCode] != null;
+    var i = hashCode & (table.length - 1);
+    var probe = 0;
+    while (probe <= maxProbe) {
+      val current = table[i];
+      if (current == null || current.probe < probe) {
+        return false;
+      }
+      if (hashCode == current.hashcode
+          && (key == current.key || Objects.equals(key, current.key))) {
+        return true;
+      }
+      if (i == table.length - 1) {
+        i = 0;
+      } else {
+        i = 1 + (hashCode % (table.length));
+      }
+      ++probe;
+    }
+    return false;
   }
 
   @Override
@@ -70,7 +86,7 @@ public class CompactHashMap<K, V> implements Map<K, V> {
   @Override
   public V get(Object key) {
 
-    val hashCode = key.hashCode();
+    val hashCode = codeFor(key);
     var i = hashCode & (table.length - 1);
     var probe = 0;
 
@@ -87,7 +103,8 @@ public class CompactHashMap<K, V> implements Map<K, V> {
       if (i == table.length - 1) {
         i = 0;
       } else {
-        i = i + 1;
+        //        i = i + 1;
+        i = 1 + (hashCode % (table.length));
       }
       ++probe;
     }
@@ -97,7 +114,7 @@ public class CompactHashMap<K, V> implements Map<K, V> {
 
   @Override
   public V put(K key, V value) {
-    if (table.length * loadFactor < filled) {
+    if (table.length * loadFactor <= filled) {
       resize();
     }
 
@@ -130,7 +147,8 @@ public class CompactHashMap<K, V> implements Map<K, V> {
       if (i == table.length - 1) {
         i = 0;
       } else {
-        i = i + 1;
+        //        i = i + 1;
+        i = 1 + (hashcode % (table.length));
       }
       ++probe;
     }
@@ -160,7 +178,8 @@ public class CompactHashMap<K, V> implements Map<K, V> {
       if (idx == table.length - 1) {
         j = 0;
       } else {
-        j = idx + 1;
+        //        j = idx + 1;
+        j = 1 + (idx % (table.length));
       }
 
       if (j == i) {
@@ -175,6 +194,14 @@ public class CompactHashMap<K, V> implements Map<K, V> {
     }
 
     return result;
+  }
+
+  protected int probe(int idx) {
+    int len = table.length;
+    if (idx == len - 1) {
+      return 0;
+    }
+    return 1 + (idx % len);
   }
 
   @Override
@@ -198,7 +225,7 @@ public class CompactHashMap<K, V> implements Map<K, V> {
 
   @Override
   public Collection<V> values() {
-    return null;
+    return new ValueView();
   }
 
   @Override
@@ -210,105 +237,12 @@ public class CompactHashMap<K, V> implements Map<K, V> {
     return key == null ? 0 : key.hashCode();
   }
 
-  final class KeyIterator implements Iterator<K> {
-    int cursor;
-    int found;
+  private V insert(K k, V v, int h, Entry<K, V> cache) {
 
-    KeyIterator() {
-      found = 0;
-      cursor = 0;
-    }
+    K key = k;
+    V value = v;
+    int hashCode = h;
 
-    @Override
-    public boolean hasNext() {
-      return found < filled;
-    }
-
-    @Override
-    public K next() {
-
-      if (found < filled) {
-        int len = table.length;
-        for (int i = cursor; i < len; i++) {
-          val next = table[i];
-          if (next != null) {
-            found++;
-            cursor = i + 1;
-            return next.key;
-          }
-        }
-      }
-      throw new NoSuchElementException("No more elements");
-    }
-  }
-
-  final class ViewSet implements Set<K> {
-
-    @Override
-    public int size() {
-      return 0;
-    }
-
-    @Override
-    public boolean isEmpty() {
-      return false;
-    }
-
-    @Override
-    public boolean contains(Object o) {
-      return false;
-    }
-
-    @Override
-    public Iterator<K> iterator() {
-      return new KeyIterator();
-    }
-
-    @Override
-    public Object[] toArray() {
-      return new Object[0];
-    }
-
-    @Override
-    public <T> T[] toArray(T[] a) {
-      return null;
-    }
-
-    @Override
-    public boolean add(K k) {
-      return false;
-    }
-
-    @Override
-    public boolean remove(Object o) {
-      return false;
-    }
-
-    @Override
-    public boolean containsAll(Collection<?> c) {
-      return false;
-    }
-
-    @Override
-    public boolean addAll(Collection<? extends K> c) {
-      return false;
-    }
-
-    @Override
-    public boolean retainAll(Collection<?> c) {
-      return false;
-    }
-
-    @Override
-    public boolean removeAll(Collection<?> c) {
-      return false;
-    }
-
-    @Override
-    public void clear() {}
-  }
-
-  private V insert(K key, V value, int hashCode, Entry<K, V> cache) {
     V result = null;
     int probe = 0;
     int i = hashCode & (table.length - 1);
@@ -360,10 +294,11 @@ public class CompactHashMap<K, V> implements Map<K, V> {
         probe = previousProbe;
       }
 
-      if (i == table.length - 1) {
+      int len = table.length;
+      if (i == len - 1) {
         i = 0;
       } else {
-        i = i + 1;
+        i = 1 + (h % (len));
       }
       ++probe;
     }
@@ -373,9 +308,10 @@ public class CompactHashMap<K, V> implements Map<K, V> {
   private void resize() {
     val previousTable = table;
     val previousLength = table.length;
-    table = new Entry[previousTable.length * 2];
-    maxProbe = 0;
+
     filled = 0;
+    maxProbe = 0;
+    table = new Entry[(previousLength == 0 ? 1 : previousLength) * 2];
 
     int count = 0;
     while (count < previousLength) {
@@ -383,6 +319,169 @@ public class CompactHashMap<K, V> implements Map<K, V> {
       if (e != null) {
         insert(e.key, e.value, e.hashcode, e);
       }
+    }
+  }
+
+  final class KeyIterator implements Iterator<K> {
+    int cursor;
+    int found;
+
+    KeyIterator() {
+      found = 0;
+      cursor = 0;
+    }
+
+    @Override
+    public boolean hasNext() {
+      return found < filled;
+    }
+
+    @Override
+    public K next() {
+
+      if (found < filled) {
+        int len = table.length;
+        for (int i = cursor; i < len; i++) {
+          val next = table[i];
+          if (next != null) {
+            found++;
+            cursor = i + 1;
+            return next.key;
+          }
+        }
+      }
+      throw new NoSuchElementException("No more elements");
+    }
+  }
+
+  final class ValueIterator implements Iterator<V> {
+    int cursor;
+    int found;
+
+    @Override
+    public boolean hasNext() {
+      return found < filled;
+    }
+
+    @Override
+    public V next() {
+      if (found < filled) {
+        int len = table.length;
+        for (int i = cursor; i < len; i++) {
+          val next = table[i];
+          if (next != null) {
+            found++;
+            cursor = i + 1;
+            return next.value;
+          }
+        }
+      }
+      throw new NoSuchElementException("No more elements");
+    }
+  }
+
+  final class ValueView extends AbstractCollection<V> {
+
+    @Override
+    public Iterator<V> iterator() {
+      return new ValueIterator();
+    }
+
+    @Override
+    public int size() {
+      return filled;
+    }
+  }
+
+  final class ViewSet extends AbstractSet<K> {
+
+    @Override
+    public int size() {
+      return filled;
+    }
+
+    @Override
+    public boolean isEmpty() {
+      return isEmpty();
+    }
+
+    @Override
+    public boolean contains(Object o) {
+      return containsKey(o);
+    }
+
+    @Override
+    public Iterator<K> iterator() {
+      return new KeyIterator();
+    }
+
+    @Override
+    public Object[] toArray() {
+      val result = new Object[filled];
+
+      val iterator = iterator();
+      int count = 0;
+      while (iterator.hasNext()) {
+        result[count++] = iterator.next();
+      }
+      return result;
+    }
+
+    @Override
+    public <T> T[] toArray(T[] a) {
+      if (a.length != filled) {
+        return (T[]) toArray();
+      }
+      val iterator = iterator();
+      int count = 0;
+      while (iterator.hasNext()) {
+        a[count++] = (T) iterator.next();
+      }
+      return a;
+    }
+
+    @Override
+    public boolean add(K k) {
+      throw new UnsupportedOperationException("add() is not supported");
+    }
+
+    @Override
+    public boolean remove(Object o) {
+      return CompactHashMap.this.remove(o) != null;
+    }
+
+    @Override
+    public boolean containsAll(Collection<?> c) {
+      if (c == null) {
+        return false;
+      }
+
+      for (val k : c) {
+        if (!containsKey(k)) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    @Override
+    public boolean addAll(Collection<? extends K> c) {
+      throw new UnsupportedOperationException("addAll() is not supported");
+    }
+
+    @Override
+    public boolean removeAll(Collection<?> c) {
+      boolean modified = false;
+      for (val k : c) {
+        // not optimal performing possibly 2 lookups, but incorrect otherwise
+        modified |= containsKey(k) && CompactHashMap.this.remove(k) != null;
+      }
+      return modified;
+    }
+
+    @Override
+    public void clear() {
+      CompactHashMap.this.clear();
     }
   }
 
