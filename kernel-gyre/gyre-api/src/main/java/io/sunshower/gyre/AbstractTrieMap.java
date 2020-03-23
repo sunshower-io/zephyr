@@ -1,8 +1,7 @@
 package io.sunshower.gyre;
 
-import lombok.val;
-
 import java.util.*;
+import lombok.val;
 
 public abstract class AbstractTrieMap<K, T, V> implements TrieMap<K, V> {
 

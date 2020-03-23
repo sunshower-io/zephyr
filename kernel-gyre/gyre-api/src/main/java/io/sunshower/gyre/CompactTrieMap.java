@@ -1,8 +1,7 @@
 package io.sunshower.gyre;
 
-import lombok.val;
-
 import java.util.*;
+import lombok.val;
 
 public class CompactTrieMap<K, T, V> extends AbstractTrieMap<K, T, V> {
 

@@ -3,7 +3,6 @@ package io.sunshower.gyre;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
-
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,7 +46,6 @@ class CompactHashMapTest {
       assertEquals(i + 1, map.get(i));
     }
   }
-
 
   @Test
   void ensureResizingFromZeroLengthWorks() {
