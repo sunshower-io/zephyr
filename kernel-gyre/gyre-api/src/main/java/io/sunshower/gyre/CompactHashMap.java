@@ -10,7 +10,7 @@ public class CompactHashMap<K, V> implements Map<K, V> {
 
   private final float loadFactor;
 
-  private Entry<K, V>[] table;
+  protected Entry<K, V>[] table;
 
   /** the size of the table (including unfilled positions) */
   private final int size;
@@ -49,7 +49,7 @@ public class CompactHashMap<K, V> implements Map<K, V> {
 
   @Override
   public boolean containsKey(Object key) {
-    val hashCode = codeFor(key);
+    int hashCode = codeFor(key);
     var i = hashCode & (table.length - 1);
     var probe = 0;
     while (probe <= maxProbe) {
@@ -61,12 +61,7 @@ public class CompactHashMap<K, V> implements Map<K, V> {
           && (key == current.key || Objects.equals(key, current.key))) {
         return true;
       }
-      if (i == table.length - 1) {
-        i = 0;
-      } else {
-        i = 1 + (hashCode % (table.length));
-      }
-      ++probe;
+      i = probe(hashCode, probe++);
     }
     return false;
   }
@@ -86,9 +81,9 @@ public class CompactHashMap<K, V> implements Map<K, V> {
   @Override
   public V get(Object key) {
 
-    val hashCode = codeFor(key);
-    var i = hashCode & (table.length - 1);
-    var probe = 0;
+    int hashCode = codeFor(key);
+    int i = hashCode & (table.length - 1);
+    int probe = 0;
 
     while (probe <= maxProbe) {
       val current = table[i];
@@ -100,13 +95,7 @@ public class CompactHashMap<K, V> implements Map<K, V> {
           && (key == current.key || Objects.equals(key, current.key))) {
         return current.value;
       }
-      if (i == table.length - 1) {
-        i = 0;
-      } else {
-        //        i = i + 1;
-        i = 1 + (hashCode % (table.length));
-      }
-      ++probe;
+      i = probe(hashCode, probe++);
     }
 
     return null;
@@ -118,13 +107,13 @@ public class CompactHashMap<K, V> implements Map<K, V> {
       resize();
     }
 
-    return insert(key, value, key.hashCode(), null);
+    return insert(key, value, codeFor(key), null);
   }
 
   @Override
   public V remove(Object key) {
 
-    val hashcode = key.hashCode();
+    int hashcode = codeFor(key);
     int i = hashcode & (table.length - 1);
     int probe = 0;
     int index = 0;
@@ -144,13 +133,7 @@ public class CompactHashMap<K, V> implements Map<K, V> {
         break;
       }
 
-      if (i == table.length - 1) {
-        i = 0;
-      } else {
-        //        i = i + 1;
-        i = 1 + (hashcode % (table.length));
-      }
-      ++probe;
+      i = probe(hashcode, probe++);
     }
 
     if (result == null) {
@@ -159,11 +142,7 @@ public class CompactHashMap<K, V> implements Map<K, V> {
     filled = filled - 1;
 
     for (; ; ) {
-      if (i == table.length - 1) {
-        i = 0;
-      } else {
-        i = i + 1;
-      }
+      i = probe(i, probe);
 
       val current = table[i];
       if (current == null || current.probe == 0) {
@@ -174,13 +153,7 @@ public class CompactHashMap<K, V> implements Map<K, V> {
     int idx = index;
     for (; ; ) {
 
-      int j;
-      if (idx == table.length - 1) {
-        j = 0;
-      } else {
-        //        j = idx + 1;
-        j = 1 + (idx % (table.length));
-      }
+      int j = probe(idx, probe);
 
       if (j == i) {
         table[idx] = null;
@@ -196,12 +169,12 @@ public class CompactHashMap<K, V> implements Map<K, V> {
     return result;
   }
 
-  protected int probe(int idx) {
+  protected int probe(int idx, int attempt) {
     int len = table.length;
     if (idx == len - 1) {
       return 0;
     }
-    return 1 + (idx % len);
+    return (1 + (idx + attempt)) % len;
   }
 
   @Override
@@ -293,14 +266,7 @@ public class CompactHashMap<K, V> implements Map<K, V> {
         value = previousValue;
         probe = previousProbe;
       }
-
-      int len = table.length;
-      if (i == len - 1) {
-        i = 0;
-      } else {
-        i = 1 + (h % (len));
-      }
-      ++probe;
+      i = probe(h, probe++);
     }
     return result;
   }

@@ -2,10 +2,7 @@ package io.sunshower.gyre;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,6 +17,27 @@ class CompactHashMapTest {
   }
 
   @Test
+  void ensureRemovingManyCollisionsWorks() {
+    val map = createMap(1);
+
+    val collisions = new ArrayList<Collider>();
+    for (int i = 0; i < 1000; i++) {
+      val collider = new Collider(i);
+      collisions.add(collider);
+      map.put(collider, i);
+    }
+
+    val liter = collisions.listIterator(collisions.size());
+    while (liter.hasPrevious()) {
+      val prev = liter.previous();
+      assertEquals(prev.value, map.remove(prev));
+      liter.remove();
+    }
+
+    assertTrue(map.isEmpty());
+  }
+
+  @Test
   void ensureMapItemCanBeRetrieved() {
     for (int i = 0; i < 100; i++) {
       map.put(i, i + 1);
@@ -30,15 +48,16 @@ class CompactHashMapTest {
     }
   }
 
+
   @Test
   void ensureResizingFromZeroLengthWorks() {
-    val map = new CompactHashMap<String, String>(0);
+    val map = createMap(0);
     map.put("1", "2");
   }
 
   @Test
   void ensureKeysetWorks() {
-    val map = new CompactHashMap<String, String>(0);
+    val map = createMap(0);
     map.put("hello", "world");
     map.put("sup", "world");
     assertEquals(map.keySet(), Set.of("hello", "sup"));
@@ -78,7 +97,7 @@ class CompactHashMapTest {
   void ensureContainsKeyFunctionsForCollision() {
     val fst = new Collider(1);
     val snd = new Collider(2);
-    val map = new CompactHashMap<Collider, String>();
+    val map = createMap();
     map.put(fst, "hello");
     map.put(snd, "world");
 
@@ -91,10 +110,23 @@ class CompactHashMapTest {
   }
 
   @Test
+  void ensureRemovingElementsWorks() {
+    for (int i = 0; i < 100; i++) {
+      map.put(i, 10 * i + i);
+    }
+
+    for (int i = 99; i >= 0; i--) {
+      assertEquals(10 * i + i, map.remove(i));
+    }
+
+    assertTrue(map.isEmpty());
+  }
+
+  @Test
   void ensureInsertingAMillionElementsWorks() {
     long t1 = System.currentTimeMillis();
-    int size = 10000000;
-    val map = new CompactHashMap<>(10);
+    int size = 1000 * 1000;
+    val map = createMap(10);
     for (int i = 0; i < size; i++) {
       map.put(i, i + 1);
     }
@@ -153,5 +185,13 @@ class CompactHashMapTest {
       }
       return false;
     }
+  }
+
+  protected <K, V> Map<K, V> createMap() {
+    return createMap(10);
+  }
+
+  protected <K, V> Map<K, V> createMap(int capacity) {
+    return new CompactHashMap<>(capacity);
   }
 }
