@@ -1,19 +1,26 @@
-package io.sunshower.kernel.test;
+package io.zephyr.spring.embedded;
 
 import io.zephyr.kernel.core.ModuleClasspath;
 import io.zephyr.kernel.core.ModuleLoader;
 import java.util.ServiceLoader;
 
-public class SimulatedModuleClasspath implements ModuleClasspath {
+public class EmbeddedModuleClasspath implements ModuleClasspath {
   final ModuleLoader moduleLoader;
+  final ClassLoader delegateClassloader;
 
-  public SimulatedModuleClasspath(final ModuleLoader moduleLoader) {
+  public EmbeddedModuleClasspath(
+      final ModuleLoader moduleLoader, final ClassLoader delegateClassloader) {
     this.moduleLoader = moduleLoader;
+    this.delegateClassloader = delegateClassloader;
+  }
+
+  public EmbeddedModuleClasspath(final ModuleLoader loader) {
+    this(loader, ClassLoader.getSystemClassLoader());
   }
 
   @Override
   public ClassLoader getClassLoader() {
-    return ClassLoader.getSystemClassLoader();
+    return delegateClassloader;
   }
 
   @Override

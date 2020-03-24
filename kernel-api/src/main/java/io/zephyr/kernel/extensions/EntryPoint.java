@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 public interface EntryPoint extends PrioritizedExtension, Startable, Stoppable {
   enum ContextEntries {
     ARGS,
+    KERNEL, // may not always exist
     ENTRY_POINTS,
     ENTRY_POINTS_TEMP,
     KERNEL_EXECUTOR_SERVICE,

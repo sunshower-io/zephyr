@@ -1,0 +1,19 @@
+apply plugin: 'java'
+apply plugin: 'java-library'
+
+dependencies {
+    api project(':kernel-api')
+    api project(':kernel-core')
+    api project(':kernel-modules:kernel-lib')
+    api project(':kernel-modules:synchronous-api')
+    compileOnly("org.springframework.boot:spring-boot-starter-web")
+    compileOnly("org.springframework.boot:spring-boot-starter-undertow")
+    testImplementation project(":kernel-tests:kernel-test")
+
+}
+
+configurations {
+    all {
+        exclude group: "org.springframework.boot", module: "spring-boot-starter-tomcat"
+    }
+}

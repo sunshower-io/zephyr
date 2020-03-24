@@ -54,12 +54,14 @@ public final class KernelModuleFinder implements ModuleFinder {
     val assembly = module.getAssembly();
 
     if (assembly == null) {
-      throw new IllegalStateException("Error: assembly was null somehow.  Definitely a bug");
+      log.log(Level.INFO, "findmodule.fallthrough", name);
+      return ModuleSpec.build(normalized).setFallbackLoader(localLoader).create();
     }
 
     val assemblyFile = assembly.getFile();
     if (assemblyFile == null) {
-      throw new IllegalStateException("Error: assembly file was null somehow.  Definitely a bug");
+      log.log(Level.INFO, "findmodule.fallthrough", name);
+      return ModuleSpec.build(normalized).setFallbackLoader(localLoader).create();
     }
 
     val moduleSpec = ModuleSpec.build(identifier);

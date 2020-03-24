@@ -1,5 +1,6 @@
 package io.sunshower.kernel.ext.scanner;
 
+import com.esotericsoftware.yamlbeans.YamlException;
 import com.esotericsoftware.yamlbeans.YamlReader;
 import io.zephyr.kernel.Dependency;
 import io.zephyr.kernel.InvalidPluginDescriptorException;
@@ -12,6 +13,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -36,6 +39,7 @@ public class YamlPluginDescriptorScanner implements ModuleScanner {
   static final Set<String> SEARCH_PATHS =
       Set.of(
           "META-INF/plugin.yml",
+          "classes/META-INF/plugin.yml",
           "WEB-INF/classes/META-INF/plugin.yml",
           "BOOT-INF/classes/META-INF/plugin.yml");
 
@@ -68,14 +72,31 @@ public class YamlPluginDescriptorScanner implements ModuleScanner {
     }
 
     for (val entryName : SEARCH_PATHS) {
+      val explodedFile = new File(file, entryName);
+      if (explodedFile.exists()) {
+        try (val reader =
+            new InputStreamReader(
+                Files.newInputStream(explodedFile.toPath(), StandardOpenOption.READ))) {
+          val result = getModuleDescriptor(explodedFile, source, reader);
+          if (log.isLoggable(Level.FINE)) {
+            log.log(
+                Level.FINE,
+                "yaml.descriptor.scanner.found",
+                new Object[] {entryName, file, source});
+          }
+          return result;
+        } catch (IOException e) {
+          log.log(
+              Level.INFO,
+              "yaml.descriptor.scanner.error",
+              new Object[] {file, source, e.getMessage()});
+          log.log(Level.FINEST, "Full trace", e);
+        }
+      }
+
       try {
         val zipfile = new JarFile(file, true);
         val entry = zipfile.getJarEntry(entryName);
-
-        if (log.isLoggable(Level.FINE)) {
-          log.log(
-              Level.FINE, "yaml.descriptor.scanner.found", new Object[] {entryName, file, source});
-        }
 
         if (entry != null) {
           val opt = doParse(file, zipfile, entry, source);
@@ -98,51 +119,56 @@ public class YamlPluginDescriptorScanner implements ModuleScanner {
   private Optional<ModuleDescriptor> doParse(
       File sourceFile, JarFile zipfile, JarEntry entry, URL source) throws IOException {
     try (val reader = new InputStreamReader(zipfile.getInputStream(entry))) {
-      val yamlInput = new YamlReader(reader);
-
-      val descriptorDocument = (Map<String, Object>) yamlInput.read();
-      val pluginDescriptor = (Map<String, Object>) descriptorDocument.get(ROOT);
-      if (pluginDescriptor == null) {
-        throw new InvalidPluginDescriptorException("expected root element 'plugin' in plugin.yml");
-      }
-
-      val group = require(pluginDescriptor, GROUP);
-      val name = require(pluginDescriptor, NAME);
-      val version = require(pluginDescriptor, VERSION);
-      val description = optional(pluginDescriptor, DESCRIPTION);
-      var moduleType = optional(pluginDescriptor, MODULE_TYPE);
-
-      final Module.Type modType;
-      if (moduleType != null) {
-        modType = Module.Type.parse(moduleType);
-      } else {
-        modType = Module.Type.Plugin;
-      }
-
-      val dependencyNode = (List<Object>) pluginDescriptor.get(DEPENDENCIES);
-
-      final List<Dependency> dependencies;
-
-      if (dependencyNode != null) {
-        dependencies = new ArrayList<>(dependencyNode.size());
-        for (val dep : dependencyNode) {
-          parseDependency(dependencies, (Map<String, Object>) dep);
-        }
-      } else {
-        dependencies = Collections.emptyList();
-      }
-
-      val descriptor =
-          new ModuleDescriptor(
-              modType,
-              source,
-              0,
-              sourceFile,
-              ModuleCoordinate.create(group, name, version),
-              dependencies,
-              description);
-      return Optional.of(descriptor);
+      return getModuleDescriptor(sourceFile, source, reader);
     }
+  }
+
+  private Optional<ModuleDescriptor> getModuleDescriptor(
+      File sourceFile, URL source, InputStreamReader reader) throws YamlException {
+    val yamlInput = new YamlReader(reader);
+
+    val descriptorDocument = (Map<String, Object>) yamlInput.read();
+    val pluginDescriptor = (Map<String, Object>) descriptorDocument.get(ROOT);
+    if (pluginDescriptor == null) {
+      throw new InvalidPluginDescriptorException("expected root element 'plugin' in plugin.yml");
+    }
+
+    val group = require(pluginDescriptor, GROUP);
+    val name = require(pluginDescriptor, NAME);
+    val version = require(pluginDescriptor, VERSION);
+    val description = optional(pluginDescriptor, DESCRIPTION);
+    var moduleType = optional(pluginDescriptor, MODULE_TYPE);
+
+    final Module.Type modType;
+    if (moduleType != null) {
+      modType = Module.Type.parse(moduleType);
+    } else {
+      modType = Module.Type.Plugin;
+    }
+
+    val dependencyNode = (List<Object>) pluginDescriptor.get(DEPENDENCIES);
+
+    final List<Dependency> dependencies;
+
+    if (dependencyNode != null) {
+      dependencies = new ArrayList<>(dependencyNode.size());
+      for (val dep : dependencyNode) {
+        parseDependency(dependencies, (Map<String, Object>) dep);
+      }
+    } else {
+      dependencies = Collections.emptyList();
+    }
+
+    val descriptor =
+        new ModuleDescriptor(
+            modType,
+            source,
+            0,
+            sourceFile,
+            ModuleCoordinate.create(group, name, version),
+            dependencies,
+            description);
+    return Optional.of(descriptor);
   }
 
   @SuppressWarnings("unchecked")

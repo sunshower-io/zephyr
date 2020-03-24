@@ -1,1 +1,1 @@
-DON'T ADD SERVICES HERE
+Services are added here and in webapp because this should be usable as a WAR or a JAR (should auto-generate probably)

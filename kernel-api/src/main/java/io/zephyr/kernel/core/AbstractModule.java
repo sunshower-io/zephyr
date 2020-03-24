@@ -11,6 +11,8 @@ public abstract class AbstractModule implements Module {
   @Getter @Setter protected ModuleContext context;
   @Getter @Setter protected ModuleLoader moduleLoader;
 
+  public abstract void setModuleClasspath(ModuleClasspath classpath);
+
   public abstract void setActivator(ModuleActivator o);
 
   public abstract void setTaskQueue(TaskQueue thread);

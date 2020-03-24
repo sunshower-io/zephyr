@@ -1,17 +1,10 @@
-package io.sunshower.kernel.test;
+package io.zephyr.spring.embedded;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-
-import io.sunshower.test.common.Tests;
 import io.zephyr.api.ModuleActivator;
 import io.zephyr.kernel.*;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.concurrency.ModuleThread;
-import io.zephyr.kernel.core.AbstractModule;
-import io.zephyr.kernel.core.ModuleClasspath;
-import io.zephyr.kernel.core.ModuleCoordinate;
-import io.zephyr.kernel.core.ModuleSource;
+import io.zephyr.kernel.core.*;
 import io.zephyr.kernel.memento.Memento;
 import io.zephyr.kernel.module.ModuleLifecycle;
 import java.nio.file.FileSystem;
@@ -25,28 +18,36 @@ import lombok.SneakyThrows;
 import org.springframework.context.ApplicationContext;
 
 /** this module simulates an actual module, but uses the test classpath instead */
-public class SimulatedModule extends AbstractModule implements Module {
+public class EmbeddedModule extends AbstractModule implements Module {
 
   /** immmutable state */
   final Memento memento;
 
   final Module.Type type;
   final Lifecycle lifecycle;
-  final Coordinate coordinate;
-  final SimulatedModuleLoader loader;
+  final FileSystem fileSystem;
+  private ModuleClasspath classpath;
+  final ModuleDescriptor descriptor;
   private final ApplicationContext applicationContext;
 
   /** mutable state */
   @Getter @Setter private ModuleThread thread;
 
-  public SimulatedModule(Module.Type type, ApplicationContext context) {
+  public EmbeddedModule(
+      Module.Type type,
+      ApplicationContext context,
+      Memento memento,
+      ModuleClasspath classpath,
+      FileSystem fileSystem,
+      ModuleDescriptor descriptor) {
     this.type = type;
+    this.memento = memento;
+    this.classpath = classpath;
+    this.fileSystem = fileSystem;
     this.applicationContext = context;
-    this.memento = mock(Memento.class);
     this.lifecycle = new ModuleLifecycle(this);
     this.lifecycle.setState(Lifecycle.State.Installed);
-    this.loader = new SimulatedModuleLoader();
-    this.coordinate = ModuleCoordinate.create("test", "test", "1.0.0-SNAPSHOT");
+    this.descriptor = descriptor;
   }
 
   @Override
@@ -56,7 +57,7 @@ public class SimulatedModule extends AbstractModule implements Module {
 
   @Override
   public ModuleClasspath getModuleClasspath() {
-    return loader.classpath;
+    return classpath;
   }
 
   @Override
@@ -76,17 +77,24 @@ public class SimulatedModule extends AbstractModule implements Module {
 
   @Override
   public Path getModuleDirectory() {
-    return Tests.buildDirectory().toPath();
+    return null;
+    //    return Tests.buildDirectory().toPath();
   }
 
   @Override
   public Assembly getAssembly() {
+    if (getModuleDirectory() == null) {
+      return null;
+    }
     return new Assembly(getModuleDirectory().toFile());
   }
 
   @Override
   @SneakyThrows
   public Source getSource() {
+    if (getModuleDirectory() == null) {
+      return null;
+    }
     return new ModuleSource(getModuleDirectory().toUri());
   }
 
@@ -102,17 +110,17 @@ public class SimulatedModule extends AbstractModule implements Module {
 
   @Override
   public Coordinate getCoordinate() {
-    return coordinate;
+    return descriptor.getCoordinate();
   }
 
   @Override
   public FileSystem getFileSystem() {
-    return spy(FileSystem.class);
+    return fileSystem;
   }
 
   @Override
   public ClassLoader getClassLoader() {
-    return ClassLoader.getSystemClassLoader();
+    return classpath.getClassLoader();
   }
 
   @Override
@@ -137,6 +145,11 @@ public class SimulatedModule extends AbstractModule implements Module {
 
   @Override
   public void restore(Memento memento) {}
+
+  @Override
+  public void setModuleClasspath(ModuleClasspath classpath) {
+    this.classpath = classpath;
+  }
 
   @Override
   public void setActivator(ModuleActivator o) {}

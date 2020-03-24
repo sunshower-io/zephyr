@@ -77,7 +77,7 @@ public final class KernelModuleLoader extends ModuleLoader
       }
       result = ModuleLoader.preloadModule(name, loader);
     }
-    val target = (DefaultModule) graph.get(ModuleCoordinate.parse(name));
+    val target = (AbstractModule) graph.get(ModuleCoordinate.parse(name));
     val loader = new UnloadableKernelModuleLoader(new KernelModuleFinder(target, this, kernel));
     val classpath = new DefaultModuleClasspath(result, loader);
     target.setModuleLoader(loader);

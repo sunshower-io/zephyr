@@ -52,8 +52,10 @@ public class AsynchronousServiceTracker
     @Override
     public void run() {
       val registrations = kernel.getServiceRegistry().getRegistrations(module);
-      for (val registration : registrations) {
-        onEvent(ServiceEvents.REGISTERED, Events.create(registration.getReference()));
+      if (registrations != null) {
+        for (val registration : registrations) {
+          onEvent(ServiceEvents.REGISTERED, Events.create(registration.getReference()));
+        }
       }
     }
   }

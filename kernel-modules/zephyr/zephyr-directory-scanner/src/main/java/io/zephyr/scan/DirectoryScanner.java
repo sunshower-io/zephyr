@@ -7,6 +7,7 @@ import io.zephyr.api.ModuleContext;
 import io.zephyr.cli.DefaultZephyr;
 import io.zephyr.cli.Zephyr;
 import io.zephyr.kernel.Options;
+import io.zephyr.kernel.core.Framework;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.extensions.EntryPoint;
 import io.zephyr.kernel.extensions.EntryPointRegistry;
@@ -41,8 +42,18 @@ public class DirectoryScanner implements EntryPoint, ModuleActivator {
   public void start(ModuleContext context) throws Exception {
     options = new DirectoryScannerOptions();
     options.setScan(true);
-
-    doRun(context.unwrap(Kernel.class));
+    context
+        .unwrap(Kernel.class)
+        .getScheduler()
+        .getKernelExecutor()
+        .submit(
+            () -> {
+              try {
+                doRun(context.unwrap(Kernel.class));
+              } catch (IOException e) {
+                throw new RuntimeException(e);
+              }
+            });
   }
 
   @Override
@@ -69,20 +80,28 @@ public class DirectoryScanner implements EntryPoint, ModuleActivator {
     }
 
     try {
-      val epoints = registry.getEntryPoints(this::exportsKernel);
-
-      if (epoints.isEmpty()) {
-        log.log(Level.WARNING, "scanner.entrypoint.nokernel");
-      }
-
-      val entrypoint = epoints.iterator().next();
-      log.log(Level.INFO, "scanner.entrypoint.from", entrypoint);
-      val kernel = epoints.iterator().next().getService(Kernel.class);
+      Kernel kernel = resolveKernel(registry);
       doRun(kernel);
     } catch (Exception ex) {
       running = false;
       log.log(Level.WARNING, "scanner.entrypoint.scanfailed", ex.getMessage());
     }
+  }
+
+  private Kernel resolveKernel(EntryPointRegistry registry) {
+    if (Framework.isInitialized()) {
+      return Framework.getInstance();
+    }
+
+    val epoints = registry.getEntryPoints(this::exportsKernel);
+
+    if (epoints.isEmpty()) {
+      log.log(Level.WARNING, "scanner.entrypoint.nokernel");
+    }
+
+    val entrypoint = epoints.iterator().next();
+    log.log(Level.INFO, "scanner.entrypoint.from", entrypoint);
+    return epoints.iterator().next().getService(Kernel.class);
   }
 
   private void doRun(Kernel kernel) throws IOException {
@@ -200,6 +219,7 @@ public class DirectoryScanner implements EntryPoint, ModuleActivator {
     }
     if (event.kind() == ENTRY_MODIFY) {
       handleDelete(zephyr, key, event, watchService);
+      handleCreate(zephyr, key, event, watchService);
     }
   }
 
@@ -216,7 +236,7 @@ public class DirectoryScanner implements EntryPoint, ModuleActivator {
       val file = deployedFile.toAbsolutePath().toFile();
       val modules = zephyr.getPlugins();
       for (val module : modules) {
-        if (module.getSource().is(file)) {
+        if (module.getSource() != null && module.getSource().is(file)) {
           zephyr.remove(module.getCoordinate().toCanonicalForm());
           break;
         }
@@ -232,7 +252,14 @@ public class DirectoryScanner implements EntryPoint, ModuleActivator {
     val deployedFile = path.resolve((Path) event.context());
     log.log(Level.INFO, "scanner.deployment.detected", deployedFile);
     try {
-      zephyr.install(deployedFile.toAbsolutePath().toFile().toURI().toURL());
+      val file = deployedFile.toAbsolutePath();
+      zephyr.install(file.toFile().toURI().toURL());
+
+      for (val module : zephyr.getPlugins()) {
+        if (module.getSource() != null && module.getSource().is(file.toFile().getAbsoluteFile())) {
+          zephyr.start(module.getCoordinate().toCanonicalForm());
+        }
+      }
     } catch (Exception ex) {
       log.log(Level.WARNING, "scanner.deployment.failed", path);
     }

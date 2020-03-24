@@ -1,0 +1,7 @@
+plugin:
+  name: barometer
+  group: io.zephyr
+  version: 1.0.0
+  order: 1
+  type: plugin
+  description: Diagnostic and development tools for Zephyr

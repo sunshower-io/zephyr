@@ -18,7 +18,7 @@ public class DirectoryScannerTestConfiguration {
   }
 
   @Bean
-  public DirectoryScanner scanner() {
+  public DirectoryScanner testPluginActivator() {
     return new DirectoryScanner();
   }
 

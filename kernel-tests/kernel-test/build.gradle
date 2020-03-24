@@ -7,6 +7,7 @@ dependencies {
     api project(':kernel-modules:kernel-lib')
     api project(':kernel-modules:synchronous-api')
     api 'javax.inject:javax.inject'
+    api project(':plugins:spring:spring-embedded-plugin')
     api project (':kernel-tests:kernel-test-common')
     [
             "org.springframework:spring-beans",

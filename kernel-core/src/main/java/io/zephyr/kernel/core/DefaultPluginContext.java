@@ -4,6 +4,7 @@ import io.zephyr.api.*;
 import io.zephyr.kernel.Lifecycle;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.ModuleException;
+import io.zephyr.kernel.VolatileStorage;
 import io.zephyr.kernel.concurrency.AsynchronousModuleThreadTracker;
 import io.zephyr.kernel.concurrency.AsynchronousServiceTracker;
 import io.zephyr.kernel.concurrency.ModuleThread;
@@ -12,7 +13,9 @@ import io.zephyr.kernel.log.Logging;
 import io.zephyr.kernel.service.DefaultServiceDefinition;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.ServiceLoader;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.logging.Level;
@@ -25,12 +28,18 @@ public class DefaultPluginContext implements ModuleContext {
   final Module module;
   final Kernel kernel;
 
+  final VolatileStorage delegate;
+  final Map<Object, Object> context;
+
   static final Object lock = new Object();
   static final Logger log = Logging.get(DefaultPluginContext.class);
 
-  public DefaultPluginContext(final Module module, final Kernel kernel) {
+  public DefaultPluginContext(
+      final Module module, final Kernel kernel, final VolatileStorage delegate) {
     this.module = module;
     this.kernel = kernel;
+    this.delegate = delegate;
+    this.context = new ConcurrentHashMap<>();
   }
 
   @Override
@@ -41,6 +50,10 @@ public class DefaultPluginContext implements ModuleContext {
   @Override
   @SuppressWarnings("unchecked")
   public <T> T unwrap(Class<T> type) {
+    val storage = kernel.getVolatileStorage();
+    if (storage.contains(type)) {
+      return storage.get(type);
+    }
     return (T) kernel;
   }
 
@@ -221,5 +234,48 @@ public class DefaultPluginContext implements ModuleContext {
       log.log(Level.FINE, "el.locating.evaluator.kernelmodule.failed");
     }
     return null;
+  }
+
+  @Override
+  public <K, V> V get(K key) {
+    if (delegate.contains(key)) {
+      return delegate.get(key);
+    }
+
+    if (kernel.getVolatileStorage().contains(key)) {
+      return kernel.getVolatileStorage().get(key);
+    }
+    return null;
+  }
+
+  @Override
+  public <K, V> V set(K key, V value) {
+    if (delegate.contains(key)) {
+      return delegate.set(key, value);
+    }
+    if (kernel.getVolatileStorage().contains(key)) {
+      return kernel.getVolatileStorage().get(key);
+    }
+    return delegate.set(key, value);
+  }
+
+  @Override
+  public <K> boolean contains(K key) {
+    return delegate.contains(key) || kernel.getVolatileStorage().contains(key);
+  }
+
+  @Override
+  public void clear() {
+    delegate.clear();
+  }
+
+  @Override
+  public void start() {
+    throw new IllegalStateException("You cannot call start()");
+  }
+
+  @Override
+  public void stop() {
+    throw new IllegalStateException("You cannot call start()");
   }
 }

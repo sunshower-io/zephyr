@@ -3,9 +3,7 @@ package io.zephyr.kernel.core;
 import io.zephyr.api.ModuleContext;
 import io.zephyr.api.ServiceRegistry;
 import io.zephyr.common.io.Files;
-import io.zephyr.kernel.Coordinate;
-import io.zephyr.kernel.KernelModuleEntry;
-import io.zephyr.kernel.Lifecycle;
+import io.zephyr.kernel.*;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.classloading.KernelClassloader;
 import io.zephyr.kernel.concurrency.*;
@@ -55,6 +53,8 @@ public class SunshowerKernel implements Kernel, EventSource {
     return kernelOptions;
   }
 
+  final VolatileStorage storage;
+
   /** Instance fields */
   private volatile ClassLoader classLoader;
 
@@ -80,6 +80,7 @@ public class SunshowerKernel implements Kernel, EventSource {
     this.scheduler = scheduler;
     this.serviceRegistry = registry;
     this.moduleManager = moduleManager;
+    this.storage = new ConcurrentVolatileStorage();
     this.lifecycle = new DefaultKernelLifecycle(this, scheduler, parentClassloader);
     this.eventDispatcher = new AsynchronousEventSource(scheduler.getKernelExecutor());
   }
@@ -91,6 +92,11 @@ public class SunshowerKernel implements Kernel, EventSource {
 
   public static void setKernelOptions(KernelOptions options) {
     kernelOptions = options;
+  }
+
+  @Override
+  public VolatileStorage getVolatileStorage() {
+    return storage;
   }
 
   @Override
@@ -155,6 +161,7 @@ public class SunshowerKernel implements Kernel, EventSource {
     eventDispatcher.stop();
     lifecycle.stop().toCompletableFuture().get();
     serviceRegistry.close();
+    storage.clear();
   }
 
   @Override
@@ -168,8 +175,8 @@ public class SunshowerKernel implements Kernel, EventSource {
   }
 
   @Override
-  public ModuleContext createContext(Module module) {
-    val ctx = new DefaultPluginContext(module, this);
+  public ModuleContext createContext(Module module, VolatileStorage storage) {
+    val ctx = new DefaultPluginContext(module, this, storage);
     ((AbstractModule) module).setContext(ctx);
     return ctx;
   }
