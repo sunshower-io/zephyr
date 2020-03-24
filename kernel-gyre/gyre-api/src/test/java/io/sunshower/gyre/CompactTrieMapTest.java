@@ -2,10 +2,8 @@ package io.sunshower.gyre;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
+
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,6 +30,55 @@ class CompactTrieMapTest {
       }
     }
     return b.toString();
+  }
+
+  @Test
+  void ensureToStringWorks() {
+
+    map.put("hello:world", 1);
+    map.put("sup:peeps", 2);
+
+    String expected =
+        "(k:(root) -> v:null)\n"
+            + "├── (k:hello -> v:null)\n"
+            + "│   └── (k:world -> v:1)\n"
+            + "└── (k:sup -> v:null)\n"
+            + "    └── (k:peeps -> v:2)\n";
+    assertEquals(map.toString(), expected);
+  }
+
+  @Test
+  void ensurePutAllWorks() {
+    val a = new HashMap<String, Object>();
+    a.put("hello:world", 1);
+    a.put("sup:peeps", 2);
+
+    map.putAll(a);
+
+    assertEquals(map.size(), 2);
+  }
+
+  @Test
+  void ensureContainsAllWorks() {
+    val a = new HashMap<String, Object>();
+    a.put("hello:world", 1);
+    a.put("sup:peeps", 2);
+
+    map.put("hello:world", 1);
+    map.put("sup:peeps", 2);
+    assertTrue(map.entrySet().containsAll(a.entrySet()));
+  }
+
+  @Test
+  void ensureRemoveAllWorks() {
+    val a = new HashMap<String, Object>();
+    a.put("hello:world", 1);
+    a.put("sup:peeps", 2);
+
+    map.put("hello:world", 1);
+    map.put("sup:peeps", 2);
+    assertTrue(map.entrySet().removeAll(a.entrySet()));
+    assertTrue(map.isEmpty());
   }
 
   @Test
