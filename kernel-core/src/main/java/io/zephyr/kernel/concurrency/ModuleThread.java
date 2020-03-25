@@ -221,9 +221,7 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable, 
           }
           ((AbstractModule) module).setActivator(null);
           module.getFileSystem().close();
-          if (moduleThread.get() != null) {
-            moduleThread.get().setContextClassLoader(null);
-          }
+          moduleThread.get().setContextClassLoader(null);
         } catch (Exception ex) {
           module.getLifecycle().setState(Lifecycle.State.Failed);
           throw new PluginException(ex);

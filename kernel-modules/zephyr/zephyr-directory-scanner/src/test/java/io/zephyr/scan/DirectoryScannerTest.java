@@ -102,6 +102,7 @@ class DirectoryScannerTest {
 
   @Test
   @SneakyThrows
+  @EnabledIfSystemProperty(named = "flakytests", matches = "true")
   void ensureKernelDefaultDeploymentDirectoryIsScanned() {
     val file = createFile();
     kernel.addEventListener(eventListener, ModuleEvents.INSTALLING);

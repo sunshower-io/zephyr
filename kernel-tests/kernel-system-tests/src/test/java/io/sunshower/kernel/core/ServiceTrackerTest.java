@@ -15,6 +15,7 @@ import io.zephyr.cli.Zephyr;
 import io.zephyr.kernel.events.EventListener;
 import javax.inject.Inject;
 import lombok.val;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
@@ -30,7 +31,7 @@ public class ServiceTrackerTest {
   @Inject private ModuleContext context;
   @Inject private ModuleLifecycleManager lifecycleManager;
 
-  @Test
+  @RepeatedTest(10)
   void ensureTrackingServiceProducesServiceInInstalledTestPlugin() {
     val tracker = context.trackServices(t -> true);
     tracker.addEventListener(listener, ServiceEvents.REGISTERED);
@@ -38,7 +39,7 @@ public class ServiceTrackerTest {
     zephyr.install(ProjectPlugins.TEST_PLUGIN_2.getUrl());
     lifecycleManager.start(t -> t.getCoordinate().getName().contains("2"));
     tracker.waitUntil(t -> t.size() > 0);
-    verify(listener).onEvent(eq(ServiceEvents.REGISTERED), any());
+    verify(listener, timeout(1000)).onEvent(eq(ServiceEvents.REGISTERED), any());
     tracker.close();
     lifecycleManager.remove(t -> true);
   }
