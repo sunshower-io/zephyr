@@ -76,7 +76,9 @@ public abstract class AbstractTrieMap<K, T, V> implements TrieMap<K, V> {
         return true;
       }
 
-      for (val child : current) {
+      val iter = current.iterator();
+      while (iter.hasNext()) {
+        val child = iter.next();
         stack.push(child);
       }
     }
@@ -114,12 +116,18 @@ public abstract class AbstractTrieMap<K, T, V> implements TrieMap<K, V> {
       Entry<K, T, V> child = current.locate(key, seg);
       if (child == null) {
         child = current.create(key, seg);
-        if (!segments.hasNext()) {
-          count++;
-        }
       }
+
       current = child;
     }
+
+    if (current.internal) {
+      count++;
+    }
+
+    //    if(!current.internal) {
+    //      count++;
+    //    }
     return current.setValue(value);
   }
 
@@ -201,7 +209,30 @@ public abstract class AbstractTrieMap<K, T, V> implements TrieMap<K, V> {
     }
   }
 
+  final <X> X[] fill(X[] values, Iterator<X> iterator) {
+    int c = 0;
+    while (c < count) {
+      values[c++] = iterator.next();
+    }
+    return values;
+  }
+
   final class ValueCollection extends AbstractCollection<V> {
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public Object[] toArray() {
+      return fill(new Object[count], (Iterator<Object>) new ValueIterator());
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <X> X[] toArray(X[] fill) {
+      if (fill.length < count) {
+        return (X[]) toArray();
+      }
+      return fill(fill, (Iterator<X>) new ValueIterator());
+    }
 
     @Override
     public Iterator<V> iterator() {
@@ -222,31 +253,18 @@ public abstract class AbstractTrieMap<K, T, V> implements TrieMap<K, V> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Object[] toArray() {
-
-      val result = new Entry[count];
-      val iter = new EntryIterator();
-
-      int c = 0;
-      while (c < count) {
-        result[c++] = (Entry) iter.next();
-      }
-      return result;
+      return fill(new Entry[count], new EntryIterator());
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> T[] toArray(T[] a) {
+    public <X> X[] toArray(X[] a) {
       if (a.length != count) {
-        return (T[]) toArray();
+        return (X[]) toArray();
       }
-
-      int c = 0;
-      Iterator<Map.Entry<K, V>> iter = new EntryIterator();
-      while (c < count) {
-        a[c++] = (T) iter.next();
-      }
-      return a;
+      return fill(a, (Iterator<X>) new EntryIterator());
     }
 
     @Override
@@ -261,6 +279,7 @@ public abstract class AbstractTrieMap<K, T, V> implements TrieMap<K, V> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public boolean containsAll(Collection<?> c) {
       for (val kv : c) {
         val kve = (Map.Entry<K, V>) kv;
@@ -368,7 +387,10 @@ public abstract class AbstractTrieMap<K, T, V> implements TrieMap<K, V> {
 
       while (results.isEmpty() && !stack.empty()) {
         val c = stack.pop();
-        for (val child : c) {
+
+        val iterator = c.iterator();
+        while (iterator.hasNext()) {
+          val child = iterator.next();
           stack.push(child);
           if (!child.internal) {
             results.add(child);
@@ -419,16 +441,9 @@ public abstract class AbstractTrieMap<K, T, V> implements TrieMap<K, V> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Object[] toArray() {
-
-      val result = new Object[count];
-      val keyIterator = new KeyIterator();
-
-      int cur = 0;
-      while (cur < count) {
-        result[cur++] = keyIterator.next();
-      }
-      return result;
+      return fill(new Object[count], (Iterator<Object>) new KeyIterator());
     }
 
     @Override
@@ -438,13 +453,7 @@ public abstract class AbstractTrieMap<K, T, V> implements TrieMap<K, V> {
       if (a.length != count) {
         return (T[]) toArray();
       }
-
-      int c = 0;
-      Iterator<K> iter = new KeyIterator();
-      while (c < count) {
-        a[c++] = (T) iter.next();
-      }
-      return a;
+      return fill(a, (Iterator<T>) new KeyIterator());
     }
 
     @Override
@@ -488,19 +497,21 @@ public abstract class AbstractTrieMap<K, T, V> implements TrieMap<K, V> {
     }
   }
 
-  protected abstract static class Entry<K, T, V>
-      implements Map.Entry<K, V>, Iterable<Entry<K, T, V>> {
+  protected abstract static class Entry<K, T, V> implements Map.Entry<K, V> {
 
     protected K key;
     protected V value;
     protected T identity;
-    protected boolean internal = true;
+    protected boolean internal;
 
-    protected Entry() {}
+    protected Entry() {
+      this.internal = true;
+    }
 
     protected Entry(K key, T identity, V value) {
       this.key = key;
       this.value = value;
+      this.internal = true;
       this.identity = identity;
     }
 
@@ -521,6 +532,13 @@ public abstract class AbstractTrieMap<K, T, V> implements TrieMap<K, V> {
       this.value = value;
       return result;
     }
+
+    @Override
+    public String toString() {
+      return String.format("%s -> %s", identity, value);
+    }
+
+    public abstract Iterator<? extends Entry<K, T, V>> iterator();
 
     public abstract void clear();
 

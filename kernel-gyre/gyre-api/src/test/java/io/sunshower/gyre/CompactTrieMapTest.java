@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.*;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
 class CompactTrieMapTest {
@@ -29,6 +30,28 @@ class CompactTrieMapTest {
       }
     }
     return b.toString();
+  }
+
+  @Test
+  void ensureCollectionValuesWorks() {
+
+    map.put(":hello:world", 1);
+    map.put(":sup:peeps", 2);
+
+    val values = new HashSet<>(map.values());
+    assertTrue(values.contains(1));
+    assertTrue(values.contains(2));
+  }
+
+  @Test
+  void ensureDuplicatesAreNotAllowed() {
+    map.put(":hello:world", 1);
+    assertEquals(1, map.size());
+
+    val existing = map.put(":hello:world", 2);
+
+    assertEquals(1, existing);
+    assertEquals(1, map.size());
   }
 
   @Test
@@ -81,10 +104,21 @@ class CompactTrieMapTest {
   }
 
   @Test
+  void ensureToArrayProducesExpectedResults() {
+    map.put(":ui:main", 0);
+    map.put(":ui:main:header", 1);
+    map.put(":ui:main:footer", 2);
+    map.put(":ui:main:content", 3);
+    map.put(":ui:main:navigation:primary", 4);
+    map.put(":ui:main:navigation:secondary", 5);
+    assertEquals(6, map.values().toArray().length);
+  }
+
+  @RepeatedTest(100)
   void ensureRemovingAllElementsWorks() {
     List<String> keys = new ArrayList<>();
     for (int i = 0; i < 20; i++) {
-      val path = randomPath(10);
+      val path = randomPath(random.nextInt(20) + 1);
       map.put(path, i);
       keys.add(path);
     }
@@ -101,6 +135,40 @@ class CompactTrieMapTest {
   @Test
   void ensureRemovingNonExistingObjectProducesNull() {
     assertNull(map.remove(randomPath(100)));
+  }
+
+  @Test
+  void ensureRemovingChildBeforeParentProducesTheCorrectSize() {
+    map.put("65", 1);
+    map.put("65:49:70", 2);
+    assertEquals(map.size(), 2);
+
+    map.remove("65:49:70");
+    map.remove("65");
+    assertEquals(map.size(), 0);
+  }
+
+  @Test
+  void ensureRemovingParentBeforeChildProducesCorrectSize() {
+    map.put("65", 1);
+    map.put("65:49:70", 2);
+    assertEquals(map.size(), 2);
+
+    map.remove("65");
+    map.remove("65:49:70");
+    assertEquals(map.size(), 0);
+  }
+
+  @Test
+  void ensureRemovingChildBeforeParentProducesCorrectSize() {
+
+    map.put("hello:world:how", 1);
+    map.put("hello", 2);
+
+    assertEquals(map.size(), 2);
+    val result = map.remove("hello:world:how");
+    assertEquals(result, 1);
+    assertEquals(map.size(), 1);
   }
 
   @Test
