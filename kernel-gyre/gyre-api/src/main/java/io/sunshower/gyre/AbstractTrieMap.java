@@ -47,6 +47,44 @@ public abstract class AbstractTrieMap<K, T, V> implements TrieMap<K, V> {
     return true;
   }
 
+  public List<V> descendents(K key) {
+
+    Entry<K, T, V> current = root;
+    Iterator<T> segments = analyzer.segments(key);
+    while (segments.hasNext()) {
+      val segment = segments.next();
+      val child = current.locate(key, segment);
+      if (child == null) {
+        return Collections.emptyList();
+      }
+      current = child;
+    }
+
+    if (current == null) {
+      return Collections.emptyList();
+    }
+
+    List<V> children = new ArrayList<>();
+    Stack<Entry<K, T, V>> stack = new Stack<>();
+
+    val iter = current.iterator();
+    while (iter.hasNext()) {
+      stack.push(iter.next());
+    }
+
+    while (!stack.empty()) {
+      val next = stack.pop();
+      if (!next.internal) {
+        children.add(next.value);
+      }
+      val citer = next.iterator();
+      while (citer.hasNext()) {
+        stack.push(citer.next());
+      }
+    }
+    return children;
+  }
+
   @Override
   public List<V> level(K key) {
 

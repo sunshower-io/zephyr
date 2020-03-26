@@ -114,9 +114,9 @@ class CompactTrieMapTest {
     assertEquals(6, map.values().toArray().length);
   }
 
-  @RepeatedTest(100)
+  @RepeatedTest(1000)
   void ensureRemovingAllElementsWorks() {
-    List<String> keys = new ArrayList<>();
+    Set<String> keys = new LinkedHashSet<>();
     for (int i = 0; i < 20; i++) {
       val path = randomPath(random.nextInt(20) + 1);
       map.put(path, i);
@@ -130,6 +130,14 @@ class CompactTrieMapTest {
       assertEquals(size - 1, map.size());
     }
     assertTrue(map.isEmpty());
+  }
+
+  @Test
+  void ensureDuplicatesDoNotPorgleThisTrie() {
+    map.put("30:40:50", 3);
+    map.put("30", 1);
+    map.remove("30:40:50");
+    assertEquals(1, map.size());
   }
 
   @Test
@@ -270,6 +278,18 @@ class CompactTrieMapTest {
   void ensureKeySetContainsKey() {
     map.put("hello", "world");
     assertTrue(map.keySet().contains("hello"));
+  }
+
+  @Test
+  void ensureSimpleDescendantsWork() {
+    map.put("a:b:c", 1);
+    map.put("a:b:c:d:e", 2);
+    map.put("c:d:e", 3);
+
+    val values = new HashSet<>(map.descendents("a:b"));
+    assertTrue(values.contains(1));
+    assertTrue(values.contains(2));
+    assertFalse(values.contains(3));
   }
 
   @Test
