@@ -34,12 +34,12 @@ public final class DefaultDependencyGraph implements DependencyGraph, Cloneable 
 
   @Override
   public Module latest(Coordinate coordinate) {
-    return firstOfLevel(coordinate, Module::compareTo);
+    return firstOfLevel(coordinate, Comparator.reverseOrder());
   }
 
   @Override
   public Module earliest(Coordinate coordinate) {
-    return firstOfLevel(coordinate, Comparator.reverseOrder());
+    return firstOfLevel(coordinate, Module::compareTo);
   }
 
   @Override

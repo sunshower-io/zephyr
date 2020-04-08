@@ -38,7 +38,7 @@ public class SemanticVersion implements Version {
   @Override
   public int compareTo(@NonNull Version o) {
     if (o.getClass().equals(SemanticVersion.class)) {
-      return -version.compareTo(((SemanticVersion) o).version);
+      return version.compareTo(((SemanticVersion) o).version);
     }
     throw new IllegalArgumentException("Can't compare myself to that");
   }
