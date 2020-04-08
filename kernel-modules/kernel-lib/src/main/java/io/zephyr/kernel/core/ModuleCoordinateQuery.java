@@ -73,6 +73,16 @@ public final class ModuleCoordinateQuery implements Coordinate {
     return Objects.hash(getName(), getGroup(), getVersion());
   }
 
+  public ModuleCoordinateQuery version(String version) {
+    this.version = new SemanticVersion(version);
+    return this;
+  }
+
+  public ModuleCoordinateQuery name(String name) {
+    this.name = name;
+    return this;
+  }
+
   /** lhs compare rhs lhs >= rhs */
   private static int compare(String lhs, String rhs) {
     if (lhs == null && rhs == null) {
@@ -83,15 +93,5 @@ public final class ModuleCoordinateQuery implements Coordinate {
       return -1;
     }
     return lhs.compareTo(rhs);
-  }
-
-  public ModuleCoordinateQuery version(String version) {
-    this.version = new SemanticVersion(version);
-    return this;
-  }
-
-  public ModuleCoordinateQuery name(String name) {
-    this.name = name;
-    return this;
   }
 }

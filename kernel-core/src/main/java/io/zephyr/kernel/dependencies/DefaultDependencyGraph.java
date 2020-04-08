@@ -33,6 +33,27 @@ public final class DefaultDependencyGraph implements DependencyGraph, Cloneable 
   }
 
   @Override
+  public Module latest(Coordinate coordinate) {
+    return firstOfLevel(coordinate, Module::compareTo);
+  }
+
+  @Override
+  public Module earliest(Coordinate coordinate) {
+    return firstOfLevel(coordinate, Comparator.reverseOrder());
+  }
+
+  @Override
+  public Module firstOfLevel(Coordinate coordinate, Comparator<Module> comparator) {
+    val level = getModules(coordinate);
+    if (level.isEmpty()) {
+      return null;
+    }
+
+    level.sort(comparator);
+    return level.get(0);
+  }
+
+  @Override
   public List<Module> getModules(Coordinate coordinate) {
     return modules.level(coordinate);
   }

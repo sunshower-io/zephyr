@@ -18,8 +18,6 @@ final class CoordinateAnalyzer implements Analyzer<Coordinate, String> {
   private static class CoordinateIterator implements Iterator<String> {
     final Iterator<String> parts;
 
-    static final Pattern pattern = Pattern.compile("\\.");
-
     public CoordinateIterator(Coordinate coordinate) {
       val parts = new ArrayList<String>();
       put(parts, coordinate.getGroup());
@@ -34,7 +32,7 @@ final class CoordinateAnalyzer implements Analyzer<Coordinate, String> {
 
     static void put(Collection<String> collection, String value) {
       if (value != null) {
-        collection.addAll(Arrays.asList(pattern.split(value)));
+        collection.add(value);
       }
     }
 
