@@ -10,6 +10,7 @@ import lombok.val;
 
 @Getter
 @AllArgsConstructor
+@SuppressWarnings("PMD.AvoidFieldNameMatchingMethodName")
 public final class ModuleCoordinate implements Coordinate {
   @NonNull private final String name;
   @NonNull private final String group;
@@ -24,6 +25,10 @@ public final class ModuleCoordinate implements Coordinate {
   public static Coordinate parse(@NonNull String name) {
     val segs = pattern.split(name);
     return create(segs[0], segs[1], segs[2]);
+  }
+
+  public static ModuleCoordinateQuery group(String group) {
+    return new ModuleCoordinateQuery(group);
   }
 
   @Override

@@ -18,6 +18,12 @@ public abstract class AbstractTrieMap<K, T, V> implements TrieMap<K, V> {
     this.root = createRoot();
   }
 
+  public AbstractTrieMap(Analyzer<K, T> analyzer, Map<? extends K, ? extends V> clone) {
+    this.analyzer = analyzer;
+    this.root = createRoot();
+    putAll(clone);
+  }
+
   @Override
   public int size() {
     return count;

@@ -14,22 +14,27 @@ import lombok.val;
 })
 public final class DefaultDependencyGraph implements DependencyGraph, Cloneable {
 
-  final Map<Coordinate, Module> modules;
+  final TrieMap<Coordinate, Module> modules;
   final Graph<DirectedGraph.Edge<Coordinate>, Coordinate> dependencyGraph;
 
   public DefaultDependencyGraph() {
-    modules = new HashMap<>();
+    modules = new CompactTrieMap<>(new CoordinateAnalyzer());
     dependencyGraph = new AbstractDirectedGraph<>();
   }
 
   private DefaultDependencyGraph(DefaultDependencyGraph graph) {
-    modules = new HashMap<>(graph.modules);
+    modules = new CompactTrieMap<>(new CoordinateAnalyzer(), graph.modules);
     dependencyGraph = graph.dependencyGraph.clone();
   }
 
   @Override
   public Graph<DirectedGraph.Edge<Coordinate>, Coordinate> getGraph() {
     return dependencyGraph;
+  }
+
+  @Override
+  public List<Module> getModules(Coordinate coordinate) {
+    return modules.level(coordinate);
   }
 
   @Override

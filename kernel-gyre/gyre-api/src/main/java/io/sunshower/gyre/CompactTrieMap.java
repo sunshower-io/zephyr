@@ -9,6 +9,10 @@ public class CompactTrieMap<K, T, V> extends AbstractTrieMap<K, T, V> {
     super(analyzer);
   }
 
+  public CompactTrieMap(Analyzer<K, T> analyzer, Map<? extends K, ? extends V> copy) {
+    super(analyzer, copy);
+  }
+
   @Override
   protected Entry<K, T, V> createRoot() {
     return new ListBasedEntry<>();

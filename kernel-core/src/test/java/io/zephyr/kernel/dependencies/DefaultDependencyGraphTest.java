@@ -90,12 +90,29 @@ class DefaultDependencyGraphTest {
     assertEquals(dependants.size(), 2, "must have correct dependent count");
   }
 
-  Module module(String gandname, String... deps) {
-    val coord = ModuleCoordinate.create(gandname, gandname, "1.0.0-SNAPSHOT");
+  @Test
+  void ensureRetrievingLevelWorks() {
+    val fst = newModule("test", "coolbeans");
+    val snd = newModule("test", "beanbeans");
+
+    graph.addAll(Arrays.asList(fst, snd));
+
+    val query = ModuleCoordinate.group("test").name("coolbeans");
+
+    val modules = graph.getModules(query);
+    assertEquals(modules.size(), 1, "must return 1 result");
+  }
+
+  Module newModule(String group, String name, String... deps) {
+    val coord = ModuleCoordinate.create(group, name, "1.0.0-SNAPSHOT");
     val results =
         Arrays.stream(deps)
             .map(t -> new Dependency(Dependency.Type.Service, module(t).getCoordinate()))
             .collect(Collectors.toList());
     return new MockModule(coord, results);
+  }
+
+  Module module(String gandname, String... deps) {
+    return newModule(gandname, gandname, deps);
   }
 }

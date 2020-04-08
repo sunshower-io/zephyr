@@ -7,6 +7,7 @@ import io.sunshower.gyre.Partition;
 import io.zephyr.kernel.Coordinate;
 import io.zephyr.kernel.Module;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,9 +18,11 @@ import lombok.Getter;
  */
 public interface DependencyGraph extends Iterable<Module> {
 
+  Set<UnsatisfiedDependencySet> add(Module a);
+
   Graph<DirectedGraph.Edge<Coordinate>, Coordinate> getGraph();
 
-  Set<UnsatisfiedDependencySet> add(Module a);
+  List<Module> getModules(Coordinate coordinate);
 
   @Getter
   @AllArgsConstructor
