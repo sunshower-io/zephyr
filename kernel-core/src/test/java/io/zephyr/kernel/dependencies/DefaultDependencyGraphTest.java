@@ -6,15 +6,18 @@ import io.sunshower.kernel.test.MockModule;
 import io.zephyr.kernel.Dependency;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.core.ModuleCoordinate;
+import io.zephyr.kernel.core.SemanticVersion;
 import java.util.Arrays;
 import java.util.stream.Collectors;
-
-import io.zephyr.kernel.core.SemanticVersion;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-@SuppressWarnings("PMD.JUnitTestContainsTooManyAsserts")
+@SuppressWarnings({
+  "PMD.AvoidDuplicateLiterals",
+  "PMD.JUnitTestContainsTooManyAsserts",
+  "PMD.JUnitAssertionsShouldIncludeMessage"
+})
 class DefaultDependencyGraphTest {
 
   private DependencyGraph graph;

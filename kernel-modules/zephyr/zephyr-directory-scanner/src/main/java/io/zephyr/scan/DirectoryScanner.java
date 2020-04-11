@@ -27,11 +27,17 @@ import lombok.val;
 public class DirectoryScanner implements EntryPoint, ModuleActivator {
   static final Logger log = Logging.get(DirectoryScanner.class);
 
+  /** immutable state */
+  /** currently watched keys */
   final Map<WatchKey, Path> keys;
 
+  /** mutable state */
   private FileSystem fileSystem;
-  private DirectoryScannerOptions options;
+
   private WatchService watchService;
+  private DirectoryScannerOptions options;
+
+  /** concurrent state */
   volatile boolean running;
 
   public DirectoryScanner() {
