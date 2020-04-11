@@ -42,6 +42,14 @@ public abstract class AbstractDeploymentScanner implements Startable, Stoppable,
     this.watchService = fileSystem.newWatchService();
   }
 
+  public Set<String> getPaths() {
+    return paths;
+  }
+
+  protected Path resolve(String file) {
+    return fileSystem.getPath(file);
+  }
+
   @Override
   public void start() {
     logger.log(Level.INFO, "deployment.scanner.starting");
