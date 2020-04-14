@@ -3,6 +3,7 @@ package io.zephyr.scan;
 import io.sunshower.gyre.Pair;
 import io.zephyr.api.Startable;
 import io.zephyr.api.Stoppable;
+import io.zephyr.kernel.Coordinate;
 import io.zephyr.kernel.core.*;
 import io.zephyr.kernel.log.Logging;
 import io.zephyr.kernel.module.*;
@@ -23,23 +24,22 @@ public abstract class AbstractDeploymentScanner implements Startable, Stoppable,
   private final Kernel kernel;
 
   private final Set<String> paths;
-  private final FileSystem fileSystem;
-  private final WatchService watchService;
+  private final Map<WatchKey, Path> keys;
+
+  /** mutable state */
+  private FileSystem fileSystem;
+
+  private WatchService watchService;
 
   /** concurrent state */
   private volatile boolean running;
 
-  private final Map<WatchKey, Path> keys;
-
-  protected AbstractDeploymentScanner(final Kernel kernel, final Collection<String> paths)
-      throws IOException {
+  protected AbstractDeploymentScanner(final Kernel kernel, final Collection<String> paths) {
     check(kernel, paths);
 
     this.kernel = kernel;
     this.keys = new HashMap<>();
     this.paths = Set.copyOf(paths);
-    this.fileSystem = kernel.getFileSystem();
-    this.watchService = fileSystem.newWatchService();
   }
 
   public Set<String> getPaths() {
@@ -53,11 +53,23 @@ public abstract class AbstractDeploymentScanner implements Startable, Stoppable,
   @Override
   public void start() {
     logger.log(Level.INFO, "deployment.scanner.starting");
-    kernel.getScheduler().getKernelExecutor().submit(this);
+    try {
+      this.fileSystem = kernel.getFileSystem();
+      this.watchService = fileSystem.newWatchService();
+      kernel.getScheduler().getKernelExecutor().submit(this);
+    } catch (IOException ex) {
+      ex.printStackTrace();
+    }
+  }
+
+  public Kernel getKernel() {
+    return kernel;
   }
 
   @Override
-  public void stop() {}
+  public void stop() {
+    running = false;
+  }
 
   @Override
   public void run() {
@@ -101,6 +113,7 @@ public abstract class AbstractDeploymentScanner implements Startable, Stoppable,
   }
 
   private void handleEvent(WatchEvent.Kind<?> kind, Path absolute) {
+
     if (kind == StandardWatchEventKinds.ENTRY_CREATE) {
       deploy(absolute);
     }
@@ -114,8 +127,7 @@ public abstract class AbstractDeploymentScanner implements Startable, Stoppable,
 
   private void deploy(Path absolute) {
     val undeploymentResult = undeploy(absolute);
-
-    ModuleDescriptor descriptor = undeploymentResult.snd;
+    var descriptor = undeploymentResult.snd;
     if (descriptor == null) {
       val desc = loadDescriptor(undeploymentResult.fst);
       if (desc.isEmpty()) {
@@ -130,33 +142,70 @@ public abstract class AbstractDeploymentScanner implements Startable, Stoppable,
     moduleInstallation.setLocation(urlFor(absolute.toFile()));
     moduleInstallation.setLifecycleActions(ModuleLifecycle.Actions.Activate);
     val group = new ModuleInstallationGroup(moduleInstallation);
-    kernel.getModuleManager().prepare(group).commit();
+    Coordinate finalDescriptor = descriptor;
+    kernel
+        .getModuleManager()
+        .prepare(group)
+        .commit()
+        .thenApply(t -> this.startModule(finalDescriptor));
   }
 
-  private Pair<File, ModuleDescriptor> undeploy(Path absolute) {
+  protected Coordinate startModule(Coordinate coordinate) {
+    performLifecycleAction(coordinate, ModuleLifecycle.Actions.Activate);
+    return coordinate;
+  }
+
+  private Pair<File, Coordinate> undeploy(Path absolute) {
     val file = absolute.toFile();
-    val descriptor = loadDescriptor(file);
+    Optional<Coordinate> descriptor = loadDescriptor(file);
 
     if (descriptor.isEmpty()) {
       logger.log(Level.INFO, "deployment.scan.no.module");
     } else {
+
       val moddesc = descriptor.get();
-      val lifecycle =
-          new ModuleLifecycleChangeRequest(moddesc.getCoordinate(), ModuleLifecycle.Actions.Delete);
-      val group = new ModuleLifecycleChangeGroup();
-      group.addRequest(lifecycle);
-      kernel.getModuleManager().prepare(group).commit();
+      performLifecycleAction(moddesc, ModuleLifecycle.Actions.Stop);
       return Pair.of(file, moddesc);
     }
     return Pair.of(file, null);
   }
 
-  private Optional<ModuleDescriptor> loadDescriptor(File file) {
-    val loader = ServiceLoader.load(ModuleScanner.class, kernel.getClassLoader());
-    return loader.stream().flatMap(t -> t.get().scan(file, urlFor(file)).stream()).findAny();
+  private void performLifecycleAction(Coordinate coordinate, ModuleLifecycle.Actions actions) {
+    val lifecycle = new ModuleLifecycleChangeRequest(coordinate, actions);
+    val group = new ModuleLifecycleChangeGroup();
+    group.addRequest(lifecycle);
+    val result = kernel.getModuleManager().prepare(group).commit();
+    if (actions == ModuleLifecycle.Actions.Stop) {
+      result.thenRun(() -> performLifecycleAction(coordinate, ModuleLifecycle.Actions.Delete));
+    }
   }
 
-  private URL urlFor(File file) {
+  protected Optional<Coordinate> loadDescriptor(File file) {
+    Optional<Coordinate> result = loadFile(file);
+
+    if (result.isEmpty()) {
+      val modules = kernel.getModuleManager().getModules();
+      for (val mod : modules) {
+        if (mod.getSource().is(file)) {
+          return Optional.of(mod.getCoordinate());
+        }
+      }
+    } else {
+      return result;
+    }
+    return Optional.empty();
+  }
+
+  private Optional<Coordinate> loadFile(File file) {
+    val loader = ServiceLoader.load(ModuleScanner.class, kernel.getClassLoader());
+    return loader
+        .stream()
+        .flatMap(
+            t -> t.get().scan(file, urlFor(file)).map(ModuleDescriptor::getCoordinate).stream())
+        .findAny();
+  }
+
+  protected URL urlFor(File file) {
     try {
       return file.toURI().toURL();
     } catch (MalformedURLException e) {
@@ -199,9 +248,6 @@ public abstract class AbstractDeploymentScanner implements Startable, Stoppable,
     Objects.requireNonNull(kernel, "kernel must not be null");
     if (paths.isEmpty()) {
       throw new IllegalArgumentException("Error: paths must not be null or empty");
-    }
-    if (kernel.getLifecycle().getState() != KernelLifecycle.State.Running) {
-      throw new IllegalArgumentException("Error: Zephyr kernel must be running");
     }
   }
 }
