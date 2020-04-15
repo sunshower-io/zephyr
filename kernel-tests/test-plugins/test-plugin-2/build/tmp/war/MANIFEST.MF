@@ -1,8 +1,0 @@
-Manifest-Version: 1.0
-group: sunshower.io
-name: test-plugin-2
-version: 1.0.0-SNAPSHOT
-description: just a test plugin!
-dependencies: library@io.sunshower:test-plugin-1:1.0.0-SNAPSHOT
-type: plugin
-

@@ -1,7 +1,0 @@
-Manifest-Version: 1.0
-group: io.sunshower
-name: test-plugin-1
-version: 1.0.0-SNAPSHOT
-description: just a test plugin!
-type: plugin
-
