@@ -1,0 +1,18 @@
+plugin:
+  name: spring-plugin-dep
+  group: io.sunshower.spring
+  version: 1.0.0
+  order: 1
+  type: plugin
+  description: spring-boot-plugin
+  dependencies:
+    - dependency:
+        type: library
+        required: true
+        group: io.sunshower.spring
+        version: 1.0.0
+        name: spring-plugin
+
+
+
+
