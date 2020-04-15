@@ -18,11 +18,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import lombok.val;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.event.ContextClosedEvent;
 
 @Configuration
-public class EmbeddedSpringConfiguration {
+public class EmbeddedSpringConfiguration implements ApplicationListener<ContextClosedEvent> {
 
   @Bean
   public ModuleContext moduleContext(Module module, Kernel kernel, ModuleThread thread) {
@@ -46,6 +48,7 @@ public class EmbeddedSpringConfiguration {
   public ModuleThread moduleThread(Module module, Kernel kernel) {
     val thread = new ModuleThread(module, kernel);
     ((EmbeddedModule) module).setThread(thread);
+    thread.start();
     return thread;
   }
 
@@ -107,5 +110,11 @@ public class EmbeddedSpringConfiguration {
   @Bean
   public ServiceRegistry serviceRegistry() {
     return new KernelServiceRegistry();
+  }
+
+  @Override
+  public void onApplicationEvent(ContextClosedEvent event) {
+    val thread = event.getApplicationContext().getBean(ModuleThread.class);
+    thread.stop();
   }
 }
