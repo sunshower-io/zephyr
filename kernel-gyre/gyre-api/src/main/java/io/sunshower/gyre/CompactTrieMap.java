@@ -9,6 +9,10 @@ public class CompactTrieMap<K, T, V> extends AbstractTrieMap<K, T, V> {
     super(analyzer);
   }
 
+  public CompactTrieMap(Analyzer<K, T> analyzer, Map<? extends K, ? extends V> copy) {
+    super(analyzer, copy);
+  }
+
   @Override
   protected Entry<K, T, V> createRoot() {
     return new ListBasedEntry<>();
@@ -16,7 +20,7 @@ public class CompactTrieMap<K, T, V> extends AbstractTrieMap<K, T, V> {
 
   static final class ListBasedEntry<K, T, V> extends AbstractTrieMap.Entry<K, T, V> {
     private int index;
-    private List<AbstractTrieMap.Entry<K, T, V>> children;
+    private List<ListBasedEntry<K, T, V>> children;
 
     protected ListBasedEntry() {
       super();
@@ -59,12 +63,19 @@ public class CompactTrieMap<K, T, V> extends AbstractTrieMap<K, T, V> {
     @Override
     public V remove(Entry<K, T, V> current) {
       val d = (ListBasedEntry<K, T, V>) current;
-      children.remove(d.index);
+      val child = children.get(d.index);
+      val result = d.value;
 
-      if (children.isEmpty()) {
-        children = null;
+      if (child.children == null) {
+        children.remove(d.index);
+        for (int i = d.index; i < children.size(); i++) {
+          children.get(i).index -= 1;
+        }
+      } else {
+        d.value = null;
+        d.internal = true;
       }
-      return current.getValue();
+      return result;
     }
 
     @Override
@@ -81,7 +92,7 @@ public class CompactTrieMap<K, T, V> extends AbstractTrieMap<K, T, V> {
     }
 
     @Override
-    public Iterator<Entry<K, T, V>> iterator() {
+    public Iterator<? extends Entry<K, T, V>> iterator() {
       if (children == null) {
         return Collections.emptyIterator();
       }

@@ -43,6 +43,11 @@
                 <version>${zephyr.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>io.zephyr</groupId>
+                <artifactId>zephyr-directory-scanner</artifactId>
+                <version>${zephyr.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>io.zephyr</groupId>

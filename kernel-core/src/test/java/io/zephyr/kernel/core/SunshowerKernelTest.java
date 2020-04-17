@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import io.zephyr.kernel.KernelTestCase;
 import io.zephyr.kernel.Lifecycle;
+import io.zephyr.kernel.Module;
 import io.zephyr.kernel.misc.SuppressFBWarnings;
 import io.zephyr.kernel.module.*;
 import java.io.File;
@@ -149,6 +150,40 @@ public class SunshowerKernelTest extends KernelTestCase {
   }
 
   @Test
+  void ensureRetrievingClassloaderResourceOnInstalledPluginWorksForWARFormatWorks() {
+    kernel.start();
+
+    yamlModule = relativeToProjectBuild("kernel-modules:sunshower-yaml-reader", "war", "libs");
+    springPlugin =
+        relativeToProjectBuild("kernel-tests:test-plugins:test-plugin-spring", "war", "libs");
+    install(yamlModule);
+    kernel.stop();
+    kernel.start();
+    install(springPlugin);
+
+    val module = resolveModule("spring-plugin");
+    val resource = module.getClassLoader().getResource("public/frap.txt");
+    assertNotNull(resource);
+  }
+
+  @Test
+  void ensureRetrievingClassloaderResourceOnInstalledPluginWorksForJARFormatWorks() {
+    kernel.start();
+
+    yamlModule = relativeToProjectBuild("kernel-modules:sunshower-yaml-reader", "war", "libs");
+    springPlugin =
+        relativeToProjectBuild("kernel-tests:test-plugins:test-plugin-spring-jar", "jar", "libs");
+    install(yamlModule);
+    kernel.stop();
+    kernel.start();
+    install(springPlugin);
+
+    val module = resolveModule("spring-plugin-jar");
+    val resource = module.getClassLoader().getResource("public/frap.txt");
+    assertNotNull(resource);
+  }
+
+  @Test
   void ensureStartingSpringBootPluginWorks() {
 
     kernel.start();
@@ -205,5 +240,15 @@ public class SunshowerKernelTest extends KernelTestCase {
     val lifecycleRequest = new ModuleLifecycleChangeRequest(plugin.getCoordinate(), action);
     val grp = new ModuleLifecycleChangeGroup(lifecycleRequest);
     kernel.getModuleManager().prepare(grp).commit().toCompletableFuture().get();
+  }
+
+  private Module resolveModule(String name) {
+    return kernel
+        .getModuleManager()
+        .getModules()
+        .stream()
+        .filter(t -> t.getCoordinate().getName().equals(name))
+        .findAny()
+        .get();
   }
 }
