@@ -19,7 +19,14 @@ import java.util.Set;
 import lombok.SneakyThrows;
 import lombok.val;
 
-public class DefaultModule extends AbstractModule
+@SuppressWarnings({
+  "PMD.AvoidUsingVolatile",
+  "PMD.AvoidDuplicateLiterals",
+  "PMD.UnusedPrivateMethod",
+  "PMD.DataflowAnomalyAnalysis",
+  "PMD.AvoidInstantiatingObjectsInLoops"
+})
+public final class DefaultModule extends AbstractModule
     implements Module, Comparable<Module>, Originator {
   private int order;
   private Type type;
@@ -68,10 +75,12 @@ public class DefaultModule extends AbstractModule
 
   public DefaultModule() {}
 
+  @Override
   public ModuleLoader getModuleLoader() {
     return moduleLoader;
   }
 
+  @Override
   public void setModuleLoader(ModuleLoader moduleLoader) {
     this.moduleLoader = moduleLoader;
   }
@@ -81,6 +90,7 @@ public class DefaultModule extends AbstractModule
     return activator;
   }
 
+  @Override
   public void setActivator(ModuleActivator activator) {
     this.activator = activator;
   }
@@ -94,6 +104,7 @@ public class DefaultModule extends AbstractModule
     this.lifecycle = lifecycle;
   }
 
+  @Override
   public void setModuleClasspath(ModuleClasspath moduleClasspath) {
     this.moduleClasspath = moduleClasspath;
   }
@@ -179,6 +190,7 @@ public class DefaultModule extends AbstractModule
     this.dependencies = dependencies;
   }
 
+  @Override
   @SneakyThrows
   public ModuleClasspath getModuleClasspath() {
     if (moduleClasspath == null) {
@@ -345,6 +357,7 @@ public class DefaultModule extends AbstractModule
     return "Module{" + getCoordinate() + "}";
   }
 
+  @Override
   public void setTaskQueue(TaskQueue taskQueue) {
     this.taskQueue = taskQueue;
   }
