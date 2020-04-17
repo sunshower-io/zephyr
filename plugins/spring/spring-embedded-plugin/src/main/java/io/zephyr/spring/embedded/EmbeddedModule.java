@@ -148,7 +148,8 @@ public class EmbeddedModule extends AbstractModule implements Module {
 
   @Override
   public void setModuleClasspath(ModuleClasspath classpath) {
-    this.classpath = classpath;
+    //this shouldn't be necessary--the embedded classpath should be correct
+    //    this.classpath = classpath;
   }
 
   @Override
