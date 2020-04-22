@@ -61,8 +61,12 @@ public final class KernelModuleLoader extends ModuleLoader
   @Override
   public void check(Module module) {
     val coord = module.getCoordinate();
-    if (!moduleLoaders.containsKey(coord.toCanonicalForm())) {
+    val canonicalForm = coord.toCanonicalForm();
+    if (!moduleLoaders.containsKey(canonicalForm)) {
       install(module);
+    } else {
+      val loader = moduleLoaders.get(canonicalForm);
+      ((AbstractModule) module).setModuleLoader(loader);
     }
   }
 

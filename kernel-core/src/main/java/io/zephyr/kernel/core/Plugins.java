@@ -38,6 +38,27 @@ public class Plugins {
   static final String FILE_SYSTEM_URI_TEMPLATE = "droplet://%s.%s?version=%s";
 
   @SuppressWarnings({"PMD.CloseResource", "PMD.DataflowAnomalyAnalysis"})
+  public static final Pair<String, FileSystem> locateFilesystem(
+      Coordinate coordinate, Kernel kernel) throws IOException {
+    val uri =
+        String.format(
+            FILE_SYSTEM_URI_TEMPLATE,
+            coordinate.getGroup(),
+            coordinate.getName(),
+            coordinate.getVersion());
+    FileSystem fs = FileSystems.getFileSystem(URI.create(uri));
+    return Pair.of(uri, fs);
+  }
+
+  /**
+   * this method retrieves or creates the filesystem
+   *
+   * @param coordinate
+   * @param kernel
+   * @return
+   * @throws IOException
+   */
+  @SuppressWarnings({"PMD.CloseResource", "PMD.DataflowAnomalyAnalysis"})
   public static final Pair<String, FileSystem> getFileSystem(Coordinate coordinate, Kernel kernel)
       throws IOException {
     val uri =

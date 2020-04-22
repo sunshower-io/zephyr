@@ -7,7 +7,6 @@ import io.zephyr.kernel.concurrency.Task;
 import io.zephyr.kernel.concurrency.TaskException;
 import io.zephyr.kernel.concurrency.TaskStatus;
 import io.zephyr.kernel.core.Kernel;
-import io.zephyr.kernel.core.Plugins;
 import io.zephyr.kernel.events.Events;
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
@@ -41,9 +40,9 @@ public class PluginRemoveTask extends Task {
     val moduleName = coordinate.getName();
     log.log(Level.INFO, "plugin.remove.starting", new Object[] {moduleName});
     try {
-      val fs = Plugins.getFileSystem(coordinate, kernel);
+      val fs = module.getFileSystem();
       val visitor = new DeleteVisitor();
-      for (val path : fs.getSnd().getRootDirectories()) {
+      for (val path : fs.getRootDirectories()) {
         Files.walkFileTree(path, visitor);
       }
       kernel.getModuleManager().getDependencyGraph().remove(module);
