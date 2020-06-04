@@ -1,0 +1,7 @@
+apply plugin: 'java'
+
+
+dependencies {
+    implementation 'net.sf.sevenzipjbinding:sevenzipjbinding'
+    implementation 'net.sf.sevenzipjbinding:sevenzipjbinding-all-platforms'
+}

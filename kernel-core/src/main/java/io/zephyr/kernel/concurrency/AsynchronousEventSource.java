@@ -108,7 +108,7 @@ public class AsynchronousEventSource implements EventSource, Stoppable, Startabl
         while (running) {
           while (queue.isEmpty()) {
             try {
-              queueLock.wait();
+              queueLock.wait(100);
             } catch (InterruptedException ex) {
               return;
             }

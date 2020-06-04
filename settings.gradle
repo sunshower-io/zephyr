@@ -9,6 +9,7 @@ pluginManagement {
 }
 include(
 
+        'tools:zephyr-bundle',
         'plugins:barometer',
         'plugins:spring:spring-embedded-plugin',
 

@@ -19,11 +19,10 @@ import io.zephyr.kernel.events.Events;
 import io.zephyr.kernel.log.Logging;
 import java.io.IOException;
 import java.net.URI;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystemNotFoundException;
-import java.nio.file.FileSystems;
-import java.nio.file.ProviderNotFoundException;
+import java.nio.file.*;
+import java.nio.file.spi.FileSystemProvider;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import lombok.val;
@@ -50,6 +49,7 @@ public class Plugins {
     return Pair.of(uri, fs);
   }
 
+  static final Object lock = new Object();
   /**
    * this method retrieves or creates the filesystem
    *
@@ -58,24 +58,75 @@ public class Plugins {
    * @return
    * @throws IOException
    */
-  @SuppressWarnings({"PMD.CloseResource", "PMD.DataflowAnomalyAnalysis"})
-  public static final Pair<String, FileSystem> getFileSystem(Coordinate coordinate, Kernel kernel)
+  @SuppressWarnings({
+    "PMD.CloseResource",
+    "PMD.DataflowAnomalyAnalysis",
+    "PMD.AvoidSynchronizedAtMethodLevel"
+  })
+  public static Pair<String, FileSystem> getFileSystem(Coordinate coordinate, Kernel kernel)
       throws IOException {
-    val uri =
+    val uriValue =
         String.format(
             FILE_SYSTEM_URI_TEMPLATE,
             coordinate.getGroup(),
             coordinate.getName(),
             coordinate.getVersion());
-    FileSystem fs;
-    try {
-      fs = FileSystems.getFileSystem(URI.create(uri));
-    } catch (FileSystemNotFoundException | ProviderNotFoundException ex) {
-      fs =
-          FileSystems.newFileSystem(
-              URI.create(uri), Collections.emptyMap(), kernel.getClassLoader());
+    val uri = URI.create(uriValue);
+    FileSystem fs = null;
+
+    val allProviders = retrieveOrLoadCachedProviders(kernel, uri.getScheme());
+    for (FileSystemProvider provider : allProviders) {
+      synchronized (lock) {
+        if (uri.getScheme().equals(provider.getScheme())) {
+          try {
+            fs = provider.getFileSystem(uri);
+          } catch (FileSystemNotFoundException ex) {
+            fs = provider.newFileSystem(uri, Collections.emptyMap());
+          }
+        }
+        if (fs != null) {
+          break;
+        }
+      }
     }
-    return Pair.of(uri, fs);
+
+    if (fs == null) {
+      try {
+        fs = FileSystems.getFileSystem(uri);
+      } catch (FileSystemNotFoundException | ProviderNotFoundException ex) {
+        fs = FileSystems.newFileSystem(uri, Collections.emptyMap(), kernel.getClassLoader());
+      }
+    }
+    return Pair.of(uriValue, fs);
+  }
+
+  static final AtomicReference<Set<FileSystemProvider>> existingProviders;
+
+  static {
+    existingProviders = new AtomicReference<>();
+  }
+
+  private static Set<FileSystemProvider> retrieveOrLoadCachedProviders(
+      Kernel kernel, String scheme) {
+    synchronized (lock) {
+      val result = existingProviders.get();
+      if (result == null) {
+        existingProviders.set(load(kernel, scheme));
+      }
+      return existingProviders.get();
+    }
+  }
+
+  private static Set<FileSystemProvider> load(Kernel kernel, String scheme) {
+
+    Set<FileSystemProvider> results = Collections.newSetFromMap(new WeakHashMap<>());
+    for (FileSystemProvider provider :
+        ServiceLoader.load(FileSystemProvider.class, kernel.getClassLoader())) {
+      if (scheme.equals(provider.getScheme())) {
+        results.add(provider);
+      }
+    }
+    return results;
   }
 
   public static ModuleClasspathManager moduleClasspathManager(

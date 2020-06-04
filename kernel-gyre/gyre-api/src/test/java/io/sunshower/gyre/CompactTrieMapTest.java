@@ -33,6 +33,13 @@ class CompactTrieMapTest {
   }
 
   @Test
+  void ensureInsertingLongerPortionOfCommonPrefixFirstWorks() {
+    map.put(":a:b:c:d:e:f:g", 1);
+    map.put(":a:b", 2);
+    assertEquals(map.get(":a:b"), 2);
+  }
+
+  @Test
   void ensureCollectionValuesWorks() {
 
     map.put(":hello:world", 1);

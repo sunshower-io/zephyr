@@ -11,11 +11,16 @@ import java.io.IOException;
 import java.nio.file.FileSystem;
 import java.nio.file.StandardCopyOption;
 import java.util.Collection;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import lombok.val;
 
 public abstract class AbstractCompressedModuleAssemblyExtractor implements ModuleAssemblyExtractor {
+
+  static final Logger log =
+      Logger.getLogger(AbstractCompressedModuleAssemblyExtractor.class.getName());
 
   @Override
   public void extract(Assembly assembly, FileSystem moduleFilesystem, ExtractionListener listener)
@@ -26,6 +31,7 @@ public abstract class AbstractCompressedModuleAssemblyExtractor implements Modul
   }
 
   protected ZipFile createArchive(File file) throws IOException {
+    log.log(Level.INFO, "Extracting file ''{0}''", file);
     return new ZipFile(file);
   }
 
