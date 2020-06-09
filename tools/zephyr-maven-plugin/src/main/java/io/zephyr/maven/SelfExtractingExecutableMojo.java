@@ -30,6 +30,7 @@ public class SelfExtractingExecutableMojo extends AbstractMojo {
 
   @Override
   public void execute() throws MojoExecutionException, MojoFailureException {
+    verifyOutputDirectory();
 
     val loader = ServiceLoader.load(SelfExecutingBundler.class, ClassLoader.getSystemClassLoader());
     val platform = getPlatform();
@@ -53,7 +54,7 @@ public class SelfExtractingExecutableMojo extends AbstractMojo {
     service.load(outputDirectory, log);
   }
 
-  private BundleOptions.Architecture getArchitecture() {
+  BundleOptions.Architecture getArchitecture() {
     // really our only choice RN
     return BundleOptions.Architecture.X64;
   }
