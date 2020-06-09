@@ -1,2 +1,5 @@
 
+dependencies {
+    implementation project(':tools:zephyr-bundle:zephyr-bundle-core')
+}
 

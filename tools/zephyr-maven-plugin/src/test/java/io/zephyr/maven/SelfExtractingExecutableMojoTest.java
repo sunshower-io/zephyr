@@ -1,5 +1,6 @@
 package io.zephyr.maven;
 
+import lombok.val;
 import org.apache.maven.plugin.testing.MojoRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -14,11 +15,7 @@ public class SelfExtractingExecutableMojoTest {
 
   @Test
   public void ensureWorkspaceDirectoryIsSet() throws Exception {
-    File pom = new File("target/test-classes/project-to-test/");
-    assertTrue(pom.exists() && pom.isDirectory());
-
-    SelfExtractingExecutableMojo mojo =
-        (SelfExtractingExecutableMojo) rule.lookupConfiguredMojo(pom, "generate-sfx");
+    val mojo = getSelfExtractingExecutableMojo();
     assertNotNull(mojo);
     assertNotNull(mojo.getOutputDirectory());
     assertFalse(mojo.getOutputDirectory().exists());
@@ -28,7 +25,16 @@ public class SelfExtractingExecutableMojoTest {
   }
 
   @Test
-  public void ensureExtractingBinaryWorks() {
+  public void ensureExtractingBinaryWorks() throws Exception {
+      val mojo = getSelfExtractingExecutableMojo();
+      mojo.execute();
 
+  }
+
+  private SelfExtractingExecutableMojo getSelfExtractingExecutableMojo() throws Exception {
+    File pom = new File("target/test-classes/project-to-test/");
+    assertTrue(pom.exists() && pom.isDirectory());
+
+    return (SelfExtractingExecutableMojo) rule.lookupConfiguredMojo(pom, "generate-sfx");
   }
 }
