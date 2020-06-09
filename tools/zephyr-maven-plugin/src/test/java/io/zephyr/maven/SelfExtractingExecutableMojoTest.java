@@ -38,20 +38,20 @@ public class SelfExtractingExecutableMojoTest {
   public void ensureWorkspaceDirectoryIsSet() throws Exception {
     mojo = getSelfExtractingExecutableMojo();
     assertNotNull(mojo);
-    assertNotNull(mojo.getOutputDirectory());
+    assertNotNull(mojo.getWorkspace());
 
     mojo.verifyOutputDirectory();
-    assertTrue(mojo.getOutputDirectory().exists());
+    assertTrue(mojo.getWorkspace().exists());
   }
 
   @Test
   public void ensureExtractingBinaryWorks() throws Exception {
     mojo = getSelfExtractingExecutableMojo();
     mojo.execute();
-    var workspace = mojo.getOutputDirectory();
+    var workspace = mojo.getWorkspace();
     assertTrue(workspace.exists() && workspace.isDirectory());
     if (mojo.getPlatform() == BundleOptions.Platform.Linux) {
-      val file = new File(mojo.getOutputDirectory(), "warp");
+      val file = new File(mojo.getWorkspace(), "warp");
       assertTrue(file.exists() && file.isFile());
     }
   }
@@ -67,7 +67,7 @@ public class SelfExtractingExecutableMojoTest {
     if (mojo == null) {
       return;
     }
-    val odir = mojo.getOutputDirectory();
+    val odir = mojo.getWorkspace();
     if (odir == null) {
       return;
     }

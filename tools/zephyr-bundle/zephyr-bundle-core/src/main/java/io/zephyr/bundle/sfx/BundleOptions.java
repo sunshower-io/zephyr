@@ -1,5 +1,6 @@
 package io.zephyr.bundle.sfx;
 
+import java.io.File;
 import java.nio.file.Path;
 import lombok.Getter;
 
@@ -34,22 +35,30 @@ public class BundleOptions {
 
   /** the output to generate */
   @Getter final Path outputFile;
-  /** the platform-specific executable file to include */
+
+  /**
+   * the platform-specific executable file to include. This is typically a shell script or windows
+   * batch file
+   */
   @Getter final Path executableFile;
 
   /** the directory to archive */
   @Getter final Path archiveDirectory;
+
+  @Getter final File generatorExecutable;
 
   public BundleOptions(
       Platform platform,
       Architecture architecture,
       Path executableFile,
       Path archiveDirectory,
-      Path outputFile) {
+      Path outputFile,
+      File generatorExecutable) {
     this.platform = platform;
     this.architecture = architecture;
     this.executableFile = executableFile;
     this.archiveDirectory = archiveDirectory;
     this.outputFile = outputFile;
+    this.generatorExecutable = generatorExecutable;
   }
 }

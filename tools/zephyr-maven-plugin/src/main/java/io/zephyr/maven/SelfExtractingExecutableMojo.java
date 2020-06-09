@@ -14,6 +14,9 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ServiceLoader;
 
 import static java.lang.String.format;
@@ -24,34 +27,103 @@ public class SelfExtractingExecutableMojo extends AbstractMojo {
   @Getter
   @Parameter(
       required = true,
-      property = "workspace",
+      name = "platform",
+      alias = "platform",
+      property = "generate-sfx.platform")
+  private String platform;
+
+  /**
+   * since the actual file-name is platform-dependent, this property constitutes the base path of
+   * the archive (such as the "target/aire" component of the path "target/aire.exe")
+   */
+  @Getter
+  @Parameter(
+      required = true,
+      name = "archive-base",
+      alias = "archive-base",
+      property = "generate-sfx.archive-base")
+  private File archiveBase;
+
+  /**
+   * Every executable generated must perform some steps upon execution. For instance, it's typical
+   * to launch an installer such as IZPack. This file should contain instructions for doing so
+   */
+  @Getter
+  @Parameter(required = true, property = "generate-sfx.executable-file")
+  private File executableFile;
+
+  /**
+   * the archive-directory property specifies which directory we're archiving and making executable
+   */
+  @Getter
+  @Parameter(
+      required = true,
+      name = "archive-directory",
+      alias = "archive-directory",
+      property = "generate-sfx.archive-directory",
+      defaultValue = "${project.basedir}/archive")
+  private File archiveDirectory;
+
+  /** this property specifies which directory we're placing the resulting executable archive into */
+  @Getter
+  @Parameter(
+      required = true,
+      name = "workspace",
+      alias = "workspace",
+      property = "generate-sfx.workspace",
       defaultValue = "${project.build.directory}/sfx-workspace")
-  private File outputDirectory;
+  private File workspace;
 
   @Override
   public void execute() throws MojoExecutionException, MojoFailureException {
     verifyOutputDirectory();
-
     val loader = ServiceLoader.load(SelfExecutingBundler.class, ClassLoader.getSystemClassLoader());
     val platform = getPlatform();
     val architecture = getArchitecture();
 
     for (val service : loader) {
       if (service.isApplicableTo(platform, architecture)) {
+        val actualPlatform = parsePlatformOption();
         getLog()
             .info(
                 format(
                     "applying service '%s' to platform '%s', arch '%s'",
-                    service, platform, architecture));
-        handle(service);
+                    service, actualPlatform, architecture));
+        handle(service, actualPlatform, architecture);
         break;
       }
     }
   }
 
-  private void handle(SelfExecutingBundler service) {
-    val log = new SimpleLogger();
-    service.load(outputDirectory, log);
+  private BundleOptions.Platform parsePlatformOption() throws MojoFailureException {
+    if (platform == null) {
+      throw new MojoFailureException("Error:  platform must not be null");
+    }
+
+    val opt = platform.toLowerCase().trim();
+
+    switch (opt) {
+      case "windows":
+        return BundleOptions.Platform.Windows;
+      case "linux":
+        return BundleOptions.Platform.Linux;
+      case "macos":
+        return BundleOptions.Platform.MacOS;
+    }
+    throw new MojoFailureException(
+        format(
+            "Error: platform '%s' is not supported.  Must be one of [%s]",
+            platform, bundlePlatformNames()));
+  }
+
+  BundleOptions getBundleOptions(
+      BundleOptions.Platform platform, BundleOptions.Architecture architecture, File executable)
+      throws MojoFailureException {
+    val executableFile = resolveFile(this.executableFile, "executable file");
+    val archiveDirectory = resolveDirectory(this.archiveDirectory, "archive directory");
+
+    return new BundleOptions(
+        platform, architecture, executableFile, archiveDirectory, createOutputFile(), executable);
   }
 
   BundleOptions.Architecture getArchitecture() {
@@ -79,48 +151,114 @@ public class SelfExtractingExecutableMojo extends AbstractMojo {
     return platform;
   }
 
+  Path resolveFile(File source, String name) throws MojoFailureException {
+
+    if (source == null) {
+      throw new MojoFailureException(format("Error:  file '%s' must not be null", name));
+    }
+    checkExists(source, name);
+    checkIsFile(source, name);
+    return source.getAbsoluteFile().toPath();
+  }
+
   void verifyOutputDirectory() throws MojoFailureException {
     getLog().info("verifying workspace directory {}:");
 
-    if (outputDirectory == null) {
+    if (workspace == null) {
       throw new MojoFailureException(
-          format("Error: Workspace directory <null> does not exist.  Should not be here"));
+          "Error: Workspace directory <null> does not exist.  Should not be here");
     }
 
-    if (!outputDirectory.exists()) {
+    if (!workspace.exists()) {
       getLog()
           .info(
               format(
                   "Directory '%s' does not exist.  Attempting to create '%s' and its parents...",
-                  outputDirectory, outputDirectory));
-      if (!outputDirectory.mkdirs()) {
-        getLog()
-            .warn(format("Failed to create directory '%s' or one of its parents", outputDirectory));
+                  workspace, workspace));
+      if (!workspace.mkdirs()) {
+        getLog().warn(format("Failed to create directory '%s' or one of its parents", workspace));
       } else {
-        getLog().info(format("Successfull created directory '%s'", outputDirectory));
+        getLog().info(format("Successfully created directory '%s'", workspace));
       }
     }
 
-    if (!outputDirectory.isDirectory()) {
+    if (!workspace.isDirectory()) {
       getLog()
           .warn(
               format(
                   "Error: directory '%s' exists but is not a directory.  Not overwriting",
-                  outputDirectory));
+                  workspace));
       throw new MojoFailureException(
-          format("Error.  File '%s' exists but is not a directory", outputDirectory));
+          format("Error.  File '%s' exists but is not a directory", workspace));
     }
 
-    if (!outputDirectory.canWrite()) {
+    if (!workspace.canWrite()) {
       getLog()
           .warn(
               format(
                   "Error:  directory '%s' exists and is a directory, yet I cannot write to it",
-                  outputDirectory));
+                  workspace));
       throw new MojoFailureException(
           format(
-              "Error: cannot write to directory '%s'.  Check its permissions and try again (or delete it and let me create it)"));
+              "Error: cannot write to directory '%s'.  Check its permissions and try again (or delete it and let me create it)",
+              workspace));
     }
+  }
+
+  private Path resolveDirectory(File archiveDirectory, String name) throws MojoFailureException {
+    checkExists(archiveDirectory, name);
+    checkIsDirectory(archiveDirectory, name);
+    return archiveDirectory.getAbsoluteFile().toPath();
+  }
+
+  private void checkIsDirectory(File archiveDirectory, String name) throws MojoFailureException {
+    if (!archiveDirectory.isDirectory()) {
+      val message =
+          format("%s at location %s is not a directory.  Can't continue", name, archiveDirectory);
+      getLog().warn(message);
+      throw new MojoFailureException(message);
+    }
+  }
+
+  private void checkIsFile(File source, String name) throws MojoFailureException {
+    if (!source.isFile()) {
+      val message = format("%s at location %s is not a file.  Can't continue", name, source);
+      getLog().warn(message);
+      throw new MojoFailureException(message);
+    }
+  }
+
+  private void checkExists(File source, String name) throws MojoFailureException {
+    getLog().info(format("attempting to resolve %s at %s", name, source));
+    if (!source.exists()) {
+
+      getLog().warn(format("file '%s' does not exist", source));
+      throw new MojoFailureException(
+          format("Error:  file '%s' at path '%s' does not exist", name, source));
+    }
+  }
+
+  private List<String> bundlePlatformNames() {
+
+    val result = new ArrayList<String>(BundleOptions.Platform.values().length);
+    for (val item : Platform.values()) {
+      result.add(item.name().toLowerCase());
+    }
+    return result;
+  }
+
+  private void handle(
+      SelfExecutingBundler service,
+      BundleOptions.Platform platform,
+      BundleOptions.Architecture architecture)
+      throws MojoFailureException {
+    val log = new SimpleLogger();
+    val executable = service.load(workspace, log);
+    service.create(getBundleOptions(platform, architecture, executable), log);
+  }
+
+  private Path createOutputFile() throws MojoFailureException {
+    return archiveBase.getAbsoluteFile().toPath();
   }
 
   class SimpleLogger implements Log {

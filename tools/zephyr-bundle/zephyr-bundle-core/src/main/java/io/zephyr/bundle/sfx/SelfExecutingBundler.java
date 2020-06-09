@@ -4,7 +4,7 @@ import java.io.File;
 
 public interface SelfExecutingBundler {
 
-  void load(File workspaceDirectory, Log log);
+  File load(File workspaceDirectory, Log log);
 
   void create(BundleOptions options, Log log);
 
