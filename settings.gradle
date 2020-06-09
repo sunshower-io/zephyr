@@ -9,7 +9,8 @@ pluginManagement {
 }
 include(
 
-        'tools:zephyr-bundle',
+
+
         'plugins:barometer',
         'plugins:spring:spring-embedded-plugin',
 
@@ -71,6 +72,13 @@ include(
          */
         'plugins:spring:spring-web-plugin',
 
-        'tools:gradle-plugin'
+        'tools:gradle-plugin',
+        'tools:zephyr-bundle',
+        'tools:zephyr-maven-plugin',
+        'tools:zephyr-bundle:zephyr-bundle-core',
+        'tools:zephyr-bundle:native-packages',
+        'tools:zephyr-bundle:native-packages:linux',
+        'tools:zephyr-bundle:native-packages:mac',
+        'tools:zephyr-bundle:native-packages:windows',
 )
 

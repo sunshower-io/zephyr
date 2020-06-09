@@ -1,0 +1,15 @@
+
+plugins {
+    id "de.undercouch.download" version "4.0.4"
+}
+
+def cwd = project.projectDir
+subprojects {
+
+    apply plugin: 'java'
+    apply plugin: 'java-library'
+    apply plugin: "de.undercouch.download"
+
+    apply from: "${cwd}/tasks.gradle"
+
+}

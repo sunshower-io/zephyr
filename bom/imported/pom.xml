@@ -45,6 +45,7 @@
 
 
         <sevenzipjbinding.version>16.02-2.01</sevenzipjbinding.version>
+        <slf4j-api.version>1.7.30</slf4j-api.version>
     </properties>
 
     <dependencyManagement>
@@ -54,6 +55,11 @@
             <!--
             self-extracting installer executables
             -->
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j-api.version}</version>
+            </dependency>
 
 
             <dependency>
