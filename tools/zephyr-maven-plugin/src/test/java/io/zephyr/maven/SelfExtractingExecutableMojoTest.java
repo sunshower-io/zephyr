@@ -5,6 +5,7 @@ import lombok.val;
 import lombok.var;
 import org.apache.maven.plugin.testing.MojoRule;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -25,30 +26,12 @@ public class SelfExtractingExecutableMojoTest {
 
   @After
   public void tearDown() throws IOException {
-    val odir = mojo.getOutputDirectory();
-    if (true) {
-      return;
-    }
-    //    if (odir != null) {
-    //      return;
-    //    }
+    deleteDirectory();
+  }
 
-    Files.walkFileTree(
-        odir.toPath(),
-        new SimpleFileVisitor<Path>() {
-          @Override
-          public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-            Files.delete(dir);
-            return FileVisitResult.CONTINUE;
-          }
-
-          @Override
-          public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
-              throws IOException {
-            Files.delete(file);
-            return FileVisitResult.CONTINUE;
-          }
-        });
+  @Before
+  public void setUp() throws IOException {
+    deleteDirectory();
   }
 
   @Test
@@ -56,7 +39,6 @@ public class SelfExtractingExecutableMojoTest {
     mojo = getSelfExtractingExecutableMojo();
     assertNotNull(mojo);
     assertNotNull(mojo.getOutputDirectory());
-    assertFalse(mojo.getOutputDirectory().exists());
 
     mojo.verifyOutputDirectory();
     assertTrue(mojo.getOutputDirectory().exists());
@@ -79,5 +61,32 @@ public class SelfExtractingExecutableMojoTest {
     assertTrue(pom.exists() && pom.isDirectory());
 
     return (SelfExtractingExecutableMojo) rule.lookupConfiguredMojo(pom, "generate-sfx");
+  }
+
+  private void deleteDirectory() throws IOException {
+    if (mojo == null) {
+      return;
+    }
+    val odir = mojo.getOutputDirectory();
+    if (odir == null) {
+      return;
+    }
+
+    Files.walkFileTree(
+        odir.toPath(),
+        new SimpleFileVisitor<Path>() {
+          @Override
+          public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+            Files.delete(dir);
+            return FileVisitResult.CONTINUE;
+          }
+
+          @Override
+          public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
+              throws IOException {
+            Files.delete(file);
+            return FileVisitResult.CONTINUE;
+          }
+        });
   }
 }
