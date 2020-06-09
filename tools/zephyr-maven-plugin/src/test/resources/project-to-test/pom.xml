@@ -8,14 +8,13 @@
   <artifactId>zephyr-maven-plugin</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
-  <name>Test MyMojo</name>
+  <name>Test Zephyr Maven Bundle Plugin</name>
 
   <build>
     <plugins>
       <plugin>
-        <artifactId>maven-my-plugin</artifactId>
+        <artifactId>zephyr-maven-plugin</artifactId>
         <configuration>
-          <!-- Specify the MyMojo parameter -->
           <outputDirectory>target/test-harness/project-to-test</outputDirectory>
         </configuration>
       </plugin>

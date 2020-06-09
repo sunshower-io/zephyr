@@ -1,5 +1,6 @@
 package io.zephyr.maven;
 
+import lombok.Getter;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -9,9 +10,12 @@ import org.apache.maven.plugins.annotations.Parameter;
 
 import java.io.File;
 
+import static java.lang.String.format;
+
 @Mojo(name = "generate-sfx", defaultPhase = LifecyclePhase.PROCESS_RESOURCES)
 public class SelfExtractingExecutableMojo extends AbstractMojo {
 
+  @Getter
   @Parameter(
       required = true,
       property = "workspace",
@@ -20,4 +24,48 @@ public class SelfExtractingExecutableMojo extends AbstractMojo {
 
   @Override
   public void execute() throws MojoExecutionException, MojoFailureException {}
+
+  void verifyOutputDirectory() throws MojoFailureException {
+    getLog().info("verifying workspace directory {}:");
+
+    if (outputDirectory == null) {
+      throw new MojoFailureException(
+          format("Error: Workspace directory <null> does not exist.  Should not be here"));
+    }
+
+    if (!outputDirectory.exists()) {
+      getLog()
+          .info(
+              format(
+                  "Directory '%s' does not exist.  Attempting to create '%s' and its parents...",
+                  outputDirectory, outputDirectory));
+      if (!outputDirectory.mkdirs()) {
+        getLog()
+            .warn(format("Failed to create directory '%s' or one of its parents", outputDirectory));
+      } else {
+        getLog().info(format("Successfull created directory '%s'", outputDirectory));
+      }
+    }
+
+    if (!outputDirectory.isDirectory()) {
+      getLog()
+          .warn(
+              format(
+                  "Error: directory '%s' exists but is not a directory.  Not overwriting",
+                  outputDirectory));
+      throw new MojoFailureException(
+          format("Error.  File '%s' exists but is not a directory", outputDirectory));
+    }
+
+    if (!outputDirectory.canWrite()) {
+      getLog()
+          .warn(
+              format(
+                  "Error:  directory '%s' exists and is a directory, yet I cannot write to it",
+                  outputDirectory));
+      throw new MojoFailureException(
+          format(
+              "Error: cannot write to directory '%s'.  Check its permissions and try again (or delete it and let me create it)"));
+    }
+  }
 }
