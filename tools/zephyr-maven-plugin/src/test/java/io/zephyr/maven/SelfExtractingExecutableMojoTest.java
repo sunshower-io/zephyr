@@ -28,7 +28,6 @@ public class SelfExtractingExecutableMojoTest {
   public void ensureExtractingBinaryWorks() throws Exception {
       val mojo = getSelfExtractingExecutableMojo();
       mojo.execute();
-
   }
 
   private SelfExtractingExecutableMojo getSelfExtractingExecutableMojo() throws Exception {
