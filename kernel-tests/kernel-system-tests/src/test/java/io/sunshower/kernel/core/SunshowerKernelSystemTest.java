@@ -12,6 +12,8 @@ import io.zephyr.kernel.events.EventListener;
 import javax.inject.Inject;
 import lombok.val;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 
 @ZephyrTest
 class SunshowerKernelSystemTest {
@@ -30,6 +32,7 @@ class SunshowerKernelSystemTest {
   }
 
   @Test
+  @DisabledOnOs(OS.MAC)
   void ensureStoppedKernelHasNoEventListeners() {
     assertNotEquals(
         KernelLifecycle.State.Running, kernel.getLifecycle().getState(), "must not be running");
@@ -43,6 +46,7 @@ class SunshowerKernelSystemTest {
   }
 
   @Test
+  @DisabledOnOs(OS.MAC)
   void ensureListenerCountIsZeroAfterKernelModuleInstallation() throws InterruptedException {
     kernel.start();
     val listener = mock(EventListener.class);

@@ -89,10 +89,10 @@ public class ModuleTrackerTest {
     try (val tracker = moduleContext.trackModules(t -> true)) {
       tracker.addEventListener(moduleListener, ModuleEvents.INSTALLED);
       zephyr.install(ProjectPlugins.TEST_PLUGIN_2.getUrl());
-      verify(moduleListener, times(2)).onEvent(eq(ModuleEvents.INSTALLED), any());
+      verify(moduleListener, timeout(1000).times(2)).onEvent(eq(ModuleEvents.INSTALLED), any());
       Module expected =
           moduleContext.getModules(t -> t.getCoordinate().getName().equals("test-plugin-1")).get(0);
-      verify(moduleListener, times(1))
+      verify(moduleListener, timeout(1000).times(1))
           .onEvent(eq(ModuleEvents.INSTALLED), argThat(moduleMatcher(expected)));
     }
   }
