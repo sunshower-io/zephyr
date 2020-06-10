@@ -21,12 +21,12 @@ public class SelfExtractingExecutableMojoTest {
 
   @After
   public void tearDown() throws IOException {
-    //    deleteDirectory();
+    deleteDirectory();
   }
 
   @Before
   public void setUp() throws IOException {
-    //    deleteDirectory();
+    deleteDirectory();
   }
 
   @Test
@@ -37,12 +37,6 @@ public class SelfExtractingExecutableMojoTest {
 
     mojo.verifyOutputDirectory();
     assertTrue(mojo.getWorkspace().exists());
-  }
-
-  @Test
-  public void ensurePlatformIsCorrect() throws Exception {
-    mojo = getSelfExtractingExecutableMojo();
-    assertEquals(mojo.parsePlatformOption(), BundleOptions.Platform.Windows);
   }
 
   @Test
@@ -58,20 +52,14 @@ public class SelfExtractingExecutableMojoTest {
 
   @Test
   public void ensureExtractingBinaryWorks() throws Exception {
-    mojo = getSelfExtractingExecutableMojo();
-    var file = getRealResoucesFile();
-    mojo.setArchiveDirectory(file);
+    val pom = new File("target/test-classes/configuration-test");
+    rule.executeMojo(pom, "generate-sfx");
+  }
+
+  private SelfExtractingExecutableMojo getConfiguredMojo() throws Exception {
     val pom = new File("target/test-classes/project-to-test/");
     val mavenProject = rule.readMavenProject(pom);
-    val configured = rule.lookupConfiguredMojo(mavenProject, "generate-sfx");
-    System.out.println(configured);
-//    rule.executeMojo(pom, "generate-sfx");
-    var workspace = mojo.getWorkspace();
-    assertTrue(workspace.exists() && workspace.isDirectory());
-    if (mojo.getPlatform() == BundleOptions.Platform.Linux) {
-      file = new File(mojo.getWorkspace(), "warp");
-      assertTrue(file.exists() && file.isFile());
-    }
+    return (SelfExtractingExecutableMojo) rule.lookupConfiguredMojo(mavenProject, "generate-sfx");
   }
 
   private File getRealResoucesFile() {
