@@ -26,7 +26,7 @@
                             <platform>windows</platform>
                             <archive-directory>${project.basedir}/archive</archive-directory>
                             <archive-base>${project.build.directory}/result</archive-base>
-                            <executable-file>test.bat</executable-file>
+                            <executable-file>InstantEyedropper.exe</executable-file>
                         </configuration>
                     </execution>
 
