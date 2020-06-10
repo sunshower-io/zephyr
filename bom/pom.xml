@@ -7,6 +7,19 @@
     <properties>
         <zephyr.version>2.0.0-SNAPSHOT</zephyr.version>
     </properties>
+
+
+    <distributionManagement>
+        <repository>
+            <id>sunshower-releases</id>
+            <url>http://artifacts.sunshower.io/repository/sunshower-releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>sunshower-snapshots</id>
+            <url>http://artifacts.sunshower.io/repository/sunshower-snapshots</url>
+        </snapshotRepository>
+
+    </distributionManagement>
     <modules>
         <module>imported</module>
         <module>exported</module>
