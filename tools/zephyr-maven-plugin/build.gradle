@@ -1,6 +1,1 @@
 
-task buildMaven(type:Exec) {
-    commandLine 'mvn', 'clean', 'install'
-}
-
-build.dependsOn buildMaven
