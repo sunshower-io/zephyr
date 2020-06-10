@@ -41,20 +41,22 @@ public class WarpSelfExecutingLinuxBundler implements SelfExecutingBundler {
     val permissions = new HashSet<PosixFilePermission>();
     permissions.add(PosixFilePermission.OWNER_EXECUTE);
     permissions.add(PosixFilePermission.OWNER_WRITE);
+    permissions.add(PosixFilePermission.OWNER_READ);
     Files.setPosixFilePermissions(path, permissions);
   }
 
   @Override
   public void create(BundleOptions options, Log log) {
     logOptions(options, log);
-    val executableFile = options.getExecutableFile();
     val archiveDirectory = options.getArchiveDirectory();
+    val executableFile = archiveDirectory.resolve(options.getExecutableFile());
     val outputFile = options.getOutputFile();
+
     checkFile(executableFile, log);
     checkDirectory(archiveDirectory, log);
     checkDirectory(outputFile.getParent(), log);
 
-    val actualOutputFile = getOutputFile(options.getOutputFile());
+    val actualOutputFile = getOutputFile(options.getOutputFile(), options.getPlatform());
 
     doRun(options, log, executableFile, archiveDirectory, actualOutputFile);
   }
@@ -63,10 +65,11 @@ public class WarpSelfExecutingLinuxBundler implements SelfExecutingBundler {
     return String.format("%s-%s", options.getPlatform().toString().toLowerCase(), "x64");
   }
 
-  private Path getOutputFile(Path outputFile) {
+  private Path getOutputFile(Path outputFile, BundleOptions.Platform platform) {
     val baseName = outputFile.getFileName();
     val parentDir = outputFile.getParent();
-    return Paths.get(parentDir.toAbsolutePath().toString(), format("%s.exe", baseName));
+    return Paths.get(
+        parentDir.toAbsolutePath().toString(), platform.normalize(baseName.toString()));
   }
 
   @Override
@@ -90,7 +93,7 @@ public class WarpSelfExecutingLinuxBundler implements SelfExecutingBundler {
             "Attempting to generate self-extracting archive with parameters: "
                 + "\t archive source directory: %s\n"
                 + "\t executable file: %s\n"
-                + "\t archive file base (will append '.exe'): %s\n"
+                + "\t archive file base: %s\n"
                 + "\t target platform: %s\n"
                 + "\t target architecture: %s\n ",
             options.getArchiveDirectory(),
@@ -146,12 +149,10 @@ public class WarpSelfExecutingLinuxBundler implements SelfExecutingBundler {
       Path archiveDirectory,
       Path actualOutputFile) {
 
-    val args = getInputArguments(options, executableFile, archiveDirectory, actualOutputFile);
-
-    log.info(format("Generation command: \n%s\n", String.join(" ", args)));
-    val procBuilder = new ProcessBuilder(args).inheritIO();
-
     try {
+      val args = getInputArguments(options, executableFile, archiveDirectory, actualOutputFile);
+      log.info(format("Generation command: \n%s\n", String.join(" ", args)));
+      val procBuilder = new ProcessBuilder(args).inheritIO();
       val process = procBuilder.start();
       val result = process.waitFor();
       if (result != 0) {
@@ -165,7 +166,8 @@ public class WarpSelfExecutingLinuxBundler implements SelfExecutingBundler {
   }
 
   private String[] getInputArguments(
-      BundleOptions options, Path executableFile, Path archiveDirectory, Path actualOutputFile) {
+      BundleOptions options, Path executableFile, Path archiveDirectory, Path actualOutputFile)
+      throws IOException {
     return new String[] {
       options.getGeneratorExecutable().getAbsolutePath(),
       "-a",
@@ -173,9 +175,14 @@ public class WarpSelfExecutingLinuxBundler implements SelfExecutingBundler {
       "-i",
       archiveDirectory.toString(),
       "-e",
-      executableFile.toString(),
+      getExecutableFile(executableFile),
       "-o",
       actualOutputFile.toString()
     };
+  }
+
+  private String getExecutableFile(Path executableFile) throws IOException {
+    setExecutable(executableFile);
+    return Paths.get(executableFile.toString()).getFileName().toString();
   }
 }

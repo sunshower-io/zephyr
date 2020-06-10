@@ -15,14 +15,50 @@
             <plugin>
                 <groupId>io.zephyr.maven</groupId>
                 <artifactId>zephyr-maven-plugin</artifactId>
-                <configuration>
-                    <platform>linux</platform>
-                    <archive-directory>${project.basedir}/archive</archive-directory>
-                    <archive-base>${project.build.directory}/result</archive-base>
-                    <executable-file>${project.basedir}/exe/test.sh</executable-file>
+                <executions>
+                    <execution>
+                        <id>generate-windows</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>generate-sfx</goal>
+                        </goals>
+                        <configuration>
+                            <platform>windows</platform>
+                            <archive-directory>${project.basedir}/archive</archive-directory>
+                            <archive-base>${project.build.directory}/result</archive-base>
+                            <executable-file>test.bat</executable-file>
+                        </configuration>
+                    </execution>
 
-                    <!--                    <outputDirectory>target/test-harness/project-to-test</outputDirectory>-->
-                </configuration>
+                    <execution>
+                        <id>generate-linux</id>
+
+                        <phase>package</phase>
+                        <goals>
+                            <goal>generate-sfx</goal>
+                        </goals>
+                        <configuration>
+                            <platform>linux</platform>
+                            <archive-directory>${project.basedir}/archive</archive-directory>
+                            <archive-base>${project.build.directory}/result</archive-base>
+                            <executable-file>test.sh</executable-file>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>generate-mac</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>generate-sfx</goal>
+                        </goals>
+                        <configuration>
+                            <platform>linux</platform>
+                            <archive-directory>${project.basedir}/archive</archive-directory>
+                            <archive-base>${project.build.directory}/result</archive-base>
+                            <executable-file>test.sh</executable-file>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

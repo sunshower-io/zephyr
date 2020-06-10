@@ -5,15 +5,27 @@ import java.nio.file.Path;
 import lombok.Getter;
 
 public class BundleOptions {
-  public enum Platform {
-    Windows("windows"),
+  private interface Normalizer {
+    String normalize(String value);
+  }
+
+  public enum Platform implements Normalizer {
     MacOS("macos"),
-    Linux("linux");
+    Linux("linux"),
+    Windows("windows") {
+      public String normalize(String name) {
+        return name + ".exe";
+      }
+    };
 
     final String name;
 
     Platform(String name) {
       this.name = name;
+    }
+
+    public String normalize(String name) {
+      return name;
     }
   }
 
@@ -40,7 +52,7 @@ public class BundleOptions {
    * the platform-specific executable file to include. This is typically a shell script or windows
    * batch file
    */
-  @Getter final Path executableFile;
+  @Getter final String executableFile;
 
   /** the directory to archive */
   @Getter final Path archiveDirectory;
@@ -50,7 +62,7 @@ public class BundleOptions {
   public BundleOptions(
       Platform platform,
       Architecture architecture,
-      Path executableFile,
+      String executableFile,
       Path archiveDirectory,
       Path outputFile,
       File generatorExecutable) {

@@ -4,17 +4,12 @@ import io.zephyr.bundle.sfx.BundleOptions;
 import lombok.val;
 import lombok.var;
 import org.apache.maven.plugin.testing.MojoRule;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
+import java.net.URISyntaxException;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 
 import static org.junit.Assert.*;
@@ -26,12 +21,12 @@ public class SelfExtractingExecutableMojoTest {
 
   @After
   public void tearDown() throws IOException {
-    deleteDirectory();
+    //    deleteDirectory();
   }
 
   @Before
   public void setUp() throws IOException {
-    deleteDirectory();
+    //    deleteDirectory();
   }
 
   @Test
@@ -45,14 +40,50 @@ public class SelfExtractingExecutableMojoTest {
   }
 
   @Test
+  public void ensurePlatformIsCorrect() throws Exception {
+    mojo = getSelfExtractingExecutableMojo();
+    assertEquals(mojo.parsePlatformOption(), BundleOptions.Platform.Windows);
+  }
+
+  @Test
+  public void ensureArchiveDirectoryIsCorrect() throws Exception {
+    mojo = getSelfExtractingExecutableMojo();
+    val expected =
+        Paths.get(ClassLoader.getSystemResource("./project-to-test/archive").toURI())
+            .toFile()
+            .getAbsoluteFile();
+    val actual = mojo.getArchiveDirectory().getAbsoluteFile();
+    assertEquals(actual, expected);
+  }
+
+  @Test
   public void ensureExtractingBinaryWorks() throws Exception {
     mojo = getSelfExtractingExecutableMojo();
-    mojo.execute();
+    var file = getRealResoucesFile();
+    mojo.setArchiveDirectory(file);
+    val pom = new File("target/test-classes/project-to-test/");
+    val mavenProject = rule.readMavenProject(pom);
+    val configured = rule.lookupConfiguredMojo(mavenProject, "generate-sfx");
+    System.out.println(configured);
+//    rule.executeMojo(pom, "generate-sfx");
     var workspace = mojo.getWorkspace();
     assertTrue(workspace.exists() && workspace.isDirectory());
     if (mojo.getPlatform() == BundleOptions.Platform.Linux) {
-      val file = new File(mojo.getWorkspace(), "warp");
+      file = new File(mojo.getWorkspace(), "warp");
       assertTrue(file.exists() && file.isFile());
+    }
+  }
+
+  private File getRealResoucesFile() {
+    try {
+      val classpathRoot = Paths.get(ClassLoader.getSystemResource("./").toURI());
+      return classpathRoot
+          .getParent()
+          .getParent()
+          .resolve("src/test/resources/project-to-test/archive")
+          .toFile();
+    } catch (URISyntaxException e) {
+      throw new RuntimeException(e);
     }
   }
 
@@ -69,6 +100,10 @@ public class SelfExtractingExecutableMojoTest {
     }
     val odir = mojo.getWorkspace();
     if (odir == null) {
+      return;
+    }
+
+    if (!odir.exists()) {
       return;
     }
 

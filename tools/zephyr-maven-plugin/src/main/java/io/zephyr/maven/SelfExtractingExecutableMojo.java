@@ -4,6 +4,7 @@ import io.zephyr.bundle.sfx.BundleOptions;
 import io.zephyr.bundle.sfx.Log;
 import io.zephyr.bundle.sfx.SelfExecutingBundler;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.val;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.maven.plugin.AbstractMojo;
@@ -21,10 +22,14 @@ import java.util.ServiceLoader;
 
 import static java.lang.String.format;
 
-@Mojo(name = "generate-sfx", defaultPhase = LifecyclePhase.PROCESS_RESOURCES)
+@Mojo(
+    name = "generate-sfx",
+    defaultPhase = LifecyclePhase.PROCESS_RESOURCES,
+    executionStrategy = "always")
 public class SelfExtractingExecutableMojo extends AbstractMojo {
 
   @Getter
+  @Setter
   @Parameter(
       required = true,
       name = "platform",
@@ -37,11 +42,8 @@ public class SelfExtractingExecutableMojo extends AbstractMojo {
    * the archive (such as the "target/aire" component of the path "target/aire.exe")
    */
   @Getter
-  @Parameter(
-      required = true,
-      name = "archive-base",
-      alias = "archive-base",
-      property = "generate-sfx.archive-base")
+  @Setter
+  @Parameter(name = "archive-base", alias = "archive-base", property = "generate-sfx.archive-base")
   private File archiveBase;
 
   /**
@@ -49,15 +51,16 @@ public class SelfExtractingExecutableMojo extends AbstractMojo {
    * to launch an installer such as IZPack. This file should contain instructions for doing so
    */
   @Getter
-  @Parameter(required = true, property = "generate-sfx.executable-file")
-  private File executableFile;
+  @Setter
+  @Parameter(alias = "executable-file", property = "generate-sfx.executable-file")
+  private String executableFile;
 
   /**
    * the archive-directory property specifies which directory we're archiving and making executable
    */
   @Getter
+  @Setter
   @Parameter(
-      required = true,
       name = "archive-directory",
       alias = "archive-directory",
       property = "generate-sfx.archive-directory",
@@ -66,6 +69,7 @@ public class SelfExtractingExecutableMojo extends AbstractMojo {
 
   /** this property specifies which directory we're placing the resulting executable archive into */
   @Getter
+  @Setter
   @Parameter(
       required = true,
       name = "workspace",
@@ -77,7 +81,7 @@ public class SelfExtractingExecutableMojo extends AbstractMojo {
   @Override
   public void execute() throws MojoExecutionException, MojoFailureException {
     verifyOutputDirectory();
-    val loader = ServiceLoader.load(SelfExecutingBundler.class, ClassLoader.getSystemClassLoader());
+    val loader = ServiceLoader.load(SelfExecutingBundler.class);
     val platform = getPlatform();
     val architecture = getArchitecture();
 
@@ -95,31 +99,9 @@ public class SelfExtractingExecutableMojo extends AbstractMojo {
     }
   }
 
-  private BundleOptions.Platform parsePlatformOption() throws MojoFailureException {
-    if (platform == null) {
-      throw new MojoFailureException("Error:  platform must not be null");
-    }
-
-    val opt = platform.toLowerCase().trim();
-
-    switch (opt) {
-      case "windows":
-        return BundleOptions.Platform.Windows;
-      case "linux":
-        return BundleOptions.Platform.Linux;
-      case "macos":
-        return BundleOptions.Platform.MacOS;
-    }
-    throw new MojoFailureException(
-        format(
-            "Error: platform '%s' is not supported.  Must be one of [%s]",
-            platform, bundlePlatformNames()));
-  }
-
   BundleOptions getBundleOptions(
       BundleOptions.Platform platform, BundleOptions.Architecture architecture, File executable)
       throws MojoFailureException {
-    val executableFile = resolveFile(this.executableFile, "executable file");
     val archiveDirectory = resolveDirectory(this.archiveDirectory, "archive directory");
 
     return new BundleOptions(
@@ -147,8 +129,29 @@ public class SelfExtractingExecutableMojo extends AbstractMojo {
           "Cannot determine current platform architecture.  Please submit a bug report");
     }
 
-    getLog().info(format("Current platform: ", platform));
+    getLog().info(format("Current platform: %s", platform));
     return platform;
+  }
+
+  BundleOptions.Platform parsePlatformOption() throws MojoFailureException {
+    if (platform == null) {
+      throw new MojoFailureException("Error:  platform must not be null");
+    }
+
+    val opt = platform.toLowerCase().trim();
+
+    switch (opt) {
+      case "windows":
+        return BundleOptions.Platform.Windows;
+      case "linux":
+        return BundleOptions.Platform.Linux;
+      case "macos":
+        return BundleOptions.Platform.MacOS;
+    }
+    throw new MojoFailureException(
+        format(
+            "Error: platform '%s' is not supported.  Must be one of [%s]",
+            platform, bundlePlatformNames()));
   }
 
   Path resolveFile(File source, String name) throws MojoFailureException {
@@ -162,7 +165,7 @@ public class SelfExtractingExecutableMojo extends AbstractMojo {
   }
 
   void verifyOutputDirectory() throws MojoFailureException {
-    getLog().info("verifying workspace directory {}:");
+    getLog().info(format("verifying workspace directory %s:", workspace));
 
     if (workspace == null) {
       throw new MojoFailureException(
