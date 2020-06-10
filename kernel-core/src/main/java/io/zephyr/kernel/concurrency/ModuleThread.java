@@ -157,8 +157,8 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable, 
     val currentState = module.getLifecycle().getState();
     if (!currentState.isAtLeast(Lifecycle.State.Active)) {
       module.getLifecycle().setState(Lifecycle.State.Starting);
-      val loader = module.getModuleClasspath().resolveServiceLoader(ModuleActivator.class);
       kernel.getModuleManager().getModuleLoader().check(module);
+      val loader = module.getModuleClasspath().resolveServiceLoader(ModuleActivator.class);
       val ctx = kernel.createContext(module, this);
       moduleThread.get().setContextClassLoader(module.getClassLoader());
       for (val activator : loader) {

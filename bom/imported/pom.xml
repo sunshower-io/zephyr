@@ -12,6 +12,7 @@
 
     <properties>
 
+
         <!--
         Test Dependency Versions
         -->
@@ -43,10 +44,34 @@
         <javax-annotation.version>1.3.2</javax-annotation.version>
 
 
+        <sevenzipjbinding.version>16.02-2.01</sevenzipjbinding.version>
+        <slf4j-api.version>1.7.30</slf4j-api.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+
+
+            <!--
+            self-extracting installer executables
+            -->
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j-api.version}</version>
+            </dependency>
+
+
+            <dependency>
+                <groupId>net.sf.sevenzipjbinding</groupId>
+                <artifactId>sevenzipjbinding</artifactId>
+                <version>${sevenzipjbinding.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.sf.sevenzipjbinding</groupId>
+                <artifactId>sevenzipjbinding-all-platforms</artifactId>
+                <version>${sevenzipjbinding.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>com.vaadin</groupId>

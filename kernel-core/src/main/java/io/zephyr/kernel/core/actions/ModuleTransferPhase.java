@@ -69,7 +69,7 @@ public class ModuleTransferPhase extends Task {
       scope.set(MODULE_ASSEMBLY_FILE, assembly);
       log.log(Level.INFO, "transfer.file.complete", new Object[] {file, assembly});
       dispatchEvent(kernel, fs, ModulePhaseEvents.MODULE_TRANSFER_COMPLETED);
-    } catch (IOException ex) {
+    } catch (Exception ex) {
       val message =
           MessageFormat.format(
               bundle.getString("transfer.file.failed"), assembly, file, ex.getMessage());
@@ -96,6 +96,7 @@ public class ModuleTransferPhase extends Task {
           "transfer.uri.success",
           new Object[] {uri, fs.getRootDirectories().iterator().next()});
       dispatchEvent(kernel, fs, ModulePhaseEvents.MODULE_FILESYSTEM_CREATION_COMPLETED);
+
       return fs;
     } catch (IOException ex) {
       handleFilesystemCreationFailed(kernel, ex);

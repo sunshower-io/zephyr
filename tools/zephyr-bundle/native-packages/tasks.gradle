@@ -1,0 +1,51 @@
+dependencies {
+
+    //todo: uncomment when Github/S3 permits HEAD
+    //    executable 'dgiagio:warp:0.3.0:linux-x64'
+
+    implementation 'org.slf4j:slf4j-api'
+    testImplementation project(':kernel-tests:kernel-test-common')
+}
+
+
+
+
+configurations {
+    executable {
+        extendsFrom api
+        canBeResolved = true
+    }
+}
+
+repositories {
+    ivy {
+        url 'https://github.com/'
+        patternLayout {
+            artifact 'dgiagio/[module]/releases/download/v[revision]/[classifier].warp-packer'
+        }
+        metadataSources {
+            artifact()
+        }
+    }
+}
+
+jar {
+    from("$buildDir/$binPath/warp") {
+        into "$binPath"
+    }
+}
+
+task download(type: Download) {
+    src downloadURL
+    dest "${buildDir}/$binPath/warp"
+    overwrite true
+}
+
+task unpackDependencies(type: Copy) {
+    dependsOn configurations.executable
+    from configurations.executable
+    into "${project.buildDir}"
+}
+
+assemble.dependsOn "download"
+assemble.dependsOn unpackDependencies

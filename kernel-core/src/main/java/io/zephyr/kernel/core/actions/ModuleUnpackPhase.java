@@ -36,7 +36,11 @@ public class ModuleUnpackPhase extends Task implements ModuleAssemblyExtractor.E
   }
 
   @Override
-  @SuppressWarnings({"PMD.CloseResource", "PMD.DataflowAnomalyAnalysis"})
+  @SuppressWarnings({
+    "PMD.CloseResource",
+    "PMD.DataflowAnomalyAnalysis",
+    "PMD.AvoidInstantiatingObjectsInLoops"
+  })
   public TaskValue run(Scope context) {
 
     File assemblyFile = context.get(ModuleTransferPhase.MODULE_ASSEMBLY_FILE);
@@ -56,9 +60,9 @@ public class ModuleUnpackPhase extends Task implements ModuleAssemblyExtractor.E
         log.log(Level.INFO, "module.extractor.afterapplication", extractor);
         anyworked = true;
       } catch (Exception ex) {
-        log.log(Level.INFO, "module.extractor.error", extractor);
-        if (log.isLoggable(Level.FINE)) {
-          log.log(Level.FINE, "module.extractor.actualerror", ex);
+        log.log(Level.INFO, "module.extractor.error", new Object[] {ex.getMessage(), extractor});
+        if (log.isLoggable(Level.INFO)) {
+          log.log(Level.INFO, "module.extractor.actualerror", ex);
         }
         fireExtractorFailed(extractor, ex);
       }

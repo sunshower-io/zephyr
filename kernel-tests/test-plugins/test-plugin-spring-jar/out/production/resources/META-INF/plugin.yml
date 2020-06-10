@@ -1,5 +1,5 @@
 plugin:
-  name: spring-plugin
+  name: spring-plugin-jar
   group: io.sunshower.spring
   version: 1.0.0
   order: 1

@@ -28,6 +28,7 @@ allprojects {
 
     publishing {
         repositories {
+            mavenLocal()
             maven {
                 credentials {
                     username "$mavenRepositoryUsername"
