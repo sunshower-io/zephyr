@@ -6,25 +6,25 @@
     <servers>
         <server>
             <id>sunshower-oss-repo</id>
-            <username>${env.MVN_REPO_USR}</username>
-            <password>${env.MVN_REPO_PSW}</password>
+            <username>${oss-repo.username}</username>
+            <password>${oss-repo.password}</password>
         </server>
         <server>
             <id>sunshower-releases</id>
-            <username>${env.MVN_REPO_USR}</username>
-            <password>${env.MVN_REPO_PSW}</password>
+            <username>${sunshower-repo.username}</username>
+            <password>${sunshower-repo.password}</password>
         </server>
 
         <server>
             <id>sunshower-snapshots</id>
-            <username>${env.MVN_REPO_USR}</username>
-            <password>${env.MVN_REPO_PSW}</password>
+            <username>${sunshower-repo.username}</username>
+            <password>${sunshower-repo.password}</password>
         </server>
 
         <server>
             <id>github.com</id>
-            <username>${env.GITHUB_USR}</username>
-            <passphrase>${env.GITHUB_PSW}</passphrase>
+            <username>${github.username}</username>
+            <passphrase>${github.password}</passphrase>
         </server>
     </servers>
 
