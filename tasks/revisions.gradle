@@ -14,9 +14,18 @@ def writeProperties(props) {
 
 def setVersion() {
     def newVersion = System.getProperty("newVersion")
+
+    if(!newVersion) {
+        newVersion = "${System.getenv("CURRENT_MAJOR_VERSION")}.${System.getenv("CURRENT_MINOR_VERSION")}.${System.getenv("BUILD_NUMBER")}"
+        if(System.getenv("zephyrRelease")) {
+            newVersion += ".Final"
+        } else {
+            newVersion += "-SNAPSHOT"
+        }
+    }
     if(newVersion) {
         def props = loadProperties()
-        props.version = newVersion
+        props.version = newVersion.toString()
         writeProperties(props)
 
     } else {
