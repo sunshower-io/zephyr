@@ -87,17 +87,17 @@ subprojects {
     plugins.withType(JavaPlugin) {
         publishing {
             publications {
-                mavenJava(MavenPublication) {
-                    from components.java
-                    versionMapping {
-                        usage('java-api') {
-                            fromResolutionOf('runtimeClasspath')
-                        }
-                        usage('java-runtime') {
-                            fromResolutionResult()
-                        }
-                    }
-                }
+//                mavenJava(MavenPublication) {
+//                    from components.java
+//                    versionMapping {
+//                        usage('java-api') {
+//                            fromResolutionOf('runtimeClasspath')
+//                        }
+//                        usage('java-runtime') {
+//                            fromResolutionResult()
+//                        }
+//                    }
+//                }
             }
         }
         tasks.withType(com.github.spotbugs.SpotBugsTask) {
