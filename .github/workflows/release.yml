@@ -73,7 +73,7 @@ jobs:
 
 
       - name: Generate Next Number
-        id: buildnumber
+        id: nextbuildnumber
         uses: einaregilsson/build-number@v2
         with:
           token: ${{ secrets.github_token }}
