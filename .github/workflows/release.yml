@@ -78,7 +78,9 @@ jobs:
         with:
           token: ${{ secrets.github_token }}
           prefix: zephyr
-        run: |
-          echo "BUILD NO: $BUILD_NUMBER"
+
+      - name: Echo Build Number
+        run: echo "BUILD NO $BUILD_NUMBER"
+
 
 
