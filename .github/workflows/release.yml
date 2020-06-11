@@ -2,7 +2,7 @@ name: Create Zephyr Release
 on:
   push:
     tags:
-      - 'v*'
+        - 'v*'
 
 jobs:
   build:
@@ -12,7 +12,11 @@ jobs:
       CURRENT_MINOR_VERSION: 0
     steps:
       - name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@master
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
       - name: Set up JDK 11
         uses: actions/setup-java@v1
         with:
@@ -57,11 +61,24 @@ jobs:
           gradle-version: 6.0.1
           arguments: assemble build sA publish -i -PmavenRepositoryUsername=${{secrets.MAVEN_REPOSITORY_USERNAME}} -PmavenRepositoryPassword=${{secrets.MAVEN_REPOSITORY_PASSWORD}} -PmavenRepositoryUrl=${{secrets.MAVEN_REPOSITORY_URL}} --stacktrace
 
+      - name: Commit Version Changes
+        run: |
+          git config --local user.email "build@sunshower.io"
+          git config --local user.name "build"
+          git commit -am "Add changes"
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+
       - name: Generate Next Number
         id: buildnumber
         uses: einaregilsson/build-number@v2
         with:
           token: ${{ secrets.github_token }}
           prefix: zephyr
+        run: |
+          echo "BUILD NO: $BUILD_NUMBER"
 
 
