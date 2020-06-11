@@ -12,6 +12,7 @@
     <properties>
         <zephyr.version>2.0.0-SNAPSHOT</zephyr.version>
     </properties>
+
     <dependencyManagement>
         <dependencies>
 

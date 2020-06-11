@@ -1,0 +1,42 @@
+def loadProperties() {
+    def props = new Properties()
+    def file = new File("gradle.properties")
+    file.withInputStream {
+        props.load(it)
+    }
+    return props
+}
+
+
+def writeProperties(props) {
+    props.store(new File("gradle.properties").newWriter(), null)
+}
+
+def setVersion() {
+    def newVersion = System.getProperty("newVersion")
+
+    if(!newVersion) {
+        newVersion = "${System.getenv("CURRENT_MAJOR_VERSION")}.${System.getenv("CURRENT_MINOR_VERSION")}.${System.getenv("BUILD_NUMBER")}"
+        if(System.getProperty("zephyrRelease")) {
+            newVersion += ".Final"
+        } else {
+            newVersion += "-SNAPSHOT"
+        }
+    }
+    if(newVersion) {
+        println("Setting version from ${project.version} to $newVersion")
+        def props = loadProperties()
+        props.version = newVersion.toString()
+        writeProperties(props)
+        println("successfully updated project version ${project.version} to $newVersion")
+
+    } else {
+        logger.warn("No new version passed in.  Not doing anything")
+    }
+
+}
+project.tasks.register("setVersion") {
+    doLast {
+        setVersion()
+    }
+}

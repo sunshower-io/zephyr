@@ -7,6 +7,8 @@ plugins {
     id "io.spring.dependency-management" version "1.0.6.RELEASE"
 }
 
+apply from: "$rootDir/tasks/revisions.gradle"
+
 allprojects {
     apply plugin: 'idea'
     apply plugin: 'maven-publish'
@@ -24,6 +26,7 @@ allprojects {
         jcenter()
         mavenLocal()
         mavenCentral()
+
     }
 
     publishing {
@@ -84,17 +87,17 @@ subprojects {
     plugins.withType(JavaPlugin) {
         publishing {
             publications {
-                mavenJava(MavenPublication) {
-                    from components.java
-                    versionMapping {
-                        usage('java-api') {
-                            fromResolutionOf('runtimeClasspath')
-                        }
-                        usage('java-runtime') {
-                            fromResolutionResult()
-                        }
-                    }
-                }
+//                mavenJava(MavenPublication) {
+//                    from components.java
+//                    versionMapping {
+//                        usage('java-api') {
+//                            fromResolutionOf('runtimeClasspath')
+//                        }
+//                        usage('java-runtime') {
+//                            fromResolutionResult()
+//                        }
+//                    }
+//                }
             }
         }
         tasks.withType(com.github.spotbugs.SpotBugsTask) {
@@ -134,4 +137,5 @@ subprojects {
 build.dependsOn assemble
 
 defaultTasks 'clean', 'assemble', 'build', 'spotlessApply', 'publishToMavenLocal'
+
 

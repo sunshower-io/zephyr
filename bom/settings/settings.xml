@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+
+    <servers>
+        <server>
+            <id>sunshower-oss-repo</id>
+            <username>${oss-repo.username}</username>
+            <password>${oss-repo.password}</password>
+        </server>
+        <server>
+            <id>sunshower-releases</id>
+            <username>${sunshower-repo.username}</username>
+            <password>${sunshower-repo.password}</password>
+        </server>
+
+        <server>
+            <id>sunshower-snapshots</id>
+            <username>${sunshower-repo.username}</username>
+            <password>${sunshower-repo.password}</password>
+        </server>
+
+        <server>
+            <id>github.com</id>
+            <username>${github.username}</username>
+            <passphrase>${github.password}</passphrase>
+        </server>
+    </servers>
+
+    <profiles>
+
+        <profile>
+            <id>sunshower</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <repositories>
+                <repository>
+                    <id>sunshower-snapshots</id>
+                    <url>http://artifacts.sunshower.io/repository/sunshower-snapshots</url>
+                    <releases>
+                        <enabled>false</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                </repository>
+                <repository>
+                    <id>sunshower-releases</id>
+                    <url>http://artifacts.sunshower.io/repository/sunshower-releases</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </repository>
+
+
+                <repository>
+                    <id>gridgain-releases</id>
+                    <url>http://www.gridgainsystems.com/nexus/content/repositories/external</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </repository>
+                <repository>
+                    <id>gridgain-snapshots</id>
+                    <url>http://www.gridgainsystems.com/nexus/content/repositories/external-beta</url>
+                    <releases>
+                        <enabled>false</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                </repository>
+                <repository>
+                    <id>sunshower-oss-repo</id>
+                    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                </repository>
+
+                <repository>
+                    <id>sunshower-cache</id>
+                    <url>http://artifacts.sunshower.io/repository/local-cache/</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                </repository>
+
+                <repository>
+                    <id>spring-snapshot</id>
+                    <url>https://repo.spring.io/libs-snapshot</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                </repository>
+                <repository>
+                    <id>spring-release</id>
+                    <url>https://repo.spring.io/libs-release</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </repository>
+            </repositories>
+        </profile>
+    </profiles>
+
+</settings>
