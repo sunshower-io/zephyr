@@ -7,6 +7,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      CURRENT_MAJOR_VERSION: 2
+      CURRENT_MINOR_VERSION: 0
     steps:
       - name: Checkout
         uses: actions/checkout@v1
@@ -22,7 +25,7 @@ jobs:
           prefix: zephyr
       - name: Increment Bills-of-Materials
         run: |
-          mvn versions:set -DnewVersion=${{secrets.CURRENT_VERSION}}.$BUILD_NUMBER.Final -f bom
+          mvn versions:set -DnewVersion=$CURRENT_MAJOR_VERSION.$CURRENT_MINOR_VERSION.$BUILD_NUMBER.Final -f bom
 
       - name: Deploy Bills-Of-Materials
         run: mvn install deploy -f bom --settings bom/settings/settings.xml -Dsunshower-repo.username=${{secrets.MAVEN_REPOSITORY_USERNAME}} -Dsunshower-repo.password=${{secrets.MAVEN_REPOSITORY_PASSWORD}}
