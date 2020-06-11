@@ -22,6 +22,6 @@ jobs:
           prefix: zephyr
       - name: Increment Bills-of-Materials
         run: |
-          mvn versions:set -DnewVersion=${{secrets.CURRENT_VERSION}}.$BUILD_NUMBER.Final
+          mvn versions:set -DnewVersion=${{secrets.CURRENT_VERSION}}.$BUILD_NUMBER.Final -f bom
 
 
