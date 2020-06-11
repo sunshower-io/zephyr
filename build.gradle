@@ -91,7 +91,6 @@ subprojects {
                     from components.java
                     versionMapping {
                         usage('java-api') {
-                            classifier 'api'
                             fromResolutionOf('runtimeClasspath')
                         }
                         usage('java-runtime') {
