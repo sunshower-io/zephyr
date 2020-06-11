@@ -7,6 +7,8 @@ plugins {
     id "io.spring.dependency-management" version "1.0.6.RELEASE"
 }
 
+apply from: "$rootDir/tasks/revisions.gradle"
+
 allprojects {
     apply plugin: 'idea'
     apply plugin: 'maven-publish'
@@ -134,4 +136,5 @@ subprojects {
 build.dependsOn assemble
 
 defaultTasks 'clean', 'assemble', 'build', 'spotlessApply', 'publishToMavenLocal'
+
 

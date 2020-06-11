@@ -31,3 +31,7 @@ jobs:
     - name: Build Maven Plugin
       run: mvn install -f tools/zephyr-maven-plugin --settings bom/settings/settings.xml -Dsunshower-repo.username=${{secrets.MAVEN_REPOSITORY_USERNAME}} -Dsunshower-repo.password=${{secrets.MAVEN_REPOSITORY_PASSWORD}}
 
+    - name: Release
+      if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true
+      run: mvn clean install -f bom
+
