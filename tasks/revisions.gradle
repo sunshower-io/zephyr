@@ -24,9 +24,11 @@ def setVersion() {
         }
     }
     if(newVersion) {
+        logger.info("Setting version from ${project.version} to $newVersion")
         def props = loadProperties()
         props.version = newVersion.toString()
         writeProperties(props)
+        logger.info("successfully updated project version ${project.version} to $newVersion")
 
     } else {
         logger.warn("No new version passed in.  Not doing anything")

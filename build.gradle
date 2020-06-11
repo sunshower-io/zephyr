@@ -26,6 +26,14 @@ allprojects {
         jcenter()
         mavenLocal()
         mavenCentral()
+        maven {
+            credentials {
+                username "$mavenRepositoryUsername"
+                password "$mavenRepositoryPassword"
+            }
+            url "$mavenRepositoryUrl"
+        }
+
     }
 
     publishing {
