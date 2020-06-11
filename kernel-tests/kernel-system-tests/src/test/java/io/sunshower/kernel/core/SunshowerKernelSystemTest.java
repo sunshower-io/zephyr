@@ -34,6 +34,10 @@ class SunshowerKernelSystemTest {
   @Test
   @DisabledOnOs(OS.MAC)
   void ensureStoppedKernelHasNoEventListeners() {
+    int count = 0;
+    while (kernel.getLifecycle().getState() != KernelLifecycle.State.Running && count++ < 20) {
+      Thread.sleep(100);
+    }
     assertNotEquals(
         KernelLifecycle.State.Running, kernel.getLifecycle().getState(), "must not be running");
     assertEquals(0, kernel.getListenerCount(), "must have no listeners");
@@ -53,6 +57,10 @@ class SunshowerKernelSystemTest {
     kernel.addEventListener(
         listener, EventListener.Options.REMOVE_AFTER_DISPATCH, ModuleEvents.INSTALLED);
     zephyr.install(StandardModules.YAML.getUrl());
+    int count = 0;
+    while (kernel.getListenerCount() != 0 && count++ < 20) {
+      Thread.sleep(100);
+    }
     assertEquals(0, kernel.getListenerCount(), "must have no listeners");
     kernel.stop();
   }
