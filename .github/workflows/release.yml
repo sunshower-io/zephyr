@@ -1,0 +1,19 @@
+name: Create Zephyr Release
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate Build Number
+        id: buildnumber
+        uses: einaregilsson/build-number@v2
+        with:
+          token: ${{ secrets.github_token }}
+          prefix: zephyr
+      - name: Print Build Number
+        run: echo "$BUILD_NUMBER"
+
