@@ -33,7 +33,7 @@ class SunshowerKernelSystemTest {
 
   @Test
   @DisabledOnOs(OS.MAC)
-  void ensureStoppedKernelHasNoEventListeners() {
+  void ensureStoppedKernelHasNoEventListeners() throws Exception {
     int count = 0;
     while (kernel.getLifecycle().getState() != KernelLifecycle.State.Running && count++ < 20) {
       Thread.sleep(100);
