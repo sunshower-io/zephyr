@@ -17,11 +17,7 @@ def setVersion() {
 
     if(!newVersion) {
         newVersion = "${System.getenv("CURRENT_MAJOR_VERSION")}.${System.getenv("CURRENT_MINOR_VERSION")}.${System.getenv("BUILD_NUMBER")}"
-        if(System.getProperty("zephyrRelease")) {
-            newVersion += ".Final"
-        } else {
-            newVersion += "-SNAPSHOT"
-        }
+        newVersion += ".Final"
     }
     if(newVersion) {
         println("Setting version from ${project.version} to $newVersion")
