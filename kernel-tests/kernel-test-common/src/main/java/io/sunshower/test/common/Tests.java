@@ -12,7 +12,7 @@ public class Tests {
 
   public static File buildDirectory() {
     for (var file = current(); file != null; file = file.getParentFile()) {
-      val check = checkDirs(file, "build", "out");
+      val check = checkDirs(file, "build", "target", "out");
 
       if (check != null) {
         return check.toPath().normalize().toFile();
@@ -39,11 +39,15 @@ public class Tests {
   public static File rootDirectory() {
     File result = null;
     for (var file = current(); file != null; file = file.getParentFile()) {
-      val check = new File(file, "build.gradle");
+
+      var check = new File(file, "build.gradle");
       if (check.exists() && check.isFile()) {
         result = check.getParentFile();
       } else {
-        break;
+        check = new File(file, "pom.xml");
+        if (check.exists() && check.isFile()) {
+          result = check.getParentFile();
+        }
       }
     }
     if (result != null) {
@@ -84,7 +88,12 @@ public class Tests {
 
   public static File currentRoot() {
     for (var file = current(); file != null; file = file.getParentFile()) {
-      val b = new File(file, "build.gradle");
+      var b = new File(file, "build.gradle");
+      if (b.exists()) {
+        return file;
+      }
+
+      b = new File(file, "pom.xml");
       if (b.exists()) {
         return file;
       }
