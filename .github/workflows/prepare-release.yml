@@ -149,9 +149,11 @@ jobs:
         run: |
           mvn versions:set -DnewVersion=${{ steps.snapshotVersion.outputs.result }} -f bom
           mvn clean install -f bom
+
       - name: Increment Zephyr Maven Plugin Version
-        run: |
-          mvn versions:set -DnewVersion=${{ steps.snapshotVersion.outputs.result }} -f bom
+        run: >-
+          mvn versions:set -DnewVersion=${{ steps.snapshotVersion.outputs.result }}
+          -f tools/zephyr-maven-plugin
 
       - name: Increment Zephyr Build Number to Snapshot
         uses: eskatos/gradle-command-action@v1
@@ -171,12 +173,6 @@ jobs:
           -Dsunshower-repo.username=${{secrets.MAVEN_REPOSITORY_USERNAME}}
           -Dsunshower-repo.password=${{secrets.MAVEN_REPOSITORY_PASSWORD}} -e
 
-      - name: Deploy Zephyr Maven Plugin
-        run: >-
-          mvn install deploy -f tools/zephyr-maven-plugin
-          --settings bom/settings/settings.xml
-          -Dsunshower-repo.username=${{secrets.MAVEN_REPOSITORY_USERNAME}}
-          -Dsunshower-repo.password=${{secrets.MAVEN_REPOSITORY_PASSWORD}} -e
 
 
       - name: Build Zephyr Projects
@@ -190,6 +186,14 @@ jobs:
             -PmavenRepositoryUsername=${{secrets.MAVEN_REPOSITORY_USERNAME}}
             -PmavenRepositoryPassword=${{secrets.MAVEN_REPOSITORY_PASSWORD}}
             -PmavenRepositoryUrl=${{secrets.MAVEN_REPOSITORY_URL}} --stacktrace
+
+
+      - name: Deploy Zephyr Maven Plugin
+        run: >-
+          mvn install deploy -f tools/zephyr-maven-plugin
+          --settings bom/settings/settings.xml
+          -Dsunshower-repo.username=${{secrets.MAVEN_REPOSITORY_USERNAME}}
+          -Dsunshower-repo.password=${{secrets.MAVEN_REPOSITORY_PASSWORD}} -e
 
       - name: Commit Version Changes and Release
         run: |
