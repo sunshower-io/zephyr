@@ -40,7 +40,7 @@ jobs:
       - name: Set Final Version Number
         id: finalVersion
         run: |
-          echo '::set-output name=result::$CURRENT_MAJOR_VERSION.CURRENT_MINOR_VERSION.$BUILD_NUMBER.Final'
+          echo '::set-output name=result::$CURRENT_MAJOR_VERSION.$CURRENT_MINOR_VERSION.$BUILD_NUMBER.Final'
 
 
       - name: Generate Next Number
@@ -53,7 +53,7 @@ jobs:
       - name: Set Next Snapshot Version Number
         id: snapshotVersion
         run: |
-          echo '::set-output name=result::$CURRENT_MAJOR_VERSION.CURRENT_MINOR_VERSION.$BUILD_NUMBER-SNAPSHOT'
+          echo '::set-output name=result::$CURRENT_MAJOR_VERSION.$CURRENT_MINOR_VERSION.$BUILD_NUMBER-SNAPSHOT'
 
       - name: Increment Bills-of-Materials
         run: |
