@@ -87,12 +87,6 @@ jobs:
           -Dsunshower-repo.username=${{secrets.MAVEN_REPOSITORY_USERNAME}}
           -Dsunshower-repo.password=${{secrets.MAVEN_REPOSITORY_PASSWORD}} -e
 
-      - name: Deploy Zephyr Maven Plugin
-        run: >-
-          mvn install deploy -f tools/zephyr-maven-plugin
-          --settings bom/settings/settings.xml
-          -Dsunshower-repo.username=${{secrets.MAVEN_REPOSITORY_USERNAME}}
-          -Dsunshower-repo.password=${{secrets.MAVEN_REPOSITORY_PASSWORD}} -e
 
 
 
@@ -107,6 +101,22 @@ jobs:
             -PmavenRepositoryUsername=${{secrets.MAVEN_REPOSITORY_USERNAME}}
             -PmavenRepositoryPassword=${{secrets.MAVEN_REPOSITORY_PASSWORD}}
             -PmavenRepositoryUrl=${{secrets.MAVEN_RELEASE_URL}} --stacktrace
+
+
+      #################   Deploy Zephyr Maven Plugin #################
+      #
+      #   build and deploy the zephyr maven plugin.
+      #
+      #   Note:  This must happen after "Build Zephyr Projects" action
+      #
+      #################   Deploy Zephyr Maven Plugin #################
+
+      - name: Deploy Zephyr Maven Plugin
+        run: >-
+          mvn install deploy -f tools/zephyr-maven-plugin
+          --settings bom/settings/settings.xml
+          -Dsunshower-repo.username=${{secrets.MAVEN_REPOSITORY_USERNAME}}
+          -Dsunshower-repo.password=${{secrets.MAVEN_REPOSITORY_PASSWORD}} -e
 
       - name: Commit Version Changes
         run: |
