@@ -50,8 +50,8 @@ public class ModuleListenerTestCase extends ShellTestCase {
           kernel.addEventListener(listener, ModuleEvents.INSTALL_FAILED, ModuleEvents.INSTALLED);
         },
         () -> {
-          verify(listener, timeout(100).times(1)).onEvent(eq(ModuleEvents.INSTALL_FAILED), any());
-          verify(listener, timeout(100).times(0)).onEvent(eq(ModuleEvents.INSTALLED), any());
+          verify(listener, timeout(1000).times(1)).onEvent(eq(ModuleEvents.INSTALL_FAILED), any());
+          verify(listener, timeout(1000).times(0)).onEvent(eq(ModuleEvents.INSTALLED), any());
         },
         new FileInstallable(new File("nothere")));
   }
