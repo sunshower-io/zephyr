@@ -54,7 +54,7 @@ class KernelLauncherTest {
   void ensureRegistryContainsCorrectEntryPointCount() {
     val ctx = runAndGetMock().getContext();
     val registry = (EntryPointRegistry) ctx.get(EntryPoint.ContextEntries.ENTRY_POINT_REGISTRY);
-    Assertions.assertEquals(6, registry.getEntryPoints().size(), "must contain 2 entrypoints");
+    Assertions.assertEquals(5, registry.getEntryPoints().size(), "must contain 2 entrypoints");
   }
 
   MockEntryPoint runAndGetMock() {
