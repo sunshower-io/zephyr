@@ -2,8 +2,7 @@ package io.zephyr.api;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 import io.zephyr.kernel.modules.shell.ShellTestCase;
 import java.io.File;
@@ -39,7 +38,7 @@ public class ModuleListenerTestCase extends ShellTestCase {
           kernel.addEventListener(listener, ModuleEvents.INSTALLING);
         },
         () -> {
-          verify(listener, times(1)).onEvent(eq(ModuleEvents.INSTALLING), any());
+          verify(listener, timeout(100).times(1)).onEvent(eq(ModuleEvents.INSTALLING), any());
         },
         StandardModules.YAML);
   }
@@ -51,8 +50,8 @@ public class ModuleListenerTestCase extends ShellTestCase {
           kernel.addEventListener(listener, ModuleEvents.INSTALL_FAILED, ModuleEvents.INSTALLED);
         },
         () -> {
-          verify(listener, times(1)).onEvent(eq(ModuleEvents.INSTALL_FAILED), any());
-          verify(listener, times(0)).onEvent(eq(ModuleEvents.INSTALLED), any());
+          verify(listener, timeout(100).times(1)).onEvent(eq(ModuleEvents.INSTALL_FAILED), any());
+          verify(listener, timeout(100).times(0)).onEvent(eq(ModuleEvents.INSTALLED), any());
         },
         new FileInstallable(new File("nothere")));
   }
@@ -64,8 +63,8 @@ public class ModuleListenerTestCase extends ShellTestCase {
           kernel.addEventListener(listener, ModuleEvents.INSTALLED, ModuleEvents.INSTALL_FAILED);
         },
         () -> {
-          verify(listener, times(1)).onEvent(eq(ModuleEvents.INSTALLED), any());
-          verify(listener, times(0)).onEvent(eq(ModuleEvents.INSTALL_FAILED), any());
+          verify(listener, timeout(100).times(1)).onEvent(eq(ModuleEvents.INSTALLED), any());
+          verify(listener, timeout(100).times(0)).onEvent(eq(ModuleEvents.INSTALL_FAILED), any());
         },
         StandardModules.YAML);
   }
@@ -82,9 +81,9 @@ public class ModuleListenerTestCase extends ShellTestCase {
               ModuleEvents.INSTALLING);
         },
         () -> {
-          verify(listener, times(1)).onEvent(eq(ModuleEvents.INSTALLED), any());
-          verify(listener, times(1)).onEvent(eq(ModuleEvents.INSTALLING), any());
-          verify(listener, times(0)).onEvent(eq(ModuleEvents.INSTALL_FAILED), any());
+          verify(listener, timeout(100).times(1)).onEvent(eq(ModuleEvents.INSTALLED), any());
+          verify(listener, timeout(100).times(1)).onEvent(eq(ModuleEvents.INSTALLING), any());
+          verify(listener, timeout(100).times(0)).onEvent(eq(ModuleEvents.INSTALL_FAILED), any());
         },
         TestPlugins.TEST_PLUGIN_1);
   }
