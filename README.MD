@@ -16,7 +16,7 @@ If you've ever used [GIMP](https://gimp.org), Adobe Photoshop,
 or [Wordpress](https://wordpress.org), then you've used an *extensible*
 application, which is very similar to a *modular* application.  In fact,
 for many applications, *extensible* and *modular* may be used
-interchangeably.  
+interchangeably.
 
 *Extensible* applications are applications that can be extended by users,
 other vendors, or the application vendor themselves.  As a user,
