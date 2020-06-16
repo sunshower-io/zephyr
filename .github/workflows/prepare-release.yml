@@ -57,7 +57,7 @@ jobs:
 
       - name: Increment Bills-of-Materials
         run: |
-          mvn versions:set -DnewVersion=${{ steps.finalVersion.outputs.result }}-f bom
+          mvn versions:set -DnewVersion=${{ steps.finalVersion.outputs.result }} -f bom
           mvn clean install -f bom
 
 
