@@ -61,7 +61,7 @@ jobs:
 
 
 
-
+      # Accessible via ${{ steps.finalVersion.outputs.result }}
       - name: Set Final Version Number
         id: finalVersion
         run: |
@@ -75,6 +75,7 @@ jobs:
           token: ${{ secrets.github_token }}
           prefix: zephyr
 
+      # Accessible via ${{ steps.snapshotVersion.outputs.result }}
       - name: Set Next Snapshot Version Number
         id: snapshotVersion
         run: |
@@ -115,7 +116,7 @@ jobs:
 
 
 
-      - name: Build Zephyr Projects
+      - name: Build And Deploy Zephyr Projects
         uses: eskatos/gradle-command-action@v1
         env:
           JAVA_TOOL_OPTIONS: -Duser.language=en -Duser.country=US
@@ -152,7 +153,27 @@ jobs:
           git tag -a v${{ steps.finalVersion.outputs.result }} -m "Releasing ${{ steps.finalVersion.outputs.result }}"
           git push origin v${{ steps.finalVersion.outputs.result }}
 
+      - uses: actions/upload-artifact@v2
+        with:
+          name: zephyr-main
+          path: zephyr-main/build/distributions/*.zip
 
+      - name: get commit message
+        run: echo ::set-env name=commitmsg::$(git log --format=%B -n 1 ${{ github.event.after }})
+
+      - name: Perform Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: |
+            Changes in this Release:
+            ${{ env.commitmsg }}
+          draft: false
+          prerelease: false
 
       #################   Rev Snapshots     #################
 
@@ -214,6 +235,7 @@ jobs:
           git config --local user.name "build"
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
           git commit -am "Releasing new Snapshot [tag: snapshot]"
+
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
