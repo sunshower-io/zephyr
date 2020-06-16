@@ -148,7 +148,7 @@ jobs:
           git config --local user.email "build@sunshower.io"
           git config --local user.name "build"
           git commit -am "Final Release [tag: final, version: ${{steps.finalVersion.outputs.result}}]"
-
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
           git tag -a v${{ steps.finalVersion.outputs.result }} -m "Releasing ${{ steps.finalVersion.outputs.result }}"
           git push origin v${{ steps.finalVersion.outputs.result }}
 
@@ -160,10 +160,6 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: v${{ steps.finalVersion.outputs.result }}
           tags: true
-
-
-
-
 
 
       #################   Rev Snapshots     #################
@@ -224,6 +220,7 @@ jobs:
         run: |
           git config --local user.email "build@sunshower.io"
           git config --local user.name "build"
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
           git commit -am "Releasing new Snapshot [tag: snapshot]"
       - name: Push changes
         uses: ad-m/github-push-action@master
