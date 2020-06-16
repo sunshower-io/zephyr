@@ -8,12 +8,37 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    #################   Set Up Environment  #################
+
+    #################   Set up Environment  #################
+    #
+    #   This is where we set the new MAJOR and MINOR versions
+    #   for a series of releases.  This must be updated both
+    #   here and in release.yml
+    #
+    #################   Set up Environment  #################
 
     env:
       CURRENT_MAJOR_VERSION: 2
       CURRENT_MINOR_VERSION: 0
 
+    #################   Overview of Build Process   #################
+    #   Note:  this is documented fully at
+    #   https://github.com/sunshower-io/zephyr/build.md
+    #
+    #   Versions:  most/all component versions should be stored in
+    #   bom/imported/pom.xml
+    #
+    #   Released versions:  All exported component versions should be
+    #   stored in bom/exported/pom.xml
+    #
+    #   Odd dependency notes:
+    #   Project path: tools/zephyr-bundle/native-packages/(windows,linux,mac)
+    #   Notes:  These projects depend on warp (https://github.com/dgiagio/warp/releases)
+    #
+    #
+    #
+    #
+    #################   Overview of Build Process   #################
 
     steps:
       - name: Checkout
@@ -122,7 +147,7 @@ jobs:
         run: |
           git config --local user.email "build@sunshower.io"
           git config --local user.name "build"
-          git commit -am "Final Release [tag: final]"
+          git commit -am "Final Release [tag: final, version: ${{steps.finalVersion.outputs.result}}]"
 
           git tag -a v${{ steps.finalVersion.outputs.result }} -m "Releasing ${{ steps.finalVersion.outputs.result }}"
           git push origin v${{ steps.finalVersion.outputs.result }}
