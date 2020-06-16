@@ -44,7 +44,7 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: zephyr-main
-          path: zephyr-main/build/distributions/**/*.zip
+          path: zephyr-main/build/distributions/*.zip
 
       - name: get commit message
         run: echo ::set-env name=commitmsg::$(git log --format=%B -n 1 ${{ github.event.after }})
