@@ -35,65 +35,13 @@ jobs:
           prefix: zephyr
 
 
-      #################   Release Projects   #################
 
 
-
-
-      - name: Increment Bills-of-Materials
+      - name: Set Final Version Number
+        id: finalVersion
         run: |
-          mvn versions:set -DnewVersion=$CURRENT_MAJOR_VERSION.$CURRENT_MINOR_VERSION.$BUILD_NUMBER.Final -f bom
-          mvn clean install -f bom
-      - name: Increment Zephyr Maven Plugin Version
-        run: |
-          mvn versions:set -DnewVersion=$CURRENT_MAJOR_VERSION.$CURRENT_MINOR_VERSION.$BUILD_NUMBER.Final -f bom
+          echo '::set-output name=result::$CURRENT_MAJOR_VERSION.CURRENT_MINOR_VERSION.$BUILD_NUMBER.Final'
 
-      - name: Increment Zephyr Build Number
-        uses: eskatos/gradle-command-action@v1
-        env:
-          JAVA_TOOL_OPTIONS: -Duser.language=en -Duser.country=US
-        with:
-          gradle-version: 6.0.1
-          arguments: setVersion -DzephyrRelease=true -PmavenRepositoryUsername=${{secrets.MAVEN_REPOSITORY_USERNAME}} -PmavenRepositoryPassword=${{secrets.MAVEN_REPOSITORY_PASSWORD}} -PmavenRepositoryUrl=${{secrets.MAVEN_REPOSITORY_URL}}
-
-      - name: Deploy Bills-Of-Materials
-        run: |
-          mvn install deploy -f bom --settings bom/settings/settings.xml -Dsunshower-repo.username=${{secrets.MAVEN_REPOSITORY_USERNAME}} -Dsunshower-repo.password=${{secrets.MAVEN_REPOSITORY_PASSWORD}} -e
-
-      - name: Deploy Zephyr Maven Plugin
-        run: mvn install deploy -f tools/zephyr-maven-plugin --settings bom/settings/settings.xml -Dsunshower-repo.username=${{secrets.MAVEN_REPOSITORY_USERNAME}} -Dsunshower-repo.password=${{secrets.MAVEN_REPOSITORY_PASSWORD}} -e
-
-
-      # This is where the release actually happens
-      # First, we build everything with the new final build numbers
-      # At this point, everything is in the form <major>.<minir>.<buildno>.Final
-      # Publications to sunshower-releases have occurred for all artifacts
-
-      - name: Build Zephyr Projects
-        uses: eskatos/gradle-command-action@v1
-        env:
-          JAVA_TOOL_OPTIONS: -Duser.language=en -Duser.country=US
-        with:
-          gradle-version: 6.0.1
-          arguments: assemble build sA publish -i -PmavenRepositoryUsername=${{secrets.MAVEN_REPOSITORY_USERNAME}} -PmavenRepositoryPassword=${{secrets.MAVEN_REPOSITORY_PASSWORD}} -PmavenRepositoryUrl=${{secrets.MAVEN_RELEASE_URL}} --stacktrace
-
-      - name: Commit Version Changes
-        run: |
-          git config --local user.email "build@sunshower.io"
-          git config --local user.name "build"
-          git commit -am "Final Release [tag: final]"
-
-          git tag -a v$CURRENT_MAJOR_VERSION.$CURRENT_MINOR_VERSION.$BUILD_NUMBER.Final -m "Release Bot: Releasing $CURRENT_MAJOR_VERSION.$CURRENT_MINOR_VERSION.$BUILD_NUMBER.Final"
-          git push origin v$CURRENT_MAJOR_VERSION.$CURRENT_MINOR_VERSION.$BUILD_NUMBER.Final
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-
-
-
-
-      #################   Generate Next Version #################
 
       - name: Generate Next Number
         id: nextbuildnumber
@@ -102,33 +50,50 @@ jobs:
           token: ${{ secrets.github_token }}
           prefix: zephyr
 
-
-      #################   Rev Snapshots     #################
-
-
-
-      - name: Increment Bills-of-Materials to Snapshots
+      - name: Set Next Snapshot Version Number
+        id: snapshotVersion
         run: |
-          mvn versions:set -DnewVersion=$CURRENT_MAJOR_VERSION.$CURRENT_MINOR_VERSION.$BUILD_NUMBER-SNAPSHOT -f bom
+          echo '::set-output name=result::$CURRENT_MAJOR_VERSION.CURRENT_MINOR_VERSION.$BUILD_NUMBER-SNAPSHOT'
+
+      - name: Increment Bills-of-Materials
+        run: |
+          mvn versions:set -DnewVersion=${{ steps.finalVersion.outputs.result }}-f bom
           mvn clean install -f bom
-      - name: Increment Zephyr Maven Plugin Version
-        run: |
-          mvn versions:set -DnewVersion=$CURRENT_MAJOR_VERSION.$CURRENT_MINOR_VERSION.$BUILD_NUMBER-SNAPSHOT -f bom
 
-      - name: Increment Zephyr Build Number to Snapshot
+
+      - name: Increment Zephyr Maven Plugin Version
+        run: >-
+          mvn versions:set
+          -DnewVersion=${{ steps.finalVersion.outputs.result }}
+          -f tools/zephyr-maven-plugin
+          --settings bom/settings/settings.xml
+
+      - name: Increment Zephyr Build Number
         uses: eskatos/gradle-command-action@v1
         env:
           JAVA_TOOL_OPTIONS: -Duser.language=en -Duser.country=US
         with:
           gradle-version: 6.0.1
-          arguments: setVersion -PmavenRepositoryUsername=${{secrets.MAVEN_REPOSITORY_USERNAME}} -PmavenRepositoryPassword=${{secrets.MAVEN_REPOSITORY_PASSWORD}} -PmavenRepositoryUrl=${{secrets.MAVEN_REPOSITORY_URL}}
+          arguments: >-
+            setVersion -DzephyrRelease=true
+            -PmavenRepositoryUsername=${{secrets.MAVEN_REPOSITORY_USERNAME}}
+            -PmavenRepositoryPassword=${{secrets.MAVEN_REPOSITORY_PASSWORD}}
+            -PmavenRepositoryUrl=${{secrets.MAVEN_REPOSITORY_URL}}
 
       - name: Deploy Bills-Of-Materials
-        run: |
-          mvn install deploy -f bom --settings bom/settings/settings.xml -Dsunshower-repo.username=${{secrets.MAVEN_REPOSITORY_USERNAME}} -Dsunshower-repo.password=${{secrets.MAVEN_REPOSITORY_PASSWORD}} -e
+        run: >-
+          mvn install deploy -f bom
+          --settings bom/settings/settings.xml
+          -Dsunshower-repo.username=${{secrets.MAVEN_REPOSITORY_USERNAME}}
+          -Dsunshower-repo.password=${{secrets.MAVEN_REPOSITORY_PASSWORD}} -e
 
       - name: Deploy Zephyr Maven Plugin
-        run: mvn install deploy -f tools/zephyr-maven-plugin --settings bom/settings/settings.xml -Dsunshower-repo.username=${{secrets.MAVEN_REPOSITORY_USERNAME}} -Dsunshower-repo.password=${{secrets.MAVEN_REPOSITORY_PASSWORD}} -e
+        run: >-
+          mvn install deploy -f tools/zephyr-maven-plugin
+          --settings bom/settings/settings.xml
+          -Dsunshower-repo.username=${{secrets.MAVEN_REPOSITORY_USERNAME}}
+          -Dsunshower-repo.password=${{secrets.MAVEN_REPOSITORY_PASSWORD}} -e
+
 
 
       - name: Build Zephyr Projects
@@ -137,9 +102,85 @@ jobs:
           JAVA_TOOL_OPTIONS: -Duser.language=en -Duser.country=US
         with:
           gradle-version: 6.0.1
-          arguments: assemble build sA publish -i -PmavenRepositoryUsername=${{secrets.MAVEN_REPOSITORY_USERNAME}} -PmavenRepositoryPassword=${{secrets.MAVEN_REPOSITORY_PASSWORD}} -PmavenRepositoryUrl=${{secrets.MAVEN_REPOSITORY_URL}} --stacktrace
+          arguments: >-
+            assemble build sA publish -i
+            -PmavenRepositoryUsername=${{secrets.MAVEN_REPOSITORY_USERNAME}}
+            -PmavenRepositoryPassword=${{secrets.MAVEN_REPOSITORY_PASSWORD}}
+            -PmavenRepositoryUrl=${{secrets.MAVEN_RELEASE_URL}} --stacktrace
 
       - name: Commit Version Changes
+        run: |
+          git config --local user.email "build@sunshower.io"
+          git config --local user.name "build"
+          git commit -am "Final Release [tag: final]"
+
+          git tag -a v${{ steps.finalVersion.outputs.result }} -m "Releasing ${{ steps.finalVersion.outputs.result }}"
+          git push origin v${{ steps.finalVersion.outputs.result }}
+
+
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: v${{ steps.finalVersion.outputs.result }}
+
+
+
+
+
+
+      #################   Rev Snapshots     #################
+
+
+
+      - name: Increment Bills-of-Materials to Snapshots
+        run: |
+          mvn versions:set -DnewVersion=${{ steps.snapshotVersion.outputs.result }} -f bom
+          mvn clean install -f bom
+      - name: Increment Zephyr Maven Plugin Version
+        run: |
+          mvn versions:set -DnewVersion=${{ steps.snapshotVersion.outputs.result }} -f bom
+
+      - name: Increment Zephyr Build Number to Snapshot
+        uses: eskatos/gradle-command-action@v1
+        env:
+          JAVA_TOOL_OPTIONS: -Duser.language=en -Duser.country=US
+        with:
+          gradle-version: 6.0.1
+          arguments: >-
+            setVersion -PmavenRepositoryUsername=${{secrets.MAVEN_REPOSITORY_USERNAME}}
+            -PmavenRepositoryPassword=${{secrets.MAVEN_REPOSITORY_PASSWORD}}
+            -PmavenRepositoryUrl=${{secrets.MAVEN_REPOSITORY_URL}}
+
+      - name: Deploy Bills-Of-Materials
+        run: >-
+          mvn install deploy -f bom
+          --settings bom/settings/settings.xml
+          -Dsunshower-repo.username=${{secrets.MAVEN_REPOSITORY_USERNAME}}
+          -Dsunshower-repo.password=${{secrets.MAVEN_REPOSITORY_PASSWORD}} -e
+
+      - name: Deploy Zephyr Maven Plugin
+        run: >-
+          mvn install deploy -f tools/zephyr-maven-plugin
+          --settings bom/settings/settings.xml
+          -Dsunshower-repo.username=${{secrets.MAVEN_REPOSITORY_USERNAME}}
+          -Dsunshower-repo.password=${{secrets.MAVEN_REPOSITORY_PASSWORD}} -e
+
+
+      - name: Build Zephyr Projects
+        uses: eskatos/gradle-command-action@v1
+        env:
+          JAVA_TOOL_OPTIONS: -Duser.language=en -Duser.country=US
+        with:
+          gradle-version: 6.0.1
+          arguments: >-
+            assemble build sA publish -i
+            -PmavenRepositoryUsername=${{secrets.MAVEN_REPOSITORY_USERNAME}}
+            -PmavenRepositoryPassword=${{secrets.MAVEN_REPOSITORY_PASSWORD}}
+            -PmavenRepositoryUrl=${{secrets.MAVEN_REPOSITORY_URL}} --stacktrace
+
+      - name: Commit Version Changes and Release
         run: |
           git config --local user.email "build@sunshower.io"
           git config --local user.name "build"
