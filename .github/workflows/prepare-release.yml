@@ -123,7 +123,8 @@ jobs:
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-        branch: v${{ steps.finalVersion.outputs.result }}
+          branch: v${{ steps.finalVersion.outputs.result }}
+          tags: true
 
 
 
