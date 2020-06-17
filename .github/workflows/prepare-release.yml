@@ -174,8 +174,8 @@ jobs:
           draft: false
           prerelease: false
 
-      - name: Upload Release Asset
-        id: upload-release-asset
+      - name: Upload Release Asset Zip
+        id: upload-release-asset-zip
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -185,6 +185,16 @@ jobs:
           asset_name: zephyr-main.zip
           asset_content_type: application/zip
 
+      - name: Upload Release Asset Tar
+        id: upload-release-asset-tar
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: zephyr-main/build/distributions/zephyr-main.tar
+          asset_name: zephyr-main.tar
+          asset_content_type: application/x-tar
       #################   Rev Snapshots     #################
 
 
