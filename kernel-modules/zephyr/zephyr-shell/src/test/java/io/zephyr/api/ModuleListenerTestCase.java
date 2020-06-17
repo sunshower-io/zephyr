@@ -8,11 +8,13 @@ import io.zephyr.kernel.modules.shell.ShellTestCase;
 import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
+@Disabled("Need to figure out why this is flaky")
 @ExtendWith(MockitoExtension.class)
 public class ModuleListenerTestCase extends ShellTestCase {
 
