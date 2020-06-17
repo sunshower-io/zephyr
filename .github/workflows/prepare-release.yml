@@ -138,6 +138,13 @@ jobs:
       - name: get commit message
         run: echo ::set-env name=commitmsg::$(git log --format=%B -n 1:2 ${{ github.event.after }})
 
+
+      - name: Commit Version Changes
+        run: |
+          git config --local user.email "build@sunshower.io"
+          git config --local user.name "build"
+          git commit -am "Final Release [tag: final, version: ${{steps.finalVersion.outputs.result}}]"
+
       - name: Perform Release
         id: create_release
         uses: actions/create-release@v1
@@ -152,7 +159,7 @@ jobs:
 
             ${{ env.commitmsg }}
 
-            Tag: [Related Tag](https://github.com/sunshower-io/zephyr/releases/tag/v${{ env.final_version }}.Final
+            Tag: https://github.com/sunshower-io/zephyr/releases/tag/v${{ env.final_version }}.Final
           draft: false
           prerelease: false
 
@@ -181,9 +188,6 @@ jobs:
 
       - name: Commit Version Changes
         run: |
-          git config --local user.email "build@sunshower.io"
-          git config --local user.name "build"
-          git commit -am "Final Release [tag: final, version: ${{steps.finalVersion.outputs.result}}]"
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
           git tag -a v${{ steps.finalVersion.outputs.result }} -m "Releasing ${{ steps.finalVersion.outputs.result }}"
           git push origin v${{ steps.finalVersion.outputs.result }}
