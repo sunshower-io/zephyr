@@ -158,7 +158,7 @@ jobs:
           git push origin v${{ steps.finalVersion.outputs.result }}
 
       - name: get commit message
-        run: echo ::set-env name=commitmsg::$(git log --format=%B -n 2 ${{ github.event.after }})
+        run: echo ::set-env name=commitmsg::$(git log --format=%B -n 1:2 ${{ github.event.after }})
 
       - name: Perform Release
         id: create_release
@@ -166,11 +166,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v${{ steps.finalVersion.outputs.result }}
-          release_name: Release v${{ steps.finalVersion.outputs.result }}
+          tag_name: v$CURRENT_MAJOR_VERSION.$CURRENT_MINOR_VERSIN.$BUILD_NUMBER
+          release_name: Release $CURRENT_MAJOR_VERSION.$CURRENT_MINOR_VERSIN.$BUILD_NUMBER
 
           body: |
-            Changes in ${{ steps.finalVersion.outputs.result }} Release:
+            Changes in $CURRENT_MAJOR_VERSION.$CURRENT_MINOR_VERSIN.$BUILD_NUMBER Release:
             ${{ env.commitmsg }}
           draft: false
           prerelease: false
