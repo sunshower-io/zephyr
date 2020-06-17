@@ -66,6 +66,12 @@ startScripts {
     classpath = files("lib/*")
 }
 
+distributions {
+    main {
+        baseName = "zephyr-main"
+        version = ""
+    }
+}
 
 jar {
     manifest {
