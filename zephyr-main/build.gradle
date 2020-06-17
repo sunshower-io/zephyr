@@ -92,14 +92,14 @@ jar {
     }
 }
 
-publishing {
-    publications {
-
-        applicationTar(MavenPublication) {
-            artifact source: distTar, classifier: 'tar', extension: 'tar'
-        }
-        applicationZip(MavenPublication) {
-            artifact source: distZip, classifier: 'zip', extension: 'zip'
-        }
-    }
-}
+//publishing {
+//    publications {
+//
+//        applicationTar(MavenPublication) {
+//            artifact source: distTar, classifier: 'tar', extension: 'tar'
+//        }
+//        applicationZip(MavenPublication) {
+//            artifact source: distZip, classifier: 'zip', extension: 'zip'
+//        }
+//    }
+//}
