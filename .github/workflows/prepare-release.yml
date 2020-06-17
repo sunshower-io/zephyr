@@ -151,11 +151,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v$CURRENT_MAJOR_VERSION.$CURRENT_MINOR_VERSION.$BUILD_NUMBER
-          release_name: Release $CURRENT_MAJOR_VERSION.$CURRENT_MINOR_VERSION.$BUILD_NUMBER
+          tag_name: zephyr-${{ github.ref }}
+          release_name: Zephyr-r${{ github.ref }}
 
           body: |
-            Changes in $CURRENT_MAJOR_VERSION.$CURRENT_MINOR_VERSIN.$BUILD_NUMBER Release:
+            Changes in zephyr-${{ github.ref }}
             ${{ env.commitmsg }}
           draft: false
           prerelease: false
