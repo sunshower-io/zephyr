@@ -134,14 +134,6 @@ jobs:
           -Dsunshower-repo.username=${{secrets.MAVEN_REPOSITORY_USERNAME}}
           -Dsunshower-repo.password=${{secrets.MAVEN_REPOSITORY_PASSWORD}} -e
 
-      - name: Commit Version Changes
-        run: |
-          git config --local user.email "build@sunshower.io"
-          git config --local user.name "build"
-          git commit -am "Final Release [tag: final, version: ${{steps.finalVersion.outputs.result}}]"
-          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
-          git tag -a v${{ steps.finalVersion.outputs.result }} -m "Releasing ${{ steps.finalVersion.outputs.result }}"
-          git push origin v${{ steps.finalVersion.outputs.result }}
 
       - name: get commit message
         run: echo ::set-env name=commitmsg::$(git log --format=%B -n 1:2 ${{ github.event.after }})
@@ -156,8 +148,11 @@ jobs:
           release_name: Zephyr-r${{ env.final_version }}
 
           body: |
-            Changes in zephyr-${{ env.final_version }}
+            ** Changes in zephyr-${{ env.final_version }} **
+
             ${{ env.commitmsg }}
+
+            Tag: [Related Tag](https://github.com/sunshower-io/zephyr/releases/tag/v${{ env.final_version }}.Final
           draft: false
           prerelease: false
 
@@ -182,6 +177,19 @@ jobs:
           asset_path: zephyr-main/build/distributions/zephyr-main.tar
           asset_name: zephyr-main.tar
           asset_content_type: application/x-tar
+
+
+      - name: Commit Version Changes
+        run: |
+          git config --local user.email "build@sunshower.io"
+          git config --local user.name "build"
+          git commit -am "Final Release [tag: final, version: ${{steps.finalVersion.outputs.result}}]"
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+          git tag -a v${{ steps.finalVersion.outputs.result }} -m "Releasing ${{ steps.finalVersion.outputs.result }}"
+          git push origin v${{ steps.finalVersion.outputs.result }}
+
+
+
       #################   Rev Snapshots     #################
 
 
