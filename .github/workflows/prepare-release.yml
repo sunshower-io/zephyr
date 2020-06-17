@@ -63,8 +63,8 @@ jobs:
       - name: Set Final Version Number
         id: finalVersion
         run: |
-          echo '::set-env name=final_version::$CURRENT_MAJOR_VERSION.$CURRENT_MINOR_VERSION.$BUILD_NUMBER'
-          echo '::set-output name=result::$CURRENT_MAJOR_VERSION.$CURRENT_MINOR_VERSION.$BUILD_NUMBER.Final'
+          echo ::set-env name=final_version::$CURRENT_MAJOR_VERSION.$CURRENT_MINOR_VERSION.$BUILD_NUMBER
+          echo ::set-output name=result::$CURRENT_MAJOR_VERSION.$CURRENT_MINOR_VERSION.$BUILD_NUMBER.Final
 
 
 
