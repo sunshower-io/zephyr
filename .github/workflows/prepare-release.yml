@@ -65,7 +65,7 @@ jobs:
       - name: Set Final Version Number
         id: finalVersion
         run: |
-          echo '::set-env name=FINAL_BUILD_NO::$CURRENT_MAJOR_VERSION.$CURRENT_MINOR_VERSION.$BUILD_NUMBER.Final'
+          echo '::set-output name=no_ext::$CURRENT_MAJOR_VERSION.$CURRENT_MINOR_VERSION.$BUILD_NUMBER'
           echo '::set-output name=result::$CURRENT_MAJOR_VERSION.$CURRENT_MINOR_VERSION.$BUILD_NUMBER.Final'
 
 
@@ -181,7 +181,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: zephyr-main/build/distributions/zephyr-$FINAL_BUILD_NO.zip
+          asset_path: zephyr-main/build/distributions/zephyr-${{ steps.finalVersion.outputs.no_ext }}.zip
           asset_name: zephyr-main.zip
           asset_content_type: application/zip
 
