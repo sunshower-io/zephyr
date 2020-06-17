@@ -65,11 +65,13 @@ build.dependsOn extractPlugins
 startScripts {
     classpath = files("lib/*")
 }
-
+/**
+ * ugly hack to get version
+ */
 distributions {
     main {
-        baseName = "zephyr-main"
-        version = ""
+        baseName = "zephyr"
+        version = "main"
     }
 }
 
