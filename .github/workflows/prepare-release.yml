@@ -63,6 +63,7 @@ jobs:
       - name: Set Final Version Number
         id: finalVersion
         run: |
+          echo '::set-env name=final_version::$CURRENT_MAJOR_VERSION.$CURRENT_MINOR_VERSION.$BUILD_NUMBER'
           echo '::set-output name=result::$CURRENT_MAJOR_VERSION.$CURRENT_MINOR_VERSION.$BUILD_NUMBER.Final'
 
 
@@ -151,11 +152,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: zephyr-${{ github.ref }}
-          release_name: Zephyr-r${{ github.ref }}
+          tag_name: zephyr-${{ env.final_version }}
+          release_name: Zephyr-r${{ env.final_version }}
 
           body: |
-            Changes in zephyr-${{ github.ref }}
+            Changes in zephyr-${{ env.final_version }}
             ${{ env.commitmsg }}
           draft: false
           prerelease: false
