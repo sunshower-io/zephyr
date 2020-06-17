@@ -54,8 +54,8 @@ application {
     mainClassName = 'io.zephyr.kernel.launch.KernelLauncher'
 }
 
-task extractPlugins(type: Copy)  {
-    
+task extractPlugins(type: Copy) {
+
     from configurations.plugin
     into "${projectDir}/zephyr/kernel/deployments"
 }
@@ -65,14 +65,13 @@ build.dependsOn extractPlugins
 startScripts {
     classpath = files("lib/*")
 }
-/**
- * ugly hack to get version
- */
-distributions {
-    main {
-        baseName = "zephyr"
-        version = "main"
-    }
+
+distZip {
+    archiveName "zephyr-main.zip"
+}
+
+distTar {
+    archiveName "zephyr-main.tar"
 }
 
 jar {
