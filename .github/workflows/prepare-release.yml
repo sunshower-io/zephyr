@@ -57,15 +57,12 @@ jobs:
         uses: einaregilsson/build-number@v2
         with:
           token: ${{ secrets.github_token }}
-          prefix: zephyr
-
 
 
       # Accessible via ${{ steps.finalVersion.outputs.result }}
       - name: Set Final Version Number
         id: finalVersion
         run: |
-          echo '::set-output name=no_ext::$CURRENT_MAJOR_VERSION.$CURRENT_MINOR_VERSION.$BUILD_NUMBER'
           echo '::set-output name=result::$CURRENT_MAJOR_VERSION.$CURRENT_MINOR_VERSION.$BUILD_NUMBER.Final'
 
 
@@ -74,7 +71,6 @@ jobs:
         uses: einaregilsson/build-number@v2
         with:
           token: ${{ secrets.github_token }}
-          prefix: zephyr
 
       # Accessible via ${{ steps.snapshotVersion.outputs.result }}
       - name: Set Next Snapshot Version Number
