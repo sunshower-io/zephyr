@@ -98,7 +98,7 @@ jobs:
 
       - name: Deploy Bills-Of-Materials
         run: >-
-          mvn install deploy -f bom
+          mvn clean install deploy -f bom
           --settings bom/settings/settings.xml
           -Dsunshower-repo.username=${{secrets.MAVEN_REPOSITORY_USERNAME}}
           -Dsunshower-repo.password=${{secrets.MAVEN_REPOSITORY_PASSWORD}} -e
@@ -113,7 +113,7 @@ jobs:
         with:
           gradle-version: 6.0.1
           arguments: >-
-            assemble build sA publish -i
+            clean assemble build sA javadoc publish -i
             -PmavenRepositoryUsername=${{secrets.MAVEN_REPOSITORY_USERNAME}}
             -PmavenRepositoryPassword=${{secrets.MAVEN_REPOSITORY_PASSWORD}}
             -PmavenRepositoryUrl=${{secrets.MAVEN_RELEASE_URL}} --stacktrace
@@ -129,7 +129,7 @@ jobs:
 
       - name: Deploy Zephyr Maven Plugin
         run: >-
-          mvn install deploy -f tools/zephyr-maven-plugin
+          mvn clean install deploy -f tools/zephyr-maven-plugin
           --settings bom/settings/settings.xml
           -Dsunshower-repo.username=${{secrets.MAVEN_REPOSITORY_USERNAME}}
           -Dsunshower-repo.password=${{secrets.MAVEN_REPOSITORY_PASSWORD}} -e
@@ -249,7 +249,7 @@ jobs:
         with:
           gradle-version: 6.0.1
           arguments: >-
-            assemble build sA publish -i
+            clean assemble build sA javadoc publish -i
             -PmavenRepositoryUsername=${{secrets.MAVEN_REPOSITORY_USERNAME}}
             -PmavenRepositoryPassword=${{secrets.MAVEN_REPOSITORY_PASSWORD}}
             -PmavenRepositoryUrl=${{secrets.MAVEN_REPOSITORY_URL}} --stacktrace
