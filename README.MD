@@ -34,7 +34,15 @@ from the list of plugins on their website or in their application and
 
 ## Contributing
 
-// tk
+### Submitting a Pull Request
+Submitting a pull request will automatically trigger a build, as well as kick off PR linting.
+
+To get the PR linting phase to pass, there are a few requirements:
+1. PR is assigned to the author (happens automatically with the github-actions bot)
+1. Body of PR includes the issue the PR is resolving. This should be the canonical link (e.g. https://github.com/sunshower-io/zephyr/issues/83)
+1. PR is added to Zephyr Development Board (should happen automatically, but may be outstanding issues with workflow)
+
+A reviewer should also be assigned, but this is not required to get the linting to pass.
 
 ## Build Instructions
 
