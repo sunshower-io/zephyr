@@ -34,6 +34,17 @@ from the list of plugins on their website or in their application and
 
 ## Contributing
 
+// tk
+
+## Build Instructions
+
+1.  Install [Maven](https://maven.apache.org/)
+1.  Install [Gradle](https://gradle.org)
+1.  Create a `gradle.properties` file under `$HOME/.gradle/gradle.properties`
+1.  In `$HOME/.gradle/gradle.properties` add the following lines:
+1.  Run `mvn clean install -f bom`
+1.  Run `gradle`
+
 
 
 
