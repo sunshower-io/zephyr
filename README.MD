@@ -1,3 +1,7 @@
+# Status
+
+![Prepare Zephyr Release](https://github.com/sunshower-io/zephyr/workflows/Prepare%20Zephyr%20Release/badge.svg)
+
 # Welcome to Zephyr
 
 Welcome!  Most documentation is hosted over at the
