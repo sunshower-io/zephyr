@@ -85,10 +85,26 @@ subprojects {
 
 
     plugins.withType(JavaPlugin) {
+
+
+        task packageJavadocs(type: Jar, dependsOn: 'javadoc') {
+            classifier 'javadoc'
+            version project.version
+            from javadoc.destinationDir
+        }
+
+        javadoc {
+            source = sourceSets.main.allJava
+            classpath += configurations.runtime
+            options.addBooleanOption('html5', true)
+        }
+
+
         publishing {
             publications {
                 mavenJava(MavenPublication) {
                     from components.java
+                    artifact tasks.packageJavadocs
                     versionMapping {
                         usage('java-api') {
                             fromResolutionOf('runtimeClasspath')
@@ -138,6 +154,13 @@ subprojects {
 }
 build.dependsOn assemble
 
-defaultTasks 'clean', 'assemble', 'build', 'spotlessApply', 'publishToMavenLocal'
+defaultTasks(
+        'clean',
+        'assemble',
+        'build',
+        'spotlessApply',
+        'javadoc',
+        'publishToMavenLocal'
+)
 
 
