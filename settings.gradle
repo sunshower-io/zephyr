@@ -15,6 +15,7 @@ include(
         'plugins:spring:spring-embedded-plugin',
 
         'aire:aire-core',
+        'tools:dll-finder',
 
         'zephyr-main',
         'kernel-modules:zephyr:zephyr-mvel',

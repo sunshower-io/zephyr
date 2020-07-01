@@ -46,10 +46,18 @@
 
         <sevenzipjbinding.version>16.02-2.01</sevenzipjbinding.version>
         <slf4j-api.version>1.7.30</slf4j-api.version>
+        <image4j.version>0.7.2</image4j.version>
     </properties>
 
     <dependencyManagement>
+
         <dependencies>
+
+            <dependency>
+                <groupId>com.github.imcdonagh</groupId>
+                <artifactId>image4j</artifactId>
+                <version>${image4j.version}</version>
+            </dependency>
 
 
             <!--

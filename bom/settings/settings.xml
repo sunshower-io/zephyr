@@ -36,6 +36,17 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <repositories>
+
+                <repository>
+                    <id>mulesoft-releases</id>
+                    <url>https://repository.mulesoft.org/nexus/content/repositories/public/</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                </repository>
                 <repository>
                     <id>sunshower-snapshots</id>
                     <url>http://artifacts.sunshower.io/repository/sunshower-snapshots</url>

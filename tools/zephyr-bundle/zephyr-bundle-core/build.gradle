@@ -1,1 +1,12 @@
 apply plugin: 'java'
+
+repositories {
+    maven {
+        url 'https://repository.mulesoft.org/nexus/content/repositories/public/'
+    }
+}
+
+dependencies {
+    implementation 'com.github.imcdonagh:image4j'
+    testImplementation project(':kernel-tests:kernel-test-common')
+}
