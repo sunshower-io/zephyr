@@ -27,6 +27,9 @@
                             <archive-directory>${project.basedir}/archive</archive-directory>
                             <archive-base>${project.build.directory}/result</archive-base>
                             <executable-file>InstantEyedropper.exe</executable-file>
+                            <executable-configuration>
+                                <version>1.0</version>
+                            </executable-configuration>
                         </configuration>
                     </execution>
 
@@ -42,6 +45,9 @@
                             <archive-directory>${project.basedir}/archive</archive-directory>
                             <archive-base>${project.build.directory}/result</archive-base>
                             <executable-file>test.sh</executable-file>
+                            <executable-configuration>
+                                <version>1.0</version>
+                            </executable-configuration>
                         </configuration>
                     </execution>
 
@@ -56,6 +62,9 @@
                             <archive-directory>${project.basedir}/archive</archive-directory>
                             <archive-base>${project.build.directory}/result</archive-base>
                             <executable-file>test.sh</executable-file>
+                            <executable-configuration>
+                                <version>1.0</version>
+                            </executable-configuration>
                         </configuration>
                     </execution>
                 </executions>

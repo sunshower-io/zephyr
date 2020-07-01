@@ -1,8 +1,7 @@
 package io.zephyr.maven;
 
-import io.zephyr.bundle.sfx.BundleOptions;
+import lombok.Getter;
 import lombok.val;
-import lombok.var;
 import org.apache.maven.plugin.testing.MojoRule;
 import org.junit.*;
 
@@ -14,9 +13,10 @@ import java.nio.file.attribute.BasicFileAttributes;
 
 import static org.junit.Assert.*;
 
-public class SelfExtractingExecutableMojoTest {
+public class SelfExtractingExecutableMojoTest extends AbstractZephyrMavenMojoTest {
 
-  @Rule public MojoRule rule = new MojoRule();
+  @Getter @Rule public MojoRule rule = new MojoRule();
+
   private SelfExtractingExecutableMojo mojo;
 
   @After
@@ -73,13 +73,6 @@ public class SelfExtractingExecutableMojoTest {
     } catch (URISyntaxException e) {
       throw new RuntimeException(e);
     }
-  }
-
-  private SelfExtractingExecutableMojo getSelfExtractingExecutableMojo() throws Exception {
-    File pom = new File("target/test-classes/project-to-test/");
-    assertTrue(pom.exists() && pom.isDirectory());
-
-    return (SelfExtractingExecutableMojo) rule.lookupConfiguredMojo(pom, "generate-sfx");
   }
 
   private void deleteDirectory() throws IOException {

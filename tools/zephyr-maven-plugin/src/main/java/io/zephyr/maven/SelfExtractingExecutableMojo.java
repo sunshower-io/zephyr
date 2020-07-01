@@ -78,6 +78,14 @@ public class SelfExtractingExecutableMojo extends AbstractMojo {
       defaultValue = "${project.build.directory}/sfx-workspace")
   private File workspace;
 
+  @Getter
+  @Setter
+  @Parameter(
+      name = "executable-configuration",
+      alias = "executable-configuration",
+      property = "generate-sfx.executable-configuration")
+  private ExecutableConfiguration executableConfiguration;
+
   @Override
   public void execute() throws MojoExecutionException, MojoFailureException {
     verifyOutputDirectory();
