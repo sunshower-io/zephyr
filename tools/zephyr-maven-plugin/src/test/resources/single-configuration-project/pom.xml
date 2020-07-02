@@ -21,7 +21,52 @@
                     <archive-base>${project.build.directory}/result</archive-base>
                     <executable-file>InstantEyedropper.exe</executable-file>
                     <executable-configuration>
-                        <version>1.0</version>
+                        <version-string>1.0.1</version-string>
+                        <file-version>1.0.2</file-version>
+                        <product-version>1.0.6</product-version>
+                        <manifest-file>${project.basedir}/archive/manifest.xml</manifest-file>
+                        <resource-strings>
+                            <test-resource>whatever1</test-resource>
+                            <test-resource2>whatever2</test-resource2>
+                        </resource-strings>
+
+                        <icon-definition>
+                            <format>ICO</format>
+                            <source>${project.basedir}/archive/installer256px.png</source>
+                            <icons>
+
+                                <icon>
+                                    <size>16px</size>
+                                    <channel>rgba</channel>
+                                </icon>
+
+
+                                <icon>
+                                    <size>32px</size>
+                                    <channel>rgba</channel>
+                                </icon>
+
+                                <icon>
+                                    <size>48px</size>
+                                    <channel>rgba</channel>
+                                </icon>
+
+                                <icon>
+                                    <size>32px</size>
+                                    <channel>8bit</channel>
+                                </icon>
+
+                                <icon>
+                                    <size>24px</size>
+                                    <channel>8bit</channel>
+                                </icon>
+
+                                <icon>
+                                    <size>16px</size>
+                                    <channel>8bit</channel>
+                                </icon>
+                            </icons>
+                        </icon-definition>
                     </executable-configuration>
                 </configuration>
             </plugin>
