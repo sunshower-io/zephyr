@@ -2,7 +2,6 @@ package io.zephyr.bundle.linux;
 
 import static io.zephyr.bundle.sfx.IOUtilities.checkDirectory;
 import static io.zephyr.bundle.sfx.IOUtilities.checkFile;
-import static java.lang.String.format;
 
 import io.zephyr.bundle.sfx.BundleOptions;
 import io.zephyr.bundle.sfx.Log;
@@ -23,18 +22,18 @@ public class WarpSelfExecutingLinuxBundler implements SelfExecutingBundler {
     if (!exists(workspaceDirectory)) {
       val currentFile = getCodeLocation();
       try (val inputStream = currentFile.openStream()) {
-        log.info(format("Copying file '%s' to '%s'", "linux/exe/warp", file));
+        log.info("Copying file '%s' to '%s'", "linux/exe/warp", file);
         Files.copy(inputStream, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
-        log.info(format("Successfully copied file '%s' to '%s'", "linux/exe/warp", file));
-        log.info(format("Making file '%s' executable...", file));
+        log.info("Successfully copied file '%s' to '%s'", "linux/exe/warp", file);
+        log.info("Making file '%s' executable...", file);
         setExecutable(file.toPath());
-        log.info(format("Successfully set '%s' to be executable", file));
+        log.info("Successfully set '%s' to be executable", file);
         return file;
       } catch (IOException ex) {
         throw new IllegalArgumentException("Failed to extract bundler: ", ex);
       }
     } else {
-      log.info(format("File '%s' already exists--not re-extracting", file.getAbsolutePath()));
+      log.info("File '%s' already exists--not re-extracting", file.getAbsolutePath());
       return file;
     }
   }
@@ -91,18 +90,17 @@ public class WarpSelfExecutingLinuxBundler implements SelfExecutingBundler {
 
   private void logOptions(BundleOptions options, Log log) {
     log.info(
-        format(
-            "Attempting to generate self-extracting archive with parameters: "
-                + "\t archive source directory: %s\n"
-                + "\t executable file: %s\n"
-                + "\t archive file base: %s\n"
-                + "\t target platform: %s\n"
-                + "\t target architecture: %s\n ",
-            options.getArchiveDirectory(),
-            options.getExecutableFile(),
-            options.getOutputFile(),
-            options.getPlatform(),
-            options.getArchitecture()));
+        "Attempting to generate self-extracting archive with parameters: "
+            + "\t archive source directory: %s\n"
+            + "\t executable file: %s\n"
+            + "\t archive file base: %s\n"
+            + "\t target platform: %s\n"
+            + "\t target architecture: %s\n ",
+        options.getArchiveDirectory(),
+        options.getExecutableFile(),
+        options.getOutputFile(),
+        options.getPlatform(),
+        options.getArchitecture());
   }
 
   private void doRun(
@@ -114,7 +112,7 @@ public class WarpSelfExecutingLinuxBundler implements SelfExecutingBundler {
 
     try {
       val args = getInputArguments(options, executableFile, archiveDirectory, actualOutputFile);
-      log.info(format("Generation command: \n%s\n", String.join(" ", args)));
+      log.info("Generation command: \n%s\n", String.join(" ", args));
       val procBuilder = new ProcessBuilder(args).inheritIO();
       val process = procBuilder.start();
       val result = process.waitFor();
@@ -122,9 +120,9 @@ public class WarpSelfExecutingLinuxBundler implements SelfExecutingBundler {
         throw new IllegalArgumentException("Error: failed to create self-extracting archive");
       }
     } catch (IOException ex) {
-      log.warn(format("Failed to create self-extracting archive.  Reason: %s", ex.getMessage()));
+      log.warn("Failed to create self-extracting archive.  Reason: %s", ex.getMessage());
     } catch (InterruptedException e) {
-      log.warn(format("Interrupted.  Reason: %s", e.getMessage()));
+      log.warn("Interrupted.  Reason: %s", e.getMessage());
     }
   }
 

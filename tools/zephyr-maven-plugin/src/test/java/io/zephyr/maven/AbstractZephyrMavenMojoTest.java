@@ -2,8 +2,6 @@ package io.zephyr.maven;
 
 import java.io.File;
 
-import lombok.val;
-import org.apache.maven.plugin.MojoExecution;
 import org.apache.maven.plugin.testing.MojoRule;
 
 import static org.junit.Assert.assertTrue;

@@ -1,8 +1,6 @@
 package io.zephyr.maven;
 
-import io.zephyr.bundle.sfx.BundleOptions;
-import io.zephyr.bundle.sfx.Log;
-import io.zephyr.bundle.sfx.SelfExecutingBundler;
+import io.zephyr.bundle.sfx.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
@@ -26,7 +24,8 @@ import static java.lang.String.format;
     name = "generate-sfx",
     defaultPhase = LifecyclePhase.PROCESS_RESOURCES,
     executionStrategy = "always")
-public class SelfExtractingExecutableMojo extends AbstractMojo {
+public class SelfExtractingExecutableMojo extends AbstractMojo
+    implements SelfExtractingExecutableConfiguration {
 
   @Getter
   @Setter
@@ -87,10 +86,15 @@ public class SelfExtractingExecutableMojo extends AbstractMojo {
   private ExecutableConfiguration executableConfiguration;
 
   @Override
+  public ExecutableFileConfiguration getExecutableFileConfiguration() {
+    return executableConfiguration;
+  }
+
+  @Override
   public void execute() throws MojoExecutionException, MojoFailureException {
     verifyOutputDirectory();
     val loader = ServiceLoader.load(SelfExecutingBundler.class);
-    val platform = getPlatform();
+    val platform = resolvePlatform();
     val architecture = getArchitecture();
 
     for (val service : loader) {
@@ -121,7 +125,7 @@ public class SelfExtractingExecutableMojo extends AbstractMojo {
     return BundleOptions.Architecture.X64;
   }
 
-  BundleOptions.Platform getPlatform() throws MojoFailureException {
+  BundleOptions.Platform resolvePlatform() throws MojoFailureException {
     getLog().info("Looking up current platform architecture...");
     BundleOptions.Platform platform = null;
     if (SystemUtils.IS_OS_MAC_OSX) {
@@ -275,18 +279,18 @@ public class SelfExtractingExecutableMojo extends AbstractMojo {
   class SimpleLogger implements Log {
 
     @Override
-    public void warn(String s) {
-      getLog().warn(s);
+    public void warn(String s, Object... params) {
+      getLog().warn(format(s, params));
     }
 
     @Override
-    public void debug(String s) {
-      getLog().debug(s);
+    public void debug(String s, Object... params) {
+      getLog().debug(format(s, params));
     }
 
     @Override
-    public void info(String s) {
-      getLog().info(s);
+    public void info(String s, Object... params) {
+      getLog().info(format(s, params));
     }
   }
 }

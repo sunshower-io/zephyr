@@ -2,7 +2,7 @@ package io.zephyr.bundle.sfx.icons;
 
 import lombok.val;
 
-public class IconComponent {
+public interface IconDefinition {
 
   enum Size {
     Size16px("16px", 16),
@@ -34,7 +34,7 @@ public class IconComponent {
 
     public static Channel fromString(String value) {
       val normalized = value.toLowerCase();
-      switch (value) {
+      switch (normalized) {
         case "rgba":
           return Channel.RGBA;
         case "8bit":
@@ -44,35 +44,15 @@ public class IconComponent {
     }
   }
 
-  /** doesn't seem to be a way to provide custom mappings to enums */
-  private Size _size;
+  /**
+   * @return the (square) size of this icon. Right now this is an enumeration instead of an integral
+   *     value as it's not clear how arbitrary sizes are supported by the relevant operating systems
+   */
+  Size getSize();
 
-  private String size;
-
-  private String channel;
-  private Channel _channel;
-
-  public void setSize(String size) {
-    this.size = size;
-    this._size = Size.valueOf(size);
-  }
-
-  public Size getSize() {
-    if (_size == null && size != null) {
-      setSize(size);
-    }
-    return _size;
-  }
-
-  public void setChannel(String channel) {
-    this.channel = channel;
-    this._channel = Channel.valueOf(channel);
-  }
-
-  public Channel getChannel() {
-    if (_channel == null && channel != null) {
-      setChannel(channel);
-    }
-    return _channel;
-  }
+  /**
+   * @return the channel of this icon. ICNS is richer than ICO, but we're supporting the
+   *     lowest-common denominator for now
+   */
+  Channel getChannel();
 }

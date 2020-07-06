@@ -1,16 +1,16 @@
 package io.zephyr.maven;
 
+import io.zephyr.bundle.sfx.ExecutableFileConfiguration;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.maven.plugins.annotations.Parameter;
 
 import java.io.File;
-import java.nio.file.Path;
 import java.util.Map;
 
 @ToString
-public class ExecutableConfiguration {
+public class ExecutableConfiguration implements ExecutableFileConfiguration {
 
   /** the version string to set in an executable */
   @Getter
@@ -56,5 +56,5 @@ public class ExecutableConfiguration {
       name = "icon-definition",
       alias = "icon-definition",
       property = "generate-sfx.icon-definition")
-  private IconDefinition iconDefinition;
+  private Icons iconDefinition;
 }
