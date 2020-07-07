@@ -1,5 +1,7 @@
 package io.zephyr.bundle.sfx.windows;
 
+import static java.lang.String.format;
+
 import io.zephyr.bundle.sfx.IOUtilities;
 import io.zephyr.bundle.sfx.Log;
 import io.zephyr.bundle.sfx.SelfExtractingExecutableConfiguration;
@@ -7,7 +9,6 @@ import io.zephyr.bundle.sfx.formats.ICO;
 import io.zephyr.bundle.sfx.icons.CompositeIconDefinition;
 import io.zephyr.bundle.sfx.icons.IconDefinition;
 import io.zephyr.bundle.sfx.icons.ImageBundler;
-
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -15,13 +16,9 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-
+import javax.imageio.ImageIO;
 import lombok.val;
 import net.sf.image4j.codec.ico.ICOEncoder;
-
-import javax.imageio.ImageIO;
-
-import static java.lang.String.format;
 
 public class ICOBundler implements ImageBundler {
 
@@ -49,6 +46,26 @@ public class ICOBundler implements ImageBundler {
     val icons = ICO.resize(image, getSizeValues(iconDefinition), log);
 
     val actualTempFile = tempFile.resolve(UUID.randomUUID().toString() + ".ico").toFile();
+    try {
+      if (!actualTempFile.exists()) {
+        val parent = actualTempFile.getParentFile();
+        if (!(parent.exists() || parent.mkdirs())) {
+          throw new IllegalArgumentException(
+              format(
+                  "Error: failed to create '%s'--do you have appropriate permissions in its parent directory ('%s')?",
+                  parent, parent.getParent()));
+        }
+        if (!actualTempFile.createNewFile()) {
+          throw new IllegalArgumentException(
+              format(
+                  "Error: failed to create '%s'--do you have appropriate permissions in its parent directory ('%s')?",
+                  actualTempFile, actualTempFile.getParent()));
+        }
+      }
+    } catch (IOException e) {
+      log.warn("Failed to create file '%s', reason: '%s'", actualTempFile, e.getMessage());
+      throw new IllegalArgumentException(e);
+    }
 
     try {
       log.info("Writing intermediate file to '%s'...", actualTempFile);
