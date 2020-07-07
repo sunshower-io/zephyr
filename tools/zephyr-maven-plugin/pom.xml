@@ -205,30 +205,6 @@
         </pluginManagement>
         <plugins>
 
-<!--            <plugin>-->
-<!--                <groupId>org.codehaus.mojo</groupId>-->
-<!--                <artifactId>build-helper-maven-plugin</artifactId>-->
-<!--                <version>${build-helper-maven-plugin.version}</version>-->
-<!--                <executions>-->
-<!--                    <execution>-->
-<!--                        <id>attach-artifacts</id>-->
-<!--                        <phase>package</phase>-->
-<!--                        <goals>-->
-<!--                            <goal>attach-artifact</goal>-->
-<!--                        </goals>-->
-<!--                        <configuration>-->
-<!--                            <artifacts>-->
-<!--                                <artifact>-->
-<!--                                    <file>some file</file>-->
-<!--                                    <type>extension of your file</type>-->
-<!--                                    <classifier>site</classifier>-->
-<!--                                </artifact>-->
-<!--                            </artifacts>-->
-<!--                        </configuration>-->
-<!--                    </execution>-->
-<!--                </executions>-->
-<!--            </plugin>-->
-
 
             <plugin>
                 <artifactId>maven-site-plugin</artifactId>

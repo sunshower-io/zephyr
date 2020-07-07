@@ -1,0 +1,22 @@
+<project>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>io.zephyr</groupId>
+    <artifactId>zephyr-bom</artifactId>
+    <version>2.0.53-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <parent>
+        <groupId>io.zephyr</groupId>
+        <artifactId>zephyr-bom</artifactId>
+        <relativePath>../../../bom</relativePath>
+        <version>2.0.53-SNAPSHOT</version>
+    </parent>
+
+    <properties>
+        <zephyr.version>2.0.53-SNAPSHOT</zephyr.version>
+    </properties>
+
+    <modules>
+        <module>simple-executable</module>
+    </modules>
+
+</project>

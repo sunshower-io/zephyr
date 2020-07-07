@@ -12,6 +12,7 @@ public interface IconDefinition {
     Size24px("24px", 24),
     Size32px("32px", 32),
     Size48px("48px", 48),
+    Size96px("96px", 96),
     Size256px("256px", 256);
 
     public static Size fromString(String value) {
