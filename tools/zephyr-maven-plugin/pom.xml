@@ -205,7 +205,6 @@
         </pluginManagement>
         <plugins>
 
-
             <plugin>
                 <artifactId>maven-site-plugin</artifactId>
                 <version>${maven-site-plugin.version}</version>
@@ -257,6 +256,28 @@
                 </executions>
             </plugin>
 
+<!--            <plugin>-->
+<!--                <groupId>org.codehaus.mojo</groupId>-->
+<!--                <artifactId>build-helper-maven-plugin</artifactId>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <id>attach-artifacts</id>-->
+<!--                        <phase>package</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>attach-artifact</goal>-->
+<!--                        </goals>-->
+<!--                        <configuration>-->
+<!--                            <artifacts>-->
+<!--                                <artifact>-->
+<!--                                    <file>${project.build.directory}/site-assembly.zip</file>-->
+<!--                                    <type>zip</type>-->
+<!--                                    <classifier>site</classifier>-->
+<!--                                </artifact>-->
+<!--                            </artifacts>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
