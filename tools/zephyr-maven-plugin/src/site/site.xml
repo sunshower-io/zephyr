@@ -1,0 +1,25 @@
+<project name="Zephyr Maven Plugin">
+
+    <bannerLeft>
+        <name>Zephyr Maven Plugin</name>
+        <src>/images/installer256px.png</src>
+        <href>https://zephyr.sunshower.io/</href>
+    </bannerLeft>
+
+
+
+    <skin>
+        <groupId>org.apache.maven.skins</groupId>
+        <artifactId>maven-fluido-skin</artifactId>
+        <version>1.8</version>
+    </skin>
+
+    <body>
+        <head>
+            <![CDATA[<link rel="stylesheet" href="./css/site.css"></link>]]>
+        </head>
+        <menu name="Overview">
+            <item name="introduction" href="introduction.html" />
+        </menu>
+    </body>
+</project>
