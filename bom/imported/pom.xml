@@ -49,6 +49,7 @@
         <image4j.version>0.7.2</image4j.version>
         <imageio-batik.version>3.5</imageio-batik.version>
         <batik-transcoder.version>1.6-1</batik-transcoder.version>
+        <zip4j.version>2.6.1</zip4j.version>
     </properties>
 
     <dependencyManagement>
@@ -64,6 +65,11 @@
                 <groupId>org.apache.xmlgraphics</groupId>
                 <artifactId>batik-transcoder</artifactId>
                 <version>1.9</version>
+            </dependency>
+            <dependency>
+                <groupId>net.lingala.zip4j</groupId>
+                <artifactId>zip4j</artifactId>
+                <version>${zip4j.version}</version>
             </dependency>
 
 

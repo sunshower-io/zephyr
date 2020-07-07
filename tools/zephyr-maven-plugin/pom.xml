@@ -110,6 +110,24 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+    <repositories>
+
+
+        <repository>
+            <id>mulesoft-cache</id>
+            <url>https://repository.mulesoft.org/nexus/content/repositories/public/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>sunshower-cache</id>
+            <url>http://artifacts.sunshower.io/repository/sunshower-cache</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
 
     <build>
         <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->

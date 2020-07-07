@@ -18,7 +18,7 @@ public class Icon implements IconDefinition {
 
   public void setSize(String size) {
     this.size = size;
-    this._size = Size.valueOf(size);
+    this._size = Size.fromString(size);
   }
 
   public Size getSize() {
@@ -30,7 +30,7 @@ public class Icon implements IconDefinition {
 
   public void setChannel(String channel) {
     this.channel = channel;
-    this._channel = Channel.valueOf(channel);
+    this._channel = Channel.fromString(channel);
   }
 
   public Channel getChannel() {

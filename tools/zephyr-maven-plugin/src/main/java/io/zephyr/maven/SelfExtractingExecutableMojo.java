@@ -97,6 +97,38 @@ public class SelfExtractingExecutableMojo extends AbstractMojo
     val platform = resolvePlatform();
     val architecture = getArchitecture();
 
+    val executableFile = generateExecutable(loader, platform, architecture);
+
+    editExecutable(executableFile, platform, architecture);
+  }
+
+  private void editExecutable(
+      File executableFile,
+      BundleOptions.Platform platform,
+      BundleOptions.Architecture architecture) {
+    val log = getLog();
+    if (executableConfiguration == null) {
+      log.info("No additional executable configuration specified--not modifying");
+    }
+
+    for (val service : ServiceLoader.load(ExecutableFileIconService.class)) {
+      log.info(
+          format(
+              "Checking service '%s' against platform/architecture combination %s/%s",
+              service, platform, architecture));
+
+      if (service.isApplicableTo(platform, architecture)) {
+        log.info(format("Service is applicable to %s/%s", platform, architecture));
+        service.setIcons(this, new SimpleLogger());
+      }
+    }
+  }
+
+  private File generateExecutable(
+      ServiceLoader<SelfExecutingBundler> loader,
+      BundleOptions.Platform platform,
+      BundleOptions.Architecture architecture)
+      throws MojoFailureException {
     for (val service : loader) {
       if (service.isApplicableTo(platform, architecture)) {
         val actualPlatform = parsePlatformOption();
@@ -105,10 +137,12 @@ public class SelfExtractingExecutableMojo extends AbstractMojo
                 format(
                     "applying service '%s' to platform '%s', arch '%s'",
                     service, actualPlatform, architecture));
-        handle(service, actualPlatform, architecture);
-        break;
+        return handle(service, actualPlatform, architecture);
       }
     }
+    throw new MojoFailureException(
+        format(
+            "Failed to resolve any applicable service loaders for this platform (%s)", platform));
   }
 
   BundleOptions getBundleOptions(
@@ -164,16 +198,6 @@ public class SelfExtractingExecutableMojo extends AbstractMojo
         format(
             "Error: platform '%s' is not supported.  Must be one of [%s]",
             platform, bundlePlatformNames()));
-  }
-
-  Path resolveFile(File source, String name) throws MojoFailureException {
-
-    if (source == null) {
-      throw new MojoFailureException(format("Error:  file '%s' must not be null", name));
-    }
-    checkExists(source, name);
-    checkIsFile(source, name);
-    return source.getAbsoluteFile().toPath();
   }
 
   void verifyOutputDirectory() throws MojoFailureException {
@@ -235,14 +259,6 @@ public class SelfExtractingExecutableMojo extends AbstractMojo
     }
   }
 
-  private void checkIsFile(File source, String name) throws MojoFailureException {
-    if (!source.isFile()) {
-      val message = format("%s at location %s is not a file.  Can't continue", name, source);
-      getLog().warn(message);
-      throw new MojoFailureException(message);
-    }
-  }
-
   private void checkExists(File source, String name) throws MojoFailureException {
     getLog().info(format("attempting to resolve %s at %s", name, source));
     if (!source.exists()) {
@@ -262,14 +278,14 @@ public class SelfExtractingExecutableMojo extends AbstractMojo
     return result;
   }
 
-  private void handle(
+  private File handle(
       SelfExecutingBundler service,
       BundleOptions.Platform platform,
       BundleOptions.Architecture architecture)
       throws MojoFailureException {
     val log = new SimpleLogger();
     val executable = service.load(workspace, log);
-    service.create(getBundleOptions(platform, architecture, executable), log);
+    return service.create(getBundleOptions(platform, architecture, executable), log);
   }
 
   private Path createOutputFile() throws MojoFailureException {

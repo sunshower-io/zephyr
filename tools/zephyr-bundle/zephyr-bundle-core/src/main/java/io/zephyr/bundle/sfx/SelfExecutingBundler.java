@@ -6,5 +6,5 @@ public interface SelfExecutingBundler extends PlatformSpecificService {
 
   File load(File workspaceDirectory, Log log);
 
-  void create(BundleOptions options, Log log);
+  File create(BundleOptions options, Log log);
 }

@@ -34,6 +34,11 @@ jar {
     from("$buildDir/$binPath/wine.zip"){
         into "$binPath"
     }
+
+
+    from("$buildDir/$binPath/rcedit.exe"){
+        into "$binPath"
+    }
 }
 
 task downloadWarp(type: Download) {
@@ -52,11 +57,23 @@ task downloadWine(type: Download) {
     useETag true
 }
 
+task downloadRcEdit(type: Download) {
+    src rcEditDownloadURL
+    dest "${buildDir}/$binPath/rcedit.exe"
+    overwrite false
+    onlyIfModified true
+    useETag true
+}
+
 task unpackDependencies(type: Copy) {
     dependsOn configurations.executable
     from configurations.executable
     into "${project.buildDir}"
 }
 
-assemble.dependsOn "downloadWarp", 'downloadWine'
+assemble.dependsOn(
+        "downloadWarp",
+        "downloadWine",
+        "downloadRcEdit"
+)
 assemble.dependsOn unpackDependencies

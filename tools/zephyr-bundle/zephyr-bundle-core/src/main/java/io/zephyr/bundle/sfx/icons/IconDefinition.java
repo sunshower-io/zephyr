@@ -16,7 +16,7 @@ public interface IconDefinition {
 
     public static Size fromString(String value) {
       for (val sizeEl : Size.values()) {
-        if (sizeEl.size.equals(value)) {
+        if (sizeEl.size.equalsIgnoreCase(value)) {
           return sizeEl;
         }
       }

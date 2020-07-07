@@ -10,7 +10,7 @@ repositories {
 
 dependencies {
 
-
+    implementation 'net.lingala.zip4j:zip4j'
     implementation 'com.github.imcdonagh:image4j'
     implementation'org.apache.xmlgraphics:batik-transcoder'
     implementation 'com.twelvemonkeys.imageio:imageio-batik'

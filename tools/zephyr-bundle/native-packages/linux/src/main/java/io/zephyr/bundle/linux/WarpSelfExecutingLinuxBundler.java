@@ -47,7 +47,7 @@ public class WarpSelfExecutingLinuxBundler implements SelfExecutingBundler {
   }
 
   @Override
-  public void create(BundleOptions options, Log log) {
+  public File create(BundleOptions options, Log log) {
     logOptions(options, log);
     val archiveDirectory = options.getArchiveDirectory();
     val executableFile = archiveDirectory.resolve(options.getExecutableFile());
@@ -60,6 +60,7 @@ public class WarpSelfExecutingLinuxBundler implements SelfExecutingBundler {
     val actualOutputFile = getOutputFile(options.getOutputFile(), options.getPlatform());
 
     doRun(options, log, executableFile, archiveDirectory, actualOutputFile);
+    return actualOutputFile.toFile();
   }
 
   private String getArchitectureString(BundleOptions options) {

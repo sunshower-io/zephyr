@@ -2,10 +2,16 @@ package io.zephyr.bundle.sfx;
 
 import static java.lang.String.format;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import net.lingala.zip4j.ZipFile;
 
 public class IOUtilities {
+
+  public static void unzipDirectory(Path zipfile, Path destination) throws IOException {
+    new ZipFile(zipfile.toFile()).extractAll(destination.toAbsolutePath().toString());
+  }
 
   public static void checkDirectory(Path directory, Log log) {
 
