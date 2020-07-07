@@ -1,5 +1,8 @@
 package io.zephyr.bundle.sfx.icons;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import lombok.val;
 
 public interface IconDefinition {
@@ -8,7 +11,23 @@ public interface IconDefinition {
     Size16px("16px", 16),
     Size24px("24px", 24),
     Size32px("32px", 32),
-    Size48px("48px", 48);
+    Size48px("48px", 48),
+    Size256px("256px", 256);
+
+    public static Size fromString(String value) {
+      for (val sizeEl : Size.values()) {
+        if (sizeEl.size.equals(value)) {
+          return sizeEl;
+        }
+      }
+      throw new IllegalArgumentException("Error: invalid size: " + value);
+    }
+
+    public static List<Size> all() {
+      val results = new ArrayList<>(List.of(values()));
+      Collections.reverse(results);
+      return Collections.unmodifiableList(results);
+    }
 
     final int pixels;
     final String size;
@@ -18,13 +37,12 @@ public interface IconDefinition {
       this.pixels = pixels;
     }
 
-    public static Size fromString(String value) {
-      for (val sizeEl : Size.values()) {
-        if (sizeEl.size.equals(value)) {
-          return sizeEl;
-        }
-      }
-      throw new IllegalArgumentException("Error: invalid size: " + value);
+    public int getWidth() {
+      return pixels;
+    }
+
+    public int getHeight() {
+      return pixels;
     }
   }
 
