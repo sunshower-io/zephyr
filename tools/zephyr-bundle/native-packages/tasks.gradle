@@ -8,8 +8,6 @@ dependencies {
 }
 
 
-
-
 configurations {
     executable {
         extendsFrom api
@@ -35,9 +33,16 @@ jar {
     }
 }
 
-task download(type: Download) {
-    src downloadURL
+task downloadWarp(type: Download) {
+    src warpDownloadURL
     dest "${buildDir}/$binPath/warp"
+    overwrite true
+    onlyIfModified true
+}
+
+task downloadWine(type: Download) {
+    src wineDownloadURL
+    dest "${buildDir}/$binPath/wine.zip"
     overwrite true
 }
 
@@ -47,5 +52,5 @@ task unpackDependencies(type: Copy) {
     into "${project.buildDir}"
 }
 
-assemble.dependsOn "download"
+assemble.dependsOn "downloadWarp", 'downloadWine'
 assemble.dependsOn unpackDependencies

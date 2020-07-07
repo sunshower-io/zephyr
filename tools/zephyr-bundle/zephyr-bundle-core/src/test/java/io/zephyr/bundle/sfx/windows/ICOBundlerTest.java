@@ -11,7 +11,6 @@ import io.sunshower.test.common.Tests;
 import io.zephyr.bundle.sfx.ExecutableFileConfiguration;
 import io.zephyr.bundle.sfx.Log;
 import io.zephyr.bundle.sfx.SelfExtractingExecutableConfiguration;
-import io.zephyr.bundle.sfx.formats.ICO;
 import io.zephyr.bundle.sfx.icons.CompositeIconDefinition;
 import io.zephyr.bundle.sfx.icons.IconDefinition;
 import io.zephyr.bundle.sfx.icons.ImageBundler;
