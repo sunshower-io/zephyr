@@ -17,11 +17,11 @@ user's system to function.
 
 |                            | Windows | Mac         | Linux |
 |----------------------------|---------|-------------|-------|
-| Self-Extracting Executable | Yes     | Yes         | Yes   |
+| Self-Extracting Executable | Yes     | In-Progress | Yes   |
 | Code-Signing               | Yes     | In-Progress | Yes   |
-| Executable Icon            | Yes     | Yes         | Yes   |
-| Executable Metadata        | Yes     | Yes         | Yes   |
-| Executable Run Permissions | Yes     | Yes         | Yes   |
+| Executable Icon            | Yes     | In-Progress | Yes   |
+| Executable Metadata        | Yes     | In-Progress | Yes   |
+| Executable Run Permissions | Yes     | In-Progress | Yes   |
 
 Additionally, Zephyr Installer Plugins can generate ICO and ICNS icons
 from PNG, SVG, and other formats.
@@ -31,7 +31,7 @@ from PNG, SVG, and other formats.
 
 |        | Mac OSX    | Windows    | Linux      |
 |--------|------------|------------|------------|
-| Maven  | Yes        | Yes        | Yes        |
+| Maven  | In-Progress| Yes        | Yes        |
 | Gradle | Planned    | Planned    | Planned    |
 | Bazel  | Commercial | Commercial | Commercial |
 | Ant    | Commercial | Commercial | Commercial |

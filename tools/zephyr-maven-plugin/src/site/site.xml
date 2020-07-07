@@ -13,13 +13,37 @@
         <artifactId>maven-fluido-skin</artifactId>
         <version>1.8</version>
     </skin>
-
+    <custom>
+        <fluidoSkin>
+            <topBarEnabled>true</topBarEnabled>
+<!--            <sideBarEnabled></sideBarEnabled>-->
+        </fluidoSkin>
+    </custom>
     <body>
         <head>
             <![CDATA[<link rel="stylesheet" href="./css/site.css"></link>]]>
         </head>
         <menu name="Overview">
-            <item name="introduction" href="introduction.html" />
+            <item name="Home" href="index.html" />
+            <item name="Sitemap" href="sitemap.html" />
+        </menu>
+        <menu name="Maven">
+            <item name="Getting Started" href="maven/getting-started.html"/>
+        </menu>
+        <menu name="Maven Plugin Details">
+            <item name="Project Info" href="project-info.html"/>
+            <item name="Dependencies" href="dependencies.html"/>
+            <item name="Dependency Info" href="dependency-info.html"/>
+            <item name="Distribution Management" href="distribution-management.html"/>
+            <item name="Generate SFX Mojo" href="generate-sfx-mojo.html"/>
+
+            <item name="Help" href="help-mojo.html"/>
+
+            <item name="Summary" href="summary.html"/>
+            <item name="Plugins" href="plugins.html"/>
+            <item name="Plugin Info" href="plugin-info.html"/>
+            <item name="Plugin Management" href="plugin-management.html"/>
+            <item name="Reports" href="project-reports.html"/>
         </menu>
     </body>
 </project>
