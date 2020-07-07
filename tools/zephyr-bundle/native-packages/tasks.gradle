@@ -28,7 +28,10 @@ repositories {
 }
 
 jar {
-    from("$buildDir/$binPath/warp") {
+    from("$buildDir/$binPath/warp"){
+        into "$binPath"
+    }
+    from("$buildDir/$binPath/wine.zip"){
         into "$binPath"
     }
 }
@@ -36,14 +39,17 @@ jar {
 task downloadWarp(type: Download) {
     src warpDownloadURL
     dest "${buildDir}/$binPath/warp"
-    overwrite true
+    overwrite false
     onlyIfModified true
+    useETag true
 }
 
 task downloadWine(type: Download) {
     src wineDownloadURL
     dest "${buildDir}/$binPath/wine.zip"
-    overwrite true
+    overwrite false
+    onlyIfModified true
+    useETag true
 }
 
 task unpackDependencies(type: Copy) {
