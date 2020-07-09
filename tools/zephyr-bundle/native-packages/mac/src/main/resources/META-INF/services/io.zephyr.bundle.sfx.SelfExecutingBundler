@@ -1,1 +1,1 @@
-io.zephyr.bundle.osx.SelfExecutingBundler
+io.zephyr.bundle.osx.WarpSelfExtractingMacBundler
