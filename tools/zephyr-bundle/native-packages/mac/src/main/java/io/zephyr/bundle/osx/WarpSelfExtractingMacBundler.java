@@ -1,19 +1,19 @@
 package io.zephyr.bundle.osx;
 
+import io.zephyr.bundle.sfx.AbstractSelfExecutingBundler;
 import io.zephyr.bundle.sfx.BundleOptions;
-import io.zephyr.bundle.sfx.Log;
 import io.zephyr.bundle.sfx.SelfExecutingBundler;
-import java.io.File;
 
-public class WarpSelfExtractingMacBundler implements SelfExecutingBundler {
-  @Override
-  public File load(File workspaceDirectory, Log log) {
-    return null;
+public class WarpSelfExtractingMacBundler extends AbstractSelfExecutingBundler
+    implements SelfExecutingBundler {
+  static final String RESOURCE_PATH = "exe/mac/warp";
+
+  public WarpSelfExtractingMacBundler() {
+    super(WarpSelfExtractingMacBundler.class);
   }
 
-  @Override
-  public File create(BundleOptions options, Log log) {
-    return null;
+  protected String getBundledResourcePath() {
+    return RESOURCE_PATH;
   }
 
   @Override
