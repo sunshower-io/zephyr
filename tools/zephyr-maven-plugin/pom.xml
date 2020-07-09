@@ -62,6 +62,13 @@
             <version>${project.version}</version>
         </dependency>
 
+
+        <dependency>
+            <groupId>io.zephyr.bundle</groupId>
+            <artifactId>osx</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>io.zephyr.bundle</groupId>
             <artifactId>linux</artifactId>

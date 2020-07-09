@@ -3,7 +3,6 @@ package io.zephyr.bundle.osx;
 import io.zephyr.bundle.sfx.BundleOptions;
 import io.zephyr.bundle.sfx.Log;
 import io.zephyr.bundle.sfx.SelfExecutingBundler;
-
 import java.io.File;
 
 public class WarpSelfExtractingMacBundler implements SelfExecutingBundler {
