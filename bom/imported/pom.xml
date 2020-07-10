@@ -50,6 +50,7 @@
         <imageio-batik.version>3.5</imageio-batik.version>
         <batik-transcoder.version>1.6-1</batik-transcoder.version>
         <zip4j.version>2.6.1</zip4j.version>
+        <jsign-core.version>3.1</jsign-core.version>
     </properties>
 
     <dependencyManagement>
@@ -79,6 +80,11 @@
                 <version>${image4j.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>net.jsign</groupId>
+                <artifactId>jsign-core</artifactId>
+                <version>${jsign-core.version}</version>
+            </dependency>
 
             <!--
             self-extracting installer executables

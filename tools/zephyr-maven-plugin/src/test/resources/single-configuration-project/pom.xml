@@ -69,6 +69,14 @@
                         </icon-definition>
                     </executable-configuration>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>sign-executable</id>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
