@@ -20,6 +20,18 @@
                     <archive-directory>${project.basedir}/archive</archive-directory>
                     <archive-base>${project.build.directory}/result</archive-base>
                     <executable-file>test.bat</executable-file>
+                    <signature>
+                        <algorithm>SHA512</algorithm>
+                        <program>
+                            <name>hello</name>
+                            <url>www.frapper.com</url>
+                        </program>
+
+                        <key-store>
+                            <type>JKS</type>
+                            <password>test-password</password>
+                        </key-store>
+                    </signature>
 
                     <executable-configuration>
                         <version-string>1.0.1</version-string>

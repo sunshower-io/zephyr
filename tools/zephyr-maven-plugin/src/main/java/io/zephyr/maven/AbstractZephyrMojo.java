@@ -8,6 +8,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import java.io.File;
 
 public abstract class AbstractZephyrMojo extends AbstractMojo {
+
   /**
    * since the actual file-name is platform-dependent, this property constitutes the base path of
    * the archive (such as the "target/aire" component of the path "target/aire.exe")
@@ -66,4 +67,9 @@ public abstract class AbstractZephyrMojo extends AbstractMojo {
       alias = "executable-configuration",
       property = "generate-sfx.executable-configuration")
   protected ExecutableConfiguration executableConfiguration;
+
+  @Getter
+  @Setter
+  @Parameter(name = "signature", alias = "signature", property = "generate-sfx.signature")
+  protected PlatformSignatureConfiguration signature;
 }

@@ -82,6 +82,11 @@
 
             <dependency>
                 <groupId>net.jsign</groupId>
+                <artifactId>jsign</artifactId>
+                <version>${jsign-core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.jsign</groupId>
                 <artifactId>jsign-core</artifactId>
                 <version>${jsign-core.version}</version>
             </dependency>

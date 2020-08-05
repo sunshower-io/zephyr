@@ -12,6 +12,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ServiceLoader;
+import java.util.logging.Level;
 import lombok.val;
 
 public class LinuxWindowsExecutableFileIconService implements ExecutableFileIconService {
@@ -74,15 +75,16 @@ public class LinuxWindowsExecutableFileIconService implements ExecutableFileIcon
     if (iconFile == null) {
       return;
     }
-    val processBuilder =
-        new ProcessBuilder()
-            .inheritIO()
-            .command(
-                emulator.toAbsolutePath().toString(),
-                emulatedExecutable.toAbsolutePath().toString(),
-                executableFile,
-                "--set-icon",
-                iconFile.getAbsolutePath());
+    val processBuilder = new ProcessBuilder();
+    if (log.getLevel() == Level.FINEST) {
+      processBuilder.inheritIO();
+    }
+    processBuilder.command(
+        emulator.toAbsolutePath().toString(),
+        emulatedExecutable.toAbsolutePath().toString(),
+        executableFile,
+        "--set-icon",
+        iconFile.getAbsolutePath());
 
     try {
       val process = processBuilder.start();

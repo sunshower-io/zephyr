@@ -82,7 +82,7 @@ public abstract class AbstractSelfExecutingBundler implements SelfExecutingBundl
   }
 
   private void logOptions(BundleOptions options, Log log) {
-    log.info(
+    log.debug(
         "Attempting to generate self-extracting archive with parameters: "
             + "\t archive source directory: %s\n"
             + "\t executable file: %s\n"
@@ -105,7 +105,7 @@ public abstract class AbstractSelfExecutingBundler implements SelfExecutingBundl
 
     try {
       val args = getInputArguments(options, executableFile, archiveDirectory, actualOutputFile);
-      log.info("Generation command: \n%s\n", String.join(" ", args));
+      log.debug("Generation command: \n%s\n", String.join(" ", args));
       val procBuilder = new ProcessBuilder(args).inheritIO();
       val process = procBuilder.start();
       val result = process.waitFor();

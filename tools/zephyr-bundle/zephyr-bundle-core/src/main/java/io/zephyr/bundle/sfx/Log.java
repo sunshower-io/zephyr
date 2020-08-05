@@ -1,9 +1,18 @@
 package io.zephyr.bundle.sfx;
 
+import java.util.logging.Level;
+
 public interface Log {
+
+  Level getLevel();
 
   Log NOOP =
       new Log() {
+        @Override
+        public Level getLevel() {
+          return Level.SEVERE;
+        }
+
         @Override
         public void warn(String message, Object... args) {}
 

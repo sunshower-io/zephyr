@@ -10,6 +10,8 @@ repositories {
 
 dependencies {
 
+    implementation 'net.jsign:jsign'
+    implementation 'net.jsign:jsign-core'
     implementation 'net.lingala.zip4j:zip4j'
     implementation 'com.github.imcdonagh:image4j'
     implementation'org.apache.xmlgraphics:batik-transcoder'

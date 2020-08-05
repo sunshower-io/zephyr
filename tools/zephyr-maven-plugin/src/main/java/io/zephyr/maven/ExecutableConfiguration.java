@@ -57,4 +57,6 @@ public class ExecutableConfiguration implements ExecutableFileConfiguration {
       alias = "icon-definition",
       property = "generate-sfx.icon-definition")
   private Icons iconDefinition;
+
+
 }

@@ -1,16 +1,12 @@
 package io.zephyr.maven;
 
 import io.zephyr.bundle.sfx.*;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.val;
 import org.apache.commons.lang3.SystemUtils;
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.annotations.Parameter;
 
 import javax.inject.Named;
 import java.io.File;
@@ -18,6 +14,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
+import java.util.logging.Level;
 
 import static java.lang.String.format;
 
@@ -28,7 +25,6 @@ import static java.lang.String.format;
     executionStrategy = "always")
 public class SelfExtractingExecutableMojo extends AbstractZephyrMojo
     implements SelfExtractingExecutableConfiguration {
-
 
   @Override
   public ExecutableFileConfiguration getExecutableFileConfiguration() {
@@ -238,6 +234,24 @@ public class SelfExtractingExecutableMojo extends AbstractZephyrMojo
   }
 
   class SimpleLogger implements Log {
+
+    @Override
+    public Level getLevel() {
+      val log = getLog();
+      if (log.isErrorEnabled()) {
+        return Level.SEVERE;
+      }
+      if (log.isWarnEnabled()) {
+        return Level.WARNING;
+      }
+      if (log.isInfoEnabled()) {
+        return Level.INFO;
+      }
+      if (log.isDebugEnabled()) {
+        return Level.FINEST;
+      }
+      return Level.INFO;
+    }
 
     @Override
     public void warn(String s, Object... params) {
