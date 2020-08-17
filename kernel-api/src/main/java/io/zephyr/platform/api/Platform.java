@@ -39,8 +39,7 @@ public class Platform {
   }
 
   public static OperatingSystem current() {
-    return EnumSet.allOf(OperatingSystem.class)
-        .stream()
+    return EnumSet.allOf(OperatingSystem.class).stream()
         .filter(OperatingSystem::is)
         .findAny()
         .orElseThrow(UnknownPlatformException::new);
@@ -50,10 +49,23 @@ public class Platform {
     return ServiceLoader.load(service, classLoader).findFirst();
   }
 
+  public static <T extends NativeService> T demandNativeService(
+      ClassLoader classLoader, Class<T> type) {
+    val current = current();
+    return demandService(classLoader, type, t -> t.isNativeTo(current) || t.canRunOn(current));
+  }
+
+  public static <T> T demandService(ClassLoader loader, Class<T> type, Predicate<T> predicate) {
+    return ServiceLoader.load(type, loader).stream()
+        .map(ServiceLoader.Provider::get)
+        .filter(predicate)
+        .findAny()
+        .orElseThrow(NoSuchElementException::new);
+  }
+
   public static <T> T demandService(
       Class<T> service, ClassLoader classLoader, Predicate<ServiceLoader.Provider<T>> filter) {
-    return ServiceLoader.load(service, classLoader)
-        .stream()
+    return ServiceLoader.load(service, classLoader).stream()
         .filter(filter)
         .findAny()
         .map(ServiceLoader.Provider::get)
@@ -62,16 +74,14 @@ public class Platform {
 
   public static <T> Collection<ServiceLoader.Provider<T>> resolveProviders(
       Class<T> service, ClassLoader classLoader, Predicate<ServiceLoader.Provider<T>> filter) {
-    return ServiceLoader.load(service, classLoader)
-        .stream()
-        .filter(filter::test)
+    return ServiceLoader.load(service, classLoader).stream()
+        .filter(filter)
         .collect(Collectors.toSet());
   }
 
   public static <T> Collection<T> resolveServices(
       Class<T> service, ClassLoader classLoader, Predicate<T> filter) {
-    return ServiceLoader.load(service, classLoader)
-        .stream()
+    return ServiceLoader.load(service, classLoader).stream()
         .map(ServiceLoader.Provider::get)
         .filter(filter)
         .collect(Collectors.toSet());
