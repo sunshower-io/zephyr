@@ -9,7 +9,7 @@ public class Platform {
 
   static final String CURRENT = System.getProperty("os.name");
 
-  enum OperatingSystem {
+  public enum OperatingSystem {
     Linux("Linux", "LINUX", "linux"),
     OSX("Mac OS X"),
     Windows("Windows");
@@ -39,7 +39,8 @@ public class Platform {
   }
 
   public static OperatingSystem current() {
-    return EnumSet.allOf(OperatingSystem.class).stream()
+    return EnumSet.allOf(OperatingSystem.class)
+        .stream()
         .filter(OperatingSystem::is)
         .findAny()
         .orElseThrow(UnknownPlatformException::new);
@@ -56,7 +57,8 @@ public class Platform {
   }
 
   public static <T> T demandService(ClassLoader loader, Class<T> type, Predicate<T> predicate) {
-    return ServiceLoader.load(type, loader).stream()
+    return ServiceLoader.load(type, loader)
+        .stream()
         .map(ServiceLoader.Provider::get)
         .filter(predicate)
         .findAny()
@@ -65,7 +67,8 @@ public class Platform {
 
   public static <T> T demandService(
       Class<T> service, ClassLoader classLoader, Predicate<ServiceLoader.Provider<T>> filter) {
-    return ServiceLoader.load(service, classLoader).stream()
+    return ServiceLoader.load(service, classLoader)
+        .stream()
         .filter(filter)
         .findAny()
         .map(ServiceLoader.Provider::get)
@@ -74,14 +77,16 @@ public class Platform {
 
   public static <T> Collection<ServiceLoader.Provider<T>> resolveProviders(
       Class<T> service, ClassLoader classLoader, Predicate<ServiceLoader.Provider<T>> filter) {
-    return ServiceLoader.load(service, classLoader).stream()
+    return ServiceLoader.load(service, classLoader)
+        .stream()
         .filter(filter)
         .collect(Collectors.toSet());
   }
 
   public static <T> Collection<T> resolveServices(
       Class<T> service, ClassLoader classLoader, Predicate<T> filter) {
-    return ServiceLoader.load(service, classLoader).stream()
+    return ServiceLoader.load(service, classLoader)
+        .stream()
         .map(ServiceLoader.Provider::get)
         .filter(filter)
         .collect(Collectors.toSet());
