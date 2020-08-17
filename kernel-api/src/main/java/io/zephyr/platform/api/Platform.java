@@ -1,13 +1,9 @@
 package io.zephyr.platform.api;
 
-import lombok.val;
-
-import java.util.Collection;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.ServiceLoader;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import lombok.val;
 
 public class Platform {
 
@@ -42,13 +38,22 @@ public class Platform {
     throw new IllegalStateException("No platforms for you!");
   }
 
+  public static OperatingSystem current() {
+    return EnumSet.allOf(OperatingSystem.class)
+        .stream()
+        .filter(OperatingSystem::is)
+        .findAny()
+        .orElseThrow(UnknownPlatformException::new);
+  }
+
   public static <T> Optional<T> resolveService(Class<T> service, ClassLoader classLoader) {
     return ServiceLoader.load(service, classLoader).findFirst();
   }
 
   public static <T> T demandService(
       Class<T> service, ClassLoader classLoader, Predicate<ServiceLoader.Provider<T>> filter) {
-    return ServiceLoader.load(service, classLoader).stream()
+    return ServiceLoader.load(service, classLoader)
+        .stream()
         .filter(filter)
         .findAny()
         .map(ServiceLoader.Provider::get)
@@ -57,14 +62,16 @@ public class Platform {
 
   public static <T> Collection<ServiceLoader.Provider<T>> resolveProviders(
       Class<T> service, ClassLoader classLoader, Predicate<ServiceLoader.Provider<T>> filter) {
-    return ServiceLoader.load(service, classLoader).stream()
+    return ServiceLoader.load(service, classLoader)
+        .stream()
         .filter(filter::test)
         .collect(Collectors.toSet());
   }
 
   public static <T> Collection<T> resolveServices(
       Class<T> service, ClassLoader classLoader, Predicate<T> filter) {
-    return ServiceLoader.load(service, classLoader).stream()
+    return ServiceLoader.load(service, classLoader)
+        .stream()
         .map(ServiceLoader.Provider::get)
         .filter(filter)
         .collect(Collectors.toSet());
