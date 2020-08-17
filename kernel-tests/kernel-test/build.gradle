@@ -17,5 +17,8 @@ dependencies {
         api it
     }
 
+    api("com.github.zafarkhaja:java-semver")
+    api("org.jboss.modules:jboss-modules")
+
     api project(':kernel-core')
 }

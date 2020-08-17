@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.Set;
 import lombok.NonNull;
 
+@SuppressWarnings({"PMD.AvoidFieldNameMatchingMethodName", "PMD.AvoidUsingVolatile"})
 public class ModuleFileSystem extends FileSystem implements Closeable {
 
   public static final String SUNSHOWER_HOME = "sunshower::filesystem::home";
@@ -19,6 +20,10 @@ public class ModuleFileSystem extends FileSystem implements Closeable {
   final File rootDirectory;
   final Path rootDirectoryPath;
   final ModuleFileSystemProvider fileSystemProvider;
+  private final Object lock = new Object();
+
+  private volatile boolean open;
+  private volatile ScopedModuleFileSystemProvider provider;
 
   @SuppressFBWarnings
   @SuppressWarnings("PMD.ArrayIsStoredDirectly")
@@ -27,24 +32,45 @@ public class ModuleFileSystem extends FileSystem implements Closeable {
       @NonNull ModuleFileSystemProvider provider,
       @NonNull File rootDirectory) {
     this.key = key;
+    this.open = true;
     this.rootDirectory = rootDirectory;
     this.fileSystemProvider = provider;
     this.rootDirectoryPath = rootDirectory.toPath();
   }
 
   @Override
+  @SuppressWarnings("PMD.DataflowAnomalyAnalysis")
   public FileSystemProvider provider() {
-    return fileSystemProvider;
+    FileSystemProvider result = provider;
+    if (result == null) {
+      synchronized (lock) {
+        result = provider;
+        if (result == null) {
+          try {
+            result = provider = new ScopedModuleFileSystemProvider(rootDirectory, this);
+          } catch (AccessDeniedException ex) {
+            throw new FileSystemAccessDeniedException(ex);
+          }
+        }
+      }
+    }
+    return result;
   }
 
   @Override
   public void close() throws IOException {
-    fileSystemProvider.closeFileSystem(this);
+    synchronized (lock) {
+      try {
+        fileSystemProvider.closeFileSystem(this);
+      } finally {
+        open = false;
+      }
+    }
   }
 
   @Override
   public boolean isOpen() {
-    return FileSystems.getDefault().isOpen();
+    return open;
   }
 
   @Override
