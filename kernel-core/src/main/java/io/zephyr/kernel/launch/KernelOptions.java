@@ -22,8 +22,8 @@ import picocli.CommandLine;
 public class KernelOptions extends AbstractValidatable<KernelOptions>
     implements Options<KernelOptions> {
 
-  private static final String ZEPHYR_HOME_SYSTEM_PROPERTY_KEY = "zephyr.options.home";
-  private static final String ZEPHYR_HOME_ENVIRONMENT_VARIABLE_KEY = "ZEPHYR_HOME";
+  static final String ZEPHYR_HOME_SYSTEM_PROPERTY_KEY = "zephyr.options.home";
+  static final String ZEPHYR_HOME_ENVIRONMENT_VARIABLE_KEY = "ZEPHYR_HOME";
   private static final Logger log = Logging.get(KernelOptions.class);
   private static final long serialVersionUID = -4797996962045876401L;
 
