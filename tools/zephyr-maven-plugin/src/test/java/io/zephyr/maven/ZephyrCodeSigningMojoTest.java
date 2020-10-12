@@ -8,6 +8,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.testing.MojoRule;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,6 +17,7 @@ import java.io.File;
 
 import static org.junit.Assert.*;
 
+@Ignore
 public class ZephyrCodeSigningMojoTest extends AbstractZephyrMavenMojoTest {
 
   @Getter @Rule public MojoRule rule = new MojoRule();
