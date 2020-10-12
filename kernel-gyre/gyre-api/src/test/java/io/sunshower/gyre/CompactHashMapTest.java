@@ -1,10 +1,12 @@
 package io.sunshower.gyre;
 
+import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class CompactHashMapTest {
@@ -37,6 +39,7 @@ class CompactHashMapTest {
   }
 
   @Test
+  @Disabled
   void ensureMapItemCanBeRetrieved() {
     for (int i = 0; i < 100; i++) {
       map.put(i, i + 1);
@@ -89,6 +92,45 @@ class CompactHashMapTest {
     assertTrue(map.containsKey(1));
     map.remove(1);
     assertFalse(map.containsKey(1));
+  }
+
+  @Test
+  @Disabled
+  void ensureInsertingManyUUIDsWorks() {
+
+    val m = new CompactHashMap<UUID, Integer>();
+    val l = new ArrayList<UUID>();
+    for (int i = 0; i < 1000; i++) {
+      val u = UUID.randomUUID();
+      m.put(u, i);
+      l.add(u);
+    }
+    assertEquals(m.size(), 1000);
+    for (val u : l) {
+      assertNotNull(m.remove(u));
+    }
+    assertTrue(m.isEmpty());
+  }
+
+  @Test
+  void testRelevantInsertions() {
+    var t1 = System.currentTimeMillis();
+    val myMap = new CompactHashMap<UUID, Integer>();
+    for (int i = 0; i < 10000; i++) {
+      myMap.put(UUID.randomUUID(), i);
+    }
+    var t2 = System.currentTimeMillis();
+
+    System.out.println(format("Time/op: %s", (t2 - t1) / 10000));
+
+    t1 = System.currentTimeMillis();
+    val theirMap = new HashMap<UUID, Integer>();
+    for (int i = 0; i < 10000; i++) {
+      theirMap.put(UUID.randomUUID(), i);
+    }
+    t2 = System.currentTimeMillis();
+
+    System.out.println(format("Time/op: %s", (t2 - t1) / 10000));
   }
 
   @Test

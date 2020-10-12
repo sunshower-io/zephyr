@@ -114,7 +114,7 @@ public class CompactHashMap<K, V> implements Map<K, V> {
   public V remove(Object key) {
 
     int hashcode = codeFor(key);
-    int i = hashcode & (table.length - 1);
+    int i = mod(hashcode, table.length);
     int probe = 0;
     int index = 0;
     V result = null;
@@ -174,7 +174,8 @@ public class CompactHashMap<K, V> implements Map<K, V> {
     if (idx == len - 1) {
       return 0;
     }
-    return (1 + (idx + attempt)) % len;
+    val r = mod((1 + (idx + attempt)), len);
+    return r;
   }
 
   @Override
@@ -210,6 +211,14 @@ public class CompactHashMap<K, V> implements Map<K, V> {
     return key == null ? 0 : key.hashCode();
   }
 
+  private int mod(int x, int y) {
+    int result = x % y;
+    if (result < 0) {
+      result += y;
+    }
+    return result;
+  }
+
   private V insert(K k, V v, int h, Entry<K, V> cache) {
 
     K key = k;
@@ -218,7 +227,7 @@ public class CompactHashMap<K, V> implements Map<K, V> {
 
     V result = null;
     int probe = 0;
-    int i = hashCode & (table.length - 1);
+    int i = mod(hashCode, table.length);
     for (; ; ) {
 
       val current = table[i];

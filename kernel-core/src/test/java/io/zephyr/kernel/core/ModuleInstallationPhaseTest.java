@@ -1,14 +1,14 @@
 package io.zephyr.kernel.core;
 
-//import io.sunshower.kernel.process.KernelProcess;
-//import io.sunshower.kernel.process.KernelProcessContext;
-//import io.sunshower.module.phases.*;
-//import lombok.val;
-//import org.junit.jupiter.api.BeforeEach;
-//import org.junit.jupiter.api.Test;
+// import io.sunshower.kernel.process.KernelProcess;
+// import io.sunshower.kernel.process.KernelProcessContext;
+// import io.sunshower.module.phases.*;
+// import lombok.val;
+// import org.junit.jupiter.api.BeforeEach;
+// import org.junit.jupiter.api.Test;
 //
-//import java.util.concurrent.ExecutorService;
-//import java.util.concurrent.Executors;
+// import java.util.concurrent.ExecutorService;
+// import java.util.concurrent.Executors;
 
 public class ModuleInstallationPhaseTest {
 
@@ -31,7 +31,8 @@ public class ModuleInstallationPhaseTest {
   //
   //    unpackPhase.addPhase(new ModuleScanPhase()); // reads downloaded file for
   //    unpackPhase.addPhase(
-  //        new ModuleTransferPhase()); // copies from kernel/temp/modules/whatever.whatever to <plugin
+  //        new ModuleTransferPhase()); // copies from kernel/temp/modules/whatever.whatever to
+  // <plugin
   //    // folder>/module.droplet
   //    unpackPhase.addPhase(new ModuleIndexPhase());
   //    installationProcess.addPhase(unpackPhase);

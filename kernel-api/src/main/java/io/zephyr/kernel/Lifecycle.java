@@ -1,6 +1,9 @@
 package io.zephyr.kernel;
 
-public interface Lifecycle {
+import io.zephyr.api.Startable;
+import io.zephyr.api.Stoppable;
+
+public interface Lifecycle extends Startable, Stoppable {
 
   /**
    * This does not trigger a ModuleLifecycleChangedEvent (use the other methods for that)
