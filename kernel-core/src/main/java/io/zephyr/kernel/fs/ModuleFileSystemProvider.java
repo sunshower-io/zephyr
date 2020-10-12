@@ -2,10 +2,8 @@ package io.zephyr.kernel.fs;
 
 import static java.lang.String.format;
 
-import io.zephyr.common.io.FilePermissionChecker;
 import io.zephyr.common.io.Files;
-import io.zephyr.common.io.Strings;
-import io.zephyr.kernel.core.SunshowerKernel;
+import io.zephyr.kernel.launch.KernelOptions;
 import io.zephyr.kernel.log.Logging;
 import java.io.Closeable;
 import java.io.File;
@@ -18,17 +16,13 @@ import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.FileAttributeView;
 import java.nio.file.spi.FileSystemProvider;
 import java.util.*;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import lombok.NonNull;
 import lombok.val;
 
-@SuppressWarnings({"PMD.AvoidUsingVolatile", "PMD.AvoidDuplicateLiterals"})
+@SuppressWarnings({"PMD.AvoidUsingVolatile"})
 public class ModuleFileSystemProvider extends FileSystemProvider implements Closeable {
-
-  private static final String ZEPHYR_HOME_SYSTEM_PROPERTY_KEY = "zephyr.options.home";
-  private static final String ZEPHYR_HOME_ENVIRONMENT_VARIABLE_KEY = "ZEPHYR_HOME";
 
   static final Pattern queryPattern = Pattern.compile("=");
   static final Pattern keyPattern = Pattern.compile("\\.");
@@ -48,7 +42,7 @@ public class ModuleFileSystemProvider extends FileSystemProvider implements Clos
   private final File fileSystemRoot;
 
   public ModuleFileSystemProvider() throws AccessDeniedException {
-    this.fileSystemRoot = resolveRoot();
+    this.fileSystemRoot = KernelOptions.getKernelRootDirectory();
   }
 
   @Override
@@ -236,90 +230,5 @@ public class ModuleFileSystemProvider extends FileSystemProvider implements Clos
               query));
     }
     return Collections.singletonList(parts[1]);
-  }
-
-  private static File resolveRoot() throws AccessDeniedException {
-    log.log(Level.INFO, "filesystem.resolve.root.system_properties.begin");
-    val systemProperty = System.getProperty(ZEPHYR_HOME_SYSTEM_PROPERTY_KEY);
-
-    if (Strings.isNullOrEmpty(systemProperty)) {
-      log.log(Level.INFO, "filesystem.resolve.root.system_properties.doesnt_exist");
-    } else {
-      val file = new File(systemProperty);
-      if (checkPermissions(file, "system properties")) {
-        log.log(
-            Level.INFO,
-            "filesystem.resolve.root.system_properties.success",
-            file.getAbsolutePath());
-        return file;
-      }
-    }
-
-    val envVariable = System.getenv(ZEPHYR_HOME_ENVIRONMENT_VARIABLE_KEY);
-    if (Strings.isNullOrEmpty(envVariable)) {
-      log.log(Level.INFO, "filesystem.resolve.root.env_var.doesnt_exist");
-    } else {
-      val file = new File(envVariable);
-      if (checkPermissions(file, "ENVIRONMENT")) {
-        log.log(Level.INFO, "filesystem.resolve.root.env_var.success", file.getAbsolutePath());
-        return file;
-      }
-    }
-
-    return Files.check(
-        SunshowerKernel.getKernelOptions().getHomeDirectory(),
-        FilePermissionChecker.Type.READ,
-        FilePermissionChecker.Type.WRITE,
-        FilePermissionChecker.Type.EXECUTE);
-  }
-
-  @SuppressWarnings("PMD.UnusedPrivateMethod")
-  private static boolean checkPermissions(File file, String location) {
-    if (!file.exists()) {
-      log.log(
-          Level.WARNING, "filesystem.resolve.root.does_not_exist", new Object[] {file, location});
-      return false;
-    }
-    if (!file.isDirectory()) {
-      log.log(
-          Level.WARNING,
-          "filesystem.resolve.root.is_not_directory",
-          new Object[] {file.getAbsolutePath(), location});
-      return false;
-    }
-
-    if (!file.canRead()) {
-      log.log(
-          Level.WARNING,
-          "filesystem.resolve.root.permissions_failed",
-          new Object[] {
-            file.getAbsolutePath(), "system properties", System.getProperty("user.name"), "READ"
-          });
-      return false;
-    }
-
-    if (!file.canWrite()) {
-
-      log.log(
-          Level.WARNING,
-          "filesystem.resolve.root.permissions_failed",
-          new Object[] {
-            file.getAbsolutePath(), "system properties", System.getProperty("user.name"), "WRITE"
-          });
-      return false;
-    }
-
-    if (!file.canExecute()) {
-
-      log.log(
-          Level.WARNING,
-          "filesystem.resolve.root.permissions_failed",
-          new Object[] {
-            file.getAbsolutePath(), "system properties", System.getProperty("user.name"), "EXECUTE"
-          });
-      return false;
-    }
-
-    return true;
   }
 }
