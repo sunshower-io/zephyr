@@ -72,7 +72,7 @@ public final class KernelClassloader extends URLClassLoader {
             val output = new ByteArrayOutputStream()) {
 
           byte[] data = new byte[BUFFER_SIZE];
-          int read = 0;
+          int read;
           for (; ; ) {
             read = input.read(data, 0, data.length);
             if (read == -1) break;

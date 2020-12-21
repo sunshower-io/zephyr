@@ -1,8 +1,8 @@
 plugins {
     id 'pmd'
     id 'maven-publish'
-    id "com.diffplug.gradle.spotless" version "3.26.0"
-    id "com.github.spotbugs" version "2.0.0"
+    id "com.diffplug.spotless" version "5.8.2"
+    id "com.github.spotbugs" version "4.6.0"
     id "org.springframework.boot" version "2.2.4.RELEASE"
     id "io.spring.dependency-management" version "1.0.6.RELEASE"
 }
@@ -13,7 +13,7 @@ allprojects {
     apply plugin: 'idea'
     apply plugin: 'maven-publish'
     apply plugin: "io.spring.dependency-management"
-    apply plugin: "com.diffplug.gradle.spotless"
+    apply plugin: "com.diffplug.spotless"
 
     dependencyManagement {
         imports {
@@ -58,12 +58,12 @@ subprojects {
         }
 
 
-        tasks.withType(com.github.spotbugs.SpotBugsTask) {
-            reports {
-                xml.enabled = false
-                html.enabled = true
-            }
-        }
+//        tasks.withType(com.github.spotbugs.SpotBugsTask) {
+//            reports {
+//                xml.enabled = false
+//                html.enabled = true
+//            }
+//        }
         pmd {
             ruleSets = [
                     "${project.rootDir}/check/pmd/rules/errorprone.xml",
@@ -118,7 +118,7 @@ subprojects {
         }
 
 
-        tasks.withType(com.github.spotbugs.SpotBugsTask) {
+        tasks.withType(com.github.spotbugs.snom.SpotBugsTask) {
             reports {
                 xml.enabled = false
                 html.enabled = true

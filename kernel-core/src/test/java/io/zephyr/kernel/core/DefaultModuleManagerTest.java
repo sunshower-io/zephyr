@@ -276,7 +276,7 @@ class DefaultModuleManagerTest {
         manager
             .getModules(Lifecycle.State.Resolved)
             .stream()
-            .filter(t -> t.getCoordinate().getName().equals("test-plugin-2"))
+            .filter(t -> "test-plugin-2".equals(t.getCoordinate().getName()))
             .findAny()
             .get();
     val result = Class.forName("testproject2.Test", true, module.getClassLoader());
