@@ -46,6 +46,7 @@ dependencies {
     }
 
     [
+            ':kernel-modules:sunshower-spring',
             ':kernel-modules:sunshower-yaml-reader'
     ].each {
         implementation project(it)
