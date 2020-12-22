@@ -12,8 +12,8 @@ apply from: "$rootDir/tasks/revisions.gradle"
 allprojects {
     apply plugin: 'idea'
     apply plugin: 'maven-publish'
-    apply plugin: "io.spring.dependency-management"
     apply plugin: "com.diffplug.spotless"
+    apply plugin: "io.spring.dependency-management"
 
     dependencyManagement {
         imports {
