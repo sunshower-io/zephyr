@@ -45,6 +45,13 @@ dependencies {
         plugin project(":kernel-modules:zephyr:zephyr-$it")
     }
 
+    [
+            ':kernel-modules:sunshower-spring',
+            ':kernel-modules:sunshower-yaml-reader'
+    ].each {
+        implementation project(it)
+    }
+
     testImplementation project(path: ':kernel-core', configuration: 'tests')
 }
 

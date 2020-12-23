@@ -1,14 +1,14 @@
 package command;
 
-//import io.sunshower.test.common.Tests;
-//import io.zephyr.kernel.Lifecycle;
-//import io.zephyr.kernel.core.KernelLifecycle;
-//import io.zephyr.kernel.launch.CommandTestCase;
-//import io.zephyr.kernel.launch.KernelLauncher;
-//import io.zephyr.kernel.modules.cli.server.Server;
-//import java.io.File;
-//import java.util.UUID;
-//import org.junit.jupiter.api.*;
+// import io.sunshower.test.common.Tests;
+// import io.zephyr.kernel.Lifecycle;
+// import io.zephyr.kernel.core.KernelLifecycle;
+// import io.zephyr.kernel.launch.CommandTestCase;
+// import io.zephyr.kernel.launch.KernelLauncher;
+// import io.zephyr.kernel.modules.cli.server.Server;
+// import java.io.File;
+// import java.util.UUID;
+// import org.junit.jupiter.api.*;
 
 /**
  * I guess these tests should live by the module memento, but that introduces dependency weirdness
@@ -51,7 +51,8 @@ class DefaultModuleManagerMementoTest {
   //
   //    KernelLauncher.main(
   //        new String[] {
-  //          "kernel", "start", "-h", Tests.createTemp("test-2" + UUID.randomUUID()).getAbsolutePath()
+  //          "kernel", "start", "-h", Tests.createTemp("test-2" +
+  // UUID.randomUUID()).getAbsolutePath()
   //        });
   //    waitForKernel();
   //    runRemote(
@@ -63,7 +64,8 @@ class DefaultModuleManagerMementoTest {
   //
   //    waitForPluginState(
   //        t ->
-  //            t.stream().filter(u -> u.getLifecycle().getState() == Lifecycle.State.Resolved).count()
+  //            t.stream().filter(u -> u.getLifecycle().getState() ==
+  // Lifecycle.State.Resolved).count()
   //                == 2);
   //    //    runRemote("kernel", "restart");
   //    //    waitForKernelState(KernelLifecycle.State.Stopped);
@@ -78,7 +80,8 @@ class DefaultModuleManagerMementoTest {
   //    yamlplugin =
   //        Tests.relativeToProjectBuild("kernel-modules:sunshower-yaml-reader", "war", "libs");
   //    //    springplugin =
-  //    //        Tests.relativeToProjectBuild("kernel-tests:test-plugins:test-plugin-spring", "war",
+  //    //        Tests.relativeToProjectBuild("kernel-tests:test-plugins:test-plugin-spring",
+  // "war",
   //    // "libs");
   //  }
 }

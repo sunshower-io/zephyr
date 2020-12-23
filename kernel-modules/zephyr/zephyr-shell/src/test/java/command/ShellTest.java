@@ -19,8 +19,11 @@ import java.util.Collections;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import picocli.CommandLine;
 
+@DisabledOnOs(OS.MAC)
 @SuppressFBWarnings
 @SuppressWarnings({
   "PMD.DataflowAnomalyAnalysis",

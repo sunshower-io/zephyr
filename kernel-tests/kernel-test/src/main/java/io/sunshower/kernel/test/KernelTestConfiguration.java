@@ -8,12 +8,12 @@ import io.zephyr.cli.Zephyr;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.core.*;
 import io.zephyr.kernel.dependencies.DependencyGraph;
+import io.zephyr.kernel.launch.KernelOptions;
 import io.zephyr.kernel.memento.Memento;
 import io.zephyr.spring.embedded.EmbeddedModuleClasspath;
 import io.zephyr.spring.embedded.EmbeddedModuleLoader;
 import io.zephyr.spring.embedded.EmbeddedSpringConfiguration;
 import java.io.File;
-import java.nio.file.FileSystem;
 import java.util.Collections;
 import lombok.val;
 import org.springframework.context.annotation.Bean;
@@ -56,11 +56,11 @@ public class KernelTestConfiguration {
     return mock(ModuleActivator.class);
   }
 
-  @Bean
-  public FileSystem moduleFileSystem() {
-    return mock(FileSystem.class);
-  }
-
+  //  @Bean
+  //  public FileSystem moduleFileSystem() {
+  //    return mock(FileSystem.class);
+  //  }
+  //
   @Bean
   public Memento memento() {
     return mock(Memento.class);
@@ -73,6 +73,9 @@ public class KernelTestConfiguration {
 
   @Bean
   public File kernelRootDirectory() {
-    return Tests.createTemp();
+    val temp = Tests.createTemp();
+    val options = new KernelOptions();
+    options.setHomeDirectory(temp);
+    return temp;
   }
 }

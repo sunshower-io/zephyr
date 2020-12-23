@@ -33,23 +33,24 @@
         <dagger.version>2.24</dagger.version>
         <mvel.version>2.4.5.Final</mvel.version>
         <picocli.version>4.0.4</picocli.version>
-        <lombok.version>1.18.10</lombok.version>
+        <lombok.version>1.18.16</lombok.version>
         <yamlbeans.version>1.13</yamlbeans.version>
         <xstream.version>1.4.11.1</xstream.version>
         <javax.inject-version>1</javax.inject-version>
-        <spring.version>5.2.4.RELEASE</spring.version>
+        <spring.version>5.3.2</spring.version>
         <java-semver.version>0.9.0</java-semver.version>
         <spring-boot.version>2.2.4.RELEASE</spring-boot.version>
-        <jboss-modules.version>1.9.2.Final</jboss-modules.version>
+        <jboss-modules.version>1.11.0.Final</jboss-modules.version>
         <javax-annotation.version>1.3.2</javax-annotation.version>
 
 
         <sevenzipjbinding.version>16.02-2.01</sevenzipjbinding.version>
         <slf4j-api.version>1.7.30</slf4j-api.version>
-        <image4j.version>0.7.2</image4j.version>
+        <image4j.version>0.7</image4j.version>
         <imageio-batik.version>3.5</imageio-batik.version>
         <batik-transcoder.version>1.6-1</batik-transcoder.version>
         <zip4j.version>2.6.1</zip4j.version>
+        <jsign-core.version>3.1</jsign-core.version>
     </properties>
 
     <dependencyManagement>
@@ -74,11 +75,21 @@
 
 
             <dependency>
-                <groupId>com.github.imcdonagh</groupId>
+                <groupId>org.jclarion</groupId>
                 <artifactId>image4j</artifactId>
                 <version>${image4j.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>net.jsign</groupId>
+                <artifactId>jsign</artifactId>
+                <version>${jsign-core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.jsign</groupId>
+                <artifactId>jsign-core</artifactId>
+                <version>${jsign-core.version}</version>
+            </dependency>
 
             <!--
             self-extracting installer executables

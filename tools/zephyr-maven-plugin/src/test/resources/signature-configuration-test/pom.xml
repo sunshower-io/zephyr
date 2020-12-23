@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>io.zephyr.maven</groupId>
+    <artifactId>zephyr-maven-plugin</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+    <name>Test Zephyr Maven Bundle Plugin</name>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>io.zephyr.maven</groupId>
+                <artifactId>zephyr-maven-plugin</artifactId>
+                <configuration>
+                    <platform>windows</platform>
+                    <archive-directory>${project.basedir}/archive</archive-directory>
+                    <archive-base>${project.build.directory}/result</archive-base>
+                    <executable-file>test.bat</executable-file>
+                    <signature>
+                        <algorithm>SHA512</algorithm>
+                        <program>
+                            <name>hello</name>
+                            <url>www.frapper.com</url>
+                        </program>
+
+                        <key-store>
+                            <type>JKS</type>
+                            <password>test-password</password>
+                        </key-store>
+                    </signature>
+
+                    <executable-configuration>
+                        <version-string>1.0.1</version-string>
+                        <file-version>1.0.2</file-version>
+                        <product-version>1.0.6</product-version>
+                        <manifest-file>${project.basedir}/archive/manifest.xml</manifest-file>
+                        <resource-strings>
+                            <test-resource>whatever1</test-resource>
+                            <test-resource2>whatever2</test-resource2>
+                        </resource-strings>
+
+                        <icon-definition>
+                            <format>ICO</format>
+                            <source>${project.basedir}/archive/installer256px.png</source>
+                            <icons>
+
+                                <icon>
+                                    <size>16px</size>
+                                    <channel>rgba</channel>
+                                </icon>
+
+
+                                <icon>
+                                    <size>32px</size>
+                                    <channel>rgba</channel>
+                                </icon>
+
+                                <icon>
+                                    <size>48px</size>
+                                    <channel>rgba</channel>
+                                </icon>
+
+                                <icon>
+                                    <size>32px</size>
+                                    <channel>8bit</channel>
+                                </icon>
+
+                                <icon>
+                                    <size>24px</size>
+                                    <channel>8bit</channel>
+                                </icon>
+
+                                <icon>
+                                    <size>16px</size>
+                                    <channel>8bit</channel>
+                                </icon>
+                            </icons>
+                        </icon-definition>
+                    </executable-configuration>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>sign-executable</id>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

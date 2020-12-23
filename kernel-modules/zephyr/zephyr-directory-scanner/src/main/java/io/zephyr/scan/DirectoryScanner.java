@@ -6,7 +6,6 @@ import io.zephyr.api.ModuleActivator;
 import io.zephyr.api.ModuleContext;
 import io.zephyr.cli.DefaultZephyr;
 import io.zephyr.cli.Zephyr;
-import io.zephyr.kernel.Options;
 import io.zephyr.kernel.core.Framework;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.extensions.EntryPoint;

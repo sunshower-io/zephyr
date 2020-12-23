@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Level;
 import javax.imageio.ImageIO;
 import lombok.val;
 import net.sf.image4j.codec.ico.ICODecoder;
@@ -29,6 +30,11 @@ public class ICOBundlerTest {
 
   static final Log sysout =
       new Log() {
+
+        @Override
+        public Level getLevel() {
+          return Level.ALL;
+        }
 
         @Override
         public void warn(String message, Object... args) {

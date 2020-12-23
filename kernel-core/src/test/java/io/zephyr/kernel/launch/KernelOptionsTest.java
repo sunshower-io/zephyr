@@ -4,12 +4,30 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import io.zephyr.common.Options;
 import io.zephyr.kernel.extensions.EntryPoint;
+import java.io.File;
+import java.nio.file.AccessDeniedException;
 import java.util.EnumMap;
 import java.util.logging.Level;
 import lombok.val;
 import org.junit.jupiter.api.Test;
 
+@SuppressWarnings("PMD")
 class KernelOptionsTest {
+
+  @Test
+  void ensureOptionsIsResolvableFromSystemProperty() throws AccessDeniedException {
+    try {
+      System.setProperty(
+          KernelOptions.ZEPHYR_HOME_SYSTEM_PROPERTY_KEY, System.getProperty("user.dir"));
+
+      assertEquals(
+          KernelOptions.getKernelRootDirectory(),
+          new File(System.getProperty("user.dir")),
+          "must be equal");
+    } finally {
+      System.setProperty(KernelOptions.ZEPHYR_HOME_SYSTEM_PROPERTY_KEY, "");
+    }
+  }
 
   @Test
   void ensureLogLevelSpecificityDefaultsToWarning() {

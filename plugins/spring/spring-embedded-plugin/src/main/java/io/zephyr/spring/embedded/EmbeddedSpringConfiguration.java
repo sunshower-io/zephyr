@@ -13,6 +13,7 @@ import io.zephyr.kernel.launch.KernelOptions;
 import io.zephyr.kernel.memento.Memento;
 import io.zephyr.kernel.service.KernelServiceRegistry;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.FileSystem;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -20,6 +21,7 @@ import lombok.val;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 
 @Configuration
 public class EmbeddedSpringConfiguration {
@@ -32,6 +34,7 @@ public class EmbeddedSpringConfiguration {
   }
 
   @Bean
+  @DependsOn("kernelOptions")
   public Module embeddedModule(
       ApplicationContext context,
       Memento memento,
@@ -43,6 +46,13 @@ public class EmbeddedSpringConfiguration {
   }
 
   @Bean
+  public FileSystem moduleFileSystem(ModuleDescriptor descriptor, Kernel kernel)
+      throws IOException {
+    return Plugins.getFileSystem(descriptor.getCoordinate(), kernel).snd;
+  }
+
+  @Bean
+  @DependsOn("kernelOptions")
   public ModuleThread moduleThread(Module module, Kernel kernel) {
     val thread = new ModuleThread(module, kernel);
     ((EmbeddedModule) module).setThread(thread);

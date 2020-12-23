@@ -51,19 +51,19 @@ class StronglyConnectedComponentsTest {
     // first
     c("1", "2");
 
-    //second
+    // second
     c("2", "4");
     c("2", "5");
     c("4", "5");
     c("5", "2");
 
-    //third
+    // third
     c("2", "3");
     c("3", "6");
     c("6", "3");
     c("5", "6");
 
-    //fourth
+    // fourth
     c("4", "7");
     c("5", "7");
     c("6", "8");

@@ -8,6 +8,17 @@
         <zephyr.version>2.0.56-SNAPSHOT</zephyr.version>
     </properties>
 
+    <repositories>
+        <repository>
+            <id>maven-central</id>
+            <url>https://repo1.maven.org/maven2</url>
+        </repository>
+        <repository>
+            <id>mulesoft</id>
+            <url>https://repository.mulesoft.org/nexus/content/repositories/public/</url>
+        </repository>
+    </repositories>
+
 
     <distributionManagement>
         <repository>
@@ -18,7 +29,6 @@
             <id>sunshower-snapshots</id>
             <url>http://artifacts.sunshower.io/repository/sunshower-snapshots</url>
         </snapshotRepository>
-
     </distributionManagement>
     <modules>
         <module>imported</module>

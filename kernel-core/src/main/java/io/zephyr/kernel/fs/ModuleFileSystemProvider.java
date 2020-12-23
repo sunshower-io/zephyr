@@ -2,9 +2,8 @@ package io.zephyr.kernel.fs;
 
 import static java.lang.String.format;
 
-import io.zephyr.common.io.FilePermissionChecker;
 import io.zephyr.common.io.Files;
-import io.zephyr.kernel.core.SunshowerKernel;
+import io.zephyr.kernel.launch.KernelOptions;
 import io.zephyr.kernel.log.Logging;
 import java.io.Closeable;
 import java.io.File;
@@ -22,6 +21,7 @@ import java.util.regex.Pattern;
 import lombok.NonNull;
 import lombok.val;
 
+@SuppressWarnings({"PMD.AvoidUsingVolatile"})
 public class ModuleFileSystemProvider extends FileSystemProvider implements Closeable {
 
   static final Pattern queryPattern = Pattern.compile("=");
@@ -42,12 +42,7 @@ public class ModuleFileSystemProvider extends FileSystemProvider implements Clos
   private final File fileSystemRoot;
 
   public ModuleFileSystemProvider() throws AccessDeniedException {
-    val options = SunshowerKernel.getKernelOptions();
-    this.fileSystemRoot =
-        Files.check(
-            options.getHomeDirectory(),
-            FilePermissionChecker.Type.READ,
-            FilePermissionChecker.Type.WRITE);
+    this.fileSystemRoot = KernelOptions.getKernelRootDirectory();
   }
 
   @Override
@@ -117,61 +112,75 @@ public class ModuleFileSystemProvider extends FileSystemProvider implements Clos
   @Override
   public SeekableByteChannel newByteChannel(
       Path path, Set<? extends OpenOption> options, FileAttribute<?>... attrs) throws IOException {
-    return null;
+    val resolvedPath = resolve(path);
+    return FileSystems.getDefault().provider().newByteChannel(resolvedPath, options, attrs);
   }
 
   @Override
   public DirectoryStream<Path> newDirectoryStream(
       Path dir, DirectoryStream.Filter<? super Path> filter) throws IOException {
-    return null;
+    val path = resolve(dir);
+    return FileSystems.getDefault().provider().newDirectoryStream(path, filter);
   }
 
   @Override
-  public void createDirectory(Path dir, FileAttribute<?>... attrs) throws IOException {}
+  public void createDirectory(Path dir, FileAttribute<?>... attrs) throws IOException {
+    val path = resolve(dir);
+    FileSystems.getDefault().provider().createDirectory(path, attrs);
+  }
 
   @Override
-  public void delete(Path path) throws IOException {}
+  public void delete(Path path) throws IOException {
+    val p = resolve(path);
+    FileSystems.getDefault().provider().delete(p);
+  }
 
   @Override
-  public void copy(Path source, Path target, CopyOption... options) throws IOException {}
+  public void copy(Path source, Path target, CopyOption... options) throws IOException {
+    FileSystems.getDefault().provider().copy(resolve(source), resolve(target), options);
+  }
 
   @Override
-  public void move(Path source, Path target, CopyOption... options) throws IOException {}
+  public void move(Path source, Path target, CopyOption... options) throws IOException {
+    FileSystems.getDefault().provider().move(resolve(source), resolve(target), options);
+  }
 
   @Override
   public boolean isSameFile(Path path, Path path2) throws IOException {
-    return false;
+    return FileSystems.getDefault().provider().isSameFile(resolve(path), resolve(path2));
   }
 
   @Override
   public boolean isHidden(Path path) throws IOException {
-    return false;
+    return FileSystems.getDefault().provider().isHidden(resolve(path));
   }
 
   @Override
   public FileStore getFileStore(Path path) throws IOException {
-    return null;
+    return FileSystems.getDefault().provider().getFileStore(resolve(path));
   }
 
   @Override
-  public void checkAccess(Path path, AccessMode... modes) throws IOException {}
+  public void checkAccess(Path path, AccessMode... modes) throws IOException {
+    FileSystems.getDefault().provider().checkAccess(path, modes);
+  }
 
   @Override
   public <V extends FileAttributeView> V getFileAttributeView(
       Path path, Class<V> type, LinkOption... options) {
-    return null;
+    return FileSystems.getDefault().provider().getFileAttributeView(resolve(path), type, options);
   }
 
   @Override
   public <A extends BasicFileAttributes> A readAttributes(
       Path path, Class<A> type, LinkOption... options) throws IOException {
-    return null;
+    return FileSystems.getDefault().provider().readAttributes(resolve(path), type, options);
   }
 
   @Override
   public Map<String, Object> readAttributes(Path path, String attributes, LinkOption... options)
       throws IOException {
-    return null;
+    return FileSystems.getDefault().provider().readAttributes(resolve(path), attributes, options);
   }
 
   protected void closeFileSystem(ModuleFileSystem system) throws IOException {
@@ -182,13 +191,19 @@ public class ModuleFileSystemProvider extends FileSystemProvider implements Clos
 
   @Override
   public void setAttribute(Path path, String attribute, Object value, LinkOption... options)
-      throws IOException {}
+      throws IOException {
+    FileSystems.getDefault().provider().setAttribute(resolve(path), attribute, value, options);
+  }
 
   @Override
   public void close() throws IOException {
     for (val fs : registry) {
       closeFileSystem((ModuleFileSystem) fs);
     }
+  }
+
+  protected Path resolve(Path other) {
+    return fileSystemRoot.toPath().resolve(other);
   }
 
   private File doCreateDirectory(Path toPath) throws FileSystemException {

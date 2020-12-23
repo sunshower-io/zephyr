@@ -1,89 +1,30 @@
 package io.zephyr.maven;
 
 import io.zephyr.bundle.sfx.*;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.val;
 import org.apache.commons.lang3.SystemUtils;
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.annotations.Parameter;
 
+import javax.inject.Named;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
+import java.util.logging.Level;
 
 import static java.lang.String.format;
 
+@Named
 @Mojo(
     name = "generate-sfx",
     defaultPhase = LifecyclePhase.PROCESS_RESOURCES,
     executionStrategy = "always")
-public class SelfExtractingExecutableMojo extends AbstractMojo
+public class SelfExtractingExecutableMojo extends AbstractZephyrMojo
     implements SelfExtractingExecutableConfiguration {
-
-  @Getter
-  @Setter
-  @Parameter(
-      required = true,
-      name = "platform",
-      alias = "platform",
-      property = "generate-sfx.platform")
-  private String platform;
-
-  /**
-   * since the actual file-name is platform-dependent, this property constitutes the base path of
-   * the archive (such as the "target/aire" component of the path "target/aire.exe")
-   */
-  @Getter
-  @Setter
-  @Parameter(name = "archive-base", alias = "archive-base", property = "generate-sfx.archive-base")
-  private File archiveBase;
-
-  /**
-   * Every executable generated must perform some steps upon execution. For instance, it's typical
-   * to launch an installer such as IZPack. This file should contain instructions for doing so
-   */
-  @Getter
-  @Setter
-  @Parameter(alias = "executable-file", property = "generate-sfx.executable-file")
-  private String executableFile;
-
-  /**
-   * the archive-directory property specifies which directory we're archiving and making executable
-   */
-  @Getter
-  @Setter
-  @Parameter(
-      name = "archive-directory",
-      alias = "archive-directory",
-      property = "generate-sfx.archive-directory",
-      defaultValue = "${project.basedir}/archive")
-  private File archiveDirectory;
-
-  /** this property specifies which directory we're placing the resulting executable archive into */
-  @Getter
-  @Setter
-  @Parameter(
-      required = true,
-      name = "workspace",
-      alias = "workspace",
-      property = "generate-sfx.workspace",
-      defaultValue = "${project.build.directory}/sfx-workspace")
-  private File workspace;
-
-  @Getter
-  @Setter
-  @Parameter(
-      name = "executable-configuration",
-      alias = "executable-configuration",
-      property = "generate-sfx.executable-configuration")
-  private ExecutableConfiguration executableConfiguration;
 
   @Override
   public ExecutableFileConfiguration getExecutableFileConfiguration() {
@@ -293,6 +234,24 @@ public class SelfExtractingExecutableMojo extends AbstractMojo
   }
 
   class SimpleLogger implements Log {
+
+    @Override
+    public Level getLevel() {
+      val log = getLog();
+      if (log.isErrorEnabled()) {
+        return Level.SEVERE;
+      }
+      if (log.isWarnEnabled()) {
+        return Level.WARNING;
+      }
+      if (log.isInfoEnabled()) {
+        return Level.INFO;
+      }
+      if (log.isDebugEnabled()) {
+        return Level.FINEST;
+      }
+      return Level.INFO;
+    }
 
     @Override
     public void warn(String s, Object... params) {

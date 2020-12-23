@@ -19,7 +19,8 @@
                     <platform>windows</platform>
                     <archive-directory>${project.basedir}/archive</archive-directory>
                     <archive-base>${project.build.directory}/result</archive-base>
-                    <executable-file>InstantEyedropper.exe</executable-file>
+                    <executable-file>test.bat</executable-file>
+
                     <executable-configuration>
                         <version-string>1.0.1</version-string>
                         <file-version>1.0.2</file-version>
@@ -69,6 +70,15 @@
                         </icon-definition>
                     </executable-configuration>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>sign-executable</id>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
