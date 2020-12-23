@@ -20,6 +20,7 @@ jobs:
     env:
       CURRENT_MAJOR_VERSION: 2
       CURRENT_MINOR_VERSION: 0
+      ACTIONS_ALLOW_UNSECURE_COMMANDS: true
 
     #################   Overview of Build Process   #################
     #   Note:  this is documented fully at
