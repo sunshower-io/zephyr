@@ -47,10 +47,10 @@ jobs:
           persist-credentials: false
           fetch-depth: 0
 
-      - name: Set up JDK 11
+      - name: Set up JDK 15
         uses: actions/setup-java@v1
         with:
-          java-version: 11
+          java-version: 15
 
       - name: Generate Build Number
         id: buildnumber
@@ -89,7 +89,7 @@ jobs:
         env:
           JAVA_TOOL_OPTIONS: -Duser.language=en -Duser.country=US
         with:
-          gradle-version: 6.0.1
+          gradle-version: 6.7.1
           arguments: >-
             setVersion -DzephyrRelease=true
             -PmavenRepositoryUsername=${{secrets.MAVEN_REPOSITORY_USERNAME}}
@@ -111,7 +111,7 @@ jobs:
         env:
           JAVA_TOOL_OPTIONS: -Duser.language=en -Duser.country=US
         with:
-          gradle-version: 6.0.1
+          gradle-version: 6.7.1
           arguments: >-
             clean assemble build sA javadoc publish -i
             -PmavenRepositoryUsername=${{secrets.MAVEN_REPOSITORY_USERNAME}}
@@ -247,7 +247,7 @@ jobs:
         env:
           JAVA_TOOL_OPTIONS: -Duser.language=en -Duser.country=US
         with:
-          gradle-version: 6.0.1
+          gradle-version: 6.7.1
           arguments: >-
             clean assemble build sA javadoc publish -i
             -PmavenRepositoryUsername=${{secrets.MAVEN_REPOSITORY_USERNAME}}
