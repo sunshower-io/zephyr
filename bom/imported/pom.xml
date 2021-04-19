@@ -24,7 +24,7 @@
         UI Dependencies
         -->
 
-        <vaadin.version>14.1.17</vaadin.version>
+        <vaadin.version>14.4.10</vaadin.version>
 
         <!--
         Compile Dependency Version
