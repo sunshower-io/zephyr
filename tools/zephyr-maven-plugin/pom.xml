@@ -261,7 +261,7 @@
             </goals>
             <configuration>
               <finalName>site-assembly</finalName>
-              <appendAssemblyId>false</appendAssemblyId>
+              <appendAssemblyId>true</appendAssemblyId>
             </configuration>
           </execution>
         </executions>
