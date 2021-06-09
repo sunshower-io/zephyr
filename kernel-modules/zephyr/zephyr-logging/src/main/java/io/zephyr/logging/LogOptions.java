@@ -16,8 +16,7 @@ public class LogOptions extends AbstractValidatable<LogOptions> implements Optio
   @Getter
   @Setter
   @CommandLine.Option(
-    names = {"-h", "--home-directory"},
-    defaultValue = "zephyr"
-  )
+      names = {"-h", "--home-directory"},
+      defaultValue = "zephyr")
   private File homeDirectory;
 }

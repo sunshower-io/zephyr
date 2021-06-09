@@ -12,9 +12,8 @@ public class DirectoryScannerOptions implements Options<DirectoryScannerOptions>
 
   @Getter
   @CommandLine.Option(
-    split = ",",
-    names = {"-w", "--watch"}
-  )
+      split = ",",
+      names = {"-w", "--watch"})
   private String[] directories;
 
   @Setter

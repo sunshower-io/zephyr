@@ -198,8 +198,7 @@ public abstract class AbstractDeploymentScanner implements Startable, Stoppable,
 
   private Optional<Coordinate> loadFile(File file) {
     val loader = ServiceLoader.load(ModuleScanner.class, kernel.getClassLoader());
-    return loader
-        .stream()
+    return loader.stream()
         .flatMap(
             t -> t.get().scan(file, urlFor(file)).map(ModuleDescriptor::getCoordinate).stream())
         .findAny();
