@@ -43,38 +43,34 @@ public class KernelOptions extends AbstractValidatable<KernelOptions>
   @Getter
   @Setter
   @CommandLine.Option(
-    names = {"-h", "--home-directory"},
-    defaultValue = "zephyr"
-  )
+      names = {"-h", "--home-directory"},
+      defaultValue = "zephyr")
   private File homeDirectory;
 
   /** Specify the maximum number of threads the Sunshower Kernel may start for gyre */
   @Getter
   @Setter
   @CommandLine.Option(
-    names = {"-c", "--max-concurrency"},
-    defaultValue = "8",
-    type = Integer.class
-  )
+      names = {"-c", "--max-concurrency"},
+      defaultValue = "8",
+      type = Integer.class)
   private Integer concurrency = 8;
 
   /** Specify the maximum number of threads the Sunshower Kernel may start for kernel use */
   @Getter
   @Setter
   @CommandLine.Option(
-    names = {"-k", "--kernel-concurrency"},
-    defaultValue = "2",
-    type = Integer.class
-  )
+      names = {"-k", "--kernel-concurrency"},
+      defaultValue = "2",
+      type = Integer.class)
   private Integer kernelConcurrency = 2;
 
   /** Specify logging level. Defaults to Level.WARNING */
   @Getter
   @Setter
   @CommandLine.Option(
-    names = {"-l", "--log-level"},
-    converter = LogLevelConverter.class
-  )
+      names = {"-l", "--log-level"},
+      converter = LogLevelConverter.class)
   private Level logLevel = Level.WARNING;
 
   public KernelOptions() {

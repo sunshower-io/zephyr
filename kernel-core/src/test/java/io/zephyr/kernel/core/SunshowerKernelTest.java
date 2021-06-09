@@ -229,10 +229,7 @@ public class SunshowerKernelTest extends KernelTestCase {
   private void request(String pluginName, ModuleLifecycle.Actions action) {
 
     val plugin =
-        kernel
-            .getModuleManager()
-            .getModules()
-            .stream()
+        kernel.getModuleManager().getModules().stream()
             .filter(t -> t.getCoordinate().getName().equals(pluginName))
             .findFirst()
             .get();
@@ -243,10 +240,7 @@ public class SunshowerKernelTest extends KernelTestCase {
   }
 
   private Module resolveModule(String name) {
-    return kernel
-        .getModuleManager()
-        .getModules()
-        .stream()
+    return kernel.getModuleManager().getModules().stream()
         .filter(t -> t.getCoordinate().getName().equals(name))
         .findAny()
         .get();

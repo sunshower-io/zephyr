@@ -2,11 +2,9 @@ plugins {
     id 'net.nemerosa.versioning' version '2.8.2'
 }
 
-apply plugin: 'pmd'
 apply plugin: 'java'
 apply plugin: 'application'
 apply plugin: 'java-library'
-apply plugin: 'com.github.spotbugs'
 
 configurations {
     plugin

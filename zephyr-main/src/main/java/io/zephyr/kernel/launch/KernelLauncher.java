@@ -196,8 +196,7 @@ public class KernelLauncher implements EntryPoint, EntryPointRegistry {
   }
 
   private static List<EntryPoint> resolveEntryPoints() {
-    return ServiceLoader.load(EntryPoint.class, ClassLoader.getSystemClassLoader())
-        .stream()
+    return ServiceLoader.load(EntryPoint.class, ClassLoader.getSystemClassLoader()).stream()
         .map(ServiceLoader.Provider::get)
         .sorted(PrioritizedExtension::compareTo)
         .collect(Collectors.toList());

@@ -1,8 +1,6 @@
-apply plugin: 'pmd'
 apply plugin: 'war'
 apply plugin: 'java'
 apply plugin: 'java-library'
-apply plugin: 'com.github.spotbugs'
 
 
 dependencies {

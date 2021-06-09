@@ -228,9 +228,7 @@ public class KernelExtension
       throws Exception {
     val zephyr = ctx.getBean(Zephyr.class);
     val coords =
-        zephyr
-            .getPluginCoordinates()
-            .stream()
+        zephyr.getPluginCoordinates().stream()
             .map(Coordinate::toCanonicalForm)
             .collect(Collectors.toSet());
 

@@ -26,15 +26,37 @@
             <username>${github.username}</username>
             <passphrase>${github.password}</passphrase>
         </server>
+
+        <server>
+            <id>sunshower-github</id>
+            <username>${maven-repo.github.username}</username>
+            <password>${maven-repo.github.password}</password>
+        </server>
+
     </servers>
 
     <profiles>
-
         <profile>
-            <id>sunshower</id>
+            <id>github</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
+            <repositories>
+                <repository>
+                    <id>central</id>
+                    <url>https://repo1.maven.org/maven2</url>
+                </repository>
+                <repository>
+                    <id>sunshower-github</id>
+                    <url>https://maven.pkg.github.com/sunshower-io/*</url>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                </repository>
+            </repositories>
+        </profile>
+        <profile>
+            <id>sunshower</id>
             <repositories>
 
                 <repository>

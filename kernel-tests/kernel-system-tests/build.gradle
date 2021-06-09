@@ -2,7 +2,7 @@ apply plugin: 'java'
 
 configurations {
     tests {
-        extendsFrom(testRuntime)
+        extendsFrom(testRuntimeClasspath)
     }
 }
 
