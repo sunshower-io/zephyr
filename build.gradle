@@ -9,21 +9,6 @@ plugins {
 
 apply from: "$rootDir/tasks/revisions.gradle"
 
-apply plugin: 'maven-publish'
-
-publishing {
-    repositories {
-        mavenLocal()
-        maven {
-            credentials {
-                username "$mavenRepositoryUsername"
-                password "$mavenRepositoryPassword"
-            }
-            url "$mavenRepositoryUrl"
-        }
-    }
-}
-
 allprojects {
     apply plugin: 'idea'
     apply plugin: "com.diffplug.spotless"
