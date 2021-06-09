@@ -277,5 +277,5 @@ jobs:
 
       - name: Delete release tag
         run: |
-          git push --delete origin ${GITHUB_REF##*/}
+          git push --delete origin release/${GITHUB_REF##*/}
 
