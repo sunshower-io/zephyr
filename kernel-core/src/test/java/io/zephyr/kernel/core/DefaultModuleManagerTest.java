@@ -197,9 +197,7 @@ class DefaultModuleManagerTest {
 
     start("plugin-1");
     val p2 =
-        manager
-            .getModules(Lifecycle.State.Active)
-            .stream()
+        manager.getModules(Lifecycle.State.Active).stream()
             .filter(t -> t.getCoordinate().getName().contains("plugin-1"))
             .findFirst()
             .get();
@@ -219,9 +217,7 @@ class DefaultModuleManagerTest {
     val prepped = manager.prepare(grp);
     prepped.commit().toCompletableFuture().get();
     val p2 =
-        manager
-            .getModules(Lifecycle.State.Resolved)
-            .stream()
+        manager.getModules(Lifecycle.State.Resolved).stream()
             .filter(t -> t.getCoordinate().getName().contains("plugin-2"))
             .findFirst()
             .get();
@@ -273,9 +269,7 @@ class DefaultModuleManagerTest {
     scheduler.submit(prepped.getProcess()).get();
 
     val module =
-        manager
-            .getModules(Lifecycle.State.Resolved)
-            .stream()
+        manager.getModules(Lifecycle.State.Resolved).stream()
             .filter(t -> "test-plugin-2".equals(t.getCoordinate().getName()))
             .findAny()
             .get();
@@ -298,9 +292,7 @@ class DefaultModuleManagerTest {
   private void request(String pluginName, ModuleLifecycle.Actions action) {
 
     val plugin =
-        manager
-            .getModules()
-            .stream()
+        manager.getModules().stream()
             .filter(t -> t.getCoordinate().getName().contains(pluginName))
             .findFirst()
             .get();

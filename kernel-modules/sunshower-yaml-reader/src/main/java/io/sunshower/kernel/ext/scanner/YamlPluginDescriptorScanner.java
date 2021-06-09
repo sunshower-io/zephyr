@@ -94,8 +94,7 @@ public class YamlPluginDescriptorScanner implements ModuleScanner {
         }
       }
 
-      try {
-        val zipfile = new JarFile(file, true);
+      try (val zipfile = new JarFile(file, true)) {
         val entry = zipfile.getJarEntry(entryName);
 
         if (entry != null) {

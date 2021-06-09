@@ -205,9 +205,7 @@ class ModuleCycleDetectorTest {
 
   private List<io.sunshower.gyre.Component<DirectedGraph.Edge<Coordinate>, Coordinate>> getCycles(
       Partition<DirectedGraph.Edge<Coordinate>, Coordinate> components) {
-    return components
-        .getElements()
-        .stream()
+    return components.getElements().stream()
         .filter(io.sunshower.gyre.Component::isCyclic)
         .collect(Collectors.toList());
   }

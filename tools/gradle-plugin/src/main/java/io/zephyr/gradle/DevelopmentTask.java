@@ -49,8 +49,7 @@ public class DevelopmentTask extends DefaultTask {
     getLogger().log(LogLevel.INFO, "Shutting down plugin...");
     val plugins = zephyr.getPlugins(Lifecycle.State.Active);
     zephyr.stop(
-        plugins
-            .stream()
+        plugins.stream()
             .map(t -> t.getCoordinate().toCanonicalForm())
             .collect(Collectors.toList()));
     getLogger().log(LogLevel.INFO, "Successfully shut down plugins");
@@ -65,9 +64,7 @@ public class DevelopmentTask extends DefaultTask {
 
   private void start(Zephyr zephyr, Set<URL> urls) {
     zephyr.start(
-        zephyr
-            .getPlugins()
-            .stream()
+        zephyr.getPlugins().stream()
             .filter(t -> isSource(t, urls))
             .map(Module::getCoordinate)
             .map(Coordinate::toCanonicalForm)

@@ -67,6 +67,7 @@ subprojects {
 //            }
 //        }
         pmd {
+            toolVersion = '6.30.0'
             ruleSets = [
                     "${project.rootDir}/check/pmd/rules/errorprone.xml",
                     "category/java/multithreading.xml",
@@ -97,7 +98,7 @@ subprojects {
 
         javadoc {
             source = sourceSets.main.allJava
-            classpath += configurations.runtime
+            classpath += configurations.runtimeClasspath
             options.addBooleanOption('html5', true)
         }
 
@@ -127,6 +128,7 @@ subprojects {
             }
         }
         pmd {
+            toolVersion = '6.30.0'
             ruleSets = [
                     "${project.rootDir}/check/pmd/rules/errorprone.xml",
                     "category/java/multithreading.xml",
@@ -141,7 +143,7 @@ subprojects {
         }
         spotless {
             java {
-                googleJavaFormat('1.5')
+                googleJavaFormat('1.9')
             }
         }
 

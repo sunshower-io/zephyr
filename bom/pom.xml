@@ -1,38 +1,52 @@
 <project>
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>io.zephyr</groupId>
-    <artifactId>zephyr-bom</artifactId>
-    <version>2.0.56-SNAPSHOT</version>
-    <packaging>pom</packaging>
-    <properties>
-        <zephyr.version>2.0.56-SNAPSHOT</zephyr.version>
-    </properties>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>io.zephyr</groupId>
+  <artifactId>zephyr-bom</artifactId>
+  <version>2.0.56-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <properties>
+    <zephyr.version>2.0.56-SNAPSHOT</zephyr.version>
+  </properties>
 
-    <repositories>
-        <repository>
-            <id>maven-central</id>
-            <url>https://repo1.maven.org/maven2</url>
-        </repository>
-        <repository>
-            <id>mulesoft</id>
-            <url>https://repository.mulesoft.org/nexus/content/repositories/public/</url>
-        </repository>
-    </repositories>
+  <repositories>
+    <repository>
+      <id>maven-central</id>
+      <url>https://repo1.maven.org/maven2</url>
+    </repository>
 
 
-    <distributionManagement>
-        <repository>
-            <id>sunshower-releases</id>
-            <url>http://artifacts.sunshower.io/repository/sunshower-releases</url>
-        </repository>
-        <snapshotRepository>
-            <id>sunshower-snapshots</id>
-            <url>http://artifacts.sunshower.io/repository/sunshower-snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
-    <modules>
-        <module>imported</module>
-        <module>exported</module>
-    </modules>
+    <repository>
+      <id>mulesoft</id>
+      <url>https://repository.mulesoft.org/nexus/content/repositories/public/</url>
+    </repository>
+
+    <repository>
+      <id>sunshower-github</id>
+      <name>Sunshower-env Github</name>
+      <url>https://maven.pkg.github.com/sunshower-io/*</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+    </repository>
+  </repositories>
+
+
+  <distributionManagement>
+    <repository>
+      <id>sunshower-github</id>
+      <url>https://maven.pkg.github.com/sunshower-io/zephyr</url>
+    </repository>
+    <snapshotRepository>
+      <id>sunshower-github</id>
+      <url>https://maven.pkg.github.com/sunshower-io/zephyr</url>
+    </snapshotRepository>
+  </distributionManagement>
+  <modules>
+    <module>imported</module>
+    <module>exported</module>
+  </modules>
 
 </project>
