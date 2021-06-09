@@ -36,11 +36,11 @@
 
   <distributionManagement>
     <repository>
-      <id>sunshower-releases</id>
+      <id>sunshower-github</id>
       <url>https://maven.pkg.github.com/sunshower-io/zephyr</url>
     </repository>
     <snapshotRepository>
-      <id>sunshower-snapshots</id>
+      <id>sunshower-github</id>
       <url>https://maven.pkg.github.com/sunshower-io/zephyr</url>
     </snapshotRepository>
   </distributionManagement>
