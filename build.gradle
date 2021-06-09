@@ -3,11 +3,12 @@ plugins {
     id 'maven-publish'
     id "com.diffplug.spotless" version "5.8.2"
     id "com.github.spotbugs" version "4.6.0"
-    id "org.springframework.boot" version "2.2.4.RELEASE"
+    id "org.springframework.boot" version "2.2.4.RELEASE" apply false
     id "io.spring.dependency-management" version "1.0.6.RELEASE"
 }
 
 apply from: "$rootDir/tasks/revisions.gradle"
+
 
 allprojects {
     apply plugin: 'idea'
@@ -35,10 +36,21 @@ allprojects {
 subprojects {
 
     apply plugin: 'maven-publish'
+    publishing {
+        repositories {
+            mavenLocal()
+            maven {
+                credentials {
+                    username "$mavenRepositoryUsername"
+                    password "$mavenRepositoryPassword"
+                }
+                url "$mavenRepositoryUrl"
+            }
+        }
+    }
+
 
     plugins.withType(WarPlugin) {
-
-
         configurations {
             plugin {
                 transitive = false
@@ -66,7 +78,7 @@ subprojects {
 
         publishing {
             publications {
-                webArchive(MavenPublication) {
+                pluginMaven(MavenPublication) {
                     from components.web
                 }
             }
@@ -92,9 +104,23 @@ subprojects {
 
         publishing {
             publications {
-                mavenJava(MavenPublication) {
-                    from components.java
-                    artifact tasks.packageJavadocs
+
+                pluginMaven(MavenPublication) {
+                    artifact tasks.jar
+                    versionMapping {
+                        usage('java-api') {
+                            fromResolutionOf('runtimeClasspath')
+                        }
+                        usage('java-runtime') {
+                            fromResolutionResult()
+                        }
+                    }
+                }
+
+                pluginMaven(MavenPublication) {
+                    artifact(tasks.packageJavadocs) {
+                        classifier = 'javadocs'
+                    }
                     versionMapping {
                         usage('java-api') {
                             fromResolutionOf('runtimeClasspath')

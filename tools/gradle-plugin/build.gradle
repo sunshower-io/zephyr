@@ -1,16 +1,4 @@
-//buildscript {
-//    repositories {
-//        mavenLocal()
-//        mavenCentral()
-//    }
-//
-//    dependencies {
-//        classpath "io.zephyr:synchronous-api:2.0.0-SNAPSHOT"
-//    }
-//}
-//
 plugins {
-
     id 'java'
     id 'java-library'
     id 'java-gradle-plugin'

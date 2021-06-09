@@ -73,7 +73,7 @@ include(
          */
         'plugins:spring:spring-web-plugin',
 
-        'tools:gradle-plugin',
+//        'tools:gradle-plugin',
         'tools:zephyr-bundle',
         'tools:zephyr-maven-plugin',
         'tools:zephyr-bundle:zephyr-bundle-core',
