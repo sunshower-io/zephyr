@@ -1,4 +1,5 @@
 apply plugin: 'java'
+apply plugin: 'java-library'
 
 repositories {
     maven {
@@ -12,9 +13,9 @@ dependencies {
 
 //    implementation 'net.jsign:jsign'
 //    implementation 'net.jsign:jsign-core'
-    implementation 'net.lingala.zip4j:zip4j'
-    implementation 'org.jclarion:image4j'
-    implementation'org.apache.xmlgraphics:batik-transcoder'
-    implementation 'com.twelvemonkeys.imageio:imageio-batik'
+    api 'net.lingala.zip4j:zip4j'
+    api 'org.jclarion:image4j'
+    api 'org.apache.xmlgraphics:batik-transcoder'
+    api 'com.twelvemonkeys.imageio:imageio-batik'
     testImplementation project(':kernel-tests:kernel-test-common')
 }
