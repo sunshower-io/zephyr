@@ -18,12 +18,6 @@
   <prerequisites>
     <maven>${maven.version}</maven>
   </prerequisites>
-  <repositories>
-    <repository>
-      <id>sunshower-github</id>
-      <url>https://maven.pkg.github.com/sunshower-io/*</url>
-    </repository>
-  </repositories>
 
   <distributionManagement>
     <repository>
