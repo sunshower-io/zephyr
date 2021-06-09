@@ -140,13 +140,6 @@
         <enabled>false</enabled>
       </snapshots>
     </repository>
-    <repository>
-      <id>sunshower-cache</id>
-      <url>http://artifacts.sunshower.io/repository/sunshower-cache</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
   </repositories>
 
   <build>

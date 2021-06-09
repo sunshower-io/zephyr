@@ -31,18 +31,18 @@ allprojects {
         }
     }
 
-    publishing {
-        repositories {
-            mavenLocal()
-            maven {
-                credentials {
-                    username "$mavenRepositoryUsername"
-                    password "$mavenRepositoryPassword"
-                }
-                url "$mavenRepositoryUrl"
-            }
-        }
-    }
+//    publishing {
+//        repositories {
+//            mavenLocal()
+//            maven {
+//                credentials {
+//                    username "$mavenRepositoryUsername"
+//                    password "$mavenRepositoryPassword"
+//                }
+//                url "$mavenRepositoryUrl"
+//            }
+//        }
+//    }
 
 }
 
