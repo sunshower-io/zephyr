@@ -12,6 +12,7 @@ import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+@Disabled
 public class DevelopmentPluginTest {
 
   @Test

@@ -9,12 +9,25 @@ plugins {
 
 apply from: "$rootDir/tasks/revisions.gradle"
 
+apply plugin: 'maven-publish'
+
+publishing {
+    repositories {
+        mavenLocal()
+        maven {
+            credentials {
+                username "$mavenRepositoryUsername"
+                password "$mavenRepositoryPassword"
+            }
+            url "$mavenRepositoryUrl"
+        }
+    }
+}
+
 allprojects {
     apply plugin: 'idea'
-    apply plugin: 'maven-publish'
     apply plugin: "com.diffplug.spotless"
     apply plugin: "io.spring.dependency-management"
-
     dependencyManagement {
         imports {
             mavenBom "io.zephyr:bom-imported:$project.version"
@@ -31,23 +44,12 @@ allprojects {
         }
     }
 
-//    publishing {
-//        repositories {
-//            mavenLocal()
-//            maven {
-//                credentials {
-//                    username "$mavenRepositoryUsername"
-//                    password "$mavenRepositoryPassword"
-//                }
-//                url "$mavenRepositoryUrl"
-//            }
-//        }
-//    }
 
 }
 
 subprojects {
 
+    apply plugin: 'maven-publish'
 
     plugins.withType(WarPlugin) {
 
