@@ -56,7 +56,7 @@ jobs:
       #################   Install and Deploy  #################
 
     - name: Install and Deploy Maven POMs
-      if: matrix.os == 'ubuntu-latest'
+      if: matrix.os == 'Linux'
       run: >-
         mvn install deploy -f bom
         --settings bom/settings/settings.xml
