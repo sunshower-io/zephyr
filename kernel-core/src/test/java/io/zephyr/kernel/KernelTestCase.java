@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.FileSystems;
+import lombok.SneakyThrows;
 import lombok.extern.java.Log;
 import lombok.val;
 import org.junit.jupiter.api.AfterEach;
@@ -23,6 +24,7 @@ public class KernelTestCase {
   protected File springPlugin;
   protected SunshowerKernelConfiguration cfg;
 
+  @SneakyThrows
   @BeforeEach
   protected void setUp() {
     val options = new KernelOptions();
@@ -33,6 +35,7 @@ public class KernelTestCase {
         DaggerSunshowerKernelConfiguration.factory()
             .create(options, ClassLoader.getSystemClassLoader());
     kernel = cfg.kernel();
+    Thread.sleep(1000);
   }
 
   @AfterEach
