@@ -15,6 +15,8 @@ import lombok.extern.java.Log;
 import lombok.val;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 
 @Log
 @SuppressFBWarnings
@@ -26,6 +28,7 @@ import org.junit.jupiter.api.Test;
   "PMD.JUnitAssertionsShouldIncludeMessage",
   "PMD.JUnitTestContainsTooManyAsserts"
 })
+@DisabledOnOs(OS.WINDOWS)
 public class SunshowerKernelTest extends KernelTestCase {
 
   @Test

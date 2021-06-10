@@ -15,8 +15,11 @@ import lombok.extern.java.Log;
 import lombok.val;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 
 @Log
+@DisabledOnOs(OS.WINDOWS)
 public class KernelTestCase {
 
   protected Kernel kernel;
