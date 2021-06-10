@@ -56,7 +56,7 @@ jobs:
       #################   Install and Deploy  #################
 
     - name: Install and Deploy Maven POMs
-      runs-on: ubuntu-latest
+      if: matrix.platform == 'ubuntu-latest'
       run: >-
         mvn install deploy -f bom
         --settings bom/settings/settings.xml
@@ -95,7 +95,7 @@ jobs:
 
 
     - name: Test Maven Plugin on All Platforms
-      runs-on: ubuntu-latest
+      if: matrix.os == 'ubuntu-latest'
       run: >-
         mvn deploy -f tools/zephyr-maven-plugin
         --settings bom/settings/settings.xml
@@ -131,7 +131,7 @@ jobs:
 
     - name: Deploy Artifacts
       uses: eskatos/gradle-command-action@v1
-      runs-on: ubuntu-latest
+      if: matrix.os == 'ubuntu-latest'
       env:
         JAVA_TOOL_OPTIONS: -Duser.language=en -Duser.country=US
       with:
