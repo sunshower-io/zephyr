@@ -20,10 +20,13 @@ import javax.inject.Inject;
 import lombok.SneakyThrows;
 import lombok.val;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 
 @ZephyrTest
+@DisabledOnOs(OS.WINDOWS)
 @Clean(value = Clean.Mode.After, context = Clean.Context.Method)
 public class ModuleTrackerTest {
 
