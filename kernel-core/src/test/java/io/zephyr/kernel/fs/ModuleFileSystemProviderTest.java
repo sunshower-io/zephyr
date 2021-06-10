@@ -20,8 +20,11 @@ import java.util.logging.Logger;
 import lombok.val;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 
 @SuppressFBWarnings
+@DisabledOnOs(OS.WINDOWS)
 @SuppressWarnings({"PMD.AvoidDuplicateLiterals", "PMD.JUnitTestContainsTooManyAsserts"})
 class ModuleFileSystemProviderTest {
   static final Logger log = Logger.getLogger(ModuleFileSystemProviderTest.class.getName());
