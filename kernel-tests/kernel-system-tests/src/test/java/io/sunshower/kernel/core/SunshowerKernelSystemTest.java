@@ -16,6 +16,7 @@ import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.OS;
 
 @ZephyrTest
+@DisabledOnOs(OS.WINDOWS)
 class SunshowerKernelSystemTest {
   @Inject private Kernel kernel;
   @Inject private Zephyr zephyr;
