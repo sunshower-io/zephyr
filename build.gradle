@@ -22,7 +22,6 @@ allprojects {
 
 
     repositories {
-        jcenter()
         mavenLocal()
         mavenCentral()
         maven {
@@ -38,7 +37,6 @@ subprojects {
     apply plugin: 'maven-publish'
     publishing {
         repositories {
-            mavenLocal()
             maven {
                 credentials {
                     username "$mavenRepositoryUsername"
