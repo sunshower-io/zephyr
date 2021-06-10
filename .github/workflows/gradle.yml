@@ -63,6 +63,19 @@ jobs:
         -Dmaven-repo.github.username=${{secrets.MAVEN_REPOSITORY_USERNAME}}
         -Dmaven-repo.github.password=${{secrets.MAVEN_REPOSITORY_PASSWORD}}
 
+      #################   Install BOMs  #################
+      #
+      #   We're going to deploy the BOM from Ubuntu only
+      #   The BOM will be consumed by subsequent test-runs on Ubuntu, Windows, and MacOS
+      #
+      #################   Install BOMs  #################
+    - name: Install Maven POMs
+      run: >-
+        mvn install -f bom
+        --settings bom/settings/settings.xml
+        -Dmaven-repo.github.username=${{secrets.MAVEN_REPOSITORY_USERNAME}}
+        -Dmaven-repo.github.password=${{secrets.MAVEN_REPOSITORY_PASSWORD}}
+
 
       #################   Test  #################
       #
@@ -131,7 +144,7 @@ jobs:
 
     - name: Deploy Artifacts
       uses: eskatos/gradle-command-action@v1
-      if: matrix.os == 'ubuntu-latest'
+      if: matrix.platform == 'ubuntu-latest'
       env:
         JAVA_TOOL_OPTIONS: -Duser.language=en -Duser.country=US
       with:
