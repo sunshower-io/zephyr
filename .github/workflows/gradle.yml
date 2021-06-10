@@ -70,11 +70,7 @@ jobs:
       #
       #################   Install BOMs  #################
     - name: Install Maven POMs
-      run: >-
-        mvn install -f bom
-        --settings bom/settings/settings.xml
-        -Dmaven-repo.github.username=${{secrets.MAVEN_REPOSITORY_USERNAME}}
-        -Dmaven-repo.github.password=${{secrets.MAVEN_REPOSITORY_PASSWORD}}
+      run: mvn install -f bom --settings bom/settings/settings.xml -Dmaven-repo.github.username=${{secrets.MAVEN_REPOSITORY_USERNAME}} -Dmaven-repo.github.password=${{secrets.MAVEN_REPOSITORY_PASSWORD}}
 
 
       #################   Test  #################
@@ -92,12 +88,7 @@ jobs:
         JAVA_TOOL_OPTIONS: -Duser.language=en -Duser.country=US
       with:
         gradle-version: 7.0.2
-        arguments: >-
-          assemble build sA
-          -i
-          -PmavenRepositoryUsername=${{secrets.MAVEN_REPOSITORY_USERNAME}}
-          -PmavenRepositoryPassword=${{secrets.MAVEN_REPOSITORY_PASSWORD}}
-          -PmavenRepositoryUrl=${{secrets.MAVEN_REPOSITORY_URL}} --stacktrace
+        arguments: assemble build sA -i -PmavenRepositoryUsername=${{secrets.MAVEN_REPOSITORY_USERNAME}} -PmavenRepositoryPassword=${{secrets.MAVEN_REPOSITORY_PASSWORD}} -PmavenRepositoryUrl=${{secrets.MAVEN_REPOSITORY_URL}} --stacktrace
 
       #################   Test  #################
       #
@@ -128,11 +119,7 @@ jobs:
         JAVA_TOOL_OPTIONS: -Duser.language=en -Duser.country=US
       with:
         gradle-version: 7.0.2
-        arguments: >-
-          assemble build sA -i
-          -PmavenRepositoryUsername=${{secrets.MAVEN_REPOSITORY_USERNAME}}
-          -PmavenRepositoryPassword=${{secrets.MAVEN_REPOSITORY_PASSWORD}}
-          -PmavenRepositoryUrl=${{secrets.MAVEN_REPOSITORY_URL}} --stacktrace
+        arguments: assemble build sA -i -PmavenRepositoryUsername=${{secrets.MAVEN_REPOSITORY_USERNAME}} -PmavenRepositoryPassword=${{secrets.MAVEN_REPOSITORY_PASSWORD}} -PmavenRepositoryUrl=${{secrets.MAVEN_REPOSITORY_URL}} --stacktrace
 
 
       #################   Deploy  #################
