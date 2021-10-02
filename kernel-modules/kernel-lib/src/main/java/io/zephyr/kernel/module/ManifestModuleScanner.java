@@ -7,7 +7,6 @@ import io.zephyr.kernel.core.ModuleDescriptor;
 import io.zephyr.kernel.core.ModuleScanner;
 import io.zephyr.kernel.core.SemanticVersion;
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,7 +37,7 @@ public final class ManifestModuleScanner implements ModuleScanner {
       try (val packageFile = new JarFile(file, true)) {
         return Optional.of(read(packageFile.getManifest(), file, source));
       }
-    } catch (IOException | IllegalArgumentException e) {
+    } catch (Throwable e) {
       return Optional.empty();
     }
   }
