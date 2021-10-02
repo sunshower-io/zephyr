@@ -147,4 +147,9 @@ public class DefaultZephyr implements Zephyr {
     }
     kernel.getModuleManager().prepare(group).commit().toCompletableFuture().get();
   }
+
+  @Override
+  public Kernel getKernel() {
+    return kernel;
+  }
 }
