@@ -149,9 +149,12 @@ public class DefaultPluginContext implements ModuleContext {
       val serviceRegistry = kernel.getServiceRegistry();
       val result = new ArrayList<ServiceReference<T>>();
       for (val module : moduleManager.getModules(Lifecycle.State.Active)) {
-        for (val registration : serviceRegistry.getRegistrations(module)) {
-          if (registration.provides(type)) {
-            result.add((ServiceReference<T>) registration.getReference());
+        val set = serviceRegistry.getRegistrations(module);
+        if (set != null) {
+          for (val registration : set) {
+            if (registration.provides(type)) {
+              result.add((ServiceReference<T>) registration.getReference());
+            }
           }
         }
       }
