@@ -111,7 +111,7 @@ public class ModuleDownloadPhase extends Task implements ChannelTransferListener
   private void fireDownloadFailed(URL downloadUrl, Kernel kernel, Exception ex) {
     kernel.dispatchEvent(
         ModulePhaseEvents.MODULE_DOWNLOAD_FAILED,
-        Events.create(downloadUrl, StatusType.FAILED.unresolvable(ex.getMessage())));
+        Events.create(downloadUrl, StatusType.FAILED.unresolvable(ex)));
   }
 
   private void fireDownloadCompleted(URL downloadUrl, Kernel kernel) {

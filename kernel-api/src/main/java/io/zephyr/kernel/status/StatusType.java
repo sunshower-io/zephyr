@@ -18,4 +18,9 @@ public enum StatusType {
   public Status resolvable(String message) {
     return Status.resolvable(this, message);
   }
+
+  public Status unresolvable(Exception ex) {
+    return Status.unresolvable(this, ex);
+
+  }
 }

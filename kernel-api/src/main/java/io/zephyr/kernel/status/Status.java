@@ -24,6 +24,10 @@ public class Status {
     this.resolutions = new ArrayList<>();
   }
 
+  public static Status unresolvable(StatusType statusType, Exception ex) {
+    return new Status(statusType, ex.getMessage(), false, Optional.ofNullable(ex));
+  }
+
   public void addResolution(@NonNull Resolution resolution) {
     resolutions.add(resolution);
   }
