@@ -38,7 +38,6 @@ public class KernelTestCase {
         DaggerSunshowerKernelConfiguration.factory()
             .create(options, ClassLoader.getSystemClassLoader());
     kernel = cfg.kernel();
-    Thread.sleep(1000);
   }
 
   @AfterEach
