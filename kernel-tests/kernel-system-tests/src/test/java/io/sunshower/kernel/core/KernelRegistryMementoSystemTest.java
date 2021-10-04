@@ -15,12 +15,15 @@ import java.nio.file.Files;
 import javax.inject.Inject;
 import lombok.val;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 
 @ZephyrTest
 @Modules({
   @Module(project = "kernel-tests:test-plugins:test-plugin-spring"),
   @Module(project = "kernel-modules:sunshower-yaml-reader", type = Module.Type.KernelModule)
 })
+@DisabledOnOs(OS.WINDOWS)
 @Clean(value = Clean.Mode.Before, context = Clean.Context.Method)
 class KernelRegistryMementoSystemTest {
 
