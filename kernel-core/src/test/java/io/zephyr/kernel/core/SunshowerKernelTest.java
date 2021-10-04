@@ -1,13 +1,20 @@
 package io.zephyr.kernel.core;
 
 import static io.sunshower.test.common.Tests.relativeToProjectBuild;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.zephyr.kernel.KernelTestCase;
 import io.zephyr.kernel.Lifecycle;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.misc.SuppressFBWarnings;
-import io.zephyr.kernel.module.*;
+import io.zephyr.kernel.module.ModuleInstallationGroup;
+import io.zephyr.kernel.module.ModuleInstallationRequest;
+import io.zephyr.kernel.module.ModuleLifecycle;
+import io.zephyr.kernel.module.ModuleLifecycleChangeGroup;
+import io.zephyr.kernel.module.ModuleLifecycleChangeRequest;
 import java.io.File;
 import java.io.IOException;
 import lombok.SneakyThrows;
@@ -21,14 +28,13 @@ import org.junit.jupiter.api.condition.OS;
 @Log
 @SuppressFBWarnings
 @SuppressWarnings({
-  "PMD.AvoidInstantiatingObjectsInLoops",
-  "PMD.AvoidDuplicateLiterals",
-  "PMD.JUnitTestsShouldIncludeAssert",
-  "PMD.DataflowAnomalyAnalysis",
-  "PMD.JUnitAssertionsShouldIncludeMessage",
-  "PMD.JUnitTestContainsTooManyAsserts"
+    "PMD.AvoidInstantiatingObjectsInLoops",
+    "PMD.AvoidDuplicateLiterals",
+    "PMD.JUnitTestsShouldIncludeAssert",
+    "PMD.DataflowAnomalyAnalysis",
+    "PMD.JUnitAssertionsShouldIncludeMessage",
+    "PMD.JUnitTestContainsTooManyAsserts"
 })
-@DisabledOnOs(OS.WINDOWS)
 public class SunshowerKernelTest extends KernelTestCase {
 
   @Test
@@ -47,32 +53,48 @@ public class SunshowerKernelTest extends KernelTestCase {
   void ensureStartingKernelProducesFileSystem() throws IOException {
     assertNull(kernel.getFileSystem(), "kernel filesystem must initially be null");
     kernel.start();
-    assertNotNull(kernel.getFileSystem(), "kernel filesystem must now be set");
+    try {
+      assertNotNull(kernel.getFileSystem(), "kernel filesystem must now be set");
+    } finally {
+      kernel.stop();
+    }
   }
 
   @Test
   void ensureStartingKernelProducesClassLoader() throws IOException {
     assertNull(kernel.getClassLoader(), "kernel filesystem must initially be null");
     kernel.start();
-    assertNotNull(kernel.getClassLoader(), "kernel filesystem must now be set");
+    try {
+      assertNotNull(kernel.getClassLoader(), "kernel filesystem must now be set");
+    } finally {
+      kernel.stop();
+    }
   }
 
   @RepeatedTest(10)
   void ensureKernelLoadingIsIdempotent() throws InterruptedException {
-    kernel.start();
-    kernel.stop();
+    try {
+      kernel.start();
+    } finally {
+      kernel.stop();
+    }
   }
 
   @Test
   void ensureStartingSpringBootPluginFileWorks() throws InterruptedException {
 
-    installYamlModule();
+    try {
+      installYamlModule();
 
-    springPlugin = relativeToProjectBuild("plugins:spring:spring-web-plugin", "war", "libs");
-    install(springPlugin);
-    start("spring-web-plugin");
-    stop("spring-web-plugin");
-    remove("spring-web-plugin");
+      springPlugin = relativeToProjectBuild("plugins:spring:spring-web-plugin", "war", "libs");
+      install(springPlugin);
+      start("spring-web-plugin");
+      stop("spring-web-plugin");
+      remove("spring-web-plugin");
+    } finally {
+      kernel.stop();
+    }
+
   }
 
   private void installYamlModule() {
@@ -85,30 +107,38 @@ public class SunshowerKernelTest extends KernelTestCase {
 
   @Test
   void ensureTransitiveSpringWebPluginWorks() throws InterruptedException {
-    installYamlModule();
-    springPlugin = relativeToProjectBuild("plugins:spring:spring-web-plugin", "war", "libs");
-    install(springPlugin);
+    try {
+      installYamlModule();
+      springPlugin = relativeToProjectBuild("plugins:spring:spring-web-plugin", "war", "libs");
+      install(springPlugin);
 
-    springPlugin =
-        relativeToProjectBuild("kernel-tests:test-plugins:test-spring-web-plugin", "war", "libs");
-    install(springPlugin);
-    start("test-spring-web-plugin");
+      springPlugin =
+          relativeToProjectBuild("kernel-tests:test-plugins:test-spring-web-plugin", "war", "libs");
+      install(springPlugin);
+      start("test-spring-web-plugin");
 
-    stop("test-spring-web-plugin");
-    remove("spring-web-plugin");
+      stop("test-spring-web-plugin");
+      remove("spring-web-plugin");
+    } finally {
+      kernel.stop();
+    }
   }
 
   @Test
   void ensureRemovingPluginWorks() {
-    installYamlModule();
-    springPlugin =
-        relativeToProjectBuild("kernel-tests:test-plugins:test-plugin-spring", "war", "libs");
-    install(springPlugin);
-    assertEquals(kernel.getModuleManager().getModules().size(), 1, "must have one plugin");
+    try {
+      installYamlModule();
+      springPlugin =
+          relativeToProjectBuild("kernel-tests:test-plugins:test-plugin-spring", "war", "libs");
+      install(springPlugin);
+      assertEquals(kernel.getModuleManager().getModules().size(), 1, "must have one plugin");
 
-    remove("spring-plugin");
+      remove("spring-plugin");
 
-    assertTrue(kernel.getModuleManager().getModules().isEmpty(), "must have no plugins");
+      assertTrue(kernel.getModuleManager().getModules().isEmpty(), "must have no plugins");
+    } finally {
+      kernel.stop();
+    }
   }
 
   @Test
@@ -139,17 +169,22 @@ public class SunshowerKernelTest extends KernelTestCase {
     install(yamlModule);
     kernel.stop();
     kernel.start();
-    install(springPlugin);
+    try {
+      install(springPlugin);
 
-    start("spring-plugin");
-    //    stop("spring-plugin");
+      start("spring-plugin");
+      //    stop("spring-plugin");
 
-    var depPlugin =
-        relativeToProjectBuild("kernel-tests:test-plugins:test-plugin-spring-dep", "war", "libs");
-    install(depPlugin);
-    start("spring-plugin-dep");
+      var depPlugin =
+          relativeToProjectBuild("kernel-tests:test-plugins:test-plugin-spring-dep", "war", "libs");
+      install(depPlugin);
+      start("spring-plugin-dep");
 
-    stop("spring-plugin");
+      stop("spring-plugin");
+    } finally {
+      kernel.stop();
+    }
+
   }
 
   @Test
@@ -164,9 +199,13 @@ public class SunshowerKernelTest extends KernelTestCase {
     kernel.start();
     install(springPlugin);
 
-    val module = resolveModule("spring-plugin");
-    val resource = module.getClassLoader().getResource("public/frap.txt");
-    assertNotNull(resource);
+    try {
+      val module = resolveModule("spring-plugin");
+      val resource = module.getClassLoader().getResource("public/frap.txt");
+      assertNotNull(resource);
+    } finally {
+      kernel.stop();
+    }
   }
 
   @Test
@@ -180,26 +219,34 @@ public class SunshowerKernelTest extends KernelTestCase {
     kernel.stop();
     kernel.start();
     install(springPlugin);
+    try {
 
-    val module = resolveModule("spring-plugin-jar");
-    val resource = module.getClassLoader().getResource("public/frap.txt");
-    assertNotNull(resource);
+      val module = resolveModule("spring-plugin-jar");
+      val resource = module.getClassLoader().getResource("public/frap.txt");
+      assertNotNull(resource);
+    } finally {
+      kernel.stop();
+    }
   }
 
   @Test
   void ensureStartingSpringBootPluginWorks() {
 
-    kernel.start();
-    yamlModule = relativeToProjectBuild("kernel-modules:sunshower-yaml-reader", "war", "libs");
-    springPlugin =
-        relativeToProjectBuild("kernel-tests:test-plugins:test-plugin-spring", "war", "libs");
-    install(yamlModule);
-    kernel.stop();
-    kernel.start();
-    install(springPlugin);
+    try {
+      kernel.start();
+      yamlModule = relativeToProjectBuild("kernel-modules:sunshower-yaml-reader", "war", "libs");
+      springPlugin =
+          relativeToProjectBuild("kernel-tests:test-plugins:test-plugin-spring", "war", "libs");
+      install(yamlModule);
+      kernel.stop();
+      kernel.start();
+      install(springPlugin);
 
-    start("spring-plugin");
-    stop("spring-plugin");
+      start("spring-plugin");
+      stop("spring-plugin");
+    } finally {
+      kernel.stop();
+    }
   }
 
   private void stop(String s) {

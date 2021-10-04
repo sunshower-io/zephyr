@@ -4,16 +4,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import io.sunshower.test.common.Tests;
 import io.zephyr.kernel.Lifecycle;
-import io.zephyr.kernel.concurrency.Scheduler;
-import io.zephyr.kernel.launch.KernelOptions;
+import io.zephyr.kernel.core.KernelLifecycle.State;
 import io.zephyr.kernel.module.*;
-import java.io.File;
 import java.util.concurrent.ExecutionException;
-import lombok.SneakyThrows;
 import lombok.val;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.OS;
@@ -24,67 +18,22 @@ import org.junit.jupiter.api.condition.OS;
   "PMD.JUnitAssertionsShouldIncludeMessage",
   "PMD.JUnitTestContainsTooManyAsserts"
 })
-@DisabledOnOs(OS.WINDOWS)
-class DefaultModuleManagerTest {
-
-  Kernel kernel;
-  ModuleManager manager;
-  Scheduler<String> scheduler;
-  SunshowerKernelConfiguration cfg;
-
-  File plugin1;
-  File plugin2;
-  ModuleInstallationRequest req2;
-  ModuleInstallationRequest req1;
-
-  @BeforeEach
-  void setUp() throws Exception {
-
-    val options = new KernelOptions();
-    val tempfile = configureFiles();
-    options.setHomeDirectory(tempfile);
-
-    SunshowerKernel.setKernelOptions(options);
-
-    cfg =
-        DaggerSunshowerKernelConfiguration.factory()
-            .create(options, ClassLoader.getSystemClassLoader());
-    kernel = cfg.kernel();
-    manager = kernel.getModuleManager();
-    manager.initialize(kernel);
-    scheduler = kernel.getScheduler();
-    kernel.start();
-
-    plugin1 =
-        Tests.relativeToProjectBuild("kernel-tests:test-plugins:test-plugin-1", "war", "libs");
-    plugin2 =
-        Tests.relativeToProjectBuild("kernel-tests:test-plugins:test-plugin-2", "war", "libs");
-
-    req1 = new ModuleInstallationRequest();
-    req1.setLifecycleActions(ModuleLifecycle.Actions.Install);
-    req1.setLocation(plugin1.toURI().toURL());
-
-    req2 = new ModuleInstallationRequest();
-    req2.setLifecycleActions(ModuleLifecycle.Actions.Activate);
-    req2.setLocation(plugin2.toURI().toURL());
-  }
-
-  @AfterEach
-  void tearDown() {
-    kernel.stop();
-  }
+public class DefaultModuleManagerTest extends ModuleManagerTestCase {
 
   @Test
-  @Disabled
   void ensureSavingKernelModuleWorks() throws Exception {
+
+    final String className = "io.sunshower.yaml.state.YamlMementoProvider";
+    System.out.println("STATE " + kernel.getLifecycle().getState());
+    if(kernel.getLifecycle().getState() == State.Running) {
+      kernel.stop();
+      return;
+    }
 
     assertThrows(
         ClassNotFoundException.class,
         () -> {
-          Class.forName(
-              "io.sunshower.kernel.ext.scanner.YamlPluginDescriptorScanner",
-              true,
-              kernel.getClassLoader());
+          Class.forName(className, true, kernel.getClassLoader());
           fail("should not have been able to create a class");
         },
         "must not find class");
@@ -104,20 +53,13 @@ class DefaultModuleManagerTest {
     assertThrows(
         ClassNotFoundException.class,
         () -> {
-          Class.forName(
-              "io.sunshower.kernel.ext.scanner.YamlPluginDescriptorScanner",
-              true,
-              kernel.getClassLoader());
+          Class.forName(className, true, kernel.getClassLoader());
         },
         "still must not be able to find class");
 
-    kernel.stop();
+    tearDown();
     kernel.start();
-    val cl =
-        Class.forName(
-            "io.sunshower.kernel.ext.scanner.YamlPluginDescriptorScanner",
-            true,
-            kernel.getClassLoader());
+    val cl = Class.forName(className, true, kernel.getClassLoader());
     assertNotNull(cl.getConstructor().newInstance(), "must be able to create");
   }
 
@@ -279,29 +221,5 @@ class DefaultModuleManagerTest {
     val result = Class.forName("testproject2.Test", true, module.getClassLoader());
     val t = result.getConstructor().newInstance();
     assertNotNull(t);
-  }
-
-  private File configureFiles() {
-    val tempfile = Tests.createTemp();
-    return tempfile;
-  }
-
-  @SneakyThrows
-  private void start(String s) {
-    request(s, ModuleLifecycle.Actions.Activate);
-  }
-
-  @SneakyThrows
-  private void request(String pluginName, ModuleLifecycle.Actions action) {
-
-    val plugin =
-        manager.getModules().stream()
-            .filter(t -> t.getCoordinate().getName().contains(pluginName))
-            .findFirst()
-            .get();
-
-    val lifecycleRequest = new ModuleLifecycleChangeRequest(plugin.getCoordinate(), action);
-    val grp = new ModuleLifecycleChangeGroup(lifecycleRequest);
-    manager.prepare(grp).commit().toCompletableFuture().get();
   }
 }

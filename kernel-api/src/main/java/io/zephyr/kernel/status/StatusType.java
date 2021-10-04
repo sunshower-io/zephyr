@@ -11,8 +11,8 @@ public enum StatusType {
   WARNING;
 
   public Status unresolvable(@NonNull String message, Object... args) {
-    return Status.unresolvable(this,
-        MessageFormat.format(Objects.requireNonNullElse(message, "unknown"), args));
+    return Status.unresolvable(
+        this, MessageFormat.format(Objects.requireNonNullElse(message, "unknown"), args));
   }
 
   public Status resolvable(String message) {
@@ -21,6 +21,5 @@ public enum StatusType {
 
   public Status unresolvable(Exception ex) {
     return Status.unresolvable(this, ex);
-
   }
 }
