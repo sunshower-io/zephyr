@@ -15,8 +15,6 @@ public class Files {
 
   static final int BUFFER_SIZE = 8128;
 
-
-
   @SuppressFBWarnings
   @SuppressWarnings({"PMD.AvoidFileStream", "PMD.DataflowAnomalyAnalysis"})
   public static void transferTo(File destination, InputStream inputStream) throws IOException {
