@@ -20,10 +20,8 @@ import lombok.val;
 
 public class PluginRemoveTask extends Task {
 
-  static final Logger log = Logger.getLogger(PluginRemoveTask.class.getName());
-
   public static final String MODULE_COORDINATE = "plugin:remove:task:coordinate";
-
+  static final Logger log = Logger.getLogger(PluginRemoveTask.class.getName());
   final Kernel kernel;
 
   public PluginRemoveTask(String name, Kernel kernel) {
@@ -38,7 +36,7 @@ public class PluginRemoveTask extends Task {
     val module = kernel.getModuleManager().getModule(coordinate);
     kernel.dispatchEvent(ModuleEvents.REMOVING, Events.create(module));
     val moduleName = coordinate.getName();
-    log.log(Level.INFO, "plugin.remove.starting", new Object[] {moduleName});
+    log.log(Level.INFO, "plugin.remove.starting", new Object[]{moduleName});
     try {
       val fs = module.getFileSystem();
       val visitor = new DeleteVisitor();
@@ -48,12 +46,12 @@ public class PluginRemoveTask extends Task {
       kernel.getModuleManager().getDependencyGraph().remove(module);
       kernel.getModuleClasspathManager().uninstall(module);
     } catch (IOException ex) {
-      log.log(Level.WARNING, "plugin.remove.failed", new Object[] {moduleName, ex.getMessage()});
+      log.log(Level.WARNING, "plugin.remove.failed", new Object[]{moduleName, ex.getMessage()});
       log.log(Level.WARNING, "Error", ex);
       throw new TaskException(ex, TaskStatus.UNRECOVERABLE);
     }
     kernel.dispatchEvent(ModuleEvents.REMOVED, Events.create(module));
-    log.log(Level.INFO, "plugin.remove.succeeded", new Object[] {moduleName});
+    log.log(Level.INFO, "plugin.remove.succeeded", new Object[]{moduleName});
     return null;
   }
 
@@ -61,13 +59,27 @@ public class PluginRemoveTask extends Task {
 
     @Override
     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-      Files.delete(file);
+      try {
+        Files.delete(file);
+      } catch (IOException ex) {
+        log.log(Level.WARNING,
+            "Failed to delete file ''{0}''.  Reason: ''{0}''.  Will attempt to delete upon Zephyr process exit",
+            new Object[]{file, ex.getMessage()});
+        file.toFile().deleteOnExit();
+      }
       return FileVisitResult.CONTINUE;
     }
 
     @Override
     public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-      Files.delete(dir);
+      try {
+        Files.delete(dir);
+      } catch (IOException ex) {
+        log.log(Level.WARNING,
+            "Failed to delete directory ''{0}''.  Reason: ''{0}''.  Will attempt to delete upon Zephyr process exit",
+            new Object[]{dir, ex.getMessage()});
+        dir.toFile().deleteOnExit();
+      }
       return FileVisitResult.CONTINUE;
     }
   }
