@@ -22,18 +22,16 @@ import lombok.extern.java.Log;
 import lombok.val;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.DisabledOnOs;
-import org.junit.jupiter.api.condition.OS;
 
 @Log
 @SuppressFBWarnings
 @SuppressWarnings({
-    "PMD.AvoidInstantiatingObjectsInLoops",
-    "PMD.AvoidDuplicateLiterals",
-    "PMD.JUnitTestsShouldIncludeAssert",
-    "PMD.DataflowAnomalyAnalysis",
-    "PMD.JUnitAssertionsShouldIncludeMessage",
-    "PMD.JUnitTestContainsTooManyAsserts"
+  "PMD.AvoidInstantiatingObjectsInLoops",
+  "PMD.AvoidDuplicateLiterals",
+  "PMD.JUnitTestsShouldIncludeAssert",
+  "PMD.DataflowAnomalyAnalysis",
+  "PMD.JUnitAssertionsShouldIncludeMessage",
+  "PMD.JUnitTestContainsTooManyAsserts"
 })
 public class SunshowerKernelTest extends KernelTestCase {
 
@@ -94,7 +92,6 @@ public class SunshowerKernelTest extends KernelTestCase {
     } finally {
       kernel.stop();
     }
-
   }
 
   private void installYamlModule() {
@@ -184,7 +181,6 @@ public class SunshowerKernelTest extends KernelTestCase {
     } finally {
       kernel.stop();
     }
-
   }
 
   @Test

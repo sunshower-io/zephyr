@@ -9,8 +9,6 @@ import io.zephyr.kernel.module.*;
 import java.util.concurrent.ExecutionException;
 import lombok.val;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.DisabledOnOs;
-import org.junit.jupiter.api.condition.OS;
 
 @SuppressWarnings({
   "PMD.JUnitTestsShouldIncludeAssert",
@@ -25,7 +23,7 @@ public class DefaultModuleManagerTest extends ModuleManagerTestCase {
 
     final String className = "io.sunshower.yaml.state.YamlMementoProvider";
     System.out.println("STATE " + kernel.getLifecycle().getState());
-    if(kernel.getLifecycle().getState() == State.Running) {
+    if (kernel.getLifecycle().getState() == State.Running) {
       kernel.stop();
       return;
     }
