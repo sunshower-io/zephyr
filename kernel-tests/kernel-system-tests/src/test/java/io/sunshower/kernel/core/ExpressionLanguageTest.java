@@ -13,11 +13,14 @@ import io.zephyr.cli.Zephyr;
 import javax.inject.Inject;
 import lombok.val;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 
 @ZephyrTest
 @Modules({
   @Module(project = "kernel-modules:sunshower-yaml-reader", type = Module.Type.KernelModule)
 })
+@DisabledOnOs(OS.WINDOWS)
 @Clean(value = Clean.Mode.After, context = Clean.Context.Method)
 public class ExpressionLanguageTest {
 
