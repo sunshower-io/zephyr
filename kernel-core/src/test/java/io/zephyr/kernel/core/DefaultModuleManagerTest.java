@@ -9,6 +9,8 @@ import io.zephyr.kernel.module.*;
 import java.util.concurrent.ExecutionException;
 import lombok.val;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 
 @SuppressWarnings({
   "PMD.JUnitTestsShouldIncludeAssert",
@@ -16,6 +18,7 @@ import org.junit.jupiter.api.Test;
   "PMD.JUnitAssertionsShouldIncludeMessage",
   "PMD.JUnitTestContainsTooManyAsserts"
 })
+@DisabledOnOs(OS.WINDOWS)
 public class DefaultModuleManagerTest extends ModuleManagerTestCase {
 
   @Test
