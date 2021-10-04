@@ -49,7 +49,7 @@ public class PluginRemoveTask extends Task {
       kernel.getModuleClasspathManager().uninstall(module);
     } catch (IOException ex) {
       log.log(Level.WARNING, "plugin.remove.failed", new Object[] {moduleName, ex.getMessage()});
-      log.log(Level.FINE, "Error", ex);
+      log.log(Level.WARNING, "Error", ex);
       throw new TaskException(ex, TaskStatus.UNRECOVERABLE);
     }
     kernel.dispatchEvent(ModuleEvents.REMOVED, Events.create(module));
