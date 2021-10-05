@@ -36,6 +36,10 @@ public class Status {
     return resolvable;
   }
 
+  public Optional<Throwable> getCause() {
+    return cause;
+  }
+
   public StatusException toException() {
     return new StatusException(this);
   }
