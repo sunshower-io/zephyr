@@ -51,11 +51,31 @@
         <batik-transcoder.version>1.6-1</batik-transcoder.version>
         <zip4j.version>2.6.1</zip4j.version>
         <jsign-core.version>3.1</jsign-core.version>
+        <flyway-core.version>7.15.0</flyway-core.version>
+        <h2.version>1.4.200</h2.version>
     </properties>
 
     <dependencyManagement>
 
+
+
         <dependencies>
+
+            <!--
+            Test plugin dependencies for flyway
+            -->
+            <dependency>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-core</artifactId>
+                <version>${flyway-core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.h2database</groupId>
+                <artifactId>h2</artifactId>
+                <version>${h2.version}</version>
+            </dependency>
+
+
             <dependency>
                 <groupId>com.twelvemonkeys.imageio</groupId>
                 <artifactId>imageio-batik</artifactId>

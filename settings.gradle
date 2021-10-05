@@ -53,6 +53,7 @@ include(
         'kernel-tests:test-plugins:test-plugin-1',
         'kernel-tests:test-plugins:test-plugin-2',
         'kernel-tests:test-plugins:test-plugin-3',
+        'kernel-tests:test-plugins:test-plugin-flyway',
 
 
         /**
