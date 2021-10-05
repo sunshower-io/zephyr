@@ -3,13 +3,15 @@ package io.zephyr.kernel.status;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import lombok.Getter;
 import lombok.NonNull;
 
 public class Status {
   final String message;
   final StatusType type;
-  final boolean resolvable;
-  final Optional<Throwable> cause;
+  @Getter final boolean resolvable;
+  @Getter final Optional<Throwable> cause;
   final List<Resolution> resolutions;
 
   public Status(StatusType type, String message, boolean resolvable) {
@@ -30,14 +32,6 @@ public class Status {
 
   public void addResolution(@NonNull Resolution resolution) {
     resolutions.add(resolution);
-  }
-
-  public boolean isResolvable() {
-    return resolvable;
-  }
-
-  public Optional<Throwable> getCause() {
-    return cause;
   }
 
   public StatusException toException() {
