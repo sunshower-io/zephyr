@@ -93,6 +93,11 @@ subprojects {
             from javadoc.destinationDir
         }
 
+        task sourceJar(type: Jar) {
+            from sourceSets.main.allJava
+        }
+
+
         javadoc {
             source = sourceSets.main.allJava
             classpath += configurations.runtimeClasspath
@@ -118,6 +123,9 @@ subprojects {
                 pluginMaven(MavenPublication) {
                     artifact(tasks.packageJavadocs) {
                         classifier = 'javadocs'
+                    }
+                    artifact sourceJar {
+                        classifier "sources"
                     }
                     versionMapping {
                         usage('java-api') {
