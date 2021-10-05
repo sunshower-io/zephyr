@@ -7,7 +7,8 @@ public class StatusException extends KernelException {
   @Getter private Status status;
 
   public StatusException(Status status) {
-    super(status.message);
+    super(status.message, status.getCause().orElse(null));
     this.status = status;
   }
+
 }
