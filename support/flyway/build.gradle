@@ -1,0 +1,15 @@
+apply plugin: 'java'
+
+dependencies {
+
+
+    compileOnly project(':kernel-api')
+    implementation project(':kernel-tests:test-plugins:test-plugin-1')
+    /**
+     * testing
+     */
+    implementation 'com.h2database:h2'
+    implementation 'org.flywaydb:flyway-core'
+    testImplementation project(':kernel-tests:kernel-test-common')
+}
+

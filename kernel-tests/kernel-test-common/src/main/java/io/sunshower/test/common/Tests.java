@@ -4,8 +4,10 @@ import static java.lang.String.format;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.NoSuchElementException;
 import java.util.UUID;
+import lombok.SneakyThrows;
 import lombok.val;
 
 public class Tests {
@@ -77,8 +79,9 @@ public class Tests {
     throw new NoSuchElementException("Error--can't find project output");
   }
 
+  @SneakyThrows
   public static File relativeToCurrentProjectBuild(String ext, String... segments) {
-    return locate(currentRoot().toPath(), ext, segments);
+    return locate(Paths.get(currentRoot().getCanonicalPath()), ext, segments);
   }
 
   public static File relativeToProjectBuild(String project, String ext, String... segments) {

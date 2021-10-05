@@ -73,6 +73,7 @@ public final class KernelModuleFinder implements ModuleFinder {
       throw new ModuleLoadException(ex);
     }
 
+    /** todo JOSIAH: add to dependency spec */
     moduleSpec.addDependency(DependencySpec.OWN_DEPENDENCY);
     val dependencies = module.getDependencies();
     for (val dependency : dependencies) {
@@ -82,6 +83,7 @@ public final class KernelModuleFinder implements ModuleFinder {
               .setModuleLoader(moduleLoader)
               .setImportServices(true)
               .setExport(true)
+              .setExportFilter(PathFilters.acceptAll())
               .setImportFilter(PathFilters.acceptAll())
               .build();
       moduleSpec.addDependency(dep);

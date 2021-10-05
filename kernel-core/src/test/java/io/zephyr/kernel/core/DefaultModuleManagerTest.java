@@ -7,6 +7,7 @@ import io.zephyr.kernel.Lifecycle;
 import io.zephyr.kernel.core.KernelLifecycle.State;
 import io.zephyr.kernel.module.*;
 import java.util.concurrent.ExecutionException;
+import lombok.SneakyThrows;
 import lombok.val;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledOnOs;
@@ -22,9 +23,59 @@ import org.junit.jupiter.api.condition.OS;
 public class DefaultModuleManagerTest extends ModuleManagerTestCase {
 
   @Test
+  @SneakyThrows
+  void ensureRetrievingModuleResourceWorks() {
+    try {
+      kernel.start();
+      val grp = new ModuleInstallationGroup(req1);
+      val prepped = manager.prepare(grp);
+      prepped.commit().toCompletableFuture().get();
+      start("plugin-1");
+      val resource =
+          manager.getModule(req1.getCoordinate()).getClassLoader().getResource("test.txt");
+      assertNotNull(resource);
+      assertEquals(
+          manager.getModules(ModuleLifecycle.State.Active).size(), 1, "must be 1 started module");
+    } finally {
+      kernel.stop();
+    }
+  }
+
+  @Test
+  @SneakyThrows
+  void ensureLoadingFlywayWorks() {
+    try {
+      kernel.start();
+
+      val flywayPlugin =
+          Tests.relativeToProjectBuild(
+              "kernel-tests:test-plugins:test-plugin-flyway", "war", "libs");
+      val request = new ModuleInstallationRequest();
+      request.setLifecycleActions(ModuleLifecycle.Actions.Install);
+      request.setLocation(flywayPlugin.toURI().toURL());
+
+      val grp = new ModuleInstallationGroup(request);
+      val prepped = manager.prepare(grp);
+      scheduler.submit(prepped.getProcess()).get();
+      start("test-plugin-flyway");
+      val resource =
+          kernel
+              .getModuleManager()
+              .getModule(request.getCoordinate())
+              .getClassLoader()
+              .getResource("flyway/V1_1__sample-test.sql");
+      assertNotNull(resource);
+
+    } finally {
+      kernel.stop();
+    }
+  }
+
+  @Test
   void ensureSavingKernelModuleWorks() throws Exception {
 
-    final String className = "io.sunshower.yaml.state.YamlMementoProvider";
+    //    final String className = "io.sunshower.yaml.state.YamlMementoProvider";
+    val className = "io.sunshower.kernel.ext.scanner.YamlPluginDescriptorScanner";
     System.out.println("STATE " + kernel.getLifecycle().getState());
     if (kernel.getLifecycle().getState() == State.Running) {
       kernel.stop();

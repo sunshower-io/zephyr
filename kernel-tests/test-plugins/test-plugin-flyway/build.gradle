@@ -1,0 +1,29 @@
+apply plugin: 'war'
+apply plugin: 'java'
+apply plugin: 'java-library'
+
+dependencies {
+    compileOnly project(':kernel-api')
+    implementation project(':kernel-modules:sunshower-yaml-reader')
+    implementation project(":support:flyway")
+
+    /**
+     * testing
+     */
+    implementation 'com.h2database:h2'
+    implementation 'org.flywaydb:flyway-core'
+
+    testImplementation project(':kernel-tests:kernel-test-common')
+}
+test.dependsOn assemble
+war {
+    manifest {
+        attributes(
+                'group': 'io.sunshower',
+                'name': 'test-plugin-flyway',
+                'version': '1.0.0-SNAPSHOT',
+                'description': 'just a test plugin for flyway!',
+                'type': 'plugin'
+        )
+    }
+}
