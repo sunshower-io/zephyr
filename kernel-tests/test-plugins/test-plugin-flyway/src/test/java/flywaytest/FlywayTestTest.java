@@ -1,9 +1,14 @@
 package flywaytest;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
+import io.sunshower.test.common.Tests;
 import io.zephyr.api.ModuleContext;
+import io.zephyr.kernel.Assembly;
+import io.zephyr.kernel.Module;
+import java.io.File;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import lombok.SneakyThrows;
@@ -11,18 +16,30 @@ import lombok.val;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+@ExtendWith(MockitoExtension.class)
 class FlywayTestTest {
 
   static {
     System.setProperty("logging.level.org.flywaydb", "DEBUG");
   }
 
+  @Mock private ModuleContext context;
+
+  @Mock private Module module;
+
+  private File assemblyFile;
   private FlywayTest flywayTest;
 
   @BeforeEach
   void setUp() {
     flywayTest = new FlywayTest();
+    assemblyFile = Tests.relativeToCurrentProjectBuild("war", "libs");
+    doReturn(module).when(context).getModule();
+    doReturn(new Assembly(assemblyFile)).when(module).getAssembly();
   }
 
   @AfterEach
@@ -37,7 +54,7 @@ class FlywayTestTest {
           () -> {
             connection.createStatement().executeQuery("select * from MYTESTTABLE");
           });
-      flywayTest.start(mock(ModuleContext.class));
+      flywayTest.start(context);
       //      connection.createStatement().executeQuery("select * from MyTestTable");
       System.out.println("Tables:");
       val tables = connection.createStatement().executeQuery("show tables");

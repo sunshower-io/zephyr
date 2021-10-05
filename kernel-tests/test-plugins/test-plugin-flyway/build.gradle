@@ -1,9 +1,11 @@
 apply plugin: 'war'
 apply plugin: 'java'
+apply plugin: 'java-library'
 
 dependencies {
     compileOnly project(':kernel-api')
     implementation project(':kernel-modules:sunshower-yaml-reader')
+    implementation project(":support:flyway")
 
     /**
      * testing
@@ -13,7 +15,7 @@ dependencies {
 
     testImplementation project(':kernel-tests:kernel-test-common')
 }
-
+test.dependsOn assemble
 war {
     manifest {
         attributes(

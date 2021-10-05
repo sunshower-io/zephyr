@@ -10,6 +10,7 @@ pluginManagement {
 include(
 
 
+        'support:flyway',
 
         'plugins:barometer',
         'plugins:spring:spring-embedded-plugin',
