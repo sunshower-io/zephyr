@@ -1,6 +1,7 @@
 package io.zephyr.support.flyway;
 
 import io.zephyr.kernel.Module;
+import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
@@ -20,14 +21,22 @@ public class ClasspathModuleResourceProvider implements ResourceProvider {
 
   private final Module module;
   private final List<String> locations;
+  private final boolean searchSubAssemblies;
   private final Map<String, LoadableResource> resources;
 
   public ClasspathModuleResourceProvider(Module module, String... locations) {
+    this(module, false, locations);
+  }
+
+  public ClasspathModuleResourceProvider(Module module, boolean searchSubAssemblies,
+      String... locations) {
     this.module = Objects.requireNonNull(module, "Module must not be null");
     validate(locations);
     this.locations = Arrays.asList(locations);
     this.resources = new LinkedHashMap<>();
+    this.searchSubAssemblies = searchSubAssemblies;
   }
+
 
   @Override
   public LoadableResource getResource(String name) {
@@ -37,7 +46,12 @@ public class ClasspathModuleResourceProvider implements ResourceProvider {
   @Override
   public Collection<LoadableResource> getResources(String prefix, String[] suffixes) {
     resources.clear();
-    loadResources(prefix, suffixes);
+    loadResources(module.getAssembly().getFile(), prefix, suffixes);
+    if (searchSubAssemblies) {
+      for (val library : module.getAssembly().getLibraries()) {
+        loadResources(library.getFile(), prefix, suffixes);
+      }
+    }
     return Collections.unmodifiableCollection(resources.values());
   }
 
@@ -47,8 +61,8 @@ public class ClasspathModuleResourceProvider implements ResourceProvider {
     }
   }
 
-  private void loadResources(String prefix, String[] suffixes) {
-    try (val file = new ZipFile(module.getAssembly().getFile())) {
+  private void loadResources(File assemblyFile, String prefix, String[] suffixes) {
+    try (val file = new ZipFile(assemblyFile)) {
       for (val location : locations) {
         var normalizedLocation = location;
         if (isWar(file)) {
