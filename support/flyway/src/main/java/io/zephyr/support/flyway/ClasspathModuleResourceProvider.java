@@ -1,6 +1,7 @@
 package io.zephyr.support.flyway;
 
 import io.zephyr.kernel.Module;
+import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
@@ -9,6 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.regex.Pattern;
 import java.util.zip.ZipFile;
 import lombok.val;
 import org.flywaydb.core.api.FlywayException;
@@ -26,7 +28,6 @@ public class ClasspathModuleResourceProvider implements ResourceProvider {
     validate(locations);
     this.locations = Arrays.asList(locations);
     this.resources = new LinkedHashMap<>();
-    loadResources();
   }
 
   @Override
@@ -36,6 +37,8 @@ public class ClasspathModuleResourceProvider implements ResourceProvider {
 
   @Override
   public Collection<LoadableResource> getResources(String prefix, String[] suffixes) {
+    resources.clear();
+    loadResources(prefix, suffixes);
     return Collections.unmodifiableCollection(resources.values());
   }
 
@@ -45,7 +48,7 @@ public class ClasspathModuleResourceProvider implements ResourceProvider {
     }
   }
 
-  private void loadResources() {
+  private void loadResources(String prefix, String[] suffixes) {
     try (val file = new ZipFile(module.getAssembly().getFile())) {
       for (val location : locations) {
         var normalizedLocation = location;
@@ -55,9 +58,12 @@ public class ClasspathModuleResourceProvider implements ResourceProvider {
         val entries = file.entries();
         while (entries.hasMoreElements()) {
           val next = entries.nextElement();
+          val nextSegs = next.getName().split(Pattern.quote(File.separator));
+          val nextName = nextSegs[nextSegs.length - 1];
           if (!next.isDirectory()
               && next.getName().startsWith(normalizedLocation)
-              && next.getName().endsWith(".sql")) {
+              && nextName.startsWith(prefix)
+              && endsWith(nextName, suffixes)) {
             resources.put(
                 next.getName(),
                 new ModuleLoadableResource(module.getAssembly().getFile(), file, next, location));
@@ -68,6 +74,15 @@ public class ClasspathModuleResourceProvider implements ResourceProvider {
     } catch (IOException ex) {
       throw new FlywayException(ex);
     }
+  }
+
+  private boolean endsWith(String next, String[] suffixes) {
+    for (val suffix : suffixes) {
+      if (next.endsWith(suffix)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private boolean isWar(ZipFile file) {
