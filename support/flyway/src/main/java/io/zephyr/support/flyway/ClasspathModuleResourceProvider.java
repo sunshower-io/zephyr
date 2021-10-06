@@ -58,7 +58,7 @@ public class ClasspathModuleResourceProvider implements ResourceProvider {
         val entries = file.entries();
         while (entries.hasMoreElements()) {
           val next = entries.nextElement();
-          val nextSegs = next.getName().split(Pattern.quote(File.separator));
+          val nextSegs = next.getName().split(Pattern.quote("/"));
           val nextName = nextSegs[nextSegs.length - 1];
           if (!next.isDirectory()
               && next.getName().startsWith(normalizedLocation)
