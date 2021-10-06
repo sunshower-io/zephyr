@@ -16,14 +16,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class ClasspathModuleResourceProviderTest {
 
   private Assembly assembly;
-  @Mock
-  private Module module;
+  @Mock private Module module;
 
   @Test
   void ensureResourcesAreLoadableFromWAR() {
     configureAssembly("test-plugins:test-plugin-1", "war");
     val results =
-        FlywaySupport.classpath(module).locations("flyway").getResources("V", new String[]{".sql"});
+        FlywaySupport.classpath(module)
+            .locations("flyway")
+            .getResources("V", new String[] {".sql"});
     assertEquals(2, results.size());
   }
 
@@ -31,7 +32,9 @@ class ClasspathModuleResourceProviderTest {
   void ensureResourcesAreLoadableFromJAR() {
     configureAssembly("test-plugins:test-plugin-1", "jar");
     val results =
-        FlywaySupport.classpath(module).locations("flyway").getResources("V", new String[]{".sql"});
+        FlywaySupport.classpath(module)
+            .locations("flyway")
+            .getResources("V", new String[] {".sql"});
     assertEquals(2, results.size());
   }
 
@@ -41,7 +44,7 @@ class ClasspathModuleResourceProviderTest {
     val results =
         FlywaySupport.classpath(module)
             .locations("flyway", "location2")
-            .getResources("V", new String[]{".sql"});
+            .getResources("V", new String[] {".sql"});
     assertEquals(3, results.size());
   }
 
@@ -51,7 +54,7 @@ class ClasspathModuleResourceProviderTest {
     val results =
         FlywaySupport.classpath(module)
             .locations("flyway", "location2")
-            .getResources("V", new String[]{".sql"});
+            .getResources("V", new String[] {".sql"});
     assertEquals(3, results.size());
   }
 
