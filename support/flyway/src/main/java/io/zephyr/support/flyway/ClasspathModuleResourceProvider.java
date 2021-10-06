@@ -10,13 +10,17 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.logging.Level;
 import java.util.regex.Pattern;
+import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
+import lombok.extern.java.Log;
 import lombok.val;
 import org.flywaydb.core.api.FlywayException;
 import org.flywaydb.core.api.ResourceProvider;
 import org.flywaydb.core.api.resource.LoadableResource;
 
+@Log
 public class ClasspathModuleResourceProvider implements ResourceProvider {
 
   private final Module module;
@@ -46,13 +50,21 @@ public class ClasspathModuleResourceProvider implements ResourceProvider {
   @Override
   public Collection<LoadableResource> getResources(String prefix, String[] suffixes) {
     resources.clear();
-    loadResources(module.getAssembly().getFile(), prefix, suffixes);
+    loadResourcesIn(module.getAssembly().getFile(), prefix, suffixes);
     if (searchSubAssemblies) {
       for (val library : module.getAssembly().getLibraries()) {
-        loadResources(library.getFile(), prefix, suffixes);
+        loadResourcesIn(library.getFile(), prefix, suffixes);
       }
     }
     return Collections.unmodifiableCollection(resources.values());
+  }
+
+  private void loadResourcesIn(File file, String prefix, String[] suffixes) {
+    try {
+      loadResources(file, prefix, suffixes);
+    } catch (ZipException ex) {
+      log.log(Level.WARNING, "Error opening assembly file: ''{0}''", ex.getMessage());
+    }
   }
 
   private void validate(String[] locations) {
@@ -61,7 +73,8 @@ public class ClasspathModuleResourceProvider implements ResourceProvider {
     }
   }
 
-  private void loadResources(File assemblyFile, String prefix, String[] suffixes) {
+  private void loadResources(File assemblyFile, String prefix, String[] suffixes)
+      throws ZipException {
     try (val file = new ZipFile(assemblyFile)) {
       for (val location : locations) {
         var normalizedLocation = location;
@@ -83,7 +96,8 @@ public class ClasspathModuleResourceProvider implements ResourceProvider {
           }
         }
       }
-
+    } catch (ZipException ex) {
+      throw ex;
     } catch (IOException ex) {
       throw new FlywayException(ex);
     }
