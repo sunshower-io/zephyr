@@ -8,7 +8,10 @@ import io.zephyr.kernel.modules.shell.ShellTestCase;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 
+@DisabledOnOs({OS.MAC, OS.WINDOWS})
 class KernelStartCommandTest extends ShellTestCase {
 
   @BeforeEach
