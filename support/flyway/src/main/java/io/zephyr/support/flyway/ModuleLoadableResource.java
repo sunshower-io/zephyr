@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import lombok.Getter;
@@ -14,9 +15,9 @@ import org.flywaydb.core.api.resource.LoadableResource;
 
 public class ModuleLoadableResource extends LoadableResource {
   final byte[] data;
+  private final String name;
   @Getter final String absolutePath;
   @Getter final String absolutePathOnDisk;
-  private final String name;
 
   public ModuleLoadableResource(File assemblyFile, ZipFile file, ZipEntry entry, String location)
       throws IOException {
@@ -25,7 +26,7 @@ public class ModuleLoadableResource extends LoadableResource {
       inputStream.transferTo(outputstream);
       data = outputstream.toByteArray();
     }
-    val segs = entry.getName().split(File.separator);
+    val segs = entry.getName().split(Pattern.quote(File.separator));
     this.name = segs[segs.length - 1];
     this.absolutePath = assemblyFile.getAbsolutePath() + "!" + location;
     this.absolutePathOnDisk = absolutePath;
