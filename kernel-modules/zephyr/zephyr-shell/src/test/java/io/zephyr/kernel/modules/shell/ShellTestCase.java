@@ -16,7 +16,10 @@ import lombok.SneakyThrows;
 import lombok.val;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 
+@DisabledOnOs({OS.MAC, OS.WINDOWS})
 public class ShellTestCase {
 
   protected File homeDirectory;

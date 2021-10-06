@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.OS;
 
-@DisabledOnOs(OS.MAC)
+@DisabledOnOs({OS.MAC, OS.WINDOWS})
 @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
 class ColoredConsoleTest {
 

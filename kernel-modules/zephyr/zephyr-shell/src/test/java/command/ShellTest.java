@@ -23,7 +23,7 @@ import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.OS;
 import picocli.CommandLine;
 
-@DisabledOnOs(OS.MAC)
+@DisabledOnOs({OS.MAC, OS.WINDOWS})
 @SuppressFBWarnings
 @SuppressWarnings({
   "PMD.DataflowAnomalyAnalysis",
