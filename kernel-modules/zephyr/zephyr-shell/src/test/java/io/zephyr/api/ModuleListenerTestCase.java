@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
+@Disabled("Need to figure out why these are flaky")
 public class ModuleListenerTestCase extends ShellTestCase {
 
   static {
