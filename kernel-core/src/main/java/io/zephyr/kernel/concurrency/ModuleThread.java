@@ -1,8 +1,15 @@
 package io.zephyr.kernel.concurrency;
 
-import io.zephyr.api.*;
-import io.zephyr.kernel.*;
+import io.zephyr.api.ModuleActivator;
+import io.zephyr.api.ModuleEvents;
+import io.zephyr.api.Startable;
+import io.zephyr.api.Stoppable;
+import io.zephyr.kernel.Coordinate;
+import io.zephyr.kernel.Lifecycle;
 import io.zephyr.kernel.Module;
+import io.zephyr.kernel.PluginException;
+import io.zephyr.kernel.TaskQueue;
+import io.zephyr.kernel.VolatileStorage;
 import io.zephyr.kernel.core.AbstractModule;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.events.Events;
@@ -12,19 +19,26 @@ import io.zephyr.kernel.status.StatusType;
 import java.io.IOException;
 import java.util.Map;
 import java.util.ServiceConfigurationError;
-import java.util.concurrent.*;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import lombok.val;
 
-/** not really sure if this is a good idea or not */
+/**
+ * not really sure if this is a good idea or not
+ */
 @SuppressWarnings({
-  "PMD.DoNotUseThreads",
-  "PMD.AvoidFieldNameMatchingTypeName",
-  "PMD.UnusedPrivateMethod",
-  "PMD.DataflowAnomalyAnalysis"
+    "PMD.DoNotUseThreads",
+    "PMD.AvoidFieldNameMatchingTypeName",
+    "PMD.UnusedPrivateMethod",
+    "PMD.DataflowAnomalyAnalysis"
 })
 @SuppressFBWarnings
 public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable, VolatileStorage {
@@ -40,6 +54,8 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable, 
   final BlockingQueue<Runnable> taskQueue;
   final AtomicReference<Thread> moduleThread;
   final InheritableThreadLocal<Map<Object, Object>> context;
+  final Object queueLock = new Object();
+  final Object moduleLock = new Object();
 
   public ModuleThread(final Module module, final Kernel kernel) {
     if (module.getType() == Module.Type.KernelModule) {
@@ -54,9 +70,6 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable, 
     context.set(new ConcurrentHashMap<>());
   }
 
-  final Object queueLock = new Object();
-  final Object moduleLock = new Object();
-
   @Override
   public void stop() {
     synchronized (queueLock) {
@@ -65,7 +78,7 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable, 
       while (running.get()) {
         try {
           synchronized (moduleLock) {
-            moduleLock.wait(100);
+            moduleLock.wait();
           }
         } catch (InterruptedException ex) {
           log.log(Level.INFO, "interrupted", ex);
@@ -120,12 +133,12 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable, 
     performStart();
     while (running.get()) {
       try {
-        synchronized (queueLock) {
-          queueLock.wait(100);
-        }
         while (!taskQueue.isEmpty()) {
           val runnable = taskQueue.take();
           runnable.run();
+        }
+        synchronized (queueLock) {
+          queueLock.wait();
         }
       } catch (InterruptedException ex) {
         log.log(Level.INFO, "module interrupted", ex);
@@ -197,7 +210,7 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable, 
         Events.create(
             module, StatusType.FAILED.unresolvable(FAILURE_TEMPLATE, coordinate, ex.getMessage())));
     module.getLifecycle().setState(Lifecycle.State.Failed);
-    log.log(Level.WARNING, FAILURE_TEMPLATE, new Object[] {coordinate, ex.getMessage()});
+    log.log(Level.WARNING, FAILURE_TEMPLATE, new Object[]{coordinate, ex.getMessage()});
     log.log(Level.FINE, "Reason: ", ex);
   }
 
@@ -280,6 +293,7 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable, 
 
   static final class TaskQueueCallable<T> extends CompletableFuture<T>
       implements Callable<T>, Runnable {
+
     final Callable<T> delegate;
 
     TaskQueueCallable(Callable<T> delegate) {

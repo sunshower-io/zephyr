@@ -2,7 +2,11 @@ package io.zephyr.kernel.concurrency;
 
 import io.zephyr.api.Startable;
 import io.zephyr.api.Stoppable;
-import io.zephyr.kernel.events.*;
+import io.zephyr.kernel.events.AbstractEventSource;
+import io.zephyr.kernel.events.Event;
+import io.zephyr.kernel.events.EventListener;
+import io.zephyr.kernel.events.EventSource;
+import io.zephyr.kernel.events.EventType;
 import io.zephyr.kernel.misc.SuppressFBWarnings;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedTransferQueue;
@@ -80,12 +84,14 @@ public class AsynchronousEventSource implements EventSource, Stoppable, Startabl
     }
   }
 
-  /** waits for initialization */
+  /**
+   * waits for initialization
+   */
   public void initialize() {
     synchronized (this) {
       while (!source.running) {
         try {
-          wait(200);
+          wait();
         } catch (InterruptedException ex) {
         }
       }
@@ -94,21 +100,26 @@ public class AsynchronousEventSource implements EventSource, Stoppable, Startabl
 
   @AllArgsConstructor
   static class AsynchronousEvent<T> {
+
     final Event<T> event;
     final EventType eventType;
   }
 
   final class QueuedEventSource extends AbstractEventSource implements Runnable, Stoppable {
+
     volatile boolean running;
 
     @Override
     public void run() {
       synchronized (queueLock) {
         running = true;
+        synchronized (AsynchronousEventSource.this) {
+          AsynchronousEventSource.this.notifyAll();
+        }
         while (running) {
           while (queue.isEmpty()) {
             try {
-              queueLock.wait(100);
+              queueLock.wait();
             } catch (InterruptedException ex) {
               return;
             }

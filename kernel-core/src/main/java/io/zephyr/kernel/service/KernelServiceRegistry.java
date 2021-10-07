@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 import lombok.NonNull;
+import lombok.ToString;
 import lombok.val;
 
 @SuppressWarnings("PMD.DoNotUseThreads")
@@ -46,21 +47,17 @@ public class KernelServiceRegistry implements ServiceRegistry {
     synchronized (registries) {
       val coordinate = module.getCoordinate();
       var registry = registries.get(coordinate);
-
       if (registry == null) {
         registry = new ModuleServiceRegistry(module, this);
         registries.put(coordinate, registry);
       }
       val reference = new DefaultServiceReference<T>(module, definition);
       val registration = new DefaultServiceRegistration<T>(reference, registry, definition);
-
       registry.register(registration);
-
       module
           .getTaskQueue()
           .schedule(
               new ServiceEventDispatchTask(ServiceEvents.REGISTERED, registration.getReference()));
-
       return registration;
     }
   }
@@ -100,6 +97,7 @@ public class KernelServiceRegistry implements ServiceRegistry {
     }
   }
 
+  @ToString
   final class ServiceEventDispatchTask implements Runnable {
 
     private final EventType type;

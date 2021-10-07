@@ -1,17 +1,32 @@
 package io.zephyr.kernel.core;
 
-import static io.zephyr.kernel.core.actions.ModulePhaseEvents.*;
+import static io.zephyr.kernel.core.actions.ModulePhaseEvents.MODULE_ASSEMBLY_EXTRACTION_FAILED;
+import static io.zephyr.kernel.core.actions.ModulePhaseEvents.MODULE_DOWNLOAD_FAILED;
+import static io.zephyr.kernel.core.actions.ModulePhaseEvents.MODULE_FILESYSTEM_CREATION_FAILED;
+import static io.zephyr.kernel.core.actions.ModulePhaseEvents.MODULE_SCAN_FAILED;
+import static io.zephyr.kernel.core.actions.ModulePhaseEvents.MODULE_TRANSFER_FAILED;
 import static java.lang.String.format;
 
-import io.sunshower.gyre.*;
+import io.sunshower.gyre.Pair;
+import io.sunshower.gyre.Scope;
 import io.zephyr.api.ModuleEvents;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.concurrency.Process;
 import io.zephyr.kernel.concurrency.TaskBuilder;
 import io.zephyr.kernel.concurrency.Tasks;
-import io.zephyr.kernel.core.actions.*;
+import io.zephyr.kernel.core.actions.ModuleDownloadPhase;
+import io.zephyr.kernel.core.actions.ModuleInstallationCompletionPhase;
+import io.zephyr.kernel.core.actions.ModulePhaseEvents;
+import io.zephyr.kernel.core.actions.ModuleScanPhase;
+import io.zephyr.kernel.core.actions.ModuleTransferPhase;
+import io.zephyr.kernel.core.actions.ModuleUnpackPhase;
+import io.zephyr.kernel.core.actions.WriteKernelModuleListPhase;
+import io.zephyr.kernel.core.actions.WritePluginDescriptorPhase;
 import io.zephyr.kernel.core.lifecycle.KernelModuleListReadPhase;
-import io.zephyr.kernel.events.*;
+import io.zephyr.kernel.events.Event;
+import io.zephyr.kernel.events.EventListener;
+import io.zephyr.kernel.events.EventType;
+import io.zephyr.kernel.events.Events;
 import io.zephyr.kernel.log.Logging;
 import io.zephyr.kernel.module.ModuleInstallationGroup;
 import io.zephyr.kernel.module.ModuleInstallationRequest;

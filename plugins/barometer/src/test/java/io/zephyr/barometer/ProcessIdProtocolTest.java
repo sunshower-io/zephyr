@@ -49,7 +49,7 @@ public class ProcessIdProtocolTest {
     protocol.write(file, 1234);
     while (pid.get() == 0L) {
       synchronized (lock) {
-        lock.wait(100);
+        lock.wait();
       }
     }
     assertEquals(1234, pid.get());

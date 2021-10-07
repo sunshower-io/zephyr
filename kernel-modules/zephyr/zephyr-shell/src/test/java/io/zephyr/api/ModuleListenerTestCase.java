@@ -9,13 +9,14 @@ import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-@Disabled("Need to figure out why these are flaky")
+//@Disabled("Need to figure out why these are flaky")
 public class ModuleListenerTestCase extends ShellTestCase {
 
   static {

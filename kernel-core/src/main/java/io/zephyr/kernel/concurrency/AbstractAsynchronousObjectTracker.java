@@ -4,7 +4,11 @@ import io.zephyr.api.Tracker;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.TaskQueue;
 import io.zephyr.kernel.core.Kernel;
-import io.zephyr.kernel.events.*;
+import io.zephyr.kernel.events.AbstractEventSource;
+import io.zephyr.kernel.events.Event;
+import io.zephyr.kernel.events.EventListener;
+import io.zephyr.kernel.events.EventSource;
+import io.zephyr.kernel.events.EventType;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;
@@ -16,7 +20,9 @@ import lombok.val;
 @SuppressWarnings({"PMD.DoNotUseThreads"})
 public abstract class AbstractAsynchronousObjectTracker<T> implements Tracker<T>, EventListener<T> {
 
-  /** immutable state */
+  /**
+   * immutable state
+   */
   final Module host;
 
   final Kernel kernel;
@@ -58,24 +64,6 @@ public abstract class AbstractAsynchronousObjectTracker<T> implements Tracker<T>
     return delegatedEventSource.listensFor(types);
   }
 
-  @AllArgsConstructor
-  final class EventSetTracker {
-    final int options;
-    final EventType[] types;
-    final EventListener<?> listener;
-
-    void start() {
-      delegatedEventSource.addEventListener(listener, options, types);
-      kernel.addEventListener(AbstractAsynchronousObjectTracker.this, types);
-    }
-
-    void stop() {
-      delegatedEventSource.removeEventListener(listener);
-      removeEventListener(listener);
-      kernel.removeEventListener(AbstractAsynchronousObjectTracker.this);
-    }
-  }
-
   @Override
   public <U> void addEventListener(EventListener<U> listener, EventType... types) {
     addEventListener(listener, Options.NONE, types);
@@ -90,7 +78,10 @@ public abstract class AbstractAsynchronousObjectTracker<T> implements Tracker<T>
   }
 
   private void fireExistingModuleEvents() {
-    taskQueue.schedule(existingObjectDispatchTask);
+    synchronized (tracked) {
+      taskQueue.schedule(existingObjectDispatchTask);
+      tracked.notifyAll();
+    }
   }
 
   @Override
@@ -121,7 +112,7 @@ public abstract class AbstractAsynchronousObjectTracker<T> implements Tracker<T>
   @Override
   public void stop() {
     synchronized (eventSets) {
-      val iter = eventSets.stream().iterator();
+      val iter = new ArrayList<>(eventSets).iterator();
       while (iter.hasNext()) {
         iter.next().stop();
       }
@@ -131,7 +122,7 @@ public abstract class AbstractAsynchronousObjectTracker<T> implements Tracker<T>
   @Override
   public void start() {
     synchronized (eventSets) {
-      val iter = eventSets.stream().iterator();
+      val iter = new ArrayList<>(eventSets).iterator();
       while (iter.hasNext()) {
         iter.next().start();
       }
@@ -160,7 +151,7 @@ public abstract class AbstractAsynchronousObjectTracker<T> implements Tracker<T>
       synchronized (tracked) {
         try {
           while (!condition.test(getTracked())) {
-            tracked.wait(100);
+            tracked.wait();
           }
           return;
         } catch (InterruptedException ex) {
@@ -189,6 +180,64 @@ public abstract class AbstractAsynchronousObjectTracker<T> implements Tracker<T>
     }
   }
 
+  private boolean isTracked(EventType type, T target) {
+    synchronized (tracked) {
+      for (val trackedObject : tracked) {
+
+        if (target == trackedObject.object && trackedObject.hasFired(type)) {
+          return true;
+        }
+      }
+      return false;
+    }
+  }
+
+  static final class ObjectThreadEventSource extends AbstractEventSource {
+
+  }
+
+  static final class ObjectEventDispatchState<T> {
+
+    final T object;
+    final BitSet events;
+
+    ObjectEventDispatchState(final T object) {
+      this.object = object;
+      this.events = new BitSet();
+    }
+
+    void set(EventType events) {
+      this.events.set(events.getId());
+    }
+
+    void clear(EventType events) {
+      this.events.clear(events.getId());
+    }
+
+    boolean hasFired(EventType events) {
+      return this.events.get(events.getId());
+    }
+  }
+
+  @AllArgsConstructor
+  final class EventSetTracker {
+
+    final int options;
+    final EventType[] types;
+    final EventListener<?> listener;
+
+    void start() {
+      delegatedEventSource.addEventListener(listener, options, types);
+      kernel.addEventListener(AbstractAsynchronousObjectTracker.this, types);
+    }
+
+    void stop() {
+      delegatedEventSource.removeEventListener(listener);
+      removeEventListener(listener);
+      kernel.removeEventListener(AbstractAsynchronousObjectTracker.this);
+    }
+  }
+
   final class FilteredObjectDispatchTask implements Runnable {
 
     final EventType type;
@@ -209,42 +258,6 @@ public abstract class AbstractAsynchronousObjectTracker<T> implements Tracker<T>
           dispatchEvent(type, event);
         }
       }
-    }
-  }
-
-  private boolean isTracked(EventType type, T target) {
-    synchronized (tracked) {
-      for (val trackedObject : tracked) {
-
-        if (target == trackedObject.object && trackedObject.hasFired(type)) {
-          return true;
-        }
-      }
-      return false;
-    }
-  }
-
-  static final class ObjectThreadEventSource extends AbstractEventSource {}
-
-  static final class ObjectEventDispatchState<T> {
-    final T object;
-    final BitSet events;
-
-    ObjectEventDispatchState(final T object) {
-      this.object = object;
-      this.events = new BitSet();
-    }
-
-    void set(EventType events) {
-      this.events.set(events.getId());
-    }
-
-    void clear(EventType events) {
-      this.events.clear(events.getId());
-    }
-
-    boolean hasFired(EventType events) {
-      return this.events.get(events.getId());
     }
   }
 }
