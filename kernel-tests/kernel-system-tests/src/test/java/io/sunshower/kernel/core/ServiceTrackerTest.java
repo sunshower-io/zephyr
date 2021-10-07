@@ -28,35 +28,28 @@ import org.mockito.Mock;
 @Clean(value = Clean.Mode.After, context = Clean.Context.Method)
 public class ServiceTrackerTest {
 
-  /**
-   * mocks
-   */
-  @Mock
-  private EventListener<?> listener;
+  /** mocks */
+  @Mock private EventListener<?> listener;
 
-  /**
-   * state
-   */
-  @Inject
-  private Zephyr zephyr;
+  /** state */
+  @Inject private Zephyr zephyr;
 
-  @Inject
-  private ModuleContext context;
-  @Inject
-  private ModuleLifecycleManager lifecycleManager;
+  @Inject private ModuleContext context;
+  @Inject private ModuleLifecycleManager lifecycleManager;
 
   @RepeatedTest(10)
   void ensureTrackingServiceProducesServiceInInstalledTestPlugin() {
     val tracker = context.trackServices(t -> true);
     tracker.addEventListener(listener, ServiceEvents.REGISTERED);
-    tracker.addEventListener(new EventListener<Object>() {
+    tracker.addEventListener(
+        new EventListener<Object>() {
 
-      @Override
-      public void onEvent(EventType type, Event<Object> event) {
-        System.out.println(event);
-
-      }
-    }, ServiceEvents.REGISTERED);
+          @Override
+          public void onEvent(EventType type, Event<Object> event) {
+            System.out.println(event);
+          }
+        },
+        ServiceEvents.REGISTERED);
     zephyr.install(ProjectPlugins.TEST_PLUGIN_1.getUrl());
     zephyr.install(ProjectPlugins.TEST_PLUGIN_2.getUrl());
     lifecycleManager.start(t -> t.getCoordinate().getName().contains("2"));

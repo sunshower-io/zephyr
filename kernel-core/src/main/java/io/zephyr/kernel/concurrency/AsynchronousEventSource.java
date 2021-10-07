@@ -84,9 +84,7 @@ public class AsynchronousEventSource implements EventSource, Stoppable, Startabl
     }
   }
 
-  /**
-   * waits for initialization
-   */
+  /** waits for initialization */
   public void initialize() {
     synchronized (this) {
       while (!source.running) {

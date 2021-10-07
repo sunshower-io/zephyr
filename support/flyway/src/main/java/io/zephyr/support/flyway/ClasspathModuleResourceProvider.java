@@ -32,15 +32,14 @@ public class ClasspathModuleResourceProvider implements ResourceProvider {
     this(module, false, locations);
   }
 
-  public ClasspathModuleResourceProvider(Module module, boolean searchSubAssemblies,
-      String... locations) {
+  public ClasspathModuleResourceProvider(
+      Module module, boolean searchSubAssemblies, String... locations) {
     this.module = Objects.requireNonNull(module, "Module must not be null");
     validate(locations);
     this.locations = Arrays.asList(locations);
     this.resources = new LinkedHashMap<>();
     this.searchSubAssemblies = searchSubAssemblies;
   }
-
 
   @Override
   public LoadableResource getResource(String name) {

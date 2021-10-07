@@ -96,9 +96,9 @@ public class ShellTestCase {
   protected void startAndWait(int expectedCount, String... plugins) {
     startPlugins(plugins);
     while (kernel.getModuleManager().getModules().stream()
-               .filter(t -> t.getLifecycle().getState() == Lifecycle.State.Active)
-               .count()
-           != expectedCount) {
+            .filter(t -> t.getLifecycle().getState() == Lifecycle.State.Active)
+            .count()
+        != expectedCount) {
       Thread.sleep(200);
     }
   }
@@ -131,9 +131,9 @@ public class ShellTestCase {
 
   protected void runAsync(String... args) {
     new Thread(
-        () -> {
-          run(args);
-        })
+            () -> {
+              run(args);
+            })
         .start();
   }
 
@@ -201,12 +201,15 @@ public class ShellTestCase {
 
     val failedCount = new AtomicInteger(0);
     EventListener<Object> listener;
-    kernel.addEventListener(listener = new EventListener<Object>() {
-      @Override
-      public void onEvent(EventType type, Event<Object> event) {
-        failedCount.incrementAndGet();
-      }
-    }, ModuleEvents.INSTALL_FAILED);
+    kernel.addEventListener(
+        listener =
+            new EventListener<Object>() {
+              @Override
+              public void onEvent(EventType type, Event<Object> event) {
+                failedCount.incrementAndGet();
+              }
+            },
+        ModuleEvents.INSTALL_FAILED);
 
     try {
       install(modules);

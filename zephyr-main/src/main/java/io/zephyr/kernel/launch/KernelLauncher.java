@@ -30,13 +30,13 @@ import lombok.val;
 
 @SuppressFBWarnings
 @SuppressWarnings({
-    "PMD.UseVarargs",
-    "PMD.ArrayIsStoredDirectly",
-    "PMD.UnusedPrivateMethod",
-    "PMD.DoNotCallSystemExit",
-    "PMD.FinalizeOverloaded",
-    "PMD.AvoidDuplicateLiterals",
-    "PMD.DoNotUseThreads"
+  "PMD.UseVarargs",
+  "PMD.ArrayIsStoredDirectly",
+  "PMD.UnusedPrivateMethod",
+  "PMD.DoNotCallSystemExit",
+  "PMD.FinalizeOverloaded",
+  "PMD.AvoidDuplicateLiterals",
+  "PMD.DoNotUseThreads"
 })
 public class KernelLauncher implements EntryPoint, EntryPointRegistry {
 

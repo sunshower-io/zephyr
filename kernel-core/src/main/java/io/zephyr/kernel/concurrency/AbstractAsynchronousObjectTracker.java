@@ -20,9 +20,7 @@ import lombok.val;
 @SuppressWarnings({"PMD.DoNotUseThreads"})
 public abstract class AbstractAsynchronousObjectTracker<T> implements Tracker<T>, EventListener<T> {
 
-  /**
-   * immutable state
-   */
+  /** immutable state */
   final Module host;
 
   final Kernel kernel;
@@ -192,9 +190,7 @@ public abstract class AbstractAsynchronousObjectTracker<T> implements Tracker<T>
     }
   }
 
-  static final class ObjectThreadEventSource extends AbstractEventSource {
-
-  }
+  static final class ObjectThreadEventSource extends AbstractEventSource {}
 
   static final class ObjectEventDispatchState<T> {
 
