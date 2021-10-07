@@ -174,7 +174,7 @@ public class ZephyrCliEntryPoint implements EntryPoint {
     while (context == null) {
       synchronized (this) {
         try {
-          wait(200);
+          wait();
         } catch (InterruptedException ex) {
         }
       }

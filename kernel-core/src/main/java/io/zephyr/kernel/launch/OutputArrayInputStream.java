@@ -41,7 +41,7 @@ public class OutputArrayInputStream extends InputStream {
 
       while (readCount == messages.size()) {
         try {
-          messages.wait(100);
+          messages.wait();
         } catch (InterruptedException ex) {
           throw new IOException(ex);
         }

@@ -7,8 +7,21 @@ import io.zephyr.kernel.extensions.EntryPointRegistry;
 import io.zephyr.kernel.extensions.PrioritizedExtension;
 import io.zephyr.kernel.log.Logging;
 import io.zephyr.kernel.misc.SuppressFBWarnings;
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.ServiceLoader;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -31,110 +44,12 @@ public class KernelLauncher implements EntryPoint, EntryPointRegistry {
   static final Logger log = Logging.get(KernelLauncher.class);
 
   static KernelLauncher instance;
-
-  public static KernelLauncher getInstance() {
-    return instance;
-  }
-
   private KernelOptions options;
   private ExecutorService executorService;
   private Map<ContextEntries, Object> context;
 
-  @Override
-  public Logger getLogger() {
-    return log;
-  }
-
-  @Override
-  public void stop() {
-    executorService.shutdown();
-    try {
-      executorService.awaitTermination(1000, TimeUnit.MICROSECONDS);
-    } catch (InterruptedException ex) {
-      log.log(Level.INFO, "kernel.launcher.kernel.executor.interrupted");
-    }
-  }
-
-  @Override
-  @SuppressWarnings({"unchecked", "PMD.AvoidLiteralsInIfCondition"})
-  public void run(Map<ContextEntries, Object> ctx) {
-    while (true) {
-      synchronized (this) {
-        try {
-          val tasks = (List<EntryPoint>) ctx.get(ContextEntries.ENTRY_POINTS_TEMP);
-          if (tasks.isEmpty()) {
-            return;
-          }
-          if (tasks.size() == 1) {
-            if (tasks.get(0) == this) {
-              return;
-            }
-          }
-          wait(100);
-        } catch (InterruptedException e) {
-          log.log(Level.INFO, "interrupted");
-        }
-      }
-    }
-  }
-
-  void check() {
-    synchronized (this) {
-      notifyAll();
-    }
-  }
-
-  @Override
-  public void start() {
-    int concurrency = getOptions().getKernelConcurrency();
-    log.log(Level.INFO, "kernel.launcher.kernel.concurrency", concurrency);
-    executorService = Executors.newCachedThreadPool(new NamedThreadFactory("kernel"));
-  }
-
-  @Override
-  public void initialize(Map<ContextEntries, Object> context) {
-    this.context = context;
-    context.put(ContextEntries.ENTRY_POINT_REGISTRY, this);
-    options = Options.create(KernelOptions::new, context);
-    KernelLauncher.instance = this;
-  }
-
-  @Override
-  @SuppressWarnings("PMD.NullAssignment")
-  public void finalize(Map<ContextEntries, Object> context) {
-    KernelLauncher.instance = null;
-  }
-
-  @Override
-  public KernelOptions getOptions() {
-    return options;
-  }
-
-  @Override
-  @SuppressWarnings("unchecked")
-  public <T> T getService(Class<T> type) {
-    if (ExecutorService.class.isAssignableFrom(type)) {
-      return (T) executorService;
-    }
-
-    if (EntryPointRegistry.class.isAssignableFrom(type)) {
-      return (T) this;
-    }
-    throw new NoSuchElementException(
-        "This kernel module does not export a service of type '" + type + "'");
-  }
-
-  @Override
-  public <T> boolean exports(Class<T> type) {
-    if (ExecutorService.class.isAssignableFrom(type)) {
-      return true;
-    }
-
-    if (EntryPointRegistry.class.isAssignableFrom(type)) {
-      return true;
-    }
-
-    return false;
+  public static KernelLauncher getInstance() {
+    return instance;
   }
 
   public static void main(String[] args) {
@@ -300,6 +215,103 @@ public class KernelLauncher implements EntryPoint, EntryPointRegistry {
     log.log(Level.INFO, "kernel.entrypoint.initializing", loader);
     loader.initialize(context);
     log.log(Level.INFO, "kernel.entrypoint.initialized", loader);
+  }
+
+  @Override
+  public Logger getLogger() {
+    return log;
+  }
+
+  @Override
+  public void stop() {
+    executorService.shutdown();
+    try {
+      executorService.awaitTermination(1000, TimeUnit.MICROSECONDS);
+    } catch (InterruptedException ex) {
+      log.log(Level.INFO, "kernel.launcher.kernel.executor.interrupted");
+    }
+  }
+
+  @Override
+  @SuppressWarnings({"unchecked", "PMD.AvoidLiteralsInIfCondition"})
+  public void run(Map<ContextEntries, Object> ctx) {
+    while (true) {
+      synchronized (this) {
+        try {
+          val tasks = (List<EntryPoint>) ctx.get(ContextEntries.ENTRY_POINTS_TEMP);
+          if (tasks.isEmpty()) {
+            return;
+          }
+          if (tasks.size() == 1) {
+            if (tasks.get(0) == this) {
+              return;
+            }
+          }
+          wait();
+        } catch (InterruptedException e) {
+          log.log(Level.INFO, "interrupted");
+        }
+      }
+    }
+  }
+
+  void check() {
+    synchronized (this) {
+      notifyAll();
+    }
+  }
+
+  @Override
+  public void start() {
+    int concurrency = getOptions().getKernelConcurrency();
+    log.log(Level.INFO, "kernel.launcher.kernel.concurrency", concurrency);
+    executorService = Executors.newCachedThreadPool(new NamedThreadFactory("kernel"));
+  }
+
+  @Override
+  public void initialize(Map<ContextEntries, Object> context) {
+    this.context = context;
+    context.put(ContextEntries.ENTRY_POINT_REGISTRY, this);
+    options = Options.create(KernelOptions::new, context);
+    KernelLauncher.instance = this;
+  }
+
+  @Override
+  @SuppressWarnings("PMD.NullAssignment")
+  public void finalize(Map<ContextEntries, Object> context) {
+    KernelLauncher.instance = null;
+  }
+
+  @Override
+  public KernelOptions getOptions() {
+    return options;
+  }
+
+  @Override
+  @SuppressWarnings("unchecked")
+  public <T> T getService(Class<T> type) {
+    if (ExecutorService.class.isAssignableFrom(type)) {
+      return (T) executorService;
+    }
+
+    if (EntryPointRegistry.class.isAssignableFrom(type)) {
+      return (T) this;
+    }
+    throw new NoSuchElementException(
+        "This kernel module does not export a service of type '" + type + "'");
+  }
+
+  @Override
+  public <T> boolean exports(Class<T> type) {
+    if (ExecutorService.class.isAssignableFrom(type)) {
+      return true;
+    }
+
+    if (EntryPointRegistry.class.isAssignableFrom(type)) {
+      return true;
+    }
+
+    return false;
   }
 
   @Override

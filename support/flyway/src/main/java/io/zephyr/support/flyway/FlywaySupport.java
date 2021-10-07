@@ -11,8 +11,8 @@ public class FlywaySupport {
     return new ModuleResourceProviderBuilder(module, false);
   }
 
-  public static ModuleResourceProviderBuilder classpath(@NonNull Module module,
-      boolean searchSubAssemblies) {
+  public static ModuleResourceProviderBuilder classpath(
+      @NonNull Module module, boolean searchSubAssemblies) {
     return new ModuleResourceProviderBuilder(module, searchSubAssemblies);
   }
 

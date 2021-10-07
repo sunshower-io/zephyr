@@ -66,11 +66,13 @@ public class DefaultModuleManager implements ModuleManager, EventSource {
 
   @Override
   public List<Module> getModules() {
-    val results = new ArrayList<Module>();
-    for (val module : dependencyGraph) {
-      results.add(module);
+    synchronized (dependencyGraph) {
+      val results = new ArrayList<Module>();
+      for (val module : dependencyGraph) {
+        results.add(module);
+      }
+      return results;
     }
-    return results;
   }
 
   @Override

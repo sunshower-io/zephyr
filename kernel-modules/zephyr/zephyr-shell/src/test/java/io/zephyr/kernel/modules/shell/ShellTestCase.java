@@ -1,16 +1,21 @@
 package io.zephyr.kernel.modules.shell;
 
 import io.sunshower.test.common.Tests;
+import io.zephyr.api.ModuleEvents;
 import io.zephyr.kernel.Lifecycle;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.core.KernelLifecycle;
+import io.zephyr.kernel.events.Event;
+import io.zephyr.kernel.events.EventListener;
+import io.zephyr.kernel.events.EventType;
 import io.zephyr.kernel.extensions.EntryPoint;
 import io.zephyr.kernel.launch.KernelLauncher;
 import io.zephyr.kernel.modules.shell.server.Server;
 import java.io.File;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.concurrent.atomic.AtomicInteger;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.val;
@@ -22,70 +27,13 @@ import org.junit.jupiter.api.condition.OS;
 @DisabledOnOs({OS.MAC, OS.WINDOWS})
 public class ShellTestCase {
 
+  protected final boolean installBase;
   protected File homeDirectory;
   protected Kernel kernel;
   protected Server server;
   protected Thread serverThread;
   protected KernelLauncher launcher;
   protected Map<EntryPoint.ContextEntries, Object> launcherContext;
-
-  public enum TestPlugins implements Installable {
-    TEST_PLUGIN_1("kernel-tests:test-plugins:test-plugin-1"),
-    TEST_PLUGIN_2("kernel-tests:test-plugins:test-plugin-2"),
-    TEST_PLUGIN_3("kernel-tests:test-plugins:test-plugin-3"),
-    TEST_PLUGIN_SPRING("kernel-tests:test-plugins:test-plugin-spring"),
-    TEST_PLUGIN_SPRING_DEP("kernel-tests:test-plugins:test-plugin-spring-dep");
-
-    final String path;
-
-    TestPlugins(String path) {
-      this.path = path;
-    }
-
-    @Override
-    public String getPath() {
-      return path;
-    }
-  }
-
-  public enum StandardModules implements Installable {
-    YAML("kernel-modules:sunshower-yaml-reader");
-    final String path;
-
-    StandardModules(String path) {
-      this.path = path;
-    }
-
-    @Override
-    public String getPath() {
-      return path;
-    }
-  }
-
-  @AllArgsConstructor
-  public static final class FileInstallable implements Installable {
-    final File file;
-
-    @Override
-    public String getPath() {
-      return file.getAbsolutePath();
-    }
-
-    @Override
-    public String getAssembly() {
-      return getPath();
-    }
-  }
-
-  public interface Installable {
-    String getPath();
-
-    default String getAssembly() {
-      return Tests.relativeToProjectBuild(getPath(), "war", "libs").getAbsolutePath();
-    }
-  }
-
-  protected final boolean installBase;
 
   protected ShellTestCase(final boolean installBase) {
     this.installBase = installBase;
@@ -160,7 +108,7 @@ public class ShellTestCase {
     serverThread =
         new Thread(
             () -> {
-              run("-s");
+              run("-s -c 4");
             });
     serverThread.start();
     while ((launcher = KernelLauncher.getInstance()) == null) {
@@ -250,9 +198,26 @@ public class ShellTestCase {
 
   @SneakyThrows
   protected void installAndWaitForModuleCount(int count, Installable... modules) {
-    install(modules);
-    while (kernel.getModuleManager().getModules().size() < count) {
-      Thread.sleep(400);
+
+    val failedCount = new AtomicInteger(0);
+    EventListener<Object> listener;
+    kernel.addEventListener(
+        listener =
+            new EventListener<Object>() {
+              @Override
+              public void onEvent(EventType type, Event<Object> event) {
+                failedCount.incrementAndGet();
+              }
+            },
+        ModuleEvents.INSTALL_FAILED);
+
+    try {
+      install(modules);
+      while ((kernel.getModuleManager().getModules().size() + failedCount.get()) < count) {
+        Thread.sleep(400);
+      }
+    } finally {
+      kernel.removeEventListener(listener);
     }
   }
 
@@ -264,6 +229,64 @@ public class ShellTestCase {
   private void checkServer() {
     if (server == null) {
       throw new IllegalStateException("Error:  Server is not running");
+    }
+  }
+
+  public enum TestPlugins implements Installable {
+    TEST_PLUGIN_1("kernel-tests:test-plugins:test-plugin-1"),
+    TEST_PLUGIN_2("kernel-tests:test-plugins:test-plugin-2"),
+    TEST_PLUGIN_3("kernel-tests:test-plugins:test-plugin-3"),
+    TEST_PLUGIN_SPRING("kernel-tests:test-plugins:test-plugin-spring"),
+    TEST_PLUGIN_SPRING_DEP("kernel-tests:test-plugins:test-plugin-spring-dep");
+
+    final String path;
+
+    TestPlugins(String path) {
+      this.path = path;
+    }
+
+    @Override
+    public String getPath() {
+      return path;
+    }
+  }
+
+  public enum StandardModules implements Installable {
+    YAML("kernel-modules:sunshower-yaml-reader");
+    final String path;
+
+    StandardModules(String path) {
+      this.path = path;
+    }
+
+    @Override
+    public String getPath() {
+      return path;
+    }
+  }
+
+  public interface Installable {
+
+    String getPath();
+
+    default String getAssembly() {
+      return Tests.relativeToProjectBuild(getPath(), "war", "libs").getAbsolutePath();
+    }
+  }
+
+  @AllArgsConstructor
+  public static final class FileInstallable implements Installable {
+
+    final File file;
+
+    @Override
+    public String getPath() {
+      return file.getAbsolutePath();
+    }
+
+    @Override
+    public String getAssembly() {
+      return getPath();
     }
   }
 }
