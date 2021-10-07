@@ -1,6 +1,7 @@
 package io.zephyr.support.flyway;
 
 import io.zephyr.kernel.Module;
+import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
@@ -9,25 +10,37 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.logging.Level;
 import java.util.regex.Pattern;
+import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
+import lombok.extern.java.Log;
 import lombok.val;
 import org.flywaydb.core.api.FlywayException;
 import org.flywaydb.core.api.ResourceProvider;
 import org.flywaydb.core.api.resource.LoadableResource;
 
+@Log
 public class ClasspathModuleResourceProvider implements ResourceProvider {
 
   private final Module module;
   private final List<String> locations;
+  private final boolean searchSubAssemblies;
   private final Map<String, LoadableResource> resources;
 
   public ClasspathModuleResourceProvider(Module module, String... locations) {
+    this(module, false, locations);
+  }
+
+  public ClasspathModuleResourceProvider(Module module, boolean searchSubAssemblies,
+      String... locations) {
     this.module = Objects.requireNonNull(module, "Module must not be null");
     validate(locations);
     this.locations = Arrays.asList(locations);
     this.resources = new LinkedHashMap<>();
+    this.searchSubAssemblies = searchSubAssemblies;
   }
+
 
   @Override
   public LoadableResource getResource(String name) {
@@ -37,8 +50,21 @@ public class ClasspathModuleResourceProvider implements ResourceProvider {
   @Override
   public Collection<LoadableResource> getResources(String prefix, String[] suffixes) {
     resources.clear();
-    loadResources(prefix, suffixes);
+    loadResourcesIn(module.getAssembly().getFile(), prefix, suffixes);
+    if (searchSubAssemblies) {
+      for (val library : module.getAssembly().getLibraries()) {
+        loadResourcesIn(library.getFile(), prefix, suffixes);
+      }
+    }
     return Collections.unmodifiableCollection(resources.values());
+  }
+
+  private void loadResourcesIn(File file, String prefix, String[] suffixes) {
+    try {
+      loadResources(file, prefix, suffixes);
+    } catch (ZipException ex) {
+      log.log(Level.WARNING, "Error opening assembly file: ''{0}''", ex.getMessage());
+    }
   }
 
   private void validate(String[] locations) {
@@ -47,8 +73,9 @@ public class ClasspathModuleResourceProvider implements ResourceProvider {
     }
   }
 
-  private void loadResources(String prefix, String[] suffixes) {
-    try (val file = new ZipFile(module.getAssembly().getFile())) {
+  private void loadResources(File assemblyFile, String prefix, String[] suffixes)
+      throws ZipException {
+    try (val file = new ZipFile(assemblyFile)) {
       for (val location : locations) {
         var normalizedLocation = location;
         if (isWar(file)) {
@@ -69,7 +96,8 @@ public class ClasspathModuleResourceProvider implements ResourceProvider {
           }
         }
       }
-
+    } catch (ZipException ex) {
+      throw ex;
     } catch (IOException ex) {
       throw new FlywayException(ex);
     }
