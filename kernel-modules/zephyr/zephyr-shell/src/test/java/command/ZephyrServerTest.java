@@ -86,8 +86,7 @@ class ZephyrServerTest {
     Invoker localInvoker = (Invoker) LocateRegistry.getRegistry(9999).lookup("ZephyrShell");
     localInvoker.invoke(
         Parameters.of("kernel", "start", "-h", Tests.createTemp().getAbsolutePath()));
-    localInvoker.invoke(
-        Parameters.of("kernel", "stop", "-h", Tests.createTemp().getAbsolutePath()));
+    localInvoker.invoke(Parameters.of("kernel", "stop"));
   }
 
   private void doStart() throws InterruptedException {
