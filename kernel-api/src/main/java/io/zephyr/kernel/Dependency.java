@@ -2,9 +2,9 @@ package io.zephyr.kernel;
 
 import io.zephyr.kernel.core.ExportDescriptor;
 import io.zephyr.kernel.core.ImportDescriptor;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
@@ -12,7 +12,6 @@ import lombok.val;
 
 @Getter
 @EqualsAndHashCode
-@AllArgsConstructor
 public final class Dependency {
 
   /**
@@ -23,31 +22,51 @@ public final class Dependency {
    * the coordinate of this dependency
    */
   final Coordinate coordinate;
-
   /**
    * determine whether this dependency is optional or not
    */
   final boolean optional;
-
   /**
    * re-export this dependency
    */
   final boolean export;
-
   /**
-   * list of classes and resources that this module imports
-   */
-  @NonNull private final List<ImportDescriptor> imports;
-
-
-  /**
-   * list of classes and resources that this module imports
-   */
-  @NonNull private final List<ExportDescriptor> exports;
-  /**
+   *
    */
   final ServicesResolutionStrategy servicesResolutionStrategy;
+  /**
+   * list of classes and resources that this module imports
+   */
+  @NonNull
+  private final List<ImportDescriptor> imports;
+  /**
+   * list of classes and resources that this module imports
+   */
+  @NonNull
+  private final List<ExportDescriptor> exports;
+  public Dependency(Type type, Coordinate coordinate, boolean optional, boolean export,
+      ServicesResolutionStrategy servicesResolutionStrategy,
+      @NonNull List<ImportDescriptor> imports,
+      @NonNull List<ExportDescriptor> exports) {
+    this.type = type;
+    this.coordinate = coordinate;
+    this.optional = optional;
+    this.export = export;
+    this.servicesResolutionStrategy = servicesResolutionStrategy;
+    this.imports = imports;
+    this.exports = exports;
+  }
 
+
+  public Dependency(Dependency.Type type, Coordinate coordinate) {
+    this.type = type;
+    this.export = true;
+    this.optional = false;
+    this.coordinate = coordinate;
+    this.exports = Collections.emptyList();
+    this.imports = Collections.emptyList();
+    this.servicesResolutionStrategy = ServicesResolutionStrategy.None;
+  }
 
   public enum Type {
     Library,
