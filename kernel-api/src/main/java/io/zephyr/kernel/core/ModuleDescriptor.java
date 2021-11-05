@@ -3,17 +3,16 @@ package io.zephyr.kernel.core;
 import io.zephyr.kernel.Coordinate;
 import io.zephyr.kernel.Dependency;
 import io.zephyr.kernel.Module;
+import io.zephyr.kernel.Module.Type;
 import java.io.File;
 import java.net.URL;
 import java.util.List;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.ToString;
 
 @Getter
 @ToString
-@AllArgsConstructor
 public class ModuleDescriptor {
 
   /** the source of this module. May refer to a local file or a remote file */
@@ -41,6 +40,25 @@ public class ModuleDescriptor {
   @NonNull private final List<PathSpecification> exports;
   /** an optional description for this module */
   private final String description;
+
+  public ModuleDescriptor(
+      URL location,
+      int order,
+      File file,
+      Type type,
+      Coordinate coord,
+      List<Dependency> dependencies,
+      List<PathSpecification> exports,
+      String description) {
+    this.type = type;
+    this.order = order;
+    this.source = location;
+    this.moduleFile = file;
+    this.coordinate = coord;
+    this.exports = exports;
+    this.description = description;
+    this.dependencies = dependencies;
+  }
 
   public static final class Attributes {
 

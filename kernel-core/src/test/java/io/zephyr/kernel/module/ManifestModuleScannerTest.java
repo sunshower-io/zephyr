@@ -21,9 +21,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 @SuppressWarnings({
-    "PMD.AvoidDuplicateLiterals",
-    "PMD.JUnitTestContainsTooManyAsserts",
-    "PMD.JUnitAssertionsShouldIncludeMessage"
+  "PMD.AvoidDuplicateLiterals",
+  "PMD.JUnitTestContainsTooManyAsserts",
+  "PMD.JUnitAssertionsShouldIncludeMessage"
 })
 class ManifestModuleScannerTest {
 
@@ -92,10 +92,10 @@ class ManifestModuleScannerTest {
 
     val coordinate =
         "service@hello0:world:1.0.0-SNAPSHOT,"
-        + "service@whatever.world1:coolbeans:1.0.0-Final  , "
-        + "service@whatever.world2:coolbeans:1.0.0-Final,   "
-        + "service@whatever.world3:coolbeans:1.0.0-Final"
-        + linefeed;
+            + "service@whatever.world1:coolbeans:1.0.0-Final  , "
+            + "service@whatever.world2:coolbeans:1.0.0-Final,   "
+            + "service@whatever.world3:coolbeans:1.0.0-Final"
+            + linefeed;
     val reader = readerFor(coordinate);
     val deps = scanner.readDependencies(reader);
     assertEquals(4, deps.size());
@@ -121,13 +121,13 @@ class ManifestModuleScannerTest {
   @ValueSource(strings = {"\n", "\r\n", "\r", ""})
   void ensureOptionalWorksForSingleDependency(String linefeed) {
     val leading =
-        new String[]{
-            "", "\t", " ", " \t", " \t ",
+        new String[] {
+          "", "\t", " ", " \t", " \t ",
         };
 
     val trailing =
-        new String[]{
-            "", "\t", " ", " \t", " \t ",
+        new String[] {
+          "", "\t", " ", " \t", " \t ",
         };
 
     for (val l : leading) {
@@ -148,21 +148,20 @@ class ManifestModuleScannerTest {
   @ValueSource(strings = {"none", "import", "export"})
   void ensureServicesWorksForAllValuesWithLeadingAndTrailingWhitespace(String linefeed) {
     val leading =
-        new String[]{
-            "", "\t", " ", " \t", " \t ",
+        new String[] {
+          "", "\t", " ", " \t", " \t ",
         };
 
     val trailing =
-        new String[]{
-            "", "\t", " ", " \t", " \t ",
+        new String[] {
+          "", "\t", " ", " \t", " \t ",
         };
 
     for (val l : leading) {
       for (val t : trailing) {
 
         val coordinate =
-            format(
-                "service@hello0:world:1.0.0-SNAPSHOT<%sservices=%s%s%s>", l, t, linefeed, l);
+            format("service@hello0:world:1.0.0-SNAPSHOT<%sservices=%s%s%s>", l, t, linefeed, l);
         System.out.println(coordinate);
         val reader = readerFor(coordinate);
         val deps = scanner.readDependencies(reader);
@@ -177,8 +176,9 @@ class ManifestModuleScannerTest {
   @ParameterizedTest
   @ValueSource(strings = {"all", "just"})
   void ensureReadPathSpecificationCanBeReadForImports(String value) throws IOException {
-    val coord = readerFor(
-        format("service@hello0:world:1.0.0-SNAPSHOT<imports-paths=[%s:hello/world]>", value));
+    val coord =
+        readerFor(
+            format("service@hello0:world:1.0.0-SNAPSHOT<imports-paths=[%s:hello/world]>", value));
     val results = scanner.readDependencies(coord);
     assertEquals(results.size(), 1);
     val imports = results.get(0).getImports();
@@ -191,10 +191,11 @@ class ManifestModuleScannerTest {
   @ParameterizedTest
   @ValueSource(strings = {"exports"})
   void ensureReadPathSpecificationCanBeReadForMultipleExports(String type) throws IOException {
-    val coord = readerFor(
-        format(
-            "service@hello0:world:1.0.0-SNAPSHOT<%s-paths=[just : hello/world, all  :   world/world ]>",
-            type));
+    val coord =
+        readerFor(
+            format(
+                "service@hello0:world:1.0.0-SNAPSHOT<%s-paths=[just : hello/world, all  :   world/world ]>",
+                type));
     val results = scanner.readDependencies(coord);
     assertEquals(results.size(), 1);
     val exports = results.get(0).getExports();
@@ -209,10 +210,11 @@ class ManifestModuleScannerTest {
   @ParameterizedTest
   @ValueSource(strings = {"imports"})
   void ensureReadPathSpecificationCanBeReadForMultipleImports(String type) throws IOException {
-    val coord = readerFor(
-        format(
-            "service@hello0:world:1.0.0-SNAPSHOT<%s-paths=[just : hello/world, all  :   world/world ]>",
-            type));
+    val coord =
+        readerFor(
+            format(
+                "service@hello0:world:1.0.0-SNAPSHOT<%s-paths=[just : hello/world, all  :   world/world ]>",
+                type));
     val results = scanner.readDependencies(coord);
     assertEquals(results.size(), 1);
     val imports = results.get(0).getImports();
@@ -226,9 +228,10 @@ class ManifestModuleScannerTest {
 
   @Test
   void ensureReadPathSpecificationCanBeReadForMultipleImports_no_whitespace() throws IOException {
-    val coord = readerFor(
-        format(
-            "service@hello0:world:1.0.0-SNAPSHOT<imports-paths=[just:hello/world,all:world/world]>"));
+    val coord =
+        readerFor(
+            format(
+                "service@hello0:world:1.0.0-SNAPSHOT<imports-paths=[just:hello/world,all:world/world]>"));
     val results = scanner.readDependencies(coord);
     assertEquals(results.size(), 1);
     val imports = results.get(0).getImports();
@@ -242,9 +245,10 @@ class ManifestModuleScannerTest {
 
   @Test
   void ensureReadPathSpecificationCanBeReadForMultipleExports_no_whitespace() throws IOException {
-    val coord = readerFor(
-        format(
-            "service@hello0:world:1.0.0-SNAPSHOT<exports-paths=[just:hello/world,all:world/world]>"));
+    val coord =
+        readerFor(
+            format(
+                "service@hello0:world:1.0.0-SNAPSHOT<exports-paths=[just:hello/world,all:world/world]>"));
     val results = scanner.readDependencies(coord);
     assertEquals(results.size(), 1);
     val exports = results.get(0).getExports();
@@ -257,35 +261,40 @@ class ManifestModuleScannerTest {
   }
 
   @ParameterizedTest
-  @ValueSource(strings = {
-      "service@io.sunshower.coolbeans:whatever:1.0.0-Final<"
-      + "exports-paths=["
-      + " just:hello/world, "
-      + " all:how/are/you?"
-      + "]; "
-      + "re-export; "
-      + "optional; "
-      + "services=import; "
-      + "imports-paths=["
-      + "just:whatever, "
-      + "all:this/are/cool/paths]>,"
-      +
-      "service@io.sunshower.coolbeans2:whatever:1.0.0-Final<"
-      + " exports-paths=["
-      + "   just:hello/world, "
-      + "   all:how/are/you?]; "
-      + "   re-export; "
-      + "   optional; "
-      + "   services=export; "
-      + "   imports-paths=["
-      + "       just:whatever, "
-      + "       all:this/are/cool/paths]"
-      + " >"
-  })
+  @ValueSource(
+      strings = {
+        "service@io.sunshower.coolbeans:whatever:1.0.0-Final<"
+            + "exports-paths=["
+            + " just:hello/world, "
+            + " all:how/are/you?"
+            + "]; "
+            + "re-export; "
+            + "optional; "
+            + "services=import; "
+            + "imports-paths=["
+            + "just:whatever, "
+            + "all:these/are/cool/paths/?]>,"
+            + "service@io.sunshower.coolbeans2:whatever:1.0.0-Final<"
+            + " exports-paths=["
+            + "   just:hello/world, "
+            + "   all:how/are/you?]; "
+            + "   re-export; "
+            + "   optional; "
+            + "   services=export; "
+            + "   imports-paths=["
+            + "       just:whatever, "
+            + "       all:these/are/cool/paths/*]"
+            + " >"
+      })
   void ensureComplexPathSpecsWork(String pathSpec) throws IOException {
     val results = scanner.readDependencies(readerFor(pathSpec));
     assertEquals(2, results.size());
+  }
 
+  @Test
+  void ensureParsingFailingManifestWorks() throws IOException {
+    val results =
+        scanner.readDependencies(readerFor(" library@io.sunshower:test-plugin-1:1.0.0-SNAPSHOT\n"));
   }
 
   private PushbackReader readerFor(String s) {

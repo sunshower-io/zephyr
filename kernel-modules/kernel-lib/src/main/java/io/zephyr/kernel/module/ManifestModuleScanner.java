@@ -3,6 +3,7 @@ package io.zephyr.kernel.module;
 import io.zephyr.kernel.Dependency;
 import io.zephyr.kernel.Dependency.ServicesResolutionStrategy;
 import io.zephyr.kernel.Dependency.Type;
+import io.zephyr.kernel.Module;
 import io.zephyr.kernel.core.ModuleCoordinate;
 import io.zephyr.kernel.core.ModuleDescriptor;
 import io.zephyr.kernel.core.ModuleScanner;
@@ -12,6 +13,7 @@ import io.zephyr.kernel.core.SemanticVersion;
 import java.io.File;
 import java.io.IOException;
 import java.io.PushbackReader;
+import java.io.StringReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,6 +24,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.jar.Attributes;
+import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 import lombok.AllArgsConstructor;
 import lombok.val;
 
@@ -36,24 +41,70 @@ import lombok.val;
  *
  * <p>
  *
- * <p>For instance: <code>
- * service@io.sunshower:zephyr:version<export:none; services:true; optional>
- *
- * </code>
+ * <p>For instance: {@code service@io.sunshower:zephyr:version<export:none; services:true; optional>
+ * }
  */
 @SuppressWarnings({"PMD.UnusedPrivateMethod", "PMD.DataflowAnomalyAnalysis"})
 public final class ManifestModuleScanner implements ModuleScanner {
 
-  /**
-   *
-   */
+  /** */
   static final String[] moduleDependencyModifiers = {
-      "optional", "re-export", "services", "exports-paths", "imports-paths"
+    "optional", "re-export", "services", "exports-paths", "imports-paths"
   };
 
   @Override
   public Optional<ModuleDescriptor> scan(File file, URL source) {
-    return Optional.empty();
+    if (file == null || !file.exists()) {
+      return Optional.empty();
+    }
+
+    try {
+      try (val packageFile = new JarFile(file, true)) {
+        return Optional.of(read(packageFile.getManifest(), file, source));
+      }
+    } catch (Throwable e) {
+      e.printStackTrace();
+      return Optional.empty();
+    }
+  }
+
+  private ModuleDescriptor read(Manifest manifest, File file, URL source) throws IOException {
+    val attrs = manifest.getMainAttributes();
+    val group = req(attrs, ModuleDescriptor.Attributes.GROUP);
+    val name = req(attrs, ModuleDescriptor.Attributes.NAME);
+    val version = req(attrs, ModuleDescriptor.Attributes.VERSION);
+    val order = opt(attrs, ModuleDescriptor.Attributes.ORDER, 0);
+
+    val type = Module.Type.parse(req(attrs, ModuleDescriptor.Attributes.TYPE));
+    val description = attrs.getValue(ModuleDescriptor.Attributes.DESCRIPTION);
+    val coordinate = new ModuleCoordinate(name, group, new SemanticVersion(version));
+    val dependencies = parseDependencies(attrs);
+    return new ModuleDescriptor(
+        source, order, file, type, coordinate, dependencies, Collections.emptyList(), description);
+  }
+
+  private List<Dependency> parseDependencies(Attributes attrs) throws IOException {
+    val deps = attrs.getValue(ModuleDescriptor.Attributes.DEPENDENCIES);
+    if (!(deps == null || deps.trim().isEmpty())) {
+      return readDependencies(new PushbackReader(new StringReader(deps)));
+    }
+    return Collections.emptyList();
+  }
+
+  private Integer opt(Attributes attrs, String name, Integer i) {
+    val result = attrs.getValue(name);
+    if (result == null || result.isBlank()) {
+      return i;
+    }
+    return Integer.parseInt(name);
+  }
+
+  private String req(Attributes attrs, String key) {
+    val v = attrs.getValue(key);
+    if (v == null || v.isBlank()) {
+      throw new IllegalArgumentException("Error: key '" + key + "' must not be null/empty");
+    }
+    return v;
   }
 
   List<Dependency> readDependencies(PushbackReader reader) throws IOException {
@@ -142,11 +193,10 @@ public final class ManifestModuleScanner implements ModuleScanner {
             break;
         }
         readWhitespace(reader);
-        if(peek(reader) == ';') {
+        if (peek(reader) == ';') {
           expectAndDiscard(reader, ';');
           readWhitespace(reader);
         }
-
       }
 
       val dependency =
@@ -157,12 +207,10 @@ public final class ManifestModuleScanner implements ModuleScanner {
               (boolean) values.getOrDefault("re-export", false),
               (ServicesResolutionStrategy)
                   values.getOrDefault("services", ServicesResolutionStrategy.None),
-              (List<PathSpecification>) values.getOrDefault("imports-paths",
-                  Collections.emptyList()),
-              (List<PathSpecification>) values.getOrDefault("exports-paths",
-                  Collections.emptyList())
-
-          );
+              (List<PathSpecification>)
+                  values.getOrDefault("imports-paths", Collections.emptyList()),
+              (List<PathSpecification>)
+                  values.getOrDefault("exports-paths", Collections.emptyList()));
 
       results.add(dependency);
       readWhitespace(reader);
@@ -193,8 +241,8 @@ public final class ManifestModuleScanner implements ModuleScanner {
 
   private PathSpecification readPathSpec(Mode mode, PushbackReader reader) throws IOException {
     readWhitespace(reader);
-    val pathSpec = readUntil(reader, "Expected one of (SPACE( ), TAB(\t), ',')", ' ', ',', '\t',
-        ']');
+    val pathSpec =
+        readUntil(reader, "Expected one of (SPACE( ), TAB(\t), ',')", ' ', ',', '\t', ']');
     readWhitespace(reader);
     return new PathSpecification(mode, pathSpec.value);
   }
@@ -205,7 +253,7 @@ public final class ManifestModuleScanner implements ModuleScanner {
     expectAndDiscard(reader, ':');
     val artifact = readUntil(reader, "(missing artifact)", ':');
     expectAndDiscard(reader, ':');
-    val version = readUntil(reader, "(missing version)", ',', '<', '\r', '\n', '\t', ' ');
+    val version = readUntil(reader, "(missing version)", true, ',', '<', '\r', '\n', '\t', ' ');
     checkForNewLine(reader);
 
     return new ModuleCoordinate(artifact.value, group.value, new SemanticVersion(version.value));
@@ -235,6 +283,11 @@ public final class ManifestModuleScanner implements ModuleScanner {
 
   private MatchResult readUntil(PushbackReader reader, String cause, char... chs)
       throws IOException {
+    return readUntil(reader, cause, true, chs);
+  }
+
+  private MatchResult readUntil(PushbackReader reader, String cause, boolean oreof, char... chs)
+      throws IOException {
     val result = new StringBuilder();
     int a;
     while ((a = reader.read()) != -1) {
@@ -246,6 +299,9 @@ public final class ManifestModuleScanner implements ModuleScanner {
         }
       }
       result.append(ch);
+    }
+    if (oreof) {
+      return new MatchResult(result.toString(), a);
     }
     throw new NoSuchElementException(
         String.format(

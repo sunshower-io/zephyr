@@ -15,7 +15,12 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
@@ -160,12 +165,13 @@ public class YamlPluginDescriptorScanner implements ModuleScanner {
 
     val descriptor =
         new ModuleDescriptor(
-            modType,
             source,
             0,
             sourceFile,
+            modType,
             ModuleCoordinate.create(group, name, version),
             dependencies,
+            Collections.emptyList(),
             description);
     return Optional.of(descriptor);
   }
