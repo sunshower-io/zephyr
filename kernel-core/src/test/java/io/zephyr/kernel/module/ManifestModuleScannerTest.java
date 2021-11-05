@@ -260,6 +260,41 @@ class ManifestModuleScannerTest {
     assertEquals(i.getMode(), Mode.All);
   }
 
+
+  @ParameterizedTest
+  @ValueSource(
+      strings = {
+          "service@io.sunshower.coolbeans:whatever:1.0.0-Final<"
+          + "exports-paths=["
+          + " just:hello/world, "
+          + " all:how/are/you?"
+          + "]; "
+          + "re-export; "
+          + "optional; "
+          + "services=import; "
+          + "imports-paths=["
+          + "just:whatever, "
+          + "all:these/are/cool/paths/?]>,"
+          + "service@io.sunshower.coolbeans2:whatever:1.0.0-Final<"
+          + " exports-paths=["
+          + "   just:hello/world, "
+          + "   all:how/are/you?]; "
+          + "   re-export; "
+          + "   optional; "
+          + "   services=export; "
+          + "   imports-paths=["
+          + "       just:whatever, "
+          + "       class:io.sunshower.whatever.MyType]"
+          + " >"
+      })
+  void ensureComplexPathSpecsWorkWithClass(String pathSpec) throws IOException {
+    val results = scanner.readDependencies(readerFor(pathSpec));
+    assertEquals(2, results.size());
+
+    val r = results.get(1);
+    assertEquals(r.getImports().get(1).getMode(), Mode.Class);
+  }
+
   @ParameterizedTest
   @ValueSource(
       strings = {
@@ -295,7 +330,16 @@ class ManifestModuleScannerTest {
   void ensureParsingFailingManifestWorks() throws IOException {
     val results =
         scanner.readDependencies(readerFor(" library@io.sunshower:test-plugin-1:1.0.0-SNAPSHOT\n"));
+    assertEquals(results.size(), 1);
   }
+
+  @Test
+  void ensureParsingFailingManifestWorks2() throws IOException {
+    val results =
+        scanner.readDependencies(readerFor(" library@io.sunshower:test-plugin-1:1.0.0-SNAPSHOT"));
+    assertEquals(results.size(), 1);
+  }
+
 
   private PushbackReader readerFor(String s) {
     return new PushbackReader(new StringReader(s));

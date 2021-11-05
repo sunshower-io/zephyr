@@ -227,7 +227,7 @@ public final class ManifestModuleScanner implements ModuleScanner {
     val results = new ArrayList<PathSpecification>();
     while (peek(reader) != ']') {
       readWhitespace(reader);
-      val mode = Mode.parse(expectOneOf(reader, "all", "just"));
+      val mode = Mode.parse(expectOneOf(reader, "all", "just", "class"));
       readWhitespace(reader);
       expectAndDiscard(reader, ':');
       readWhitespace(reader);

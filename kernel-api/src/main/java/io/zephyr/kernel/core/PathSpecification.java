@@ -20,6 +20,10 @@ public class PathSpecification {
   }
 
   public enum Mode {
+    /**
+     * include class specification
+     */
+    Class,
     /** include glob path specification */
     All,
     /** include exactly these paths */
@@ -32,6 +36,8 @@ public class PathSpecification {
           return All;
         case "just":
           return Just;
+        case "class":
+          return Class;
         default:
           throw new IllegalArgumentException("No path specification mode: " + value);
       }
