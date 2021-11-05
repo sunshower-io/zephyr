@@ -6,6 +6,8 @@ import io.zephyr.kernel.Dependency.Type;
 import io.zephyr.kernel.core.ModuleCoordinate;
 import io.zephyr.kernel.core.ModuleDescriptor;
 import io.zephyr.kernel.core.ModuleScanner;
+import io.zephyr.kernel.core.PathSpecification;
+import io.zephyr.kernel.core.PathSpecification.Mode;
 import io.zephyr.kernel.core.SemanticVersion;
 import java.io.File;
 import java.io.IOException;
@@ -25,17 +27,16 @@ import lombok.val;
 
 /**
  * ManifestModuleScanner
- * <p>
- * this class parses manifest of the form: {@code name: <name>} {@code dependencies:
+ *
+ * <p>this class parses manifest of the form: {@code name: <name>} {@code dependencies:
  * <dependencySpec>} {@code dependencySpec: dependency+} {@code dependency:
  * type@<coordinate>\<<exportSpec>?<servicesSpec>?optional?\>} {@code exportSpec:
  * export:<none|import|export>} {@code servicesSpec: services:<true|false>} {@code optional:
  * optional}
- * <p>
- * <p>
- * For instance:
  *
- * <code>
+ * <p>
+ *
+ * <p>For instance: <code>
  * service@io.sunshower:zephyr:version<export:none; services:true; optional>
  *
  * </code>
@@ -47,11 +48,7 @@ public final class ManifestModuleScanner implements ModuleScanner {
    *
    */
   static final String[] moduleDependencyModifiers = {
-      "optional",
-      "export",
-      "services",
-      "includes",
-      "excludes"
+      "optional", "re-export", "services", "exports-paths", "imports-paths"
   };
 
   @Override
@@ -80,7 +77,6 @@ public final class ManifestModuleScanner implements ModuleScanner {
       if (nl == '\n' || nl == '\uFFFF' || nl == '\r') {
         return results;
       }
-
     }
   }
 
@@ -104,42 +100,103 @@ public final class ManifestModuleScanner implements ModuleScanner {
         return;
       }
     }
-
   }
 
+  @SuppressWarnings("unchecked")
   void readDependency(List<Dependency> results, PushbackReader reader) throws IOException {
     val type = readDependencyType(reader);
     val coordinate = readModuleCoordinate(reader);
     if (peek(reader) == '<') {
       expectAndDiscard(reader, '<');
-      readWhitespace(reader);
-      val moduleDependencyModifier = expectOneOf(reader, moduleDependencyModifiers);
       Map<String, Object> values = new HashMap<>();
       while (peek(reader) != '>') {
+        readWhitespace(reader);
+        val moduleDependencyModifier = expectOneOf(reader, moduleDependencyModifiers);
         switch (moduleDependencyModifier) {
-          case "optional": {
+          case "optional":
             values.put("optional", true);
-          }
-          case
-
+            break;
+          case "services":
+            readWhitespace(reader);
+            expectAndDiscard(reader, '=');
+            readWhitespace(reader);
+            val result =
+                ServicesResolutionStrategy.parse(expectOneOf(reader, "none", "import", "export"));
+            readWhitespace(reader);
+            values.put("services", result);
+            break;
+          case "re-export":
+            readWhitespace(reader);
+            values.put("re-export", true);
+            readWhitespace(reader);
+            break;
+          case "imports-paths":
+          case "exports-paths":
+            readWhitespace(reader);
+            expectAndDiscard(reader, '=');
+            readWhitespace(reader);
+            expectAndDiscard(reader, '[');
+            val pathImports = readPathList(reader);
+            expectAndDiscard(reader, ']');
+            values.put(moduleDependencyModifier, pathImports);
+            break;
         }
+        readWhitespace(reader);
+        if(peek(reader) == ';') {
+          expectAndDiscard(reader, ';');
+          readWhitespace(reader);
+        }
+
       }
 
-      val dependency = new Dependency(type, coordinate,
-          (boolean) values.getOrDefault("optional", false), false,
-          ServicesResolutionStrategy.None, Collections.emptyList(), Collections.emptyList());
+      val dependency =
+          new Dependency(
+              type,
+              coordinate,
+              (boolean) values.getOrDefault("optional", false),
+              (boolean) values.getOrDefault("re-export", false),
+              (ServicesResolutionStrategy)
+                  values.getOrDefault("services", ServicesResolutionStrategy.None),
+              (List<PathSpecification>) values.getOrDefault("imports-paths",
+                  Collections.emptyList()),
+              (List<PathSpecification>) values.getOrDefault("exports-paths",
+                  Collections.emptyList())
+
+          );
 
       results.add(dependency);
-
       readWhitespace(reader);
       expectAndDiscard(reader, '>');
-
 
     } else {
       val dependency = new Dependency(type, coordinate);
       results.add(dependency);
     }
+  }
 
+  private List<PathSpecification> readPathList(PushbackReader reader) throws IOException {
+
+    val results = new ArrayList<PathSpecification>();
+    while (peek(reader) != ']') {
+      readWhitespace(reader);
+      val mode = Mode.parse(expectOneOf(reader, "all", "just"));
+      readWhitespace(reader);
+      expectAndDiscard(reader, ':');
+      readWhitespace(reader);
+      results.add(readPathSpec(mode, reader));
+      if (peek(reader) == ',') {
+        expectAndDiscard(reader, ',');
+      }
+    }
+    return results;
+  }
+
+  private PathSpecification readPathSpec(Mode mode, PushbackReader reader) throws IOException {
+    readWhitespace(reader);
+    val pathSpec = readUntil(reader, "Expected one of (SPACE( ), TAB(\t), ',')", ' ', ',', '\t',
+        ']');
+    readWhitespace(reader);
+    return new PathSpecification(mode, pathSpec.value);
   }
 
   ModuleCoordinate readModuleCoordinate(PushbackReader reader) throws IOException {
@@ -151,8 +208,7 @@ public final class ManifestModuleScanner implements ModuleScanner {
     val version = readUntil(reader, "(missing version)", ',', '<', '\r', '\n', '\t', ' ');
     checkForNewLine(reader);
 
-    return new ModuleCoordinate(artifact.value, group.value,
-        new SemanticVersion(version.value));
+    return new ModuleCoordinate(artifact.value, group.value, new SemanticVersion(version.value));
   }
 
   private void checkForNewLine(PushbackReader reader) throws IOException {
@@ -192,8 +248,8 @@ public final class ManifestModuleScanner implements ModuleScanner {
       result.append(ch);
     }
     throw new NoSuchElementException(
-        String.format("Error: expected '%s', got '%s' EOF.  Reason: ", Arrays.toString(chs), result,
-            cause));
+        String.format(
+            "Error: expected '%s', got '%s' EOF.  Reason: ", Arrays.toString(chs), result, cause));
   }
 
   Type readDependencyType(PushbackReader reader) throws IOException {
@@ -209,7 +265,8 @@ public final class ManifestModuleScanner implements ModuleScanner {
       int ch = reader.read();
       if (ch == -1) {
         throw new IllegalArgumentException(
-            String.format("Expected one of: %s.  Reached EOF at %s instead",
+            String.format(
+                "Expected one of: %s.  Reached EOF at %s instead",
                 Arrays.toString(values), buffer));
       }
       buffer.append((char) ch);
@@ -241,8 +298,7 @@ public final class ManifestModuleScanner implements ModuleScanner {
     }
 
     throw new IllegalArgumentException(
-        String.format("Expected one of: %s.  Got '%s' instead",
-            Arrays.toString(values), buffer));
+        String.format("Expected one of: %s.  Got '%s' instead", Arrays.toString(values), buffer));
   }
 
   private int maxSize(String[] values) {
@@ -262,6 +318,4 @@ public final class ManifestModuleScanner implements ModuleScanner {
     final String value;
     final int character;
   }
-
-
 }

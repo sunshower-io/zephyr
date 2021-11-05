@@ -1,7 +1,6 @@
 package io.zephyr.kernel;
 
-import io.zephyr.kernel.core.ExportDescriptor;
-import io.zephyr.kernel.core.ImportDescriptor;
+import io.zephyr.kernel.core.PathSpecification;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -14,53 +13,41 @@ import lombok.val;
 @EqualsAndHashCode
 public final class Dependency {
 
-  /**
-   * the type of this dependency
-   */
+  /** the type of this dependency */
   final Type type;
-  /**
-   * the coordinate of this dependency
-   */
+  /** the coordinate of this dependency */
   final Coordinate coordinate;
-  /**
-   * determine whether this dependency is optional or not
-   */
+  /** determine whether this dependency is optional or not */
   final boolean optional;
-  /**
-   * re-export this dependency
-   */
-  final boolean export;
-  /**
-   *
-   */
+  /** re-export this dependency */
+  final boolean reexport;
+  /** */
   final ServicesResolutionStrategy servicesResolutionStrategy;
-  /**
-   * list of classes and resources that this module imports
-   */
-  @NonNull
-  private final List<ImportDescriptor> imports;
-  /**
-   * list of classes and resources that this module imports
-   */
-  @NonNull
-  private final List<ExportDescriptor> exports;
-  public Dependency(Type type, Coordinate coordinate, boolean optional, boolean export,
+  /** list of classes and resources that this module imports */
+  @NonNull private final List<PathSpecification> imports;
+  /** list of classes and resources that this module imports */
+  @NonNull private final List<PathSpecification> exports;
+
+  public Dependency(
+      Type type,
+      Coordinate coordinate,
+      boolean optional,
+      boolean export,
       ServicesResolutionStrategy servicesResolutionStrategy,
-      @NonNull List<ImportDescriptor> imports,
-      @NonNull List<ExportDescriptor> exports) {
+      @NonNull List<PathSpecification> imports,
+      @NonNull List<PathSpecification> exports) {
     this.type = type;
     this.coordinate = coordinate;
     this.optional = optional;
-    this.export = export;
+    this.reexport = export;
     this.servicesResolutionStrategy = servicesResolutionStrategy;
     this.imports = imports;
     this.exports = exports;
   }
 
-
   public Dependency(Dependency.Type type, Coordinate coordinate) {
     this.type = type;
-    this.export = true;
+    this.reexport = true;
     this.optional = false;
     this.coordinate = coordinate;
     this.exports = Collections.emptyList();
@@ -83,7 +70,6 @@ public final class Dependency {
       throw new IllegalArgumentException("Unknown dependency type: " + p);
     }
   }
-
 
   public enum ServicesResolutionStrategy {
     None,
