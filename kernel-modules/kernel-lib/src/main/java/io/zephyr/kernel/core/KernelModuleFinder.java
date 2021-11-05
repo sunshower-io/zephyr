@@ -50,7 +50,7 @@ public final class KernelModuleFinder implements ModuleFinder {
       throws ModuleLoadException {
     val coordinate = module.getCoordinate();
     val identifier = coordinate.toCanonicalForm();
-    log.log(Level.FINE, "findmodule.entry", new Object[]{name, identifier});
+    log.log(Level.FINE, "findmodule.entry", new Object[] {name, identifier});
 
     if (name == null) {
       log.log(Level.INFO, "");
@@ -60,7 +60,7 @@ public final class KernelModuleFinder implements ModuleFinder {
     val normalized = name.trim();
 
     if (!normalized.equals(identifier)) {
-      log.log(Level.INFO, "findmodule.name.notthis", new Object[]{name, identifier});
+      log.log(Level.INFO, "findmodule.name.notthis", new Object[] {name, identifier});
       return null;
     }
 

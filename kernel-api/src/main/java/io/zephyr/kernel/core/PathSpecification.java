@@ -20,9 +20,7 @@ public class PathSpecification {
   }
 
   public enum Mode {
-    /**
-     * include class specification
-     */
+    /** include class specification */
     Class,
     /** include glob path specification */
     All,
