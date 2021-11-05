@@ -1,5 +1,6 @@
 package io.zephyr.kernel.core;
 
+import io.zephyr.kernel.Dependency.ServicesResolutionStrategy;
 import io.zephyr.kernel.Library;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.log.Logging;
@@ -11,8 +12,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import lombok.NonNull;
 import lombok.val;
-import org.jboss.modules.*;
+import org.jboss.modules.DependencySpec;
+import org.jboss.modules.LocalLoader;
+import org.jboss.modules.ModuleDependencySpecBuilder;
+import org.jboss.modules.ModuleFinder;
+import org.jboss.modules.ModuleLoadException;
 import org.jboss.modules.ModuleLoader;
+import org.jboss.modules.ModuleSpec;
+import org.jboss.modules.ResourceLoaderSpec;
+import org.jboss.modules.ResourceLoaders;
 import org.jboss.modules.filter.PathFilters;
 
 @SuppressWarnings("PMD.UnusedPrivateMethod")
@@ -81,8 +89,10 @@ public final class KernelModuleFinder implements ModuleFinder {
           new ModuleDependencySpecBuilder()
               .setName(dependency.getCoordinate().toCanonicalForm())
               .setModuleLoader(moduleLoader)
-              .setImportServices(true)
-              .setExport(true)
+              .setImportServices(
+                  dependency.getServicesResolutionStrategy() == ServicesResolutionStrategy.Import)
+              .setExport(dependency.isReexport())
+              .setOptional(dependency.isOptional())
               .setExportFilter(PathFilters.acceptAll())
               .setImportFilter(PathFilters.acceptAll())
               .build();
