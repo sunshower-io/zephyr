@@ -1,18 +1,31 @@
 package io.zephyr.kernel.core;
 
+import io.zephyr.kernel.Dependency.ServicesResolutionStrategy;
 import io.zephyr.kernel.Library;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.log.Logging;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import lombok.NonNull;
 import lombok.val;
-import org.jboss.modules.*;
+import org.jboss.modules.DependencySpec;
+import org.jboss.modules.LocalLoader;
+import org.jboss.modules.ModuleDependencySpecBuilder;
+import org.jboss.modules.ModuleFinder;
+import org.jboss.modules.ModuleLoadException;
 import org.jboss.modules.ModuleLoader;
+import org.jboss.modules.ModuleSpec;
+import org.jboss.modules.ResourceLoaderSpec;
+import org.jboss.modules.ResourceLoaders;
+import org.jboss.modules.filter.ClassFilter;
+import org.jboss.modules.filter.ClassFilters;
+import org.jboss.modules.filter.PathFilter;
 import org.jboss.modules.filter.PathFilters;
 
 @SuppressWarnings("PMD.UnusedPrivateMethod")
@@ -81,10 +94,14 @@ public final class KernelModuleFinder implements ModuleFinder {
           new ModuleDependencySpecBuilder()
               .setName(dependency.getCoordinate().toCanonicalForm())
               .setModuleLoader(moduleLoader)
-              .setImportServices(true)
-              .setExport(true)
-              .setExportFilter(PathFilters.acceptAll())
-              .setImportFilter(PathFilters.acceptAll())
+              .setImportServices(
+                  dependency.getServicesResolutionStrategy() == ServicesResolutionStrategy.Import)
+              .setExport(dependency.isReexport())
+              .setOptional(dependency.isOptional())
+              .setExportFilter(toPathFilter(dependency.getExports()))
+              .setImportFilter(toPathFilter(dependency.getImports()))
+              .setClassImportFilter(toClassFilter(dependency.getImports()))
+              .setClassExportFilter(toClassFilter(dependency.getExports()))
               .build();
       moduleSpec.addDependency(dep);
     }
@@ -92,6 +109,40 @@ public final class KernelModuleFinder implements ModuleFinder {
     moduleSpec.setFallbackLoader(localLoader);
 
     return moduleSpec.create();
+  }
+
+  private ClassFilter toClassFilter(List<PathSpecification> classes) {
+    if (classes == null || classes.isEmpty()) {
+      return ClassFilters.acceptAll();
+    }
+
+    val result = new ArrayList<ClassFilter>();
+    for (val pathSpec : classes) {
+      switch (pathSpec.getMode()) {
+        case Class:
+          result.add(ClassFilters.fromResourcePathFilter(PathFilters.is(pathSpec.getPath())));
+          break;
+      }
+    }
+    return className -> result.stream().anyMatch(filter -> filter.accept(className));
+  }
+
+  private PathFilter toPathFilter(List<PathSpecification> paths) {
+    if (paths == null || paths.isEmpty()) {
+      return PathFilters.acceptAll();
+    }
+
+    val result = new ArrayList<PathFilter>();
+    for (val pathSpec : paths) {
+      switch (pathSpec.getMode()) {
+        case All:
+          result.add(PathFilters.match(pathSpec.getPath()));
+          break;
+        case Just:
+          result.add(PathFilters.in(Set.of(pathSpec.getPath())));
+      }
+    }
+    return PathFilters.any(result);
   }
 
   private void defineLibraries(ModuleSpec.Builder moduleSpec, Set<Library> libraries)

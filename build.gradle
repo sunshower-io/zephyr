@@ -171,6 +171,20 @@ subprojects {
             testCompileOnly 'org.projectlombok:lombok'
             annotationProcessor 'org.projectlombok:lombok'
             testAnnotationProcessor 'org.projectlombok:lombok'
+
+
+            testImplementation 'org.mockito:mockito-inline'
+            testImplementation 'org.mockito:mockito-junit-jupiter'
+            testImplementation 'org.junit.jupiter:junit-jupiter-params'
+
+            [
+                    'api',
+                    'engine'
+
+            ].each { dep ->
+                testImplementation "org.junit.jupiter:junit-jupiter-$dep"
+                testImplementation "org.junit.platform:junit-platform-suite-$dep"
+            }
         }
     }
 

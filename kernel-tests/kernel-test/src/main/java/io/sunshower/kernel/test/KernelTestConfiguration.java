@@ -6,7 +6,13 @@ import io.sunshower.test.common.Tests;
 import io.zephyr.api.ModuleActivator;
 import io.zephyr.cli.Zephyr;
 import io.zephyr.kernel.Module;
-import io.zephyr.kernel.core.*;
+import io.zephyr.kernel.core.Kernel;
+import io.zephyr.kernel.core.KernelModuleLoader;
+import io.zephyr.kernel.core.ModuleClasspath;
+import io.zephyr.kernel.core.ModuleClasspathManager;
+import io.zephyr.kernel.core.ModuleCoordinate;
+import io.zephyr.kernel.core.ModuleDescriptor;
+import io.zephyr.kernel.core.SunshowerKernel;
 import io.zephyr.kernel.dependencies.DependencyGraph;
 import io.zephyr.kernel.launch.KernelOptions;
 import io.zephyr.kernel.memento.Memento;
@@ -35,11 +41,12 @@ public class KernelTestConfiguration {
     val location = getClass().getProtectionDomain().getCodeSource().getLocation();
     val coord = ModuleCoordinate.create("test", "test", "1.0.0-SNAPSHOT");
     return new ModuleDescriptor(
-        Module.Type.Plugin,
         location,
         0,
         new File(location.getFile()),
+        Module.Type.Plugin,
         coord,
+        Collections.emptyList(),
         Collections.emptyList(),
         "test plugin");
   }

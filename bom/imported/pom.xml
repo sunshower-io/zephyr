@@ -53,6 +53,7 @@
         <jsign-core.version>3.1</jsign-core.version>
         <flyway-core.version>7.15.0</flyway-core.version>
         <h2.version>1.4.200</h2.version>
+        <junit-platform-suite-api.version>1.8.1</junit-platform-suite-api.version>
     </properties>
 
     <dependencyManagement>
@@ -250,6 +251,11 @@
                 <scope>import</scope>
             </dependency>
 
+            <dependency>
+                <groupId>org.junit.platform</groupId>
+                <artifactId>junit-platform-suite-api</artifactId>
+                <version>${junit-platform-suite-api.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>org.mockito</groupId>

@@ -1,6 +1,10 @@
 package io.zephyr.kernel;
 
+import io.zephyr.kernel.core.PathSpecification;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
+import java.util.Locale;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
@@ -17,18 +21,74 @@ public final class Dependency implements Comparable<Dependency> {
     ORDER_COMPARATOR = new OrderComparator();
   }
 
-  private final int order;
+  /**
+   * the type of this dependency
+   */
   private final Type type;
+  /**
+   * specify the startup order for dependencies
+   */
+  private final int order;
+  /**
+   * the coordinate of this dependency
+   */
   private final Coordinate coordinate;
+  /**
+   * determine whether this dependency is optional or not
+   */
+  private final boolean optional;
+  /**
+   * re-export this dependency
+   */
+  private final boolean reexport;
+  /**
+   *
+   */
+  private final ServicesResolutionStrategy servicesResolutionStrategy;
+  /**
+   * list of classes and resources that this module imports
+   */
+  @NonNull
+  private final List<PathSpecification> imports;
+  /**
+   * list of classes and resources that this module imports
+   */
+  @NonNull
+  private final List<PathSpecification> exports;
 
-  public Dependency(int order, Type type, Coordinate coordinate) {
+  public Dependency(
+      int order,
+      Type type,
+      Coordinate coordinate,
+      boolean optional,
+      boolean export,
+      ServicesResolutionStrategy servicesResolutionStrategy,
+      @NonNull List<PathSpecification> imports,
+      @NonNull List<PathSpecification> exports) {
     this.type = type;
     this.order = order;
     this.coordinate = coordinate;
+    this.optional = optional;
+    this.reexport = export;
+    this.imports = imports;
+    this.exports = exports;
+    this.servicesResolutionStrategy = servicesResolutionStrategy;
   }
 
-  public Dependency(@NonNull Type type, @NonNull Coordinate coordinate) {
-    this(-1, type, coordinate);
+  public Dependency(
+      Type type,
+      Coordinate coordinate,
+      boolean optional,
+      boolean export,
+      ServicesResolutionStrategy servicesResolutionStrategy,
+      @NonNull List<PathSpecification> imports,
+      @NonNull List<PathSpecification> exports) {
+    this(0, type, coordinate, optional, export, servicesResolutionStrategy, imports, exports);
+  }
+
+  public Dependency(Dependency.Type type, Coordinate coordinate) {
+    this(type, coordinate, false, true, ServicesResolutionStrategy.None, Collections.emptyList(),
+        Collections.emptyList());
   }
 
   public static Comparator<Dependency> orderComparator() {
@@ -53,6 +113,25 @@ public final class Dependency implements Comparable<Dependency> {
           return Service;
       }
       throw new IllegalArgumentException("Unknown dependency type: " + p);
+    }
+  }
+
+  public enum ServicesResolutionStrategy {
+    None,
+    Import,
+    Export;
+
+    public static ServicesResolutionStrategy parse(@NonNull String type) {
+      val normalized = type.toLowerCase(Locale.ROOT).trim();
+      switch (normalized) {
+        case "none":
+          return None;
+        case "import":
+          return Import;
+        case "export":
+          return Export;
+      }
+      throw new IllegalArgumentException("Unknown service resolution strategy: " + normalized);
     }
   }
 
