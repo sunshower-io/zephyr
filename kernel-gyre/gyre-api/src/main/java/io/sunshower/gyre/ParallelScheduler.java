@@ -1,6 +1,11 @@
 package io.sunshower.gyre;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.function.Predicate;
 import lombok.val;
 
@@ -16,7 +21,7 @@ public class ParallelScheduler<E, V> implements Transformation<E, V, Schedule<E,
     val copy = removeSelfDependencies(graph);
     val result = new MutableSchedule<E, V>();
 
-    val tasks = new HashMap<V, Task<E, V>>();
+    val tasks = new LinkedHashMap<V, Task<E, V>>();
     while (!copy.isEmpty()) {
       val frontier = collectFrontier(copy, edgeFilter);
 
@@ -27,7 +32,7 @@ public class ParallelScheduler<E, V> implements Transformation<E, V, Schedule<E,
       result.tasks.add(ts);
       for (val node : frontier) {
         copy.delete(node);
-        val task = new LabeledTask<E, V>(node, Collections.emptySet(), new HashSet<>());
+        val task = new LabeledTask<E, V>(node, Collections.emptySet(), new LinkedHashSet<>());
         tasks.put(node, task);
         ts.tasks.add(task);
       }

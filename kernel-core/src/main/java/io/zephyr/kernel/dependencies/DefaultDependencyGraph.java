@@ -18,13 +18,13 @@ public final class DefaultDependencyGraph implements DependencyGraph, Cloneable 
   final Graph<DirectedGraph.Edge<Coordinate>, Coordinate> dependencyGraph;
 
   public DefaultDependencyGraph() {
-    modules = new CompactTrieMap<>(new CoordinateAnalyzer());
     dependencyGraph = new AbstractDirectedGraph<>();
+    modules = new CompactTrieMap<>(new CoordinateAnalyzer());
   }
 
   private DefaultDependencyGraph(DefaultDependencyGraph graph) {
-    modules = new CompactTrieMap<>(new CoordinateAnalyzer(), graph.modules);
     dependencyGraph = graph.dependencyGraph.clone();
+    modules = new CompactTrieMap<>(new CoordinateAnalyzer(), graph.modules);
   }
 
   @Override
