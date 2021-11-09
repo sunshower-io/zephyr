@@ -14,47 +14,28 @@ import lombok.val;
 @EqualsAndHashCode
 public final class Dependency implements Comparable<Dependency> {
 
-
   static final Comparator<Dependency> ORDER_COMPARATOR;
 
   static {
     ORDER_COMPARATOR = new OrderComparator();
   }
 
-  /**
-   * the type of this dependency
-   */
+  /** the type of this dependency */
   private final Type type;
-  /**
-   * specify the startup order for dependencies
-   */
+  /** specify the startup order for dependencies */
   private final int order;
-  /**
-   * the coordinate of this dependency
-   */
+  /** the coordinate of this dependency */
   private final Coordinate coordinate;
-  /**
-   * determine whether this dependency is optional or not
-   */
+  /** determine whether this dependency is optional or not */
   private final boolean optional;
-  /**
-   * re-export this dependency
-   */
+  /** re-export this dependency */
   private final boolean reexport;
-  /**
-   *
-   */
+  /** */
   private final ServicesResolutionStrategy servicesResolutionStrategy;
-  /**
-   * list of classes and resources that this module imports
-   */
-  @NonNull
-  private final List<PathSpecification> imports;
-  /**
-   * list of classes and resources that this module imports
-   */
-  @NonNull
-  private final List<PathSpecification> exports;
+  /** list of classes and resources that this module imports */
+  @NonNull private final List<PathSpecification> imports;
+  /** list of classes and resources that this module imports */
+  @NonNull private final List<PathSpecification> exports;
 
   public Dependency(
       int order,
@@ -87,7 +68,13 @@ public final class Dependency implements Comparable<Dependency> {
   }
 
   public Dependency(Dependency.Type type, Coordinate coordinate) {
-    this(type, coordinate, false, true, ServicesResolutionStrategy.None, Collections.emptyList(),
+    this(
+        type,
+        coordinate,
+        false,
+        true,
+        ServicesResolutionStrategy.None,
+        Collections.emptyList(),
         Collections.emptyList());
   }
 

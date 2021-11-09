@@ -49,7 +49,7 @@ public final class ManifestModuleScanner implements ModuleScanner {
 
   /** */
   static final String[] moduleDependencyModifiers = {
-    "optional", "re-export", "services", "exports-paths", "imports-paths"
+    "order", "optional", "re-export", "services", "exports-paths", "imports-paths"
   };
 
   @Override
@@ -159,48 +159,11 @@ public final class ManifestModuleScanner implements ModuleScanner {
     val coordinate = readModuleCoordinate(reader);
     if (peek(reader) == '<') {
       expectAndDiscard(reader, '<');
-      Map<String, Object> values = new HashMap<>();
-      while (peek(reader) != '>') {
-        readWhitespace(reader);
-        val moduleDependencyModifier = expectOneOf(reader, moduleDependencyModifiers);
-        switch (moduleDependencyModifier) {
-          case "optional":
-            values.put("optional", true);
-            break;
-          case "services":
-            readWhitespace(reader);
-            expectAndDiscard(reader, '=');
-            readWhitespace(reader);
-            val result =
-                ServicesResolutionStrategy.parse(expectOneOf(reader, "none", "import", "export"));
-            readWhitespace(reader);
-            values.put("services", result);
-            break;
-          case "re-export":
-            readWhitespace(reader);
-            values.put("re-export", true);
-            readWhitespace(reader);
-            break;
-          case "imports-paths":
-          case "exports-paths":
-            readWhitespace(reader);
-            expectAndDiscard(reader, '=');
-            readWhitespace(reader);
-            expectAndDiscard(reader, '[');
-            val pathImports = readPathList(reader);
-            expectAndDiscard(reader, ']');
-            values.put(moduleDependencyModifier, pathImports);
-            break;
-        }
-        readWhitespace(reader);
-        if (peek(reader) == ';') {
-          expectAndDiscard(reader, ';');
-          readWhitespace(reader);
-        }
-      }
+      Map<String, Object> values = readValues(reader);
 
       val dependency =
           new Dependency(
+              (int) values.getOrDefault("order", 0),
               type,
               coordinate,
               (boolean) values.getOrDefault("optional", false),
@@ -219,6 +182,68 @@ public final class ManifestModuleScanner implements ModuleScanner {
     } else {
       val dependency = new Dependency(type, coordinate);
       results.add(dependency);
+    }
+  }
+
+  private Map<String, Object> readValues(PushbackReader reader) throws IOException {
+    Map<String, Object> values = new HashMap<>();
+    while (peek(reader) != '>') {
+      readWhitespace(reader);
+      val moduleDependencyModifier = expectOneOf(reader, moduleDependencyModifiers);
+      switch (moduleDependencyModifier) {
+        case "optional":
+          values.put("optional", true);
+          break;
+        case "services":
+          readWhitespace(reader);
+          expectAndDiscard(reader, '=');
+          readWhitespace(reader);
+          val result =
+              ServicesResolutionStrategy.parse(expectOneOf(reader, "none", "import", "export"));
+          readWhitespace(reader);
+          values.put("services", result);
+          break;
+        case "re-export":
+          readWhitespace(reader);
+          values.put("re-export", true);
+          readWhitespace(reader);
+          break;
+        case "order":
+          readWhitespace(reader);
+          expectAndDiscard(reader, '=');
+          readWhitespace(reader);
+          val order = readNumber(reader);
+          values.put("order", order);
+          break;
+        case "imports-paths":
+        case "exports-paths":
+          readWhitespace(reader);
+          expectAndDiscard(reader, '=');
+          readWhitespace(reader);
+          expectAndDiscard(reader, '[');
+          val pathImports = readPathList(reader);
+          expectAndDiscard(reader, ']');
+          values.put(moduleDependencyModifier, pathImports);
+          break;
+      }
+      readWhitespace(reader);
+      if (peek(reader) == ';') {
+        expectAndDiscard(reader, ';');
+        readWhitespace(reader);
+      }
+    }
+    return values;
+  }
+
+  private Integer readNumber(PushbackReader reader) throws IOException {
+    val result = new StringBuilder();
+    for (; ; ) {
+      int ch = reader.read();
+      if (!Character.isDigit(ch)) {
+        reader.unread(ch);
+        return Integer.parseInt(result.toString());
+      }
+      result.append((char) ch);
     }
   }
 
