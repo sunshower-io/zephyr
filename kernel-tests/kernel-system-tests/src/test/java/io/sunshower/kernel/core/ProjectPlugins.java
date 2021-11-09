@@ -11,7 +11,6 @@ public enum ProjectPlugins implements Installable {
   MODULE_ONE_V2("kernel-tests:test-plugins:module-order:module-one-v2"),
   DEPENDENT_MODULE("kernel-tests:test-plugins:module-order:dependent-module");
 
-
   final String path;
 
   ProjectPlugins(String path) {
