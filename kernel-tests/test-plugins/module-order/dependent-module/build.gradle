@@ -1,0 +1,24 @@
+apply plugin: 'war'
+
+dependencies {
+    compileOnly project(':kernel-api')
+
+//    compileOnly project(':kernel-tests:test-plugins:module-order:module-one-v1')
+}
+
+def deps = [
+        "service@io.sunshower:module-one:1.0.0-FINAL<order=2>",
+        "service@io.sunshower:module-one:2.0.0-FINAL<order=1>"
+].join(',')
+war {
+    manifest {
+        attributes(
+                'group': 'sunshower.io',
+                'name': 'dependent-module',
+                'version': '1.0.0-SNAPSHOT',
+                'description': 'Dependent Module',
+                'dependencies': deps,
+                'type': 'plugin'
+        )
+    }
+}
