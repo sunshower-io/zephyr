@@ -11,16 +11,17 @@ public class Test implements ModuleActivator {
   @Override
   public void start(ModuleContext context) {
     boolean found = false;
+
     try {
-      val type = Class.forName("one.Test", false, Thread.currentThread().getContextClassLoader());
-      type.getDeclaredMethod("v1");
+      val type = Class.forName("one.Test");
+      type.getDeclaredMethod("v2");
       found = true;
     } catch (Exception ex) {
 
+      ex.printStackTrace();
     }
-
     if (!found) {
-      throw new IllegalStateException("Not found!");
+      throw new IllegalStateException("not found");
     }
   }
 
