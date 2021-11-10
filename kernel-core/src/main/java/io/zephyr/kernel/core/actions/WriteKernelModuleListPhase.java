@@ -51,7 +51,7 @@ public class WriteKernelModuleListPhase extends Task {
   }
 
   private Set<KernelModuleEntry> readEntries(FileSystem fs) {
-    return new HashSet<>(ModuleListParser.read(fs, "modules.list"));
+    return new LinkedHashSet<>(ModuleListParser.read(fs, "modules.list"));
   }
 
   @SuppressFBWarnings

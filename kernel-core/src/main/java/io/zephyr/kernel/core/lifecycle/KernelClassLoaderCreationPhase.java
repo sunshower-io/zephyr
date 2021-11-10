@@ -11,7 +11,7 @@ import io.zephyr.kernel.misc.SuppressFBWarnings;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import lombok.val;
@@ -44,7 +44,7 @@ public class KernelClassLoaderCreationPhase extends Task {
   @SuppressFBWarnings
   @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
   private URL[] readUrls(List<KernelModuleEntry> entries) throws MalformedURLException {
-    final Set<URL> urls = new HashSet<>();
+    final Set<URL> urls = new LinkedHashSet<>();
 
     for (val entry : entries) {
 

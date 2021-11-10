@@ -11,7 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.PosixFilePermission;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import lombok.val;
 
 public abstract class AbstractSelfExecutingBundler implements SelfExecutingBundler {
@@ -136,7 +136,7 @@ public abstract class AbstractSelfExecutingBundler implements SelfExecutingBundl
   }
 
   protected void setExecutable(Path path) throws IOException {
-    val permissions = new HashSet<PosixFilePermission>();
+    val permissions = new LinkedHashSet<PosixFilePermission>();
     permissions.add(PosixFilePermission.OWNER_EXECUTE);
     permissions.add(PosixFilePermission.OWNER_WRITE);
     permissions.add(PosixFilePermission.OWNER_READ);

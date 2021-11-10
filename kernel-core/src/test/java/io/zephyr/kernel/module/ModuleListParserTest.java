@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.io.PushbackInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import lombok.val;
 import org.junit.jupiter.api.Test;
@@ -67,7 +67,7 @@ class ModuleListParserTest {
     ModuleListParser.doParse(test, items, pos);
     val result = items.get(0);
     assertEquals(
-        new HashSet<>(result.getLibraryFiles()), Set.of("lib/dapper", "frapper", "dapper"));
+        new LinkedHashSet<>(result.getLibraryFiles()), Set.of("lib/dapper", "frapper", "dapper"));
   }
 
   PushbackInputStream s(String value) {

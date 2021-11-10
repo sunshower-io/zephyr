@@ -15,7 +15,7 @@ import io.zephyr.kernel.status.Status;
 import io.zephyr.kernel.status.StatusType;
 import java.io.File;
 import java.net.URL;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
@@ -78,9 +78,11 @@ public class ModuleScanPhase extends Task {
     context.set(ModuleScanPhase.MODULE_DESCRIPTOR, result);
 
     if (result.getType() == Module.Type.KernelModule) {
-      context.computeIfAbsent(ModuleScanPhase.SCANNED_KERNEL_MODULES, new HashSet<>()).add(result);
+      context
+          .computeIfAbsent(ModuleScanPhase.SCANNED_KERNEL_MODULES, new LinkedHashSet<>())
+          .add(result);
     } else {
-      context.computeIfAbsent(ModuleScanPhase.SCANNED_PLUGINS, new HashSet<>()).add(result);
+      context.computeIfAbsent(ModuleScanPhase.SCANNED_PLUGINS, new LinkedHashSet<>()).add(result);
     }
     return null;
   }

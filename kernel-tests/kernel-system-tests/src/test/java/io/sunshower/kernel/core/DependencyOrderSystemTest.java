@@ -1,13 +1,10 @@
 package io.sunshower.kernel.core;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import io.sunshower.kernel.test.Clean;
 import io.sunshower.kernel.test.Module;
 import io.sunshower.kernel.test.Modules;
 import io.sunshower.kernel.test.ZephyrTest;
 import io.zephyr.cli.Zephyr;
-import io.zephyr.kernel.Lifecycle.State;
 import io.zephyr.kernel.core.Kernel;
 import java.util.List;
 import javax.inject.Inject;
@@ -32,7 +29,7 @@ public class DependencyOrderSystemTest {
   @Test
   void ensureModuleStartOrderWorks() throws InterruptedException {
     zephyr.start("sunshower.io:dependent-module:1.0.0-SNAPSHOT");
-//    assertEquals(3, zephyr.getPluginCoordinates(State.Active).size());
+    //    assertEquals(3, zephyr.getPluginCoordinates(State.Active).size());
     zephyr.stop(List.of("sunshower.io:dependent-module:1.0.0-SNAPSHOT"));
   }
 }

@@ -9,7 +9,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -80,7 +80,7 @@ public class DevelopmentTask extends DefaultTask {
   }
 
   private Set<URL> collectUrls(Project project, String configuration) throws MalformedURLException {
-    val urls = new HashSet<URL>();
+    val urls = new LinkedHashSet<URL>();
 
     for (val cfg : project.getConfigurations()) {
       if (cfg.getName().equals(configuration)) {

@@ -191,7 +191,7 @@ class CompactHashMapTest {
     map.put(1, 2);
     map.put(2, 3);
     val ks = map.keySet().iterator();
-    val set = new HashSet<>();
+    val set = new LinkedHashSet<>();
     while (ks.hasNext()) {
       set.add(ks.next());
     }

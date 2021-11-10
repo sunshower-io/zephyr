@@ -21,7 +21,7 @@ public class StronglyConnectedComponents<E, V> implements Transformation<E, V, P
     val links = new HashMap<V, Link<E, V>>();
     val component = new Stack<Link<E, V>>();
     val partition = new MutablePartition<E, V>();
-    val considering = new HashSet<V>();
+    val considering = new LinkedHashSet<V>();
 
     doCompute(graph, component, partition, links, considering, edgeFilter);
     return partition;
