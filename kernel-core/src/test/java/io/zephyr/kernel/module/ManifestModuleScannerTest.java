@@ -44,6 +44,16 @@ class ManifestModuleScannerTest {
 
   @Test
   @SneakyThrows
+  void ensureReadingOrderWorks() {
+    val a = "service@io.zephyr:zephyr:1.0.0-Final<order=40>";
+    val deps = scanner.readDependencies(readerFor(a));
+    assertEquals(1, deps.size());
+    val dep = deps.get(0);
+    assertEquals(40, dep.getOrder());
+  }
+
+  @Test
+  @SneakyThrows
   void ensureReadingSmallerMatchingStringWorks() {
     val reader = new PushbackReader(new StringReader("a"));
     val result = scanner.expectOneOf(reader, "a", "cd");

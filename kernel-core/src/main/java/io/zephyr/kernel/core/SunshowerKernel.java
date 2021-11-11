@@ -272,7 +272,7 @@ public class SunshowerKernel implements Kernel, EventSource {
     val pluginMementoProvider = Memento.loadProvider(getClassLoader());
     val pluginMementos = pluginsMemento.getChildren("plugin");
 
-    val modules = new HashSet<Module>(pluginMementos.size());
+    val modules = new LinkedHashSet<Module>(pluginMementos.size());
     val stateMap = new HashMap<Coordinate, Lifecycle.State>(pluginMementos.size());
 
     for (val pluginMemento : pluginMementos) {

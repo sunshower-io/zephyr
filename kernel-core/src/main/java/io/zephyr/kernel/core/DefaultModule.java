@@ -13,7 +13,7 @@ import java.io.File;
 import java.net.URI;
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.ServiceLoader;
 import java.util.Set;
 import lombok.SneakyThrows;
@@ -325,7 +325,7 @@ public final class DefaultModule extends AbstractModule
   }
 
   private void readDependencies(Memento memento) {
-    dependencies = new HashSet<>();
+    dependencies = new LinkedHashSet<>();
     val dependenciesMemento = memento.childNamed("dependencies");
     val depList = dependenciesMemento.getChildren("dependency");
     for (val dep : depList) {
@@ -336,7 +336,7 @@ public final class DefaultModule extends AbstractModule
   }
 
   private void readLibraries(Memento memento) {
-    libraries = new HashSet<>();
+    libraries = new LinkedHashSet<>();
     val librariesMemento = memento.childNamed("libraries");
     val children = librariesMemento.getChildren("library");
     for (val library : children) {

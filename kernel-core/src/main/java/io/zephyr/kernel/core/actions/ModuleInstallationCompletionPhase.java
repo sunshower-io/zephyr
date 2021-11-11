@@ -2,10 +2,16 @@ package io.zephyr.kernel.core.actions;
 
 import io.sunshower.gyre.Scope;
 import io.zephyr.api.ModuleEvents;
-import io.zephyr.kernel.*;
+import io.zephyr.kernel.Assembly;
+import io.zephyr.kernel.Dependency;
+import io.zephyr.kernel.Lifecycle;
 import io.zephyr.kernel.Module;
+import io.zephyr.kernel.Source;
 import io.zephyr.kernel.concurrency.Task;
-import io.zephyr.kernel.core.*;
+import io.zephyr.kernel.core.DefaultModule;
+import io.zephyr.kernel.core.Kernel;
+import io.zephyr.kernel.core.ModuleDescriptor;
+import io.zephyr.kernel.core.ModuleSource;
 import io.zephyr.kernel.events.Events;
 import io.zephyr.kernel.module.ModuleLifecycle;
 import io.zephyr.kernel.status.StatusType;
@@ -14,6 +20,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.FileSystem;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import lombok.val;
 
@@ -51,7 +60,7 @@ public class ModuleInstallationCompletionPhase extends Task {
               descriptor.getCoordinate(),
               fileSystem,
               assembly.getLibraries(),
-              Set.copyOf(descriptor.getDependencies()));
+              getDependencies(descriptor.getDependencies()));
 
       val lifecycle = createLifecycle(module);
       module.setLifecycle(lifecycle);
@@ -68,6 +77,12 @@ public class ModuleInstallationCompletionPhase extends Task {
               StatusType.SUCCEEDED.resolvable("Successfully installed plugin: " + descriptor)));
       return null;
     }
+  }
+
+  private Set<Dependency> getDependencies(List<Dependency> dependencies) {
+    val results = new ArrayList<>(dependencies);
+    results.sort(Dependency.orderComparator());
+    return new LinkedHashSet<>(results);
   }
 
   private Lifecycle createLifecycle(Module module) {

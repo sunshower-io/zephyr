@@ -1,0 +1,17 @@
+apply plugin: 'war'
+
+dependencies {
+    compileOnly project(':kernel-api')
+}
+
+war {
+    manifest {
+        attributes(
+                'group': 'io.sunshower',
+                'name': 'module-one',
+                'version': '1.0.0-FINAL',
+                'description': 'just a test plugin!',
+                'type': 'plugin'
+        )
+    }
+}

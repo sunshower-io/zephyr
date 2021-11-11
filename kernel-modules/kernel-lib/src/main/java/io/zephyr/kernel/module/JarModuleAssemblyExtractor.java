@@ -1,7 +1,7 @@
 package io.zephyr.kernel.module;
 
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.zip.ZipFile;
 
@@ -12,8 +12,8 @@ public class JarModuleAssemblyExtractor extends AbstractCompressedModuleAssembly
 
   public JarModuleAssemblyExtractor(
       final Collection<String> libraryDirectories, final Collection<String> resourceDirectories) {
-    this.libraryDirectories = new HashSet<>(libraryDirectories);
-    this.resourceDirectories = new HashSet<>(resourceDirectories);
+    this.libraryDirectories = new LinkedHashSet<>(libraryDirectories);
+    this.resourceDirectories = new LinkedHashSet<>(resourceDirectories);
   }
 
   @Override

@@ -8,7 +8,7 @@ import io.zephyr.kernel.core.ModuleClasspath;
 import io.zephyr.kernel.memento.Memento;
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.ServiceLoader;
 import java.util.Set;
@@ -91,7 +91,7 @@ public class MockModule implements Module {
 
   @Override
   public Set<Dependency> getDependencies() {
-    return new HashSet<>(dependencies);
+    return new LinkedHashSet<>(dependencies);
   }
 
   @Override

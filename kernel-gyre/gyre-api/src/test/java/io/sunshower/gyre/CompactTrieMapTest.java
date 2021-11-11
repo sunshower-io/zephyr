@@ -45,7 +45,7 @@ class CompactTrieMapTest {
     map.put(":hello:world", 1);
     map.put(":sup:peeps", 2);
 
-    val values = new HashSet<>(map.values());
+    val values = new LinkedHashSet<>(map.values());
     assertTrue(values.contains(1));
     assertTrue(values.contains(2));
   }
@@ -222,7 +222,7 @@ class CompactTrieMapTest {
     map.put("1:3:4", "c");
 
     val e = map.keySet().iterator();
-    val result = new HashSet<>(map.size());
+    val result = new LinkedHashSet<>(map.size());
     while (e.hasNext()) {
       result.add(e.next());
     }
@@ -293,7 +293,7 @@ class CompactTrieMapTest {
     map.put("a:b:c:d:e", 2);
     map.put("c:d:e", 3);
 
-    val values = new HashSet<>(map.descendents("a:b"));
+    val values = new LinkedHashSet<>(map.descendents("a:b"));
     assertTrue(values.contains(1));
     assertTrue(values.contains(2));
     assertFalse(values.contains(3));

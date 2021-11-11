@@ -260,7 +260,7 @@ public class Plugins {
   private static void checkForUnresolvedDependencies(
       Kernel kernel, DependencyGraph dependencyGraph, Collection<Module> installedPlugins) {
     val results = dependencyGraph.getUnresolvedDependencies(installedPlugins);
-    val unsatisfied = new HashSet<DependencyGraph.UnsatisfiedDependencySet>();
+    val unsatisfied = new LinkedHashSet<DependencyGraph.UnsatisfiedDependencySet>();
     for (val unresolvedDependency : results) {
 
       if (!unresolvedDependency.isSatisfied()) {

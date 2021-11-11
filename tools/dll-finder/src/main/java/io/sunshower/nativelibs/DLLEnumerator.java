@@ -5,17 +5,16 @@ import static java.lang.String.format;
 import java.io.*;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import lombok.val;
 
 public class DLLEnumerator {
 
-  static final Set<String> whitelist = new HashSet<>();
+  static final Set<String> whitelist = new LinkedHashSet<>();
 
   static {
-    Set<String> dlls = new HashSet<>();
+    Set<String> dlls = new LinkedHashSet<>();
     dlls.add("setupapi.dll");
     dlls.add("USER32.dll");
     dlls.add("sechost.dll");

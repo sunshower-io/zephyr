@@ -16,10 +16,17 @@ artifacts {
 }
 dependencies {
 
-    testImplementation project(':kernel-core')
-    testImplementation project(':kernel-tests:kernel-test')
-    testImplementation project(':kernel-modules:kernel-lib')
-    testImplementation project(':kernel-modules:sunshower-spring')
-    testImplementation project(':kernel-modules:sunshower-yaml-reader')
+    [
+            ':kernel-core',
+            ':kernel-tests:kernel-test',
+            ':kernel-modules:kernel-lib',
+            ':kernel-modules:sunshower-spring',
+            ':kernel-modules:sunshower-yaml-reader',
+            ':kernel-tests:test-plugins:module-order:module-one-v1',
+            ':kernel-tests:test-plugins:module-order:module-one-v2',
+            ':kernel-tests:test-plugins:module-order:dependent-module',
+    ].each {
+        testImplementation project(it)
+    }
 }
 

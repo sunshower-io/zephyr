@@ -18,13 +18,13 @@ public final class DefaultDependencyGraph implements DependencyGraph, Cloneable 
   final Graph<DirectedGraph.Edge<Coordinate>, Coordinate> dependencyGraph;
 
   public DefaultDependencyGraph() {
-    modules = new CompactTrieMap<>(new CoordinateAnalyzer());
     dependencyGraph = new AbstractDirectedGraph<>();
+    modules = new CompactTrieMap<>(new CoordinateAnalyzer());
   }
 
   private DefaultDependencyGraph(DefaultDependencyGraph graph) {
-    modules = new CompactTrieMap<>(new CoordinateAnalyzer(), graph.modules);
     dependencyGraph = graph.dependencyGraph.clone();
+    modules = new CompactTrieMap<>(new CoordinateAnalyzer(), graph.modules);
   }
 
   @Override
@@ -74,7 +74,7 @@ public final class DefaultDependencyGraph implements DependencyGraph, Cloneable 
 
     val dependencies = module.getDependencies();
 
-    val result = new HashSet<Coordinate>();
+    val result = new LinkedHashSet<Coordinate>();
     for (val dependency : dependencies) {
       val depcoord = dependency.getCoordinate();
       if (!modules.containsKey(depcoord)) {
@@ -94,9 +94,9 @@ public final class DefaultDependencyGraph implements DependencyGraph, Cloneable 
     for (val module : modules) {
       prospective.put(module.getCoordinate(), module);
     }
-    val results = new HashSet<UnsatisfiedDependencySet>();
+    val results = new LinkedHashSet<UnsatisfiedDependencySet>();
     for (val module : modules) {
-      val unsatisfied = new HashSet<Coordinate>();
+      val unsatisfied = new LinkedHashSet<Coordinate>();
       for (val dependency : module.getDependencies()) {
         val depcoord = dependency.getCoordinate();
         if (!prospective.containsKey(depcoord)) {
@@ -119,9 +119,9 @@ public final class DefaultDependencyGraph implements DependencyGraph, Cloneable 
     for (val module : modules) {
       prospective.put(module.getCoordinate(), module);
     }
-    val results = new HashSet<UnsatisfiedDependencySet>();
+    val results = new LinkedHashSet<UnsatisfiedDependencySet>();
     for (val module : modules) {
-      val unsatisfied = new HashSet<Coordinate>();
+      val unsatisfied = new LinkedHashSet<Coordinate>();
       for (val dependency : module.getDependencies()) {
         val depcoord = dependency.getCoordinate();
         if (!prospective.containsKey(depcoord)) {
@@ -163,7 +163,7 @@ public final class DefaultDependencyGraph implements DependencyGraph, Cloneable 
       return Collections.emptySet();
     }
     val dependents = dependencyGraph.getDependents(coordinate, EdgeFilters.acceptAll());
-    val results = new HashSet<Module>();
+    val results = new LinkedHashSet<Module>();
     for (val dependent : dependents) {
       results.add(modules.get(dependencyGraph.getSource(dependent)));
     }
@@ -173,7 +173,7 @@ public final class DefaultDependencyGraph implements DependencyGraph, Cloneable 
   @Override
   public Set<Module> getDependencies(Coordinate coordinate) {
     val neighbors = dependencyGraph.neighbors(coordinate);
-    val result = new HashSet<Module>(neighbors.size());
+    val result = new LinkedHashSet<Module>(neighbors.size());
     for (val neighbor : neighbors) {
       result.add(modules.get(neighbor));
     }

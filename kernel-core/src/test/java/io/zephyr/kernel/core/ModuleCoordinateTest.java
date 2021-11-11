@@ -3,7 +3,7 @@ package io.zephyr.kernel.core;
 import static org.junit.jupiter.api.Assertions.*;
 
 import io.zephyr.kernel.Coordinate;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import lombok.val;
 import org.junit.jupiter.api.Test;
 
@@ -19,7 +19,7 @@ class ModuleCoordinateTest {
 
   @Test
   void ensureModuleCoordinatesAreHashable() {
-    val hashMap = new HashSet<Coordinate>();
+    val hashMap = new LinkedHashSet<Coordinate>();
     val c = ModuleCoordinate.create("io.sunshower", "test-plugin-1", "1.0.0-SNAPSHOT");
     val v = ModuleCoordinate.create("io.sunshower", "test-plugin-1", "1.0.0-SNAPSHOT");
     hashMap.add(c);

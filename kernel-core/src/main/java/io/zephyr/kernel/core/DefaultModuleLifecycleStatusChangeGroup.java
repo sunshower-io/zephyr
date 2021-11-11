@@ -75,7 +75,7 @@ final class DefaultModuleLifecycleStatusChangeGroup implements ModuleLifecycleSt
 
   @Override
   public Set<? extends ModuleRequest> getRequests() {
-    return new HashSet<>(request.getRequests());
+    return new LinkedHashSet<>(request.getRequests());
   }
 
   private void addStopAction(

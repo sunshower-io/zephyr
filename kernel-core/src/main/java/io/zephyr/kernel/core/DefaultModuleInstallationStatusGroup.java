@@ -33,7 +33,7 @@ import io.zephyr.kernel.module.ModuleInstallationRequest;
 import io.zephyr.kernel.module.ModuleInstallationStatusGroup;
 import io.zephyr.kernel.module.ModuleRequest;
 import java.net.URL;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.concurrent.CompletionStage;
 import java.util.logging.Level;
@@ -60,8 +60,9 @@ final class DefaultModuleInstallationStatusGroup implements ModuleInstallationSt
     context.set("SunshowerKernel", kernel);
     context.set(ModuleDownloadPhase.TARGET_DIRECTORY, kernel.getFileSystem().getPath("downloads"));
 
-    context.set(ModuleInstallationCompletionPhase.INSTALLED_PLUGINS, new HashSet<Module>());
-    context.set(ModuleInstallationCompletionPhase.INSTALLED_KERNEL_MODULES, new HashSet<Module>());
+    context.set(ModuleInstallationCompletionPhase.INSTALLED_PLUGINS, new LinkedHashSet<Module>());
+    context.set(
+        ModuleInstallationCompletionPhase.INSTALLED_KERNEL_MODULES, new LinkedHashSet<Module>());
 
     val procBuilder = Tasks.newProcess("module:install").withContext(context);
     val taskBuilder =
@@ -114,7 +115,7 @@ final class DefaultModuleInstallationStatusGroup implements ModuleInstallationSt
 
   @Override
   public Set<ModuleRequest> getRequests() {
-    return new HashSet<>(installationGroup.getRequests());
+    return new LinkedHashSet<>(installationGroup.getRequests());
   }
 
   private void addIntermediates(TaskBuilder taskBuilder, ModuleInstallationGroup group) {
