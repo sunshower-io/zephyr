@@ -288,7 +288,6 @@ class ModuleFileSystemProviderTest {
                           StandardOpenOption.CREATE,
                           StandardOpenOption.WRITE,
                           StandardOpenOption.READ,
-                          StandardOpenOption.DELETE_ON_CLOSE,
                           StandardOpenOption.TRUNCATE_EXISTING));
 
       val buffer = channel.map(FileChannel.MapMode.READ_WRITE, 0, toWrite.length());
