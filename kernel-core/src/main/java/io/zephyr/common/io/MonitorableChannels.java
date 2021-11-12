@@ -17,7 +17,7 @@ public class MonitorableChannels {
     connection.connect();
     val stream = connection.getInputStream();
     val len = connection.getContentLengthLong();
-    return new MonitorableByteChannel(Channels.newChannel(stream), listener, len);
+    return new MonitorableByteChannel(connection, Channels.newChannel(stream), listener, len);
   }
 
   public static MonitorableFileTransfer transfer(URL url, Path path) throws IOException {
@@ -26,9 +26,11 @@ public class MonitorableChannels {
 
   public static MonitorableFileTransfer transfer(URL url, File destination) throws IOException {
     val connection = url.openConnection();
+    connection.setUseCaches(false);
+    connection.setDefaultUseCaches(false);
     connection.connect();
     val stream = connection.getInputStream();
     val len = connection.getContentLengthLong();
-    return new MonitorableFileTransfer(destination, len, Channels.newChannel(stream));
+    return new MonitorableFileTransfer(connection, destination, len, Channels.newChannel(stream));
   }
 }

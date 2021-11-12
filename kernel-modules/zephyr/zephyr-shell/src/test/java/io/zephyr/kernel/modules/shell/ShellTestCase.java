@@ -190,7 +190,9 @@ public class ShellTestCase {
     checkServer();
     val result = new StringBuilder("plugin install ");
     for (val module : modules) {
+      System.out.println("Installing " + module);
       result.append(module.getAssembly()).append(" ");
+      System.out.println("Module installation enqueued");
     }
     val args = result.toString().trim().split("\\s+");
     run(args);

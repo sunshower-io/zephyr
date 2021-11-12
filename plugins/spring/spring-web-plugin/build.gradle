@@ -3,9 +3,9 @@ apply plugin: 'java-library'
 
 dependencies {
     compileOnly project(':kernel-api')
+    testImplementation project(":kernel-tests:kernel-test")
     api("org.springframework.boot:spring-boot-starter-web")
     api("org.springframework.boot:spring-boot-starter-undertow")
-    testImplementation project(":kernel-tests:kernel-test")
 
 }
 
@@ -15,3 +15,6 @@ configurations {
     }
 }
 
+test {
+    dependsOn(':kernel-modules:sunshower-yaml-reader:war')
+}

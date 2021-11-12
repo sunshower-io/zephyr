@@ -8,7 +8,11 @@ import io.zephyr.kernel.log.Logging;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
+import java.nio.channels.AsynchronousFileChannel;
+import java.nio.channels.FileChannel;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -16,6 +20,7 @@ import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.FileAttributeView;
 import java.nio.file.spi.FileSystemProvider;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import lombok.NonNull;
@@ -114,6 +119,38 @@ public class ModuleFileSystemProvider extends FileSystemProvider implements Clos
       Path path, Set<? extends OpenOption> options, FileAttribute<?>... attrs) throws IOException {
     val resolvedPath = resolve(path);
     return FileSystems.getDefault().provider().newByteChannel(resolvedPath, options, attrs);
+  }
+
+  @Override
+  public InputStream newInputStream(Path path, OpenOption... options) throws IOException {
+    val resolvedPath = resolve(path);
+    return FileSystems.getDefault().provider().newInputStream(resolvedPath, options);
+  }
+
+  @Override
+  public OutputStream newOutputStream(Path path, OpenOption... options) throws IOException {
+    val resolvedPath = resolve(path);
+    return FileSystems.getDefault().provider().newOutputStream(resolvedPath, options);
+  }
+
+  @Override
+  public FileChannel newFileChannel(
+      Path path, Set<? extends OpenOption> options, FileAttribute<?>... attrs) throws IOException {
+    val resolvedPath = resolve(path);
+    return FileSystems.getDefault().provider().newFileChannel(resolvedPath, options);
+  }
+
+  @Override
+  public AsynchronousFileChannel newAsynchronousFileChannel(
+      Path path,
+      Set<? extends OpenOption> options,
+      ExecutorService executor,
+      FileAttribute<?>... attrs)
+      throws IOException {
+    val resolvedPath = resolve(path);
+    return FileSystems.getDefault()
+        .provider()
+        .newAsynchronousFileChannel(resolvedPath, options, executor, attrs);
   }
 
   @Override

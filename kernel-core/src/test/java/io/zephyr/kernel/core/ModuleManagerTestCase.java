@@ -24,11 +24,14 @@ public class ModuleManagerTestCase {
   ModuleInstallationRequest req2;
   ModuleInstallationRequest req1;
 
+  private File tempfile;
+
   @BeforeEach
   protected void setUp() throws Exception {
 
     val options = new KernelOptions();
-    val tempfile = configureFiles();
+
+    tempfile = configureFiles();
     options.setHomeDirectory(tempfile);
 
     SunshowerKernel.setKernelOptions(options);
@@ -57,13 +60,12 @@ public class ModuleManagerTestCase {
   }
 
   @AfterEach
-  void tearDown() {
+  void tearDown() throws Exception {
     kernel.stop();
   }
 
   private File configureFiles() {
-    val tempfile = Tests.createTemp();
-    return tempfile;
+    return Tests.createTemp();
   }
 
   @SneakyThrows

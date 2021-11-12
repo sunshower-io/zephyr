@@ -10,16 +10,18 @@ import java.util.concurrent.ExecutionException;
 import lombok.SneakyThrows;
 import lombok.val;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.OS;
 
+@DisabledOnOs(OS.WINDOWS)
 @SuppressWarnings({
   "PMD.JUnitTestsShouldIncludeAssert",
   "PMD.DataflowAnomalyAnalysis",
   "PMD.JUnitAssertionsShouldIncludeMessage",
   "PMD.JUnitTestContainsTooManyAsserts"
 })
-@DisabledOnOs(OS.WINDOWS)
+@TestInstance(TestInstance.Lifecycle.PER_METHOD)
 public class DefaultModuleManagerTest extends ModuleManagerTestCase {
 
   @Test

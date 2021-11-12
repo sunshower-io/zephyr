@@ -3,6 +3,7 @@ package io.sunshower.test.common;
 import static java.lang.String.format;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -60,6 +61,7 @@ public class Tests {
         }
       }
     }
+
     if (result != null) {
       return result;
     }
@@ -102,6 +104,17 @@ public class Tests {
   public static File relativeToProjectBuild(String project, String ext, String... segments) {
     val p = project(project).toPath();
     return locate(p, ext, defaultPredicate, segments);
+  }
+
+  @SneakyThrows
+  public static File relativeToProjectBuildWithCopy(
+      File tempDir, String project, String ext, String... segments) {
+    val existing = relativeToProjectBuild(project, ext, segments);
+    val newDir = new File(tempDir, UUID.randomUUID().toString());
+    newDir.mkdirs();
+    val newFile = new File(newDir, existing.getName());
+    Files.copy(existing.toPath(), newFile.toPath());
+    return newFile;
   }
 
   public static File relativeToProjectBuild(
