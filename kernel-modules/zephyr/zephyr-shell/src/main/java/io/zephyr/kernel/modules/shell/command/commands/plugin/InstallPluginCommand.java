@@ -19,6 +19,7 @@ import io.zephyr.kernel.modules.shell.console.Result;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.val;
@@ -81,7 +82,7 @@ public class InstallPluginCommand extends AbstractCommand {
     for (val url : urls) {
       String normalized = normalize(url, console);
       try {
-        results.add(new URL(normalized));
+        results.add(Paths.get(url).toUri().toURL());
       } catch (MalformedURLException e) {
         console.errorln("url '%s' isn't valid--will not be installed", normalized);
       }

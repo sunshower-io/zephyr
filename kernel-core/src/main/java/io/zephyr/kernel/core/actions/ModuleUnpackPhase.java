@@ -61,8 +61,8 @@ public class ModuleUnpackPhase extends Task implements ModuleAssemblyExtractor.E
         anyworked = true;
       } catch (Exception ex) {
         log.log(Level.INFO, "module.extractor.error", new Object[] {ex.getMessage(), extractor});
-        if (log.isLoggable(Level.INFO)) {
-          log.log(Level.INFO, "module.extractor.actualerror", ex);
+        if (log.isLoggable(Level.FINE)) {
+          log.log(Level.FINE, "module.extractor.actualerror", ex);
         }
         fireExtractorFailed(extractor, ex);
       }

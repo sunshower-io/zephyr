@@ -17,6 +17,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import lombok.SneakyThrows;
 import lombok.val;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -27,6 +28,7 @@ import org.junit.jupiter.api.condition.OS;
 @DisabledOnOs(OS.WINDOWS)
 @SuppressWarnings({"PMD.AvoidDuplicateLiterals", "PMD.JUnitTestContainsTooManyAsserts"})
 class ModuleFileSystemProviderTest {
+
   static final Logger log = Logger.getLogger(ModuleFileSystemProviderTest.class.getName());
 
   private static KernelOptions kernelOptions;
@@ -244,33 +246,31 @@ class ModuleFileSystemProviderTest {
   }
 
   @Test
-  void ensureNewByteChannelWorksOnDropletFS() throws IOException {
+  void ensureNewByteChannelWorksOnDropletFS() throws IOException, InterruptedException {
     val uri = URI.create("droplet://com.sunshower-test/test.txt?version=1.0.0");
     val fs = FileSystems.newFileSystem(uri, Collections.emptyMap());
-    val toWrite = CharBuffer.wrap("Hello world");
-    try {
-      val channel =
-          (FileChannel)
-              fs.provider()
-                  .newByteChannel(
-                      Paths.get("test.txt"),
-                      EnumSet.of(
-                          StandardOpenOption.CREATE,
-                          StandardOpenOption.WRITE,
-                          StandardOpenOption.READ,
-                          StandardOpenOption.TRUNCATE_EXISTING));
-
-      val buffer = channel.map(FileChannel.MapMode.READ_WRITE, 0, toWrite.length());
-      buffer.put(StandardCharsets.UTF_8.encode(toWrite));
-      buffer.force();
-      channel.force(true);
-
+    val toWrite = "Hello world";
+    try (val channel =
+        fs.provider()
+            .newOutputStream(
+                Paths.get("test.txt"),
+                StandardOpenOption.CREATE,
+                StandardOpenOption.WRITE,
+                StandardOpenOption.TRUNCATE_EXISTING)) {
+      channel.write(toWrite.getBytes(StandardCharsets.UTF_8));
+      channel.flush();
       val str = Files.readString(fs.getPath("test.txt"));
-      assertEquals("Hello world", str, "must be equal");
+      assertEquals(toWrite, str, "must be equal");
     } finally {
-      Files.deleteIfExists(fs.getPath("test.txt"));
+
+      deleteFile(fs.getPath("test.txt"));
       fs.close();
     }
+  }
+
+  @SneakyThrows
+  private void deleteFile(Path path) {
+    Files.deleteIfExists(path);
   }
 
   @Test
@@ -299,7 +299,13 @@ class ModuleFileSystemProviderTest {
       assertEquals("Hello world", str, "Must be equal");
 
     } finally {
-      Files.deleteIfExists(fs.getPath("test.txt"));
+      try {
+        Files.deleteIfExists(fs.getPath("test.txt"));
+      } catch (IOException ex) {
+        log.log(
+            Level.WARNING,
+            "Failed to delete " + fs.getPath("test.txt") + " reason: " + ex.getMessage());
+      }
       fs.close();
     }
   }

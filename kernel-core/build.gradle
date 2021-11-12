@@ -86,3 +86,17 @@ dependencies {
 
 }
 
+test {
+
+    dependsOn(
+            [
+                    'test-plugin-1',
+                    'test-plugin-2',
+                    'test-plugin-3',
+            ].collect {
+                ":kernel-tests:test-plugins:$it:war"
+            }
+    )
+    dependsOn(':kernel-modules:sunshower-yaml-reader:war')
+}
+

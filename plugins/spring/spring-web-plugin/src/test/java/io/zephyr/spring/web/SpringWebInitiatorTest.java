@@ -6,7 +6,10 @@ import io.sunshower.kernel.test.ZephyrTest;
 import io.zephyr.cli.Zephyr;
 import javax.inject.Inject;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 
+@DisabledOnOs(OS.WINDOWS)
 @ZephyrTest
 @Modules({
   @Module(project = "plugins:spring:spring-web-plugin"),
