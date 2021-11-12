@@ -97,9 +97,9 @@ public class ModuleFileSystemProvider extends FileSystemProvider implements Clos
   public Path getPath(@NonNull URI uri) {
     val fs = getFileSystem(uri);
     val path = uri.getPath();
-    val segments = path.split(Files.separator);
+    val segments = path.split("/");
 
-    if (path.startsWith(File.separator)) {
+    if (path.startsWith("/")) {
       if (segments.length > 1) {
         val pathSegs = Arrays.copyOfRange(segments, 2, segments.length);
         return fs.getPath(segments[1], pathSegs);
