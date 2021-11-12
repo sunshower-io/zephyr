@@ -14,7 +14,7 @@ public class Test implements ModuleActivator {
 
     try {
       val type = Class.forName("one.Test");
-      type.getDeclaredMethod("v2");
+      type.getDeclaredMethod("v1");
       found = true;
     } catch (Exception ex) {
 

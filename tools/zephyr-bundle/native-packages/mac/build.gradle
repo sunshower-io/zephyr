@@ -1,5 +1,16 @@
-
 dependencies {
     implementation project(':tools:zephyr-bundle:zephyr-bundle-core')
+}
+
+
+jar {
+    dependsOn(
+            [
+                    'downloadWarp',
+                    'downloadRcEdit',
+                    'downloadWine'
+            ].collect {
+                ":tools:zephyr-bundle:native-packages:mac:$it"
+            })
 }
 

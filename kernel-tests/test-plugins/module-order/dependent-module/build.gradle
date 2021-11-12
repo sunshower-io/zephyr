@@ -7,8 +7,8 @@ dependencies {
 }
 
 def deps = [
-        "service@io.sunshower:module-one:1.0.0-FINAL<order=2>",
-        "service@io.sunshower:module-one:2.0.0-FINAL<order=1>"
+        "service@io.sunshower:module-one:1.0.0-FINAL<order=1>",
+        "service@io.sunshower:module-one:2.0.0-FINAL<order=2>"
 ].join(',')
 war {
     manifest {

@@ -1,0 +1,19 @@
+jar {
+    dependsOn(
+            ':tools:zephyr-bundle:native-packages:windows:downloadRcEdit',
+            ':tools:zephyr-bundle:native-packages:windows:downloadWarp',
+            ':tools:zephyr-bundle:native-packages:windows:downloadWine'
+    );
+}
+
+jar {
+    dependsOn(
+            [
+                    'downloadWarp',
+                    'downloadRcEdit',
+                    'downloadWine'
+            ].collect {
+                ":tools:zephyr-bundle:native-packages:windows:$it"
+            })
+}
+

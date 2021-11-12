@@ -27,7 +27,9 @@ import org.junit.jupiter.api.condition.OS;
 @Clean(value = Clean.Mode.Before, context = Clean.Context.Method)
 class KernelRegistryMementoSystemTest {
 
+  /** inject any platform dependencies */
   @Inject private Kernel kernel;
+
   @Inject private Zephyr zephyr;
 
   @Inject private ModuleManager moduleManager;

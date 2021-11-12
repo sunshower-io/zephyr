@@ -16,7 +16,7 @@ include(
         'plugins:spring:spring-embedded-plugin',
 
         'aire:aire-core',
-        'tools:dll-finder',
+        //'tools:dll-finder',
 
         'zephyr-main',
         'kernel-modules:zephyr:zephyr-mvel',
@@ -79,12 +79,12 @@ include(
         'plugins:spring:spring-web-plugin',
 
 //        'tools:gradle-plugin',
-        'tools:zephyr-bundle',
-        'tools:zephyr-maven-plugin',
-        'tools:zephyr-bundle:zephyr-bundle-core',
-        'tools:zephyr-bundle:native-packages',
-        'tools:zephyr-bundle:native-packages:linux',
-        'tools:zephyr-bundle:native-packages:mac',
-        'tools:zephyr-bundle:native-packages:windows',
+       //// 'tools:zephyr-bundle',
+       // 'tools:zephyr-maven-plugin',
+       // 'tools:zephyr-bundle:zephyr-bundle-core',
+       // 'tools:zephyr-bundle:native-packages',
+       // 'tools:zephyr-bundle:native-packages:linux',
+       // 'tools:zephyr-bundle:native-packages:mac',
+       // 'tools:zephyr-bundle:native-packages:windows',
 )
 
