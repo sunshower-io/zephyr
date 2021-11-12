@@ -1,4 +1,4 @@
-name: Prepare Zephyr Release
+name: Release Zephyr
 on:
   push:
     tags:
@@ -78,12 +78,12 @@ jobs:
           mvn clean install -f bom
 
 
-      - name: Increment Zephyr Maven Plugin Version
-        run: >-
-          mvn versions:set
-          -DnewVersion=${{ steps.finalVersion.outputs.result }}
-          -f tools/zephyr-maven-plugin
-          --settings bom/settings/settings.xml
+#      - name: Increment Zephyr Maven Plugin Version
+#        run: >-
+#          mvn versions:set
+#          -DnewVersion=${{ steps.finalVersion.outputs.result }}
+#          -f tools/zephyr-maven-plugin
+#          --settings bom/settings/settings.xml
 
       - name: Increment Zephyr Build Number
         uses: eskatos/gradle-command-action@v1
@@ -128,12 +128,12 @@ jobs:
       #
       #################   Deploy Zephyr Maven Plugin #################
 
-      - name: Deploy Zephyr Maven Plugin
-        run: >-
-          mvn clean install deploy -f tools/zephyr-maven-plugin
-          --settings bom/settings/settings.xml
-          -Dmaven-repo.github.username=${{secrets.MAVEN_REPOSITORY_USERNAME}}
-          -Dmaven-repo.github.password=${{secrets.MAVEN_REPOSITORY_PASSWORD}} -e
+#      - name: Deploy Zephyr Maven Plugin
+#        run: >-
+#          mvn clean install deploy -f tools/zephyr-maven-plugin
+#          --settings bom/settings/settings.xml
+#          -Dmaven-repo.github.username=${{secrets.MAVEN_REPOSITORY_USERNAME}}
+#          -Dmaven-repo.github.password=${{secrets.MAVEN_REPOSITORY_PASSWORD}} -e
 
 
       - name: get commit message
@@ -218,10 +218,10 @@ jobs:
           -Dproperty=zephyr.version -DnewVersion=${{ steps.snapshotVersion.outputs.result }} &&
           mvn clean install -f bom
 
-      - name: Increment Zephyr Maven Plugin Version
-        run: >-
-          mvn versions:set -DnewVersion=${{ steps.snapshotVersion.outputs.result }}
-          -f tools/zephyr-maven-plugin
+#      - name: Increment Zephyr Maven Plugin Version
+#        run: >-
+#          mvn versions:set -DnewVersion=${{ steps.snapshotVersion.outputs.result }}
+#          -f tools/zephyr-maven-plugin
 
       - name: Increment Zephyr Build Number to Snapshot
         uses: eskatos/gradle-command-action@v1
@@ -256,12 +256,12 @@ jobs:
             -PmavenRepositoryUrl=${{secrets.MAVEN_REPOSITORY_URL}} --stacktrace
 
 
-      - name: Deploy Zephyr Maven Plugin
-        run: >-
-          mvn install deploy -f tools/zephyr-maven-plugin
-          --settings bom/settings/settings.xml
-          -Dmaven-repo.github.username=${{secrets.MAVEN_REPOSITORY_USERNAME}}
-          -Dmaven-repo.github.password=${{secrets.MAVEN_REPOSITORY_PASSWORD}} -e
+#      - name: Deploy Zephyr Maven Plugin
+#        run: >-
+#          mvn install deploy -f tools/zephyr-maven-plugin
+#          --settings bom/settings/settings.xml
+#          -Dmaven-repo.github.username=${{secrets.MAVEN_REPOSITORY_USERNAME}}
+#          -Dmaven-repo.github.password=${{secrets.MAVEN_REPOSITORY_PASSWORD}} -e
 
       - name: Commit Version Changes and Release
         run: |
