@@ -4,6 +4,7 @@ import io.zephyr.kernel.io.ChannelTransferListener;
 import io.zephyr.kernel.io.ObservableChannelTransferListener;
 import java.io.File;
 import java.io.IOException;
+import java.net.URLConnection;
 import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
@@ -17,18 +18,23 @@ public class MonitorableFileTransfer extends ObservableChannelTransferListener
 
   private final long expectedSize;
   private final File destination;
+  private final URLConnection connection;
   private final ReadableByteChannel channel;
 
-  public MonitorableFileTransfer(File destination, long expectedSize, ReadableByteChannel channel) {
+  public MonitorableFileTransfer(
+      URLConnection connection, File destination, long expectedSize, ReadableByteChannel channel) {
     this.channel = channel;
+    this.connection = connection;
     this.destination = destination;
     this.expectedSize = expectedSize;
   }
 
   @Override
   public File call() throws Exception {
-    val source = new MonitorableByteChannel(channel, this, expectedSize);
-    try (val outputstream = Files.newOutputStream(destination.toPath());
+    val source = new MonitorableByteChannel(connection, channel, this, expectedSize);
+    try (channel;
+        source;
+        val outputstream = Files.newOutputStream(destination.toPath());
         val outputChannel = Channels.newChannel(outputstream)) {
       copy(source, outputChannel);
     } catch (IOException ex) {

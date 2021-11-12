@@ -2,23 +2,33 @@ package io.zephyr.common.io;
 
 import io.zephyr.kernel.io.ChannelTransferListener;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.net.HttpURLConnection;
+import java.net.URLConnection;
 import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
+import java.util.logging.Level;
+import lombok.extern.java.Log;
+import lombok.val;
 
+@Log
 public class MonitorableByteChannel implements ReadableByteChannel {
 
   private final long expectedSize;
-  private final ChannelTransferListener listener;
+  private final URLConnection connection;
   private final ReadableByteChannel delegate;
+  private final ChannelTransferListener listener;
 
   private long bytesRead;
 
   public MonitorableByteChannel(
+      URLConnection connection,
       final ReadableByteChannel delegate,
       final ChannelTransferListener listener,
       long expectedSize) {
     this.listener = listener;
     this.delegate = delegate;
+    this.connection = connection;
     this.expectedSize = expectedSize;
   }
 
@@ -41,6 +51,37 @@ public class MonitorableByteChannel implements ReadableByteChannel {
 
   @Override
   public void close() throws IOException {
-    delegate.close();
+    try {
+      if (connection instanceof HttpURLConnection) {
+        ((HttpURLConnection) connection).disconnect();
+      } else {
+        forceClose(connection);
+      }
+    } finally {
+      delegate.close();
+    }
+  }
+
+  private void forceClose(URLConnection connection) {
+    forceClose(connection, "close");
+    forceClose(connection, "disconnect");
+  }
+
+  private void forceClose(URLConnection connection, String disconnect) {
+    for (Class<?> c = connection.getClass(); !Object.class.equals(c); c = c.getSuperclass()) {
+      try {
+        val method = c.getDeclaredMethod(disconnect);
+        method.setAccessible(true);
+        method.invoke(connection);
+        log.log(Level.INFO, "Successfully closed connection");
+        return;
+      } catch (NoSuchMethodException ex) {
+        log.log(Level.INFO, "No close method on {0}", c);
+      } catch (InvocationTargetException e) {
+        throw new RuntimeException(e);
+      } catch (IllegalAccessException e) {
+        throw new IllegalStateException(e);
+      }
+    }
   }
 }
