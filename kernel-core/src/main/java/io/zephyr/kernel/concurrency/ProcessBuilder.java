@@ -1,26 +1,28 @@
 package io.zephyr.kernel.concurrency;
 
+import io.sunshower.gyre.DirectedGraph;
 import io.sunshower.gyre.Scope;
 import io.zephyr.kernel.misc.SuppressFBWarnings;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.val;
 
 @SuppressWarnings("PMD.AvoidFieldNameMatchingMethodName")
 public class ProcessBuilder {
-
-  /** Mutable state */
-  boolean parallel;
-
-  boolean coalesce;
-  Scope context;
 
   /** Immutable state */
   final String name;
 
   final Map<String, Task> tasks;
   final Map<String, List<Task>> dependencies;
+  /** Mutable state */
+  boolean parallel;
+
+  boolean coalesce;
+  Scope context;
+
   /** mutable state */
   public ProcessBuilder(String name) {
     this.name = name;
@@ -62,7 +64,32 @@ public class ProcessBuilder {
     return this;
   }
 
+  public Process<String> create() {
+    val graph = new TaskGraph<String>();
+
+    for (val task : tasks.values()) {
+      graph.add(task);
+      val deps = dependencies.get(task.name);
+      if (deps != null) {
+        for (val dependency : deps) {
+          graph.connect(
+              task,
+              dependency,
+              DirectedGraph.incoming(String.format("%s dependsOn %s", task, dependency)));
+        }
+      }
+    }
+    Scope context;
+    if (this.context != null) {
+      context = this.context;
+    } else {
+      context = Scope.root();
+    }
+    return new DefaultProcess<>(name, coalesce, parallel, context, graph);
+  }
+
   public TaskBuilder task() {
     return new TaskBuilder(this);
   }
+
 }
