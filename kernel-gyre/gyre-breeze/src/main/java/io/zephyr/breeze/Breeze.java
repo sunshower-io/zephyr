@@ -1,5 +1,5 @@
 package io.zephyr.breeze;
-
+import io.zephyr.kernel.concurrency.Process;
 import io.sunshower.gyre.AbstractDirectedGraph;
 import io.sunshower.gyre.DirectedGraph;
 import io.sunshower.gyre.Pair;
@@ -17,13 +17,12 @@ public final class Breeze {
 
 
   @NonNull
-  static DirectedGraph<Label, TaskDefinition> newTaskGraph(@NonNull Class<?>... types) {
+  static Process<Label> newTaskGraph(@NonNull Class<?>... types) {
     val processDefinition = createReductionDefinition(types);
     val result = new AbstractDirectedGraph<Label, TaskDefinition>();
     for (val type : types) {
       define(type, result);
     }
-    return result;
   }
 
   private static ReductionDefinition createReductionDefinition(Class<?>[] types) {
