@@ -76,7 +76,7 @@ public class DefaultProcess<T> implements Process<T> {
                   DirectedGraph.Edge<T>, io.zephyr.kernel.concurrency.Task>();
           val partition = cycles.apply(graph);
           if (partition.isCyclic()) {
-            throw new IllegalStateException("Cycle detected");
+            throw new IllegalStateException("Cycle detected: " + partition.getElements());
           }
           schedule =
               local =
