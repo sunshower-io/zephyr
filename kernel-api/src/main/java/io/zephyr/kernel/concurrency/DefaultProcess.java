@@ -2,24 +2,36 @@ package io.zephyr.kernel.concurrency;
 
 import static java.lang.String.format;
 
-import io.sunshower.gyre.*;
+import io.sunshower.gyre.DirectedGraph;
+import io.sunshower.gyre.Graph;
+import io.sunshower.gyre.ParallelScheduler;
+import io.sunshower.gyre.Schedule;
+import io.sunshower.gyre.Scope;
+import io.sunshower.gyre.StronglyConnectedComponents;
+import io.sunshower.gyre.TaskSet;
 import java.util.Iterator;
 import java.util.List;
+import lombok.Getter;
 import lombok.val;
 
 /** @param <T> */
 @SuppressWarnings({"PMD.AvoidFieldNameMatchingMethodName", "PMD.AvoidUsingVolatile"})
 public class DefaultProcess<T> implements Process<T> {
+
   final String name;
   final boolean coalesce;
   final boolean parallel;
   final Scope context;
-  final TaskGraph<T> graph;
+  @Getter final DirectedGraph<T, Task> graph;
 
   private volatile Schedule<DirectedGraph.Edge<T>, io.zephyr.kernel.concurrency.Task> schedule;
 
   public DefaultProcess(
-      String name, boolean coalesce, boolean parallel, Scope context, TaskGraph<T> graph) {
+      String name,
+      boolean coalesce,
+      boolean parallel,
+      Scope context,
+      DirectedGraph<T, Task> graph) {
     this.name = name;
     this.coalesce = coalesce;
     this.parallel = parallel;
@@ -64,7 +76,7 @@ public class DefaultProcess<T> implements Process<T> {
                   DirectedGraph.Edge<T>, io.zephyr.kernel.concurrency.Task>();
           val partition = cycles.apply(graph);
           if (partition.isCyclic()) {
-            throw new IllegalStateException("Cycle detected");
+            throw new IllegalStateException("Cycle detected: " + partition.getElements());
           }
           schedule =
               local =

@@ -57,7 +57,7 @@ public class TaskBuilder {
     if (!processBuilder.tasks.containsKey(task.name)) {
       processBuilder.doRegister(task);
     }
-    task(task.name);
+    //    task(task.name);
     processBuilder.dependsOn(current, task);
     return this;
   }

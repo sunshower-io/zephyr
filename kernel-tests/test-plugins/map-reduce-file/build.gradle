@@ -1,0 +1,8 @@
+apply plugin: 'war'
+
+dependencies {
+    compileOnly project(':kernel-api')
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine'
+    testImplementation project(':kernel-tests:kernel-test')
+    testImplementation project(':kernel-tests:kernel-test-common');
+}

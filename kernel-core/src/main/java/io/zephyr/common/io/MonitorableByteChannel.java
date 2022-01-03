@@ -2,6 +2,7 @@ package io.zephyr.common.io;
 
 import io.zephyr.kernel.io.ChannelTransferListener;
 import java.io.IOException;
+import java.lang.reflect.InaccessibleObjectException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.HttpURLConnection;
 import java.net.URLConnection;
@@ -75,8 +76,8 @@ public class MonitorableByteChannel implements ReadableByteChannel {
         method.invoke(connection);
         log.log(Level.INFO, "Successfully closed connection");
         return;
-      } catch (NoSuchMethodException ex) {
-        log.log(Level.INFO, "No close method on {0}", c);
+      } catch (NoSuchMethodException | InaccessibleObjectException ex) {
+        log.log(Level.INFO, "No close method or inaccessible close method on {0}", c);
       } catch (InvocationTargetException e) {
         throw new RuntimeException(e);
       } catch (IllegalAccessException e) {

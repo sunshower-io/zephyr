@@ -1,12 +1,13 @@
 plugins {
     id 'pmd'
     id 'maven-publish'
-    id "com.diffplug.spotless" version "5.8.2"
+    id "com.diffplug.spotless" version "6.1.0"
     id "com.github.spotbugs" version "4.6.0"
     id "org.springframework.boot" version "2.2.4.RELEASE" apply false
     id "io.spring.dependency-management" version "1.0.6.RELEASE"
 }
 
+apply plugin: 'java'
 apply from: "$rootDir/tasks/revisions.gradle"
 
 
@@ -162,7 +163,7 @@ subprojects {
         }
         spotless {
             java {
-                googleJavaFormat('1.9')
+                googleJavaFormat('1.12.0')
             }
         }
 
@@ -189,7 +190,6 @@ subprojects {
     }
 
 }
-build.dependsOn assemble
 
 defaultTasks(
         'clean',
@@ -201,3 +201,4 @@ defaultTasks(
 )
 
 
+build.dependsOn assemble
