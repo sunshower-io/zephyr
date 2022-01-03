@@ -73,7 +73,9 @@ public class KernelStartCommand extends DefaultCommand {
 
       kernel.restoreState().toCompletableFuture().get();
     } catch (Exception ex) {
-      console.errorln("Failed to restore kernel state.  Reason: ", ex.getMessage());
+      if(console != null) {
+        console.errorln("Failed to restore kernel state.  Reason: ", ex.getMessage());
+      }
     } finally {
       kernel.removeEventListener(listener);
     }
