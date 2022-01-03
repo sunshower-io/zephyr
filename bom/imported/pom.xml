@@ -52,7 +52,7 @@
         <zip4j.version>2.6.1</zip4j.version>
         <jsign-core.version>3.1</jsign-core.version>
         <flyway-core.version>7.15.0</flyway-core.version>
-        <h2.version>1.4.200</h2.version>
+        <h2.version>2.0.202</h2.version>
         <junit-platform-suite-api.version>1.8.1</junit-platform-suite-api.version>
     </properties>
 
