@@ -1,6 +1,9 @@
 package io.zephyr.breeze;
 
+import static java.lang.String.format;
+
 import io.sunshower.gyre.AbstractDirectedGraph;
+import io.sunshower.gyre.DirectedGraph;
 import io.sunshower.gyre.Pair;
 import io.sunshower.gyre.Scope;
 import io.zephyr.kernel.concurrency.DefaultProcess;
@@ -14,10 +17,7 @@ import lombok.val;
 @Log
 public final class Breeze {
 
-  private Breeze() {
-
-  }
-
+  private Breeze() {}
 
   @NonNull
   static Process<Label> newTaskGraph(@NonNull Class<?>... types) {
@@ -25,14 +25,16 @@ public final class Breeze {
     val result = new AbstractDirectedGraph<Label, Task>();
 
     for (val type : types) {
-      define(type, result);
+      define(type, result, processDefinition);
     }
     val reduction = processDefinition.reduction;
 
-    return new DefaultProcess<Label>(
+    return new DefaultProcess<>(
         processDefinition.displayName,
         reduction.coalesce(),
-        reduction.parallel(), Scope.root(), result);
+        reduction.parallel(),
+        Scope.root(),
+        result);
   }
 
   private static ReductionDefinition createReductionDefinition(Class<?>[] types) {
@@ -57,8 +59,29 @@ public final class Breeze {
         "Expected at least one type to be annotated with @Reduction");
   }
 
-  private static void define(Class<?> type, AbstractDirectedGraph<Label, Task> result) {
+  private static void define(
+      Class<?> type, DirectedGraph<Label, Task> result, ReductionDefinition processDefinition) {
+    ensureNoConflictingProcessDefinition(type, processDefinition);
+    ensureTaskAnnotationIsPresent(type);
+  }
 
+  private static void ensureTaskAnnotationIsPresent(Class<?> type) {
+    if (!type.isAnnotationPresent(io.zephyr.breeze.Task.class)) {
+      throw new IllegalArgumentException(
+          format("Types must have a @Task annotation (offending type: %s)", type));
+    }
+  }
+
+  private static void ensureNoConflictingProcessDefinition(
+      Class<?> type, ReductionDefinition processDefinition) {
+    if (type.isAnnotationPresent(Reduction.class)
+        && !type.equals(processDefinition.reductionClass)) {
+      throw new IllegalArgumentException(
+          format(
+              "Error: possibly conflicting process definitions (only 1 type may be annotated with "
+                  + "@Reduction, but both %s and %s were)",
+              processDefinition.reductionClass, type));
+    }
   }
 
   @Data

@@ -1,5 +1,3 @@
 package io.zephyr.examples.mapreduce;
 
-public class ReadTask {
-
-}
+public class ReadTask {}

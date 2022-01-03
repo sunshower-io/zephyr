@@ -6,12 +6,10 @@ import lombok.Data;
 @Data
 public class Label implements Comparable<Label> {
 
-  /**
-   * the actual key for this label
-   */
+  /** the actual key for this label */
   private final String key;
-  private final String displayName;
 
+  private final String displayName;
 
   public int hashCode() {
     return key.hashCode();
@@ -29,7 +27,6 @@ public class Label implements Comparable<Label> {
     }
     return false;
   }
-
 
   @Override
   public int compareTo(Label o) {

@@ -14,9 +14,7 @@ import java.util.List;
 import lombok.Getter;
 import lombok.val;
 
-/**
- * @param <T>
- */
+/** @param <T> */
 @SuppressWarnings({"PMD.AvoidFieldNameMatchingMethodName", "PMD.AvoidUsingVolatile"})
 public class DefaultProcess<T> implements Process<T> {
 
@@ -24,13 +22,15 @@ public class DefaultProcess<T> implements Process<T> {
   final boolean coalesce;
   final boolean parallel;
   final Scope context;
-  @Getter
-  final DirectedGraph<T, Task> graph;
+  @Getter final DirectedGraph<T, Task> graph;
 
   private volatile Schedule<DirectedGraph.Edge<T>, io.zephyr.kernel.concurrency.Task> schedule;
 
   public DefaultProcess(
-      String name, boolean coalesce, boolean parallel, Scope context,
+      String name,
+      boolean coalesce,
+      boolean parallel,
+      Scope context,
       DirectedGraph<T, Task> graph) {
     this.name = name;
     this.coalesce = coalesce;

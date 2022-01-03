@@ -32,14 +32,15 @@ class ReadTaskTest {
   void ensureMappingFileToSegmentsWorks() {
     final int count = 32;
     val proc = Tasks.newProcess("mapreduce").parallel().coalesce();
-    val collectTask = new Task("compute-segments") {
-      @Override
-      public TaskValue run(Scope scope) {
-        val segs = computeSegments(count);
-        scope.set("computed-segments", segs);
-        return new TaskValue(segs, "computed-segments");
-      }
-    };
+    val collectTask =
+        new Task("compute-segments") {
+          @Override
+          public TaskValue run(Scope scope) {
+            val segs = computeSegments(count);
+            scope.set("computed-segments", segs);
+            return new TaskValue(segs, "computed-segments");
+          }
+        };
     proc.register(collectTask);
 
     val reducer = new ReducerTask();
@@ -50,14 +51,14 @@ class ReadTaskTest {
       proc.task().task("reducer").dependsOn(task);
     }
 
-
-    val scheduler = new TopologyAwareParallelScheduler<String>(
-        new ExecutorWorkerPool(Executors.newFixedThreadPool(count),
-            Executors.newFixedThreadPool(2)));
+    val scheduler =
+        new TopologyAwareParallelScheduler<String>(
+            new ExecutorWorkerPool(
+                Executors.newFixedThreadPool(count), Executors.newFixedThreadPool(2)));
     val process = proc.create();
-    val result = scheduler.submit(process, Scope.root()).toCompletableFuture().toCompletableFuture().join();
+    val result =
+        scheduler.submit(process, Scope.root()).toCompletableFuture().toCompletableFuture().join();
     System.out.println(result);
-
   }
 
   @SneakyThrows
@@ -72,10 +73,11 @@ class ReadTaskTest {
     return Collections.synchronizedList(segments);
   }
 
-  private Segment computeSegment(long testSegmentSize, RandomAccessFile rafile,
-      int i, List<Segment> segments) throws IOException {
+  private Segment computeSegment(
+      long testSegmentSize, RandomAccessFile rafile, int i, List<Segment> segments)
+      throws IOException {
     rafile.seek(i * testSegmentSize);
-    long count = 0;// number of bits offset
+    long count = 0; // number of bits offset
     for (; ; ) {
       int r = rafile.read();
       count++;
@@ -139,7 +141,7 @@ class ReadTaskTest {
             scope.set(getName() + "values", counts);
             return null;
           }
-          if(Character.isWhitespace((char) ch)) {
+          if (Character.isWhitespace((char) ch)) {
             val word = buffer.toString().trim();
             counts.compute(word, (k, v) -> v == null ? 1 : (int) v + 1);
             buffer = new StringBuilder();
@@ -147,7 +149,6 @@ class ReadTaskTest {
           count++;
           buffer.append((char) ch);
         }
-
 
       } catch (IOException ex) {
         System.out.println("Whoops: " + ex.getMessage());
@@ -164,5 +165,4 @@ class ReadTaskTest {
     long end;
     long start;
   }
-
 }

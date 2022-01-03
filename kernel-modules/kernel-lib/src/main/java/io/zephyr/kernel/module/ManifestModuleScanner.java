@@ -63,7 +63,6 @@ public final class ManifestModuleScanner implements ModuleScanner {
         return Optional.of(read(packageFile.getManifest(), file, source));
       }
     } catch (Throwable e) {
-      e.printStackTrace();
       return Optional.empty();
     }
   }

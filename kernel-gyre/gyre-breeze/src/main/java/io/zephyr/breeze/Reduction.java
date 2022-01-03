@@ -9,22 +9,14 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Reduction {
 
-  /**
-   * @return true if redundant edges should be eliminated
-   */
+  /** @return true if redundant edges should be eliminated */
   boolean coalesce() default true;
 
-
-  /**
-   * @return true if this task-graph should be parallelized
-   */
+  /** @return true if this task-graph should be parallelized */
   boolean parallel() default true;
 
-  /**
-   * @return the instantiator to use
-   */
+  /** @return the instantiator to use */
   Class<? extends Instantiator> instantiator() default Instantiator.class;
-
 
   String displayName() default Constants.DEFAULT_VALUE;
 }
