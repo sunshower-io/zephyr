@@ -54,13 +54,12 @@ class BreezeTest {
   public static class TaskB {
 
     private String value;
+
     @Run
     void run() {
       this.value = "set";
     }
   }
-
-
 
   @Task(displayName = "task A")
   @Dependency(type = TaskB.class)
