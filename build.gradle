@@ -2,9 +2,9 @@ plugins {
     id 'pmd'
     id 'maven-publish'
     id "com.diffplug.spotless" version "6.1.0"
-    id "com.github.spotbugs" version "4.6.0"
+    id "com.github.spotbugs" version "4.7.0"
     id "org.springframework.boot" version "2.2.4.RELEASE" apply false
-    id "io.spring.dependency-management" version "1.0.6.RELEASE"
+    id "io.spring.dependency-management" version "1.0.11.RELEASE"
 }
 
 apply plugin: 'java'
@@ -65,7 +65,7 @@ subprojects {
 //            }
 //        }
         pmd {
-            toolVersion = '6.30.0'
+            toolVersion = '6.34.0'
             ruleSets = [
                     "${project.rootDir}/check/pmd/rules/errorprone.xml",
                     "category/java/multithreading.xml",
@@ -148,7 +148,7 @@ subprojects {
             }
         }
         pmd {
-            toolVersion = '6.30.0'
+            toolVersion = '6.34.0'
             ruleSets = [
                     "${project.rootDir}/check/pmd/rules/errorprone.xml",
                     "category/java/multithreading.xml",
