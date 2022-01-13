@@ -3,7 +3,7 @@ plugins {
     id 'maven-publish'
     id "com.diffplug.spotless" version "6.1.0"
     id "com.github.spotbugs" version "4.7.0"
-    id "org.springframework.boot" version "2.2.4.RELEASE" apply false
+    id "org.springframework.boot" version "2.6.2" apply false
     id "io.spring.dependency-management" version "1.0.11.RELEASE"
 }
 
@@ -48,6 +48,9 @@ subprojects {
         }
     }
 
+    spotbugs {
+        toolVersion = '4.5.3'
+    }
 
     plugins.withType(WarPlugin) {
         configurations {

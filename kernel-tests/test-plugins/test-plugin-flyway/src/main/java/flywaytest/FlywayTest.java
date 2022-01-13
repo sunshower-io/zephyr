@@ -7,7 +7,8 @@ import org.flywaydb.core.Flyway;
 
 public class FlywayTest implements ModuleActivator {
 
-  static final String CONNECTION_STRING = "jdbc:h2:mem:2";
+  static final String CONNECTION_STRING =
+      "jdbc:h2:mem:testdb;USER=sa;PASSWORD=password;DB_CLOSE_DELAY=-1";
 
   @Override
   public void start(ModuleContext context) {
@@ -18,10 +19,10 @@ public class FlywayTest implements ModuleActivator {
       System.out.println("Creating connection...");
       Flyway.configure()
           .table("schema_version")
-          .dataSource(CONNECTION_STRING, "", "")
+          .dataSource(CONNECTION_STRING, "sa", "password")
           .ignoreMissingMigrations(true)
           .cleanDisabled(true)
-          .outOfOrder(true)
+          .outOfOrder(false)
           .resourceProvider(FlywaySupport.classpath(context.getModule()).locations("flyway"))
           .load()
           .migrate();
