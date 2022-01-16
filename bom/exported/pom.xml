@@ -11,6 +11,7 @@
     </parent>
     <properties>
         <zephyr.version>2.0.93-SNAPSHOT</zephyr.version>
+        <java-semver.version>0.9.0</java-semver.version>
     </properties>
 
     <dependencyManagement>
@@ -29,6 +30,11 @@
                 <version>${zephyr.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>com.github.zafarkhaja</groupId>
+                <artifactId>java-semver</artifactId>
+                <version>${java-semver.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>io.zephyr</groupId>
