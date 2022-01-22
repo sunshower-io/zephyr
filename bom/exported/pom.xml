@@ -12,6 +12,7 @@
     <properties>
         <zephyr.version>2.0.93-SNAPSHOT</zephyr.version>
         <java-semver.version>0.9.0</java-semver.version>
+        <picocli.version>4.6.2</picocli.version>
     </properties>
 
     <dependencyManagement>
@@ -105,6 +106,12 @@
                 <groupId>io.zephyr</groupId>
                 <artifactId>spring-embedded-plugin</artifactId>
                 <version>${zephyr.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>info.picocli</groupId>
+                <artifactId>picocli</artifactId>
+                <version>${picocli.version}</version>
             </dependency>
 
         </dependencies>

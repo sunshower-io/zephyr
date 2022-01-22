@@ -118,6 +118,7 @@ class NoOpMemento implements Memento {
   }
 
   @Override
+  @SuppressWarnings("unchecked")
   public <T> T read(String name, Class<T> value) {
     return (T) values.get(name);
   }

@@ -242,6 +242,11 @@ public class SunshowerKernel implements Kernel, EventSource {
     eventDispatcher.dispatchEvent(type, event);
   }
 
+  @Override
+  public List<EventListener<?>> getListeners() {
+    return eventDispatcher.getListeners();
+  }
+
   /** private methods */
   private void writePlugins(Memento pluginsMemento) {
     val plugins = moduleManager.getModules();

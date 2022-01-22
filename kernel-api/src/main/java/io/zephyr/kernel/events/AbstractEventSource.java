@@ -1,10 +1,15 @@
 package io.zephyr.kernel.events;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.val;
 
 public class AbstractEventSource implements EventSource {
+
   final Map<BitSet, List<FlaggedEventListener>> listeners;
 
   protected AbstractEventSource() {
@@ -105,8 +110,23 @@ public class AbstractEventSource implements EventSource {
     }
   }
 
+  @Override
+  public List<EventListener<?>> getListeners() {
+
+    synchronized (listeners) {
+      val results = new ArrayList<EventListener<?>>(listeners.size());
+      for (val entry : listeners.entrySet()) {
+        for (val flaggedListener : entry.getValue()) {
+          results.add(flaggedListener.listener);
+        }
+      }
+      return results;
+    }
+  }
+
   @AllArgsConstructor
   static final class FlaggedEventListener {
+
     final int flags;
     final EventListener<?> listener;
   }
