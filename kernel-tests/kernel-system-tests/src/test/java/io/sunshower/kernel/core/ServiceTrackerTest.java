@@ -18,9 +18,12 @@ import javax.inject.Inject;
 import lombok.val;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import org.mockito.Mock;
 
 @ZephyrTest
+@DisabledOnOs(OS.WINDOWS)
 @Clean(value = Clean.Mode.After, context = Clean.Context.Method)
 public class ServiceTrackerTest {
 
@@ -60,8 +63,8 @@ public class ServiceTrackerTest {
     lifecycleManager.remove(t -> true);
   }
 
-  @Test
   @RepeatedTest(10)
+  @DisabledOnOs(OS.WINDOWS)
   void ensureTrackingServiceProducesServiceInInstalledTestPluginWithMVELFilter() {
     zephyr.install(StandardModules.MVEL.getUrl());
     zephyr.restart();
