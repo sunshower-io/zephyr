@@ -14,6 +14,7 @@ dependencies {
     compileOnly project(':kernel-modules:kernel-lib')
 
 
+    testImplementation project(':kernel-api')
     testImplementation project(':kernel-core')
     testImplementation project(':kernel-modules:kernel-lib')
 

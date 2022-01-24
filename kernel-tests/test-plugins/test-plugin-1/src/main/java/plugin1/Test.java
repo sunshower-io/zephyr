@@ -12,6 +12,7 @@ public class Test implements ModuleActivator {
     moduleTracker.addEventListener(
         (type, event) -> System.out.format("%s: %s", type, event.getTarget()),
         ModuleEvents.INSTALLED);
+    context.register(Service.class, new Plugin1Service());
     System.out.println("Plugin1 started...");
   }
 

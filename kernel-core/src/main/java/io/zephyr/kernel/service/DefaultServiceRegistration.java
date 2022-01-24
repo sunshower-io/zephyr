@@ -25,7 +25,7 @@ public class DefaultServiceRegistration<T> implements ServiceRegistration<T> {
 
   @Override
   public <S> boolean provides(Class<S> type) {
-    return definition.getType().equals(type);
+    return definition.getType().isAssignableFrom(type);
   }
 
   @Override

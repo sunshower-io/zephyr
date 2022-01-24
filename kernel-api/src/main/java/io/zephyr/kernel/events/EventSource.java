@@ -1,5 +1,7 @@
 package io.zephyr.kernel.events;
 
+import java.util.List;
+
 public interface EventSource {
 
   int getListenerCount();
@@ -13,4 +15,6 @@ public interface EventSource {
   <T> void removeEventListener(EventListener<T> listener);
 
   <T> void dispatchEvent(EventType type, Event<T> event);
+
+  List<EventListener<?>> getListeners();
 }

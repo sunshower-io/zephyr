@@ -2,7 +2,7 @@ apply plugin: 'war'
 
 dependencies {
     compileOnly project(':kernel-api')
-    implementation project(':kernel-tests:test-plugins:test-plugin-1')
+    compileOnly project(':kernel-tests:test-plugins:test-plugin-1')
     implementation project(':kernel-modules:sunshower-yaml-reader')
 }
 

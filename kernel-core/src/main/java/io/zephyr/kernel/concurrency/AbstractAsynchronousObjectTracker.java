@@ -12,6 +12,7 @@ import io.zephyr.kernel.events.EventType;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 import lombok.AllArgsConstructor;
@@ -96,6 +97,11 @@ public abstract class AbstractAsynchronousObjectTracker<T> implements Tracker<T>
   @Override
   public <U> void dispatchEvent(EventType type, Event<U> event) {
     delegatedEventSource.dispatchEvent(type, event);
+  }
+
+  @Override
+  public List<EventListener<?>> getListeners() {
+    return Collections.unmodifiableList(delegatedEventSource.getListeners());
   }
 
   @Override

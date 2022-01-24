@@ -47,7 +47,8 @@ class SunshowerKernelSystemTest {
   @Test
   void ensureRunningKernelHasCorrectNumberOfListeners() {
     kernel.start();
-    assertEquals(0, kernel.getListenerCount(), "must have no listeners");
+    assertEquals(
+        0, kernel.getListenerCount(), "must have no listeners, but had" + kernel.getListeners());
   }
 
   @Test

@@ -8,6 +8,7 @@ import io.zephyr.kernel.events.EventListener;
 import io.zephyr.kernel.events.EventSource;
 import io.zephyr.kernel.events.EventType;
 import io.zephyr.kernel.misc.SuppressFBWarnings;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedTransferQueue;
 import java.util.concurrent.TransferQueue;
@@ -74,6 +75,13 @@ public class AsynchronousEventSource implements EventSource, Stoppable, Startabl
     synchronized (queueLock) {
       queue.add(new AsynchronousEvent<>(event, type));
       queueLock.notifyAll();
+    }
+  }
+
+  @Override
+  public List<EventListener<?>> getListeners() {
+    synchronized (source) {
+      return source.getListeners();
     }
   }
 
