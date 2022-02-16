@@ -4,6 +4,7 @@ import io.zephyr.api.*;
 
 public class Test implements ModuleActivator {
   private ModuleTracker moduleTracker;
+  private ServiceRegistration<Service> registration2;
 
   @Override
   public void start(ModuleContext context) {
@@ -12,7 +13,7 @@ public class Test implements ModuleActivator {
     moduleTracker.addEventListener(
         (type, event) -> System.out.format("%s: %s", type, event.getTarget()),
         ModuleEvents.INSTALLED);
-    context.register(Service.class, new Plugin1Service());
+    registration2 = context.register(Service.class, new Plugin1Service());
     System.out.println("Plugin1 started...");
   }
 
@@ -20,6 +21,7 @@ public class Test implements ModuleActivator {
   public void stop(ModuleContext context) {
     System.out.println("Plugin1 stopping...");
     moduleTracker.close();
+    registration2.dispose();
     System.out.println("Plugin1 stopped");
   }
 }
