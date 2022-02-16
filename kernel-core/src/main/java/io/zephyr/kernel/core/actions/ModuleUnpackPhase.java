@@ -91,7 +91,7 @@ public class ModuleUnpackPhase extends Task implements ModuleAssemblyExtractor.E
         ModulePhaseEvents.MODULE_ASSEMBLY_EXTRACTION_INITIATED, Events.create(assembly));
   }
 
-  private void fireExtractorFailed(ModuleAssemblyExtractor extractor, Exception ex) {
+  private void fireExtractorFailed(ModuleAssemblyExtractor extractor, Throwable ex) {
     kernel.dispatchEvent(
         ModulePhaseEvents.MODULE_ASSEMBLY_EXTRACTION_FAILED,
         Events.create(extractor, StatusType.FAILED.resolvable(ex.getMessage())));

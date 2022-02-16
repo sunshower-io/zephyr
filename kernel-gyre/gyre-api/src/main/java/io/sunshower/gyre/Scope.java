@@ -1,6 +1,7 @@
 package io.sunshower.gyre;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public interface Scope {
   <T> void set(String name, T value);
@@ -16,7 +17,7 @@ public interface Scope {
 
 final class RootScope implements Scope {
 
-  final Map<String, Object> values = new HashMap<>();
+  final Map<String, Object> values = new ConcurrentHashMap<>();
 
   @Override
   public <T> void set(String name, T value) {
