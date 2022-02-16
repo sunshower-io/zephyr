@@ -60,7 +60,6 @@ public class ModuleUnpackPhase extends Task implements ModuleAssemblyExtractor.E
         extractor.extract(assembly, moduleFileSystem, this);
         log.log(Level.INFO, "module.extractor.afterapplication", extractor);
         anyworked = true;
-        break;
       } catch (Exception | ServiceConfigurationError ex) {
         log.log(Level.INFO, "module.extractor.error", new Object[] {ex.getMessage(), extractor});
         if (log.isLoggable(Level.FINE)) {
