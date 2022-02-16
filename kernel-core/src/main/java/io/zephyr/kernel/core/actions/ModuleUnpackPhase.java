@@ -11,6 +11,7 @@ import io.zephyr.kernel.status.StatusType;
 import java.io.File;
 import java.nio.file.FileSystem;
 import java.util.ResourceBundle;
+import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -59,7 +60,8 @@ public class ModuleUnpackPhase extends Task implements ModuleAssemblyExtractor.E
         extractor.extract(assembly, moduleFileSystem, this);
         log.log(Level.INFO, "module.extractor.afterapplication", extractor);
         anyworked = true;
-      } catch (Exception ex) {
+        break;
+      } catch (Exception | ServiceConfigurationError ex) {
         log.log(Level.INFO, "module.extractor.error", new Object[] {ex.getMessage(), extractor});
         if (log.isLoggable(Level.FINE)) {
           log.log(Level.FINE, "module.extractor.actualerror", ex);

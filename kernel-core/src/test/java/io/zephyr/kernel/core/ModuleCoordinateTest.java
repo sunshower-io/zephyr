@@ -11,6 +11,12 @@ import org.junit.jupiter.api.Test;
 class ModuleCoordinateTest {
 
   @Test
+  void ensureModuleCoordinatesWorkForSemVer() {
+    val c = ModuleCoordinate.create("io.sunshower", "test-plugin-1", "1.0");
+    val v = ModuleCoordinate.create("io.sunshower", "test-plugin-1", "1.0.1");
+    assertEquals(c, v, "must be equal");
+  }
+  @Test
   void ensureModuleCoordinateEqualityWorksForEqualCoordinates() {
     val c = ModuleCoordinate.create("io.sunshower", "test-plugin-1", "1.0.0-SNAPSHOT");
     val v = ModuleCoordinate.create("io.sunshower", "test-plugin-1", "1.0.0-SNAPSHOT");
