@@ -17,12 +17,11 @@ public interface Process<E> extends Schedule<DirectedGraph.Edge<E>, Task> {
   }
 
   Mode getMode();
-  void setMode(@NonNull Mode mode) ;
 
+  void setMode(@NonNull Mode mode);
 
   /** if true, remove redundant edges (may improve execution time) */
   boolean coalesce();
-
 
   /** @return true if this process should be scheduled on a parallel scheduler */
   boolean isParallel();
@@ -33,12 +32,11 @@ public interface Process<E> extends Schedule<DirectedGraph.Edge<E>, Task> {
   Graph<DirectedGraph.Edge<E>, Task> getExecutionGraph();
 
   /**
-   *
    * Note that listeners are automatically cleared once the process is complete
+   *
    * @param type the type of the task event listener to add
    * @param listener the listener
    * @return a disposable
    */
   Disposable addEventListener(TaskEventType type, EventListener<Task> listener);
-
 }

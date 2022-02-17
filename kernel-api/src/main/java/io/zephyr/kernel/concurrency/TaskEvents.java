@@ -26,13 +26,11 @@ public enum TaskEvents implements TaskEventType, EventType {
   TaskEvents(final StatusType statusType) {
     this.id = EventType.newId();
     this.statusType = statusType;
-
   }
 
   @Override
   public StatusType getStatusType() {
-    return
-        statusType;
+    return statusType;
   }
 
   @Override

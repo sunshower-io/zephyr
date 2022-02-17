@@ -29,11 +29,9 @@ class DefaultProcessListenerDisposable implements Disposable {
     }
     listeners.remove(listener);
     disposers.remove(this);
-
   }
 
-  public <K> void set(
-      EventSource source) {
+  public <K> void set(EventSource source) {
     this.source = source;
   }
 }

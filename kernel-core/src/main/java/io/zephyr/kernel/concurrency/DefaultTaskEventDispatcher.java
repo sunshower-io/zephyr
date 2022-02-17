@@ -13,8 +13,7 @@ import lombok.val;
 class DefaultTaskEventDispatcher<K> extends CompletableFuture<Process<K>>
     implements TaskTracker<K>, TaskEventDispatcher<K> {
 
-  @Delegate
-  private final EventSource delegate;
+  @Delegate private final EventSource delegate;
 
   DefaultTaskEventDispatcher() {
     delegate = new TaskTrackerEventSource();
@@ -22,10 +21,8 @@ class DefaultTaskEventDispatcher<K> extends CompletableFuture<Process<K>>
 
   @Override
   public void dispatch(TaskEventType type, TaskPhaseEvent taskPhaseEvent) {
-    val event = Events.create(
-        taskPhaseEvent.getTask(),
-        new Status(type.getStatusType(), "", false)
-    );
+    val event =
+        Events.create(taskPhaseEvent.getTask(), new Status(type.getStatusType(), "", false));
     delegate.dispatchEvent(type, event);
   }
 
@@ -35,7 +32,5 @@ class DefaultTaskEventDispatcher<K> extends CompletableFuture<Process<K>>
     return () -> delegate.removeEventListener(listener);
   }
 
-  static final class TaskTrackerEventSource extends AbstractEventSource {
-
-  }
+  static final class TaskTrackerEventSource extends AbstractEventSource {}
 }

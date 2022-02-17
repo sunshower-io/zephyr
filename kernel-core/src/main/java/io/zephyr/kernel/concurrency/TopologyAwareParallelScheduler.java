@@ -13,9 +13,9 @@ import lombok.val;
 
 @SuppressFBWarnings
 @SuppressWarnings({
-    "PMD.AvoidInstantiatingObjectsInLoops",
-    "PMD.DoNotUseThreads",
-    "PMD.AvoidUsingVolatile"
+  "PMD.AvoidInstantiatingObjectsInLoops",
+  "PMD.DoNotUseThreads",
+  "PMD.AvoidUsingVolatile"
 })
 public class TopologyAwareParallelScheduler<K> {
 
@@ -41,16 +41,19 @@ public class TopologyAwareParallelScheduler<K> {
         workerPool.submitKernelAllocated(result::run);
         break;
       case UserspaceAllocated:
-        workerPool.submit(() -> {
-          result.run();
-          return null;
-        });
+        workerPool.submit(
+            () -> {
+              result.run();
+              return null;
+            });
         break;
       case SingleThreaded:
-        Executors.newSingleThreadExecutor().submit(() -> {
-          result.run();
-          return null;
-        });
+        Executors.newSingleThreadExecutor()
+            .submit(
+                () -> {
+                  result.run();
+                  return null;
+                });
         break;
     }
     log.log(Level.INFO, "parallel.scheduler.scheduledtask", process);
@@ -164,7 +167,6 @@ public class TopologyAwareParallelScheduler<K> {
       }
       complete(process);
     }
-
 
     void attachListeners() {
       if (process instanceof DefaultProcess<K>) {

@@ -23,9 +23,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.exceptions.verification.TooFewActualInvocations;
 
 @SuppressWarnings({
-    "PMD.DataflowAnomalyAnalysis",
-    "PMD.JUnitTestContainsTooManyAsserts",
-    "PMD.AvoidDuplicateLiterals"
+  "PMD.DataflowAnomalyAnalysis",
+  "PMD.JUnitTestContainsTooManyAsserts",
+  "PMD.AvoidDuplicateLiterals"
 })
 class TopologyAwareParallelSchedulerTest {
 
@@ -43,11 +43,9 @@ class TopologyAwareParallelSchedulerTest {
                 Executors.newFixedThreadPool(5), Executors.newFixedThreadPool(2)));
   }
 
-
   @RepeatedTest(1000)
   @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
-  void ensureListenerWorks()
-      throws ExecutionException, InterruptedException {
+  void ensureListenerWorks() throws ExecutionException, InterruptedException {
     graph.connect(
         new Task("a") {
           @SneakyThrows

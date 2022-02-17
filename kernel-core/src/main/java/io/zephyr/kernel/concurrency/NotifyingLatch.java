@@ -24,9 +24,7 @@ public class NotifyingLatch<K> {
     dispatcher.dispatch(TaskEvents.TASK_STARTING, new TaskPhaseEvent(task));
   }
 
-  /**
-   * should be called between beforeTask() and afterTask()
-   */
+  /** should be called between beforeTask() and afterTask() */
   void decrement(Task task) {
     latch.countDown();
     dispatcher.dispatch(TaskEvents.TASK_COMPLETE, new TaskPhaseEvent(task));
@@ -44,6 +42,5 @@ public class NotifyingLatch<K> {
 
   public void onTaskError(Task taskDef, TaskException ex) {
     dispatcher.dispatch(TaskEvents.TASK_ERROR, new TaskPhaseEvent(taskDef, ex));
-
   }
 }

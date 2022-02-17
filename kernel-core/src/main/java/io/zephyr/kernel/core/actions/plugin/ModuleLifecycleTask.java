@@ -4,5 +4,4 @@ import io.zephyr.kernel.Coordinate;
 
 public interface ModuleLifecycleTask {
   Coordinate getCoordinate();
-
 }

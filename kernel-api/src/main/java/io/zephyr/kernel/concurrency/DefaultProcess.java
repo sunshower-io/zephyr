@@ -18,21 +18,16 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.val;
 
-/**
- * @param <T>
- */
+/** @param <T> */
 @SuppressWarnings({"PMD.AvoidFieldNameMatchingMethodName", "PMD.AvoidUsingVolatile"})
 public class DefaultProcess<T> implements Process<T> {
 
   final String name;
   final boolean coalesce;
   final Scope context;
-  @Getter
-  final DirectedGraph<T, Task> graph;
-  @Getter
-  private final List<DefaultProcessListenerDisposable> disposers;
-  @Getter
-  private final List<Pair<TaskEventType, EventListener<Task>>> listeners;
+  @Getter final DirectedGraph<T, Task> graph;
+  @Getter private final List<DefaultProcessListenerDisposable> disposers;
+  @Getter private final List<Pair<TaskEventType, EventListener<Task>>> listeners;
   private Mode mode;
   private volatile Schedule<DirectedGraph.Edge<T>, io.zephyr.kernel.concurrency.Task> schedule;
 
@@ -91,8 +86,8 @@ public class DefaultProcess<T> implements Process<T> {
   }
 
   @Override
-  public DefaultProcessListenerDisposable addEventListener(TaskEventType type,
-      EventListener<Task> listener) {
+  public DefaultProcessListenerDisposable addEventListener(
+      TaskEventType type, EventListener<Task> listener) {
     val result = Pair.of(type, listener);
     listeners.add(result);
     val disposable = new DefaultProcessListenerDisposable(result, listeners, disposers);
