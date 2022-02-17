@@ -10,7 +10,7 @@ import io.zephyr.kernel.core.ModuleManager;
 import java.util.logging.Logger;
 import lombok.val;
 
-public class PluginStartTask extends Task {
+public class PluginStartTask extends Task implements ModuleLifecycleTask {
   private final Kernel kernel;
   private final Coordinate coordinate;
   private final ModuleManager manager;
@@ -36,5 +36,10 @@ public class PluginStartTask extends Task {
     ((AbstractModule) module).setTaskQueue(thread);
     thread.start();
     return null;
+  }
+
+  @Override
+  public Coordinate getCoordinate() {
+    return coordinate;
   }
 }

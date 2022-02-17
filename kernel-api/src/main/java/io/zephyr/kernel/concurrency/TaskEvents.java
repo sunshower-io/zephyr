@@ -1,15 +1,42 @@
 package io.zephyr.kernel.concurrency;
 
-public enum TaskEvents implements TaskEventType {
-  PROCESS_STARTING,
-  PROCESS_COMPLETE,
-  PROCESS_ERROR,
+import static io.zephyr.kernel.status.StatusType.FAILED;
+import static io.zephyr.kernel.status.StatusType.PROGRESSING;
+import static io.zephyr.kernel.status.StatusType.SUCCEEDED;
 
-  TASK_STARTING,
-  TASK_COMPLETE,
-  TASK_ERROR,
+import io.zephyr.kernel.events.EventType;
+import io.zephyr.kernel.status.StatusType;
 
-  TASK_PHASE_ERROR,
-  TASK_PHASE_STARTING,
-  TASK_PHASE_COMPLETE
+public enum TaskEvents implements TaskEventType, EventType {
+  PROCESS_STARTING(PROGRESSING),
+  PROCESS_COMPLETE(SUCCEEDED),
+  PROCESS_ERROR(FAILED),
+
+  TASK_STARTING(PROGRESSING),
+  TASK_COMPLETE(SUCCEEDED),
+  TASK_ERROR(FAILED),
+
+  TASK_PHASE_ERROR(FAILED),
+  TASK_PHASE_STARTING(PROGRESSING),
+  TASK_PHASE_COMPLETE(SUCCEEDED);
+
+  private final int id;
+  private final StatusType statusType;
+
+  TaskEvents(final StatusType statusType) {
+    this.id = EventType.newId();
+    this.statusType = statusType;
+
+  }
+
+  @Override
+  public StatusType getStatusType() {
+    return
+        statusType;
+  }
+
+  @Override
+  public int getId() {
+    return id;
+  }
 }

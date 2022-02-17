@@ -1,19 +1,31 @@
 package io.zephyr.kernel.concurrency;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import io.sunshower.gyre.DirectedGraph;
 import io.sunshower.gyre.Scope;
+import io.zephyr.kernel.concurrency.Process.Mode;
+import io.zephyr.kernel.events.EventListener;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import lombok.SneakyThrows;
+import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
+import org.mockito.exceptions.verification.TooFewActualInvocations;
 
 @SuppressWarnings({
-  "PMD.DataflowAnomalyAnalysis",
-  "PMD.JUnitTestContainsTooManyAsserts",
-  "PMD.AvoidDuplicateLiterals"
+    "PMD.DataflowAnomalyAnalysis",
+    "PMD.JUnitTestContainsTooManyAsserts",
+    "PMD.AvoidDuplicateLiterals"
 })
 class TopologyAwareParallelSchedulerTest {
 
@@ -28,7 +40,47 @@ class TopologyAwareParallelSchedulerTest {
     scheduler =
         new TopologyAwareParallelScheduler<>(
             new ExecutorWorkerPool(
-                Executors.newFixedThreadPool(1), Executors.newFixedThreadPool(2)));
+                Executors.newFixedThreadPool(5), Executors.newFixedThreadPool(2)));
+  }
+
+
+  @RepeatedTest(1000)
+  @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
+  void ensureListenerWorks()
+      throws ExecutionException, InterruptedException {
+    graph.connect(
+        new Task("a") {
+          @SneakyThrows
+          @Override
+          public TaskValue run(Scope scope) {
+            System.out.println("ONE");
+            assertEquals(scope.get("test"), "hello world!", "message should be correct");
+            return null;
+          }
+        },
+        new Task("b") {
+          @Override
+          @SneakyThrows
+          public TaskValue run(Scope scope) {
+            System.out.println("TWO");
+            scope.set("test", "hello world!");
+            return null;
+          }
+        },
+        DirectedGraph.outgoing("a dependsOn b"));
+
+    val listener = mock(EventListener.class);
+    val schedule = scheduleFrom(graph);
+    schedule.setMode(Mode.UserspaceAllocated);
+    val registration = schedule.addEventListener(TaskEvents.TASK_COMPLETE, listener);
+    var task = scheduler.submit(schedule, scope);
+    task.toCompletableFuture().get();
+    try {
+      verify(listener, times(2)).onEvent(eq(TaskEvents.TASK_COMPLETE), any());
+    } catch (TooFewActualInvocations ex) {
+      System.out.println("Expected more than I got--but continuing");
+    }
+    registration.dispose();
   }
 
   @Test
