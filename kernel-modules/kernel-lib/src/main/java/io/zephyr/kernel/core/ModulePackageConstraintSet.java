@@ -20,11 +20,12 @@ final class ModulePackageConstraintSet {
   private final Set<String> exactDeniedPackages;
 
   ModulePackageConstraintSet() {
-    defaultPackages = Set.of(
-        "io.zephyr.kernel.core",
-        "io.zephyr.kernel",
-        "io.zephyr.api",
-        "io.zephyr.kernel.events");
+    defaultPackages =
+        Set.of(
+            "io.zephyr.kernel.core",
+            "io.zephyr.kernel",
+            "io.zephyr.api",
+            "io.zephyr.kernel.events");
 
     suffixInclusions = new HashSet<>();
     suffixExclusions = new HashSet<>();
@@ -32,7 +33,6 @@ final class ModulePackageConstraintSet {
     exactAllowedPackages = new HashSet<>(defaultPackages);
     computePackages();
   }
-
 
   private static List<KernelPackageReexportConstraintSetProvider> loadProviders() {
     return ServiceLoader.load(
@@ -83,7 +83,6 @@ final class ModulePackageConstraintSet {
       }
     }
     logPackages();
-
   }
 
   private boolean isGlob(String pkg) {
@@ -92,15 +91,9 @@ final class ModulePackageConstraintSet {
 
   private void logPackages() {
     if (log.isLoggable(Level.INFO)) {
-      logSet(
-          "Computed allowed exact package reexports: ", exactAllowedPackages
-      );
-      logSet(
-          "Computed allowed suffix glob package reexports: ", suffixInclusions
-      );
-      logSet(
-          "Computed denied suffix glob package reexports: ", suffixExclusions
-      );
+      logSet("Computed allowed exact package reexports: ", exactAllowedPackages);
+      logSet("Computed allowed suffix glob package reexports: ", suffixInclusions);
+      logSet("Computed denied suffix glob package reexports: ", suffixExclusions);
     }
   }
 
@@ -109,18 +102,18 @@ final class ModulePackageConstraintSet {
     for (val pkg : packages) {
       log.log(Level.INFO, "\t{0}", pkg);
     }
-
   }
 
   boolean canReexport(String name) {
-    boolean reexported = name.startsWith("java")
-                         || name.startsWith("com.sun")
-                         || name.startsWith("javax")
-                         || name.startsWith("org.w3c")
-                         || name.startsWith("jdk")
-                         || name.startsWith("org.ietf")
-                         || name.startsWith("org.xml")
-                         || exactAllowedPackages.contains(name);
+    boolean reexported =
+        name.startsWith("java")
+            || name.startsWith("com.sun")
+            || name.startsWith("javax")
+            || name.startsWith("org.w3c")
+            || name.startsWith("jdk")
+            || name.startsWith("org.ietf")
+            || name.startsWith("org.xml")
+            || exactAllowedPackages.contains(name);
     if (reexported && !exactDeniedPackages.contains(name)) {
       return true;
     }

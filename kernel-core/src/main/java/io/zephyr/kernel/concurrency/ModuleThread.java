@@ -187,6 +187,15 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable, 
     }
   }
 
+  private void fireStopped() {
+    kernel.dispatchEvent(
+        ModuleEvents.STOPPED,
+        Events.create(
+            module,
+            Status.resolvable(
+                StatusType.PROGRESSING, "Successfully stopped module " + module.getCoordinate())));
+  }
+
   private void fireStarted() {
     kernel.dispatchEvent(
         ModuleEvents.STARTED,
@@ -240,6 +249,7 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable, 
       } finally {
         if (module.getLifecycle().getState() != Lifecycle.State.Failed) {
           module.getLifecycle().setState(Lifecycle.State.Resolved);
+          fireStopped();
         }
         context.set(null);
       }

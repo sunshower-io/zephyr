@@ -10,5 +10,4 @@ class ModulePackageConstraintSetTest {
   void ensureDeglobbingWorks() {
     assertEquals("hello.world", ModulePackageConstraintSet.deglob("hello.world.*"));
   }
-
 }

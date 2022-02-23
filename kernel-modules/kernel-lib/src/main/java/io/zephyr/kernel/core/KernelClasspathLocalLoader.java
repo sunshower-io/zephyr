@@ -20,13 +20,11 @@ public class KernelClasspathLocalLoader implements LocalLoader {
     this.classLoader = kernel.getClassLoader();
   }
 
-
   @Override
   public Class<?> loadClassLocal(String name, boolean resolve) {
     try {
       val type = Class.forName(name, true, classLoader);
-      if (
-          canReexportPackage(type.getPackageName())) {
+      if (canReexportPackage(type.getPackageName())) {
         return type;
       } else {
         log.log(
@@ -49,5 +47,4 @@ public class KernelClasspathLocalLoader implements LocalLoader {
   public List<Resource> loadResourceLocal(String name) {
     return Collections.emptyList();
   }
-
 }
