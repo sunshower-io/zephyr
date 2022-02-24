@@ -8,6 +8,7 @@ import io.zephyr.kernel.modules.shell.ShellTestCase;
 import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.OS;
@@ -48,6 +49,7 @@ public class ModuleListenerTestCase extends ShellTestCase {
   }
 
   @Test
+  @Disabled
   void ensureAttemptingToInstallInvalidPluginDispatchesFailedEvent() {
     perform(
         () -> {
