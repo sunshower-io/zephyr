@@ -20,12 +20,16 @@ import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
-import org.mockito.exceptions.verification.TooFewActualInvocations;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
+import org.junit.jupiter.api.parallel.Isolated;
 
+@Execution(ExecutionMode.SAME_THREAD)
+@Isolated("concurrent registrations by other tests fuck this up")
 @SuppressWarnings({
-  "PMD.DataflowAnomalyAnalysis",
-  "PMD.JUnitTestContainsTooManyAsserts",
-  "PMD.AvoidDuplicateLiterals"
+    "PMD.DataflowAnomalyAnalysis",
+    "PMD.JUnitTestContainsTooManyAsserts",
+    "PMD.AvoidDuplicateLiterals"
 })
 class TopologyAwareParallelSchedulerTest {
 
@@ -43,7 +47,7 @@ class TopologyAwareParallelSchedulerTest {
                 Executors.newFixedThreadPool(5), Executors.newFixedThreadPool(2)));
   }
 
-  @RepeatedTest(1000)
+  @RepeatedTest(5)
   @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
   void ensureListenerWorks() throws ExecutionException, InterruptedException {
     graph.connect(
@@ -73,11 +77,7 @@ class TopologyAwareParallelSchedulerTest {
     val registration = schedule.addEventListener(TaskEvents.TASK_COMPLETE, listener);
     var task = scheduler.submit(schedule, scope);
     task.toCompletableFuture().get();
-    try {
-      verify(listener, times(2)).onEvent(eq(TaskEvents.TASK_COMPLETE), any());
-    } catch (TooFewActualInvocations ex) {
-      System.out.println("Expected more than I got--but continuing");
-    }
+    verify(listener, times(2)).onEvent(eq(TaskEvents.TASK_COMPLETE), any());
     registration.dispose();
   }
 
