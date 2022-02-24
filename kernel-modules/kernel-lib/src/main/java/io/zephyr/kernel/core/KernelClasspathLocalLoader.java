@@ -1,8 +1,9 @@
 package io.zephyr.kernel.core;
 
+import static io.zephyr.kernel.core.ModulePackageConstraintSet.canReexportPackage;
+
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 import lombok.extern.java.Log;
 import lombok.val;
@@ -12,9 +13,6 @@ import org.jboss.modules.Resource;
 @Log
 public class KernelClasspathLocalLoader implements LocalLoader {
 
-  static final Set<String> ZEPHYR_PACKAGES =
-      Set.of(
-          "io.zephyr.kernel.core", "io.zephyr.kernel", "io.zephyr.api", "io.zephyr.kernel.events");
   //    final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
   final ClassLoader classLoader;
 
@@ -26,7 +24,7 @@ public class KernelClasspathLocalLoader implements LocalLoader {
   public Class<?> loadClassLocal(String name, boolean resolve) {
     try {
       val type = Class.forName(name, true, classLoader);
-      if (isZephyrInternal(type.getPackageName())) {
+      if (canReexportPackage(type.getPackageName(), classLoader)) {
         return type;
       } else {
         log.log(
@@ -38,17 +36,6 @@ public class KernelClasspathLocalLoader implements LocalLoader {
     } catch (ClassNotFoundException e) {
       return null;
     }
-  }
-
-  private boolean isZephyrInternal(String name) {
-    return name.startsWith("java")
-        || name.startsWith("com.sun")
-        || name.startsWith("javax")
-        || name.startsWith("org.w3c")
-        || name.startsWith("jdk")
-        || name.startsWith("org.ietf")
-        || name.startsWith("org.xml")
-        || ZEPHYR_PACKAGES.contains(name);
   }
 
   @Override
