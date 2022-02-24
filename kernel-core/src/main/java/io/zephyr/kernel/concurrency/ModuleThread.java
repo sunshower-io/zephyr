@@ -6,6 +6,7 @@ import io.zephyr.api.Startable;
 import io.zephyr.api.Stoppable;
 import io.zephyr.kernel.Coordinate;
 import io.zephyr.kernel.Lifecycle;
+import io.zephyr.kernel.Lifecycle.State;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.PluginException;
 import io.zephyr.kernel.TaskQueue;
@@ -167,23 +168,28 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable, 
     val coordinate = module.getCoordinate();
     val currentState = module.getLifecycle().getState();
     if (!currentState.isAtLeast(Lifecycle.State.Active)) {
-      module.getLifecycle().setState(Lifecycle.State.Starting);
-      kernel.getModuleManager().getModuleLoader().check(module);
-      val loader = module.getModuleClasspath().resolveServiceLoader(ModuleActivator.class);
-      val ctx = kernel.createContext(module, this);
-      moduleThread.get().setContextClassLoader(module.getClassLoader());
-      for (val activator : loader) {
-        try {
-          activator.start(ctx);
-          ((AbstractModule) module).setActivator(activator);
-          break;
-        } catch (Exception | ServiceConfigurationError | LinkageError ex) {
-          handleFailure(coordinate, ex);
-          return;
+      try {
+        module.getLifecycle().setState(Lifecycle.State.Starting);
+        kernel.getModuleManager().getModuleLoader().check(module);
+        val loader = module.getModuleClasspath().resolveServiceLoader(ModuleActivator.class);
+        val ctx = kernel.createContext(module, this);
+        moduleThread.get().setContextClassLoader(module.getClassLoader());
+        for (val activator : loader) {
+          try {
+            activator.start(ctx);
+            ((AbstractModule) module).setActivator(activator);
+            break;
+          } catch (Exception | ServiceConfigurationError | LinkageError ex) {
+            handleFailure(coordinate, ex);
+            return;
+          }
         }
+        fireStarted();
+        module.getLifecycle().setState(Lifecycle.State.Active);
+      } catch (Exception | ServiceConfigurationError ex) {
+        module.getLifecycle().setState(State.Failed);
+        handleFailure(coordinate, ex);
       }
-      fireStarted();
-      module.getLifecycle().setState(Lifecycle.State.Active);
     }
   }
 

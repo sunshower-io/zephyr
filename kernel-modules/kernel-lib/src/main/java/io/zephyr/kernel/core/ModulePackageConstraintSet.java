@@ -7,19 +7,22 @@ import java.util.ServiceLoader;
 import java.util.ServiceLoader.Provider;
 import java.util.Set;
 import java.util.logging.Level;
+import lombok.NonNull;
 import lombok.extern.java.Log;
 import lombok.val;
 
 @Log
 final class ModulePackageConstraintSet {
 
+  static volatile ModulePackageConstraintSet INSTANCE;
   private final Set<String> exactAllowedPackages;
   private final Set<String> defaultPackages;
   private final Set<String> suffixInclusions;
   private final Set<String> suffixExclusions;
   private final Set<String> exactDeniedPackages;
+  private final ClassLoader classLoader;
 
-  ModulePackageConstraintSet() {
+  ModulePackageConstraintSet(@NonNull ClassLoader classLoader) {
     defaultPackages =
         Set.of(
             "io.zephyr.kernel.core",
@@ -27,6 +30,7 @@ final class ModulePackageConstraintSet {
             "io.zephyr.api",
             "io.zephyr.kernel.events");
 
+    this.classLoader = classLoader;
     suffixInclusions = new HashSet<>();
     suffixExclusions = new HashSet<>();
     exactDeniedPackages = new HashSet<>();
@@ -34,10 +38,9 @@ final class ModulePackageConstraintSet {
     computePackages();
   }
 
-  private static List<KernelPackageReexportConstraintSetProvider> loadProviders() {
-    return ServiceLoader.load(
-            KernelPackageReexportConstraintSetProvider.class,
-            Thread.currentThread().getContextClassLoader())
+  private static List<KernelPackageReexportConstraintSetProvider> loadProviders(
+      ClassLoader classLoader) {
+    return ServiceLoader.load(KernelPackageReexportConstraintSetProvider.class, classLoader)
         .stream()
         .map(Provider::get)
         .sorted()
@@ -48,18 +51,26 @@ final class ModulePackageConstraintSet {
     return pkg.substring(0, pkg.lastIndexOf(".*"));
   }
 
-  static ModulePackageConstraintSet getInstance() {
-    return ModulePackageConstraintSetHolder.INSTANCE;
+  static ModulePackageConstraintSet getInstance(ClassLoader classLoader) {
+    var instance = INSTANCE;
+    if (instance == null) {
+      synchronized (ModulePackageConstraintSet.class) {
+        instance = INSTANCE;
+        if (instance == null) {
+          instance = INSTANCE = new ModulePackageConstraintSet(classLoader);
+        }
+      }
+    }
+    return instance;
   }
 
-  static boolean canReexportPackage(String name) {
-    return getInstance().canReexport(name);
+  static boolean canReexportPackage(String name, ClassLoader classLoader) {
+    return getInstance(classLoader).canReexport(name);
   }
 
   private void computePackages() {
     log.log(Level.INFO, "Loading reexported package definitions...");
-    val providers = loadProviders();
-
+    val providers = loadProviders(classLoader);
     for (val provider : providers) {
       partitionIncludes(provider, provider.getMode());
     }
@@ -136,10 +147,5 @@ final class ModulePackageConstraintSet {
       }
     }
     return false;
-  }
-
-  static final class ModulePackageConstraintSetHolder {
-
-    static final ModulePackageConstraintSet INSTANCE = new ModulePackageConstraintSet();
   }
 }

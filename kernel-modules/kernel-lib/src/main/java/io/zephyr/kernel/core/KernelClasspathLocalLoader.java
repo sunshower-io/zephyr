@@ -24,7 +24,7 @@ public class KernelClasspathLocalLoader implements LocalLoader {
   public Class<?> loadClassLocal(String name, boolean resolve) {
     try {
       val type = Class.forName(name, true, classLoader);
-      if (canReexportPackage(type.getPackageName())) {
+      if (canReexportPackage(type.getPackageName(), classLoader)) {
         return type;
       } else {
         log.log(
