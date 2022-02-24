@@ -18,11 +18,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import lombok.val;
 
-public class PluginRemoveTask extends Task {
+public class PluginRemoveTask extends Task implements ModuleLifecycleTask {
 
   public static final String MODULE_COORDINATE = "plugin:remove:task:coordinate";
   static final Logger log = Logger.getLogger(PluginRemoveTask.class.getName());
   final Kernel kernel;
+  private volatile Coordinate coordinate;
 
   public PluginRemoveTask(String name, Kernel kernel) {
     super(name);
@@ -32,7 +33,7 @@ public class PluginRemoveTask extends Task {
   @Override
   @SuppressWarnings("PMD.DataflowAnomalyAnalysis")
   public TaskValue run(Scope scope) {
-    final Coordinate coordinate = scope.get(MODULE_COORDINATE);
+    final Coordinate coordinate = this.coordinate = scope.get(MODULE_COORDINATE);
     val module = kernel.getModuleManager().getModule(coordinate);
     kernel.dispatchEvent(ModuleEvents.REMOVING, Events.create(module));
     val moduleName = coordinate.getName();
@@ -53,6 +54,11 @@ public class PluginRemoveTask extends Task {
     kernel.dispatchEvent(ModuleEvents.REMOVED, Events.create(module));
     log.log(Level.INFO, "plugin.remove.succeeded", new Object[] {moduleName});
     return null;
+  }
+
+  @Override
+  public Coordinate getCoordinate() {
+    return coordinate;
   }
 
   static final class DeleteVisitor extends SimpleFileVisitor<Path> {
