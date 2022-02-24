@@ -2,11 +2,14 @@ package io.zephyr.kernel.concurrency;
 
 import io.sunshower.gyre.DirectedGraph;
 import io.sunshower.gyre.Scope;
+import io.zephyr.kernel.concurrency.Process.Mode;
 import io.zephyr.kernel.log.Logging;
 import io.zephyr.kernel.misc.SuppressFBWarnings;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import lombok.val;
@@ -36,26 +39,7 @@ public class TopologyAwareParallelScheduler<K> {
   public TaskTracker<K> submit(Process<K> process, Scope context) {
     log.log(Level.INFO, "parallel.scheduler.schedulingtask", process);
     val result = new StagedScheduleEnqueuer(process, context);
-    switch (process.getMode()) {
-      case KernelAllocated:
-        workerPool.submitKernelAllocated(result::run);
-        break;
-      case UserspaceAllocated:
-        workerPool.submit(
-            () -> {
-              result.run();
-              return null;
-            });
-        break;
-      case SingleThreaded:
-        Executors.newSingleThreadExecutor()
-            .submit(
-                () -> {
-                  result.run();
-                  return null;
-                });
-        break;
-    }
+    ForkJoinPool.commonPool().submit(result);
     log.log(Level.INFO, "parallel.scheduler.scheduledtask", process);
     return result;
   }
@@ -132,13 +116,27 @@ public class TopologyAwareParallelScheduler<K> {
   final class StagedScheduleEnqueuer extends DefaultTaskEventDispatcher<K> implements Runnable {
 
     final Scope context;
+    final Process.Mode mode;
     final Process<K> process;
+    private final ExecutorService executor;
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     public StagedScheduleEnqueuer(Process<K> process, Scope context) {
       this.context = context;
       this.process = process;
+      this.mode = process.getMode();
+      this.executor = getExecutor();
       attachListeners();
+    }
+
+    private ExecutorService getExecutor() {
+      if (mode == Mode.SingleThreaded) {
+        return Executors.newSingleThreadExecutor();
+      } else if (mode == Mode.UserspaceAllocated) {
+        return workerPool.getUserspaceExecutor();
+      } else {
+        return workerPool.getKernelExecutor();
+      }
     }
 
     @Override
@@ -150,7 +148,7 @@ public class TopologyAwareParallelScheduler<K> {
         val results = new ArrayList<Task>();
         for (val task : taskSet.getTasks()) {
           val ntask = new NotifyingTask<>(task, latch, context);
-          workerPool.submit(ntask);
+          executor.submit(ntask);
           results.add(task.getValue());
         }
         try {

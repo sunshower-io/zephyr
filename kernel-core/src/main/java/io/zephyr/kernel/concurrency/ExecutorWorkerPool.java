@@ -24,8 +24,18 @@ public class ExecutorWorkerPool implements WorkerPool {
   }
 
   @Override
+  public ExecutorService getUserspaceExecutor() {
+    return executorService;
+  }
+
+  @Override
   public <T> Future<T> submit(Callable<T> value) {
     return executorService.submit(value);
+  }
+
+  @Override
+  public <T> Future<T> submitKernelAllocated(Callable<T> value) {
+    return kernelExecutorService.submit(value);
   }
 
   @Override
