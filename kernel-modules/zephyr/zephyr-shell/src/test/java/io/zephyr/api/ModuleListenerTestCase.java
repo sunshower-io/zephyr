@@ -10,8 +10,6 @@ import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.DisabledOnOs;
-import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -88,9 +86,9 @@ public class ModuleListenerTestCase extends ShellTestCase {
               ModuleEvents.INSTALLING);
         },
         () -> {
-          verify(listener, timeout(100).times(1)).onEvent(eq(ModuleEvents.INSTALLED), any());
-          verify(listener, timeout(100).times(1)).onEvent(eq(ModuleEvents.INSTALLING), any());
-          verify(listener, timeout(100).times(0)).onEvent(eq(ModuleEvents.INSTALL_FAILED), any());
+          verify(listener, timeout(1000).times(1)).onEvent(eq(ModuleEvents.INSTALLED), any());
+          verify(listener, timeout(1000).times(1)).onEvent(eq(ModuleEvents.INSTALLING), any());
+          verify(listener, timeout(1000).times(0)).onEvent(eq(ModuleEvents.INSTALL_FAILED), any());
         },
         TestPlugins.TEST_PLUGIN_1);
   }
@@ -107,9 +105,9 @@ public class ModuleListenerTestCase extends ShellTestCase {
               ModuleEvents.INSTALLING);
         },
         () -> {
-          verify(listener, times(2)).onEvent(eq(ModuleEvents.INSTALLED), any());
-          verify(listener, times(2)).onEvent(eq(ModuleEvents.INSTALLING), any());
-          verify(listener, times(0)).onEvent(eq(ModuleEvents.INSTALL_FAILED), any());
+          verify(listener, timeout(1000).times(2)).onEvent(eq(ModuleEvents.INSTALLED), any());
+          verify(listener, timeout(1000).times(2)).onEvent(eq(ModuleEvents.INSTALLING), any());
+          verify(listener, timeout(1000).times(0)).onEvent(eq(ModuleEvents.INSTALL_FAILED), any());
         },
         TestPlugins.TEST_PLUGIN_1,
         TestPlugins.TEST_PLUGIN_2);
@@ -126,9 +124,9 @@ public class ModuleListenerTestCase extends ShellTestCase {
           kernel.addEventListener(
               listener, ModuleEvents.STARTING, ModuleEvents.STARTED, ModuleEvents.START_FAILED);
           startAndWait(4, "test-plugin-1", "test-plugin-2", "spring-plugin", "spring-plugin-dep");
-          verify(listener, times(4)).onEvent(eq(ModuleEvents.STARTING), any());
-          verify(listener, times(4)).onEvent(eq(ModuleEvents.STARTED), any());
-          verify(listener, times(0)).onEvent(eq(ModuleEvents.START_FAILED), any());
+          verify(listener, timeout(1000).times(4)).onEvent(eq(ModuleEvents.STARTING), any());
+          verify(listener, timeout(1000).times(4)).onEvent(eq(ModuleEvents.STARTED), any());
+          verify(listener, timeout(1000).times(0)).onEvent(eq(ModuleEvents.START_FAILED), any());
         },
         TestPlugins.TEST_PLUGIN_1,
         TestPlugins.TEST_PLUGIN_2,
@@ -147,9 +145,9 @@ public class ModuleListenerTestCase extends ShellTestCase {
           kernel.addEventListener(
               listener, ModuleEvents.STARTING, ModuleEvents.STARTED, ModuleEvents.START_FAILED);
           startAndWait(2, "test-plugin-1", "test-plugin-2");
-          verify(listener, times(2)).onEvent(eq(ModuleEvents.STARTING), any());
-          verify(listener, times(2)).onEvent(eq(ModuleEvents.STARTED), any());
-          verify(listener, times(0)).onEvent(eq(ModuleEvents.START_FAILED), any());
+          verify(listener, timeout(1000).times(2)).onEvent(eq(ModuleEvents.STARTING), any());
+          verify(listener, timeout(1000).times(2)).onEvent(eq(ModuleEvents.STARTED), any());
+          verify(listener, timeout(1000).times(0)).onEvent(eq(ModuleEvents.START_FAILED), any());
         },
         TestPlugins.TEST_PLUGIN_1,
         TestPlugins.TEST_PLUGIN_2);
