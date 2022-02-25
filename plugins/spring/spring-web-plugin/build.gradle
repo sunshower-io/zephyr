@@ -7,6 +7,9 @@ dependencies {
     api("org.springframework.boot:spring-boot-starter-web")
     api("org.springframework.boot:spring-boot-starter-undertow")
 
+    testImplementation project(":kernel-tests:kernel-test")
+    testImplementation project(':kernel-modules:sunshower-yaml-reader')
+
 }
 
 configurations {
