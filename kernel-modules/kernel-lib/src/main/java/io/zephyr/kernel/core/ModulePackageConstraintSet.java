@@ -123,6 +123,7 @@ final class ModulePackageConstraintSet {
             || name.startsWith("javax")
             || name.startsWith("org.w3c")
             || name.startsWith("jdk")
+            || name.startsWith("sun")
             || name.startsWith("org.ietf")
             || name.startsWith("org.xml")
             || exactAllowedPackages.contains(name);
