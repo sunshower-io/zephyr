@@ -12,8 +12,6 @@ import org.jboss.modules.Resource;
 @Log
 public class KernelClasspathLocalLoader implements LocalLoader {
 
-  static final Set<String> ZEPHYR_PACKAGES =
-      Set.of("io.zephyr.kernel.core", "io.zephyr.kernel", "io.zephyr.api");
   //    final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
   final ClassLoader classLoader;
 
@@ -37,10 +35,6 @@ public class KernelClasspathLocalLoader implements LocalLoader {
     } catch (ClassNotFoundException e) {
       return null;
     }
-  }
-
-  private boolean isZephyrInternal(String name) {
-    return ZEPHYR_PACKAGES.contains(name);
   }
 
   @Override

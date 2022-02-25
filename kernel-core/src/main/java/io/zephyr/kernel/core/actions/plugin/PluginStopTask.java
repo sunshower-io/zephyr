@@ -6,7 +6,7 @@ import io.zephyr.kernel.concurrency.Task;
 import io.zephyr.kernel.core.ModuleManager;
 import lombok.val;
 
-public class PluginStopTask extends Task {
+public class PluginStopTask extends Task implements ModuleLifecycleTask {
 
   private final Coordinate coordinate;
   private final ModuleManager manager;
@@ -26,5 +26,10 @@ public class PluginStopTask extends Task {
       taskQueue.stop();
     }
     return null;
+  }
+
+  @Override
+  public Coordinate getCoordinate() {
+    return coordinate;
   }
 }

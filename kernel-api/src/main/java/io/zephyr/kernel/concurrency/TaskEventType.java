@@ -1,3 +1,9 @@
 package io.zephyr.kernel.concurrency;
 
-public interface TaskEventType {}
+import io.zephyr.kernel.events.EventType;
+import io.zephyr.kernel.status.StatusType;
+
+public interface TaskEventType extends EventType {
+
+  StatusType getStatusType();
+}
