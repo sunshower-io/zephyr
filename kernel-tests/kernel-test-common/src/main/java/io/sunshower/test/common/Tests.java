@@ -3,6 +3,8 @@ package io.sunshower.test.common;
 import static java.lang.String.format;
 
 import java.io.File;
+import java.io.PrintStream;
+import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -171,6 +173,38 @@ public class Tests {
       }
     }
     return os;
+  }
+
+  public static void dumpAllThreadLocks(PrintStream printStream) {
+    val threads = Thread.getAllStackTraces().keySet();
+    for(val thread : threads) {
+      dumpThreadLocks(thread, printStream);
+    }
+  }
+
+  @SneakyThrows
+  public static void dumpThreadLocks(Thread thread, PrintStream printStream) {
+    val threadLocals = thread.getClass().getDeclaredField("threadLocals");
+    threadLocals.setAccessible(true);
+    val threadLocalMap = threadLocals.get(thread);
+    val tableField = Class.forName("java.lang.ThreadLocal$ThreadLocalMap").getDeclaredField("table");
+    val valueField = Class.forName("java.lang.ThreadLocal$ThreadLocalMap$Entry").getDeclaredField("value");
+    valueField.setAccessible(true);
+
+
+
+    tableField.setAccessible(true);
+    printStream.format("---Thread: %s, holding locks ---\n", thread.getName());
+
+    val table = tableField.get(threadLocalMap);
+    val length = Array.getLength(table);
+    for(int i = 0; i < length; i++) {
+      val entry = Array.get(table, i);
+      val value = valueField.get(entry);
+      if(!(entry == null || value == null)) {
+        printStream.format("\ttype: %s, value: %s\n", value.getClass(), value);
+      }
+    }
   }
 
   @SneakyThrows

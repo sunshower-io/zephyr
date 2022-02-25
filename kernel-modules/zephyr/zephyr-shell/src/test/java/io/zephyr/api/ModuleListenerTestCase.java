@@ -4,6 +4,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
+import io.sunshower.test.common.ThreadLockFailedExtension;
 import io.zephyr.kernel.modules.shell.ShellTestCase;
 import java.io.File;
 import java.util.logging.Level;
@@ -16,7 +17,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-@DisabledOnOs(value = OS.WINDOWS, disabledReason = "Need to figure out why these are flaky")
+@ExtendWith(ThreadLockFailedExtension.class)
+//@DisabledOnOs(value = OS.WINDOWS, disabledReason = "Need to figure out why these are flaky")
 public class ModuleListenerTestCase extends ShellTestCase {
 
   static {

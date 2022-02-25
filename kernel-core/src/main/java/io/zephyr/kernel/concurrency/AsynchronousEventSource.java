@@ -146,6 +146,7 @@ public class AsynchronousEventSource implements EventSource, Stoppable, Startabl
     @Override
     public void stop() {
       synchronized (queueLock) {
+        drain();
         running = false;
         queueLock.notifyAll();
       }
