@@ -39,7 +39,7 @@ public class ModuleListenerTestCase extends ShellTestCase {
           kernel.addEventListener(listener, ModuleEvents.INSTALLING);
         },
         () -> {
-          verify(listener, timeout(100).times(1)).onEvent(eq(ModuleEvents.INSTALLING), any());
+          verify(listener, timeout(1000).times(1)).onEvent(eq(ModuleEvents.INSTALLING), any());
         },
         StandardModules.YAML);
   }
