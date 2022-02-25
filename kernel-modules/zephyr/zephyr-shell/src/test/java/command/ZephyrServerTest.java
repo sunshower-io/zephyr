@@ -19,10 +19,12 @@ import lombok.val;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.DisabledOnOs;
-import org.junit.jupiter.api.condition.OS;
+import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
 
-@DisabledOnOs(OS.MAC)
+@DisabledIfEnvironmentVariable(
+    named = "BUILD_ENVIRONMENT",
+    matches = "github",
+    disabledReason = "RMI is flaky")
 @SuppressWarnings({
   "PMD.DoNotUseThreads",
   "PMD.EmptyCatchBlock",

@@ -21,10 +21,12 @@ import lombok.SneakyThrows;
 import lombok.val;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.condition.DisabledOnOs;
-import org.junit.jupiter.api.condition.OS;
+import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
 
-@DisabledOnOs({OS.MAC, OS.WINDOWS})
+@DisabledIfEnvironmentVariable(
+    named = "BUILD_ENVIRONMENT",
+    matches = "github",
+    disabledReason = "RMI is flaky")
 public class ShellTestCase {
 
   protected final boolean installBase;
@@ -43,9 +45,11 @@ public class ShellTestCase {
     this(true);
   }
 
+  static volatile int count;
+
   @BeforeEach
   protected void setUp() {
-    homeDirectory = Tests.createTemp();
+    homeDirectory = Tests.createTemp("test-" + ++count);
     if (installBase) {
       startServer();
       startKernel();

@@ -76,7 +76,7 @@ final class DefaultModuleInstallationStatusGroup implements ModuleInstallationSt
 
   private EventListener<Object> addModuleLifecycleDelegateListeners(Kernel kernel) {
     val listener =
-        new EventListener<Object>() {
+        new EventListener<>() {
           @Override
           public void onEvent(EventType type, Event<Object> event) {
             kernel.dispatchEvent(ModuleEvents.INSTALL_FAILED, event);

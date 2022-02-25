@@ -7,6 +7,7 @@ import java.util.ServiceLoader;
 import java.util.ServiceLoader.Provider;
 import java.util.Set;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 import lombok.NonNull;
 import lombok.extern.java.Log;
 import lombok.val;
@@ -44,7 +45,7 @@ final class ModulePackageConstraintSet {
         .stream()
         .map(Provider::get)
         .sorted()
-        .toList();
+        .collect(Collectors.toUnmodifiableList());
   }
 
   static String deglob(String pkg) {
@@ -122,6 +123,7 @@ final class ModulePackageConstraintSet {
             || name.startsWith("javax")
             || name.startsWith("org.w3c")
             || name.startsWith("jdk")
+            || name.startsWith("sun")
             || name.startsWith("org.ietf")
             || name.startsWith("org.xml")
             || exactAllowedPackages.contains(name);

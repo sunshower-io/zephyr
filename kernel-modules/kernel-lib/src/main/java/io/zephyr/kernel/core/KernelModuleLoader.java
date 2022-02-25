@@ -52,6 +52,7 @@ public final class KernelModuleLoader extends ModuleLoader
     val loader = moduleLoaders.get(id);
     if (loader != null) {
       loader.unload(coordinate);
+      loader.close();
       moduleLoaders.remove(id);
     }
   }

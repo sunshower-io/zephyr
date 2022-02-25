@@ -3,6 +3,8 @@ package io.sunshower.test.common;
 import static java.lang.String.format;
 
 import java.io.File;
+import java.io.PrintStream;
+import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -171,6 +173,74 @@ public class Tests {
       }
     }
     return os;
+  }
+
+  public static void dumpAllThreadLocks(PrintStream printStream) {
+    val threads = Thread.getAllStackTraces().keySet();
+    for (val thread : threads) {
+      dumpThreadLocks(thread, printStream);
+    }
+  }
+
+  public static void dumpThreadLocks(Thread thread, PrintStream printStream) {
+    try {
+      val threadLocals = thread.getClass().getDeclaredField("threadLocals");
+      threadLocals.setAccessible(true);
+      val threadLocalMap = threadLocals.get(thread);
+      val tableField =
+          Class.forName("java.lang.ThreadLocal$ThreadLocalMap").getDeclaredField("table");
+      val valueField =
+          Class.forName("java.lang.ThreadLocal$ThreadLocalMap$Entry").getDeclaredField("value");
+      valueField.setAccessible(true);
+
+      tableField.setAccessible(true);
+      printStream.format("---Thread: %s, holding locks ---\n", thread.getName());
+
+      val table = tableField.get(threadLocalMap);
+      val length = Array.getLength(table);
+      for (int i = 0; i < length; i++) {
+        val entry = Array.get(table, i);
+        if (entry == null) {
+          continue;
+        }
+        val value = valueField.get(entry);
+        if (value != null) {
+          if (value.getClass().isArray()) {
+            val vlen = Array.getLength(value);
+            for (int j = 0; j < vlen; j++) {
+              val vval = Array.get(value, j);
+              if (vval != null) {
+                if (isNativeBuffer(vval)) {
+                  printNativeBuffer(printStream, vval);
+
+                } else {
+                  printStream.format("\t\ttype: %s, value: %s\n", vval.getClass(), vval);
+                }
+              }
+            }
+
+          } else {
+            printStream.format("\ttype: %s, value: %s\n", value.getClass(), value);
+          }
+        }
+      }
+    } catch (Exception ex) {
+      //      ex.printStackTrace(printStream);
+    }
+  }
+
+  private static void printNativeBuffer(PrintStream printStream, Object vval) throws Exception {
+    val type = Class.forName("sun.nio.fs.NativeBuffer");
+    val field = type.getDeclaredField("owner");
+    field.setAccessible(true);
+    printStream.format(
+        "\t\tnative buffer[type: %s, value: %s, owner: %s]\n",
+        vval.getClass(), vval, field.get(vval));
+  }
+
+  private static boolean isNativeBuffer(Object vval) throws Exception {
+    val type = Class.forName("sun.nio.fs.NativeBuffer");
+    return vval.getClass().equals(type);
   }
 
   @SneakyThrows

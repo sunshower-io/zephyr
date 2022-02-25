@@ -54,6 +54,7 @@
         <flyway-core.version>8.4.1</flyway-core.version>
         <h2.version>2.1.210</h2.version>
         <junit-platform-suite-api.version>1.8.1</junit-platform-suite-api.version>
+        <awaitility.version>3.0.0</awaitility.version>
     </properties>
 
     <dependencyManagement>
@@ -76,6 +77,12 @@
                 <version>${h2.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>org.awaitility</groupId>
+                <artifactId>awaitility</artifactId>
+                <version>${awaitility.version}</version>
+                <scope>test</scope>
+            </dependency>
 
             <dependency>
                 <groupId>com.twelvemonkeys.imageio</groupId>
