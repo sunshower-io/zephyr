@@ -35,7 +35,6 @@ import org.junit.jupiter.api.condition.OS;
   "PMD.JUnitAssertionsShouldIncludeMessage",
   "PMD.JUnitTestContainsTooManyAsserts"
 })
-@DisabledOnOs(OS.WINDOWS)
 public class SunshowerKernelTest extends KernelTestCase {
 
   @Test

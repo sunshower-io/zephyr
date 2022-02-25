@@ -25,7 +25,6 @@ import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.OS;
 
 @SuppressFBWarnings
-@DisabledOnOs(OS.WINDOWS)
 @SuppressWarnings({"PMD.AvoidDuplicateLiterals", "PMD.JUnitTestContainsTooManyAsserts"})
 class ModuleFileSystemProviderTest {
 

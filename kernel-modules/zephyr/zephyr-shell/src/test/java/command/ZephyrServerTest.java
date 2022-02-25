@@ -22,7 +22,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.OS;
 
-@DisabledOnOs({OS.MAC, OS.WINDOWS})
 @SuppressWarnings({
   "PMD.DoNotUseThreads",
   "PMD.EmptyCatchBlock",
