@@ -120,7 +120,6 @@ public final class KernelModuleLoader extends ModuleLoader
 
     final KernelModuleLoader loader;
     private Coordinate coordinate;
-    private ModuleClasspath classpath;
 
     UnloadableKernelModuleLoader(KernelModuleFinder kernelModuleFinder) {
       super(kernelModuleFinder);
@@ -150,8 +149,7 @@ public final class KernelModuleLoader extends ModuleLoader
 
       try {
         this.coordinate = coordinate;
-        return (classpath =
-            new DefaultModuleClasspath(loadModule(coordinate.toCanonicalForm()), this));
+        return new DefaultModuleClasspath(loadModule(coordinate.toCanonicalForm()), this);
       } catch (ModuleLoadException e) {
         throw new UnsatisfiedDependencyException(e);
       }
@@ -161,7 +159,7 @@ public final class KernelModuleLoader extends ModuleLoader
       if (coordinate != null) {
         unload(coordinate);
       }
-      classpath = null;
+      coordinate = null;
     }
   }
 }
