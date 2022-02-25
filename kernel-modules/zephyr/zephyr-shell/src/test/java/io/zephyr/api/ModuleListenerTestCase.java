@@ -12,8 +12,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
-import org.junit.jupiter.api.condition.DisabledOnOs;
-import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
@@ -35,14 +33,12 @@ public class ModuleListenerTestCase extends ShellTestCase {
     Logger logger;
     for (logger = Logger.getLogger(ModuleListenerTestCase.class.getName());
         logger.getParent() != null;
-        logger = logger.getParent()) {
-    }
+        logger = logger.getParent()) {}
 
     logger.setLevel(Level.SEVERE);
   }
 
-  @Mock
-  protected ModuleListener listener;
+  @Mock protected ModuleListener listener;
 
   public ModuleListenerTestCase() {
     super(false);
@@ -130,8 +126,7 @@ public class ModuleListenerTestCase extends ShellTestCase {
 
     installFully(StandardModules.YAML);
     perform(
-        () -> {
-        },
+        () -> {},
         () -> {
           kernel.addEventListener(
               listener, ModuleEvents.STARTING, ModuleEvents.STARTED, ModuleEvents.START_FAILED);
@@ -151,8 +146,7 @@ public class ModuleListenerTestCase extends ShellTestCase {
 
     installFully(StandardModules.YAML);
     perform(
-        () -> {
-        },
+        () -> {},
         () -> {
           kernel.addEventListener(
               listener, ModuleEvents.STARTING, ModuleEvents.STARTED, ModuleEvents.START_FAILED);

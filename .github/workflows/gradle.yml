@@ -48,8 +48,9 @@ jobs:
       #################   JDK  #################
 
     - name: Set up JDK 17
-      uses: actions/setup-java@v1
+      uses: actions/setup-java@v2
       with:
+        distribution: zulu
         java-version: 17
 
 

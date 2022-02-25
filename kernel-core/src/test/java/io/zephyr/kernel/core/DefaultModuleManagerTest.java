@@ -187,24 +187,36 @@ public class DefaultModuleManagerTest extends ModuleManagerTestCase {
 
   @Test
   void ensureStartingAndStoppingInitiatorModuleWorks() throws Exception {
-    val grp = new ModuleInstallationGroup(req1, req2);
-    val prepped = manager.prepare(grp);
-    prepped.commit().toCompletableFuture().get();
+    kernel.stop();
+    kernel.start();
+    try {
+      val grp = new ModuleInstallationGroup(req1, req2);
+      val prepped = manager.prepare(grp);
+      prepped.commit().toCompletableFuture().get();
 
-    start("plugin-1");
-    val p2 =
-        manager.getModules(Lifecycle.State.Active).stream()
-            .filter(t -> t.getCoordinate().getName().contains("plugin-1"))
-            .findFirst()
-            .get();
+      start("plugin-1");
+      val p2 =
+          manager.getModules(Lifecycle.State.Active).stream()
+              .filter(t -> t.getCoordinate().getName().contains("plugin-1"))
+              .findFirst()
+              .get();
 
-    val req1action =
-        new ModuleLifecycleChangeRequest(p2.getCoordinate(), ModuleLifecycle.Actions.Stop);
-    val lgrp = new ModuleLifecycleChangeGroup(req1action);
-    manager.prepare(lgrp).commit().toCompletableFuture().get();
+      val req1action =
+          new ModuleLifecycleChangeRequest(p2.getCoordinate(), ModuleLifecycle.Actions.Stop);
+      val lgrp = new ModuleLifecycleChangeGroup(req1action);
+      manager.prepare(lgrp).commit().toCompletableFuture().get();
+      for (int i = 0; i < 5; i++) {
+        if (manager.getModules(Lifecycle.State.Resolved).size() == 2) {
+          break;
+        }
+        Thread.sleep(1000);
+      }
 
-    assertEquals(manager.getModules(Lifecycle.State.Active).size(), 0);
-    assertEquals(manager.getModules(Lifecycle.State.Resolved).size(), 2);
+      assertEquals(manager.getModules(Lifecycle.State.Active).size(), 0);
+      assertEquals(manager.getModules(Lifecycle.State.Resolved).size(), 2);
+    } finally {
+      kernel.stop();
+    }
   }
 
   @Test
