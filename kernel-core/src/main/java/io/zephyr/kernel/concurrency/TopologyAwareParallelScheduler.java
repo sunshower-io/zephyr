@@ -167,7 +167,7 @@ public class TopologyAwareParallelScheduler<K> {
     }
 
     void attachListeners() {
-      if (process instanceof DefaultProcess<K>) {
+      if (process instanceof DefaultProcess) {
         val proc = (DefaultProcess<K>) process;
         for (val listener : proc.getListeners()) {
           addEventListener(listener.fst, listener.snd);

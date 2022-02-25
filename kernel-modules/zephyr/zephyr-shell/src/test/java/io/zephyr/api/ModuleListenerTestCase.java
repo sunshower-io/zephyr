@@ -16,19 +16,21 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-// @Disabled("Need to figure out why these are flaky")
+@DisabledOnOs(value = OS.WINDOWS, disabledReason = "Need to figure out why these are flaky")
 public class ModuleListenerTestCase extends ShellTestCase {
 
   static {
     Logger logger;
     for (logger = Logger.getLogger(ModuleListenerTestCase.class.getName());
         logger.getParent() != null;
-        logger = logger.getParent()) {}
+        logger = logger.getParent()) {
+    }
 
     logger.setLevel(Level.SEVERE);
   }
 
-  @Mock protected ModuleListener listener;
+  @Mock
+  protected ModuleListener listener;
 
   public ModuleListenerTestCase() {
     super(false);
@@ -41,7 +43,7 @@ public class ModuleListenerTestCase extends ShellTestCase {
           kernel.addEventListener(listener, ModuleEvents.INSTALLING);
         },
         () -> {
-          verify(listener, timeout(100).times(1)).onEvent(eq(ModuleEvents.INSTALLING), any());
+          verify(listener, timeout(1000).times(1)).onEvent(eq(ModuleEvents.INSTALLING), any());
         },
         StandardModules.YAML);
   }
@@ -66,8 +68,8 @@ public class ModuleListenerTestCase extends ShellTestCase {
           kernel.addEventListener(listener, ModuleEvents.INSTALLED, ModuleEvents.INSTALL_FAILED);
         },
         () -> {
-          verify(listener, timeout(100).times(1)).onEvent(eq(ModuleEvents.INSTALLED), any());
-          verify(listener, timeout(100).times(0)).onEvent(eq(ModuleEvents.INSTALL_FAILED), any());
+          verify(listener, timeout(1000).times(1)).onEvent(eq(ModuleEvents.INSTALLED), any());
+          verify(listener, timeout(1000).times(0)).onEvent(eq(ModuleEvents.INSTALL_FAILED), any());
         },
         StandardModules.YAML);
   }
@@ -116,7 +118,8 @@ public class ModuleListenerTestCase extends ShellTestCase {
 
     installFully(StandardModules.YAML);
     perform(
-        () -> {},
+        () -> {
+        },
         () -> {
           kernel.addEventListener(
               listener, ModuleEvents.STARTING, ModuleEvents.STARTED, ModuleEvents.START_FAILED);
@@ -136,7 +139,8 @@ public class ModuleListenerTestCase extends ShellTestCase {
 
     installFully(StandardModules.YAML);
     perform(
-        () -> {},
+        () -> {
+        },
         () -> {
           kernel.addEventListener(
               listener, ModuleEvents.STARTING, ModuleEvents.STARTED, ModuleEvents.START_FAILED);
