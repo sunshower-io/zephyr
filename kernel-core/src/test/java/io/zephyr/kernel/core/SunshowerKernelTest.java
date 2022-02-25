@@ -22,8 +22,6 @@ import lombok.extern.java.Log;
 import lombok.val;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.DisabledOnOs;
-import org.junit.jupiter.api.condition.OS;
 
 @Log
 @SuppressFBWarnings
@@ -35,7 +33,6 @@ import org.junit.jupiter.api.condition.OS;
   "PMD.JUnitAssertionsShouldIncludeMessage",
   "PMD.JUnitTestContainsTooManyAsserts"
 })
-@DisabledOnOs(OS.WINDOWS)
 public class SunshowerKernelTest extends KernelTestCase {
 
   @Test
@@ -143,21 +140,24 @@ public class SunshowerKernelTest extends KernelTestCase {
 
   @Test
   void ensureInstallingAndStartingInvalidPluginFails() {
-
     installYamlModule();
+    try {
 
-    springPlugin =
-        relativeToProjectBuild("kernel-tests:test-plugins:test-plugin-spring", "war", "libs");
+      springPlugin =
+          relativeToProjectBuild("kernel-tests:test-plugins:test-plugin-spring", "war", "libs");
 
-    install(springPlugin);
+      install(springPlugin);
 
-    springPlugin =
-        relativeToProjectBuild("kernel-tests:test-plugins:test-plugin-spring-error", "war", "libs");
-    install(springPlugin);
-    start("spring-plugin");
-    start("spring-plugin-error");
-    val failed = kernel.getModuleManager().getModules(Lifecycle.State.Failed);
-    assertEquals(failed.size(), 1, "must have one failed plugin");
+      springPlugin =
+          relativeToProjectBuild(
+              "kernel-tests:test-plugins:test-plugin-spring-error", "war", "libs");
+      install(springPlugin);
+      start("spring-plugin-error");
+      val failed = kernel.getModuleManager().getModules(Lifecycle.State.Failed);
+      assertEquals(failed.size(), 1, "must have one failed plugin");
+    } finally {
+      kernel.stop();
+    }
   }
 
   @Test
