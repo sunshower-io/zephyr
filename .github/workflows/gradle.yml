@@ -19,6 +19,9 @@ on:
 #
 #################   Set up Environment  #################
 
+env:
+  BUILD_ENVIRONMENT: github
+
 jobs:
   build:
 
@@ -45,8 +48,9 @@ jobs:
       #################   JDK  #################
 
     - name: Set up JDK 17
-      uses: actions/setup-java@v1
+      uses: actions/setup-java@v2
       with:
+        distribution: zulu
         java-version: 17
 
 
@@ -89,8 +93,13 @@ jobs:
       env:
         JAVA_TOOL_OPTIONS: -Duser.language=en -Duser.country=US
       with:
-        gradle-version: 7.3.3
-        arguments: assemble build sA -i -PmavenRepositoryUsername=${{secrets.MAVEN_REPOSITORY_USERNAME}} -PmavenRepositoryPassword=${{secrets.MAVEN_REPOSITORY_PASSWORD}} -PmavenRepositoryUrl=${{secrets.MAVEN_REPOSITORY_URL}} --stacktrace
+        gradle-version: 7.4
+        arguments: >-
+          assemble build sA -i
+          -PmavenRepositoryUsername=${{secrets.MAVEN_REPOSITORY_USERNAME}}
+          -PmavenRepositoryPassword=${{secrets.MAVEN_REPOSITORY_PASSWORD}}
+          -PmavenRepositoryUrl=${{secrets.MAVEN_REPOSITORY_URL}}
+          --stacktrace --max-workers=1
 
       #################   Test  #################
       #
@@ -120,8 +129,14 @@ jobs:
       env:
         JAVA_TOOL_OPTIONS: -Duser.language=en -Duser.country=US
       with:
-        gradle-version: 7.3.3
-        arguments: assemble build sA -i -PmavenRepositoryUsername=${{secrets.MAVEN_REPOSITORY_USERNAME}} -PmavenRepositoryPassword=${{secrets.MAVEN_REPOSITORY_PASSWORD}} -PmavenRepositoryUrl=${{secrets.MAVEN_REPOSITORY_URL}} --stacktrace
+        gradle-version: 7.4
+        arguments: >-
+          assemble build sA
+          -i -PmavenRepositoryUsername=${{secrets.MAVEN_REPOSITORY_USERNAME}}
+          -PmavenRepositoryPassword=${{secrets.MAVEN_REPOSITORY_PASSWORD}}
+          -PmavenRepositoryUrl=${{secrets.MAVEN_REPOSITORY_URL}}
+          --stacktrace
+          --max-workers=1
 
 
       #################   Deploy  #################
@@ -137,9 +152,10 @@ jobs:
       env:
         JAVA_TOOL_OPTIONS: -Duser.language=en -Duser.country=US
       with:
-        gradle-version: 7.3.3
+        gradle-version: 7.4
         arguments: >-
           assemble build publish sA -i
           -PmavenRepositoryUsername=${{secrets.MAVEN_REPOSITORY_USERNAME}}
           -PmavenRepositoryPassword=${{secrets.MAVEN_REPOSITORY_PASSWORD}}
-          -PmavenRepositoryUrl=${{secrets.MAVEN_REPOSITORY_URL}} --stacktrace
+          -PmavenRepositoryUrl=${{secrets.MAVEN_REPOSITORY_URL}}
+          --stacktrace --max-workers=1

@@ -2,19 +2,31 @@ package io.zephyr.api;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.verify;
 
+import io.sunshower.test.common.ThreadLockFailedExtension;
 import io.zephyr.kernel.modules.shell.ShellTestCase;
 import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
+import org.junit.jupiter.api.parallel.Isolated;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+@Isolated
+@Execution(ExecutionMode.SAME_THREAD)
 @ExtendWith(MockitoExtension.class)
-// @Disabled("Need to figure out why these are flaky")
+@ExtendWith(ThreadLockFailedExtension.class)
+@DisabledIfEnvironmentVariable(
+    named = "BUILD_ENVIRONMENT",
+    matches = "github",
+    disabledReason = "RMI is flaky")
 public class ModuleListenerTestCase extends ShellTestCase {
 
   static {
@@ -147,7 +159,7 @@ public class ModuleListenerTestCase extends ShellTestCase {
         TestPlugins.TEST_PLUGIN_2);
   }
 
-  protected void perform(Runnable before, Runnable after, Installable... modules) {
+  protected synchronized void perform(Runnable before, Runnable after, Installable... modules) {
     start();
     try {
       before.run();

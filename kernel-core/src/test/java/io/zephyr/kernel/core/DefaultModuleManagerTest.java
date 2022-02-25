@@ -1,12 +1,21 @@
 package io.zephyr.kernel.core;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.awaitility.Awaitility.await;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import io.sunshower.test.common.Tests;
 import io.zephyr.kernel.Lifecycle;
 import io.zephyr.kernel.core.KernelLifecycle.State;
-import io.zephyr.kernel.module.*;
+import io.zephyr.kernel.module.ModuleInstallationGroup;
+import io.zephyr.kernel.module.ModuleInstallationRequest;
+import io.zephyr.kernel.module.ModuleLifecycle;
+import io.zephyr.kernel.module.ModuleLifecycleChangeGroup;
+import io.zephyr.kernel.module.ModuleLifecycleChangeRequest;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import lombok.SneakyThrows;
 import lombok.val;
 import org.junit.jupiter.api.Test;
@@ -187,24 +196,36 @@ public class DefaultModuleManagerTest extends ModuleManagerTestCase {
 
   @Test
   void ensureStartingAndStoppingInitiatorModuleWorks() throws Exception {
-    val grp = new ModuleInstallationGroup(req1, req2);
-    val prepped = manager.prepare(grp);
-    prepped.commit().toCompletableFuture().get();
+    kernel.stop();
+    kernel.start();
+    try {
+      val grp = new ModuleInstallationGroup(req1, req2);
+      val prepped = manager.prepare(grp);
+      prepped.commit().toCompletableFuture().get();
 
-    start("plugin-1");
-    val p2 =
-        manager.getModules(Lifecycle.State.Active).stream()
-            .filter(t -> t.getCoordinate().getName().contains("plugin-1"))
-            .findFirst()
-            .get();
+      start("plugin-1");
+      val p2 =
+          manager.getModules(Lifecycle.State.Active).stream()
+              .filter(t -> t.getCoordinate().getName().contains("plugin-1"))
+              .findFirst()
+              .get();
 
-    val req1action =
-        new ModuleLifecycleChangeRequest(p2.getCoordinate(), ModuleLifecycle.Actions.Stop);
-    val lgrp = new ModuleLifecycleChangeGroup(req1action);
-    manager.prepare(lgrp).commit().toCompletableFuture().get();
+      val req1action =
+          new ModuleLifecycleChangeRequest(p2.getCoordinate(), ModuleLifecycle.Actions.Stop);
+      val lgrp = new ModuleLifecycleChangeGroup(req1action);
+      manager.prepare(lgrp).commit().toCompletableFuture().get();
+      for (int i = 0; i < 5; i++) {
+        if (manager.getModules(Lifecycle.State.Resolved).size() == 2) {
+          break;
+        }
+        Thread.sleep(1000);
+      }
 
-    assertEquals(manager.getModules(Lifecycle.State.Active).size(), 0);
-    assertEquals(manager.getModules(Lifecycle.State.Resolved).size(), 2);
+      assertEquals(manager.getModules(Lifecycle.State.Active).size(), 0);
+      assertEquals(manager.getModules(Lifecycle.State.Resolved).size(), 2);
+    } finally {
+      kernel.stop();
+    }
   }
 
   @Test
@@ -233,8 +254,10 @@ public class DefaultModuleManagerTest extends ModuleManagerTestCase {
       throws Exception {
     val grp = new ModuleInstallationGroup(req1);
     val prepped = manager.prepare(grp);
-    scheduler.submit(prepped.getProcess()).get();
-
+    scheduler.submit(prepped.getProcess()).toCompletableFuture().get();
+    await()
+        .atMost(1, TimeUnit.SECONDS)
+        .until(() -> !manager.getModules(Lifecycle.State.Resolved).isEmpty());
     val module = manager.getModules(Lifecycle.State.Resolved).get(0);
     val result = Class.forName("plugin1.Test", true, module.getClassLoader());
     val t = result.getConstructor().newInstance();
@@ -263,6 +286,12 @@ public class DefaultModuleManagerTest extends ModuleManagerTestCase {
     val grp = new ModuleInstallationGroup(req2, req1);
     val prepped = manager.prepare(grp);
     scheduler.submit(prepped.getProcess()).get();
+    await()
+        .atMost(1, TimeUnit.SECONDS)
+        .until(
+            () ->
+                manager.getModules(Lifecycle.State.Resolved).stream()
+                    .anyMatch(t -> "test-plugin-2".equals(t.getCoordinate().getName())));
 
     val module =
         manager.getModules(Lifecycle.State.Resolved).stream()

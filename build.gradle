@@ -52,6 +52,9 @@ subprojects {
         toolVersion = '4.5.3'
     }
 
+    tasks.withType(Test) {
+        maxParallelForks = 1
+    }
     plugins.withType(WarPlugin) {
         configurations {
             plugin {

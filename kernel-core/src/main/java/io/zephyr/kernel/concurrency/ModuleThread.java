@@ -70,6 +70,11 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable, 
 
   @Override
   public void stop() {
+    log.log(Level.INFO, "Stopping module thread: {0}", Thread.currentThread().getName());
+    if (!running.get()) {
+      log.log(Level.INFO, "Module thread {0} is not running", Thread.currentThread().getName());
+      return;
+    }
     synchronized (queueLock) {
       running.set(false);
       queueLock.notifyAll();
@@ -85,10 +90,16 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable, 
       }
       doStop();
     }
+    log.log(
+        Level.INFO, "Successfully stopped module thread: {0}", Thread.currentThread().getName());
   }
 
   @Override
   public void start() {
+    if (running.get()) {
+      log.info("Module thread {0} is already running");
+      return;
+    }
     synchronized (moduleLock) {
       val thread = new Thread(this, "module-" + module.getCoordinate().toCanonicalForm());
       moduleThread.set(thread);
