@@ -14,7 +14,7 @@ import lombok.val;
 public final class ModuleCoordinate implements Coordinate {
   @NonNull private final String name;
   @NonNull private final String group;
-  @NonNull private final Version version;
+  @NonNull private final SemanticVersion version;
 
   static final Pattern pattern = Pattern.compile(":");
 
@@ -70,5 +70,10 @@ public final class ModuleCoordinate implements Coordinate {
   @Override
   public String toString() {
     return String.format("%s:%s:%s", group, name, version);
+  }
+
+  @Override
+  public boolean satisfies(String range) {
+    return version.satisfies(range);
   }
 }

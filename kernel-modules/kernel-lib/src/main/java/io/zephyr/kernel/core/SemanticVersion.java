@@ -42,4 +42,9 @@ public class SemanticVersion implements Version {
     }
     throw new IllegalArgumentException("Can't compare myself to that");
   }
+
+  @Override
+  public boolean satisfies(String range) {
+    return version.satisfies(range);
+  }
 }

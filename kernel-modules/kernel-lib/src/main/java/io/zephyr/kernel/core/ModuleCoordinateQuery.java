@@ -31,6 +31,11 @@ public final class ModuleCoordinateQuery implements Coordinate {
   }
 
   @Override
+  public boolean satisfies(String range) {
+    return version.satisfies(range);
+  }
+
+  @Override
   public int compareTo(Coordinate o) {
     if (o == null) {
       return 1;

@@ -11,4 +11,7 @@ public interface Coordinate extends Comparable<Coordinate> {
   default String toCanonicalForm() {
     return String.format("%s:%s:%s", getGroup(), getName(), getVersion());
   }
+
+  boolean satisfies(String range);
+
 }
