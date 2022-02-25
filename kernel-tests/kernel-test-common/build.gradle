@@ -5,6 +5,7 @@ apply plugin: 'java-library'
 dependencies {
     api project(':kernel-api')
     [
+            'org.awaitility:awaitility',
             'org.mockito:mockito-core',
             'org.mockito:mockito-junit-jupiter',
             "org.junit.jupiter:junit-jupiter-api",

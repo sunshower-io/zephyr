@@ -1,22 +1,31 @@
 package io.zephyr.kernel.core;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.awaitility.Awaitility.await;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import io.sunshower.test.common.Tests;
 import io.zephyr.kernel.Lifecycle;
 import io.zephyr.kernel.core.KernelLifecycle.State;
-import io.zephyr.kernel.module.*;
+import io.zephyr.kernel.module.ModuleInstallationGroup;
+import io.zephyr.kernel.module.ModuleInstallationRequest;
+import io.zephyr.kernel.module.ModuleLifecycle;
+import io.zephyr.kernel.module.ModuleLifecycleChangeGroup;
+import io.zephyr.kernel.module.ModuleLifecycleChangeRequest;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import lombok.SneakyThrows;
 import lombok.val;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
 @SuppressWarnings({
-  "PMD.JUnitTestsShouldIncludeAssert",
-  "PMD.DataflowAnomalyAnalysis",
-  "PMD.JUnitAssertionsShouldIncludeMessage",
-  "PMD.JUnitTestContainsTooManyAsserts"
+    "PMD.JUnitTestsShouldIncludeAssert",
+    "PMD.DataflowAnomalyAnalysis",
+    "PMD.JUnitAssertionsShouldIncludeMessage",
+    "PMD.JUnitTestContainsTooManyAsserts"
 })
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 public class DefaultModuleManagerTest extends ModuleManagerTestCase {
@@ -245,8 +254,10 @@ public class DefaultModuleManagerTest extends ModuleManagerTestCase {
       throws Exception {
     val grp = new ModuleInstallationGroup(req1);
     val prepped = manager.prepare(grp);
-    scheduler.submit(prepped.getProcess()).get();
-
+    scheduler.submit(prepped.getProcess()).toCompletableFuture().get();
+    await()
+        .atMost(1, TimeUnit.SECONDS)
+        .until(() -> !manager.getModules(Lifecycle.State.Resolved).isEmpty());
     val module = manager.getModules(Lifecycle.State.Resolved).get(0);
     val result = Class.forName("plugin1.Test", true, module.getClassLoader());
     val t = result.getConstructor().newInstance();
@@ -255,8 +266,8 @@ public class DefaultModuleManagerTest extends ModuleManagerTestCase {
 
   @Test
   void
-      ensureInstallingSingleModuleResultsInModuleClasspathBeingConfiguredCorrectlyWithoutDependantClassesAppearing()
-          throws Exception {
+  ensureInstallingSingleModuleResultsInModuleClasspathBeingConfiguredCorrectlyWithoutDependantClassesAppearing()
+      throws Exception {
     val grp = new ModuleInstallationGroup(req1);
     val prepped = manager.prepare(grp);
     scheduler.submit(prepped.getProcess()).get();
@@ -275,6 +286,11 @@ public class DefaultModuleManagerTest extends ModuleManagerTestCase {
     val grp = new ModuleInstallationGroup(req2, req1);
     val prepped = manager.prepare(grp);
     scheduler.submit(prepped.getProcess()).get();
+    await().atMost(1, TimeUnit.SECONDS)
+        .until(() -> manager
+            .getModules(Lifecycle.State.Resolved
+            ).stream().anyMatch(t -> "test-plugin-2".equals(t.getCoordinate().getName()))
+        );
 
     val module =
         manager.getModules(Lifecycle.State.Resolved).stream()
