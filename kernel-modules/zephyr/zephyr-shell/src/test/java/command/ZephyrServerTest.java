@@ -21,7 +21,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
 
-@DisabledIfEnvironmentVariable(named = "BUILD_ENVIRONMENT", matches = "github", disabledReason = "RMI is flaky")
+@DisabledIfEnvironmentVariable(
+    named = "BUILD_ENVIRONMENT",
+    matches = "github",
+    disabledReason = "RMI is flaky")
 @SuppressWarnings({
   "PMD.DoNotUseThreads",
   "PMD.EmptyCatchBlock",
