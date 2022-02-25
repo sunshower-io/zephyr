@@ -4,6 +4,8 @@ on:
     tags:
         - 'release/*'
 
+env:
+  BUILD_ENVIRONMENT: github
 jobs:
   build:
     runs-on: ubuntu-latest

@@ -19,6 +19,9 @@ on:
 #
 #################   Set up Environment  #################
 
+env:
+  BUILD_ENVIRONMENT: github
+
 jobs:
   build:
 
