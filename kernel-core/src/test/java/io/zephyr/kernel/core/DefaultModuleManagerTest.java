@@ -22,10 +22,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
 @SuppressWarnings({
-    "PMD.JUnitTestsShouldIncludeAssert",
-    "PMD.DataflowAnomalyAnalysis",
-    "PMD.JUnitAssertionsShouldIncludeMessage",
-    "PMD.JUnitTestContainsTooManyAsserts"
+  "PMD.JUnitTestsShouldIncludeAssert",
+  "PMD.DataflowAnomalyAnalysis",
+  "PMD.JUnitAssertionsShouldIncludeMessage",
+  "PMD.JUnitTestContainsTooManyAsserts"
 })
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 public class DefaultModuleManagerTest extends ModuleManagerTestCase {
@@ -266,8 +266,8 @@ public class DefaultModuleManagerTest extends ModuleManagerTestCase {
 
   @Test
   void
-  ensureInstallingSingleModuleResultsInModuleClasspathBeingConfiguredCorrectlyWithoutDependantClassesAppearing()
-      throws Exception {
+      ensureInstallingSingleModuleResultsInModuleClasspathBeingConfiguredCorrectlyWithoutDependantClassesAppearing()
+          throws Exception {
     val grp = new ModuleInstallationGroup(req1);
     val prepped = manager.prepare(grp);
     scheduler.submit(prepped.getProcess()).get();
@@ -286,11 +286,12 @@ public class DefaultModuleManagerTest extends ModuleManagerTestCase {
     val grp = new ModuleInstallationGroup(req2, req1);
     val prepped = manager.prepare(grp);
     scheduler.submit(prepped.getProcess()).get();
-    await().atMost(1, TimeUnit.SECONDS)
-        .until(() -> manager
-            .getModules(Lifecycle.State.Resolved
-            ).stream().anyMatch(t -> "test-plugin-2".equals(t.getCoordinate().getName()))
-        );
+    await()
+        .atMost(1, TimeUnit.SECONDS)
+        .until(
+            () ->
+                manager.getModules(Lifecycle.State.Resolved).stream()
+                    .anyMatch(t -> "test-plugin-2".equals(t.getCoordinate().getName())));
 
     val module =
         manager.getModules(Lifecycle.State.Resolved).stream()
