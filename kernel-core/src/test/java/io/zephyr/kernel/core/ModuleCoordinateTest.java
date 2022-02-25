@@ -12,10 +12,9 @@ class ModuleCoordinateTest {
 
   @Test
   void ensureModuleCoordinatesWorkForSemVer() {
-    val c = ModuleCoordinate.create("io.sunshower", "test-plugin-1", "1.0.0+");
+    val c = ModuleCoordinate.create("io.sunshower", "test-plugin-1", "1.0.0");
     val v = ModuleCoordinate.create("io.sunshower", "test-plugin-1", "1.0.1");
-
-    v.isCompatibleWith(c);
+    assertEquals(1, v.compareTo(c));
   }
 
   @Test

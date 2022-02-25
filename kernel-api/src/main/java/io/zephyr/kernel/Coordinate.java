@@ -13,5 +13,4 @@ public interface Coordinate extends Comparable<Coordinate> {
   }
 
   boolean satisfies(String range);
-
 }
