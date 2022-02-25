@@ -19,6 +19,6 @@ public class EmbeddedModuleLoader implements ModuleLoader {
 
   @Override
   public void close() throws Exception {
-    //nothing to do
+    // nothing to do
   }
 }

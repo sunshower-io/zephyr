@@ -118,7 +118,5 @@ public class MockModule implements Module {
   public void restore(Memento memento) {}
 
   @Override
-  public void close() throws Exception {
-
-  }
+  public void close() throws Exception {}
 }

@@ -119,6 +119,8 @@ public final class KernelModuleLoader extends ModuleLoader
       implements io.zephyr.kernel.core.ModuleLoader, AutoCloseable {
 
     final KernelModuleLoader loader;
+    private Coordinate coordinate;
+    private ModuleClasspath classpath;
 
     UnloadableKernelModuleLoader(KernelModuleFinder kernelModuleFinder) {
       super(kernelModuleFinder);
@@ -145,15 +147,21 @@ public final class KernelModuleLoader extends ModuleLoader
 
     @Override
     public ModuleClasspath loadModule(Coordinate coordinate) {
+
       try {
-        return new DefaultModuleClasspath(loadModule(coordinate.toCanonicalForm()), this);
+        this.coordinate = coordinate;
+        return (classpath =
+            new DefaultModuleClasspath(loadModule(coordinate.toCanonicalForm()), this));
       } catch (ModuleLoadException e) {
         throw new UnsatisfiedDependencyException(e);
       }
     }
 
     public void close() throws Exception {
-      loader.close();
+      if (coordinate != null) {
+        unload(coordinate);
+      }
+      classpath = null;
     }
   }
 }

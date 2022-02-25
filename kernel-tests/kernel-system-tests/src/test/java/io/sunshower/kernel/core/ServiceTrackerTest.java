@@ -38,8 +38,9 @@ public class ServiceTrackerTest {
   @Inject private ModuleContext context;
   @Inject private ModuleLifecycleManager lifecycleManager;
 
-  @RepeatedTest(2)
+  @RepeatedTest(100)
   void ensureTrackingServiceProducesServiceInInstalledTestPlugin() {
+    zephyr.startup();
     try {
       val tracker = context.trackServices(t -> true);
       tracker.addEventListener(listener, ServiceEvents.REGISTERED);

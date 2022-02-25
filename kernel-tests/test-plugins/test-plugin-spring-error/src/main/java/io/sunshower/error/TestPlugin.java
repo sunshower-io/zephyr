@@ -1,4 +1,4 @@
-package io.sunshower.spring;
+package io.sunshower.error;
 
 import io.zephyr.api.ModuleActivator;
 import io.zephyr.api.ModuleContext;
@@ -13,6 +13,7 @@ public class TestPlugin implements ModuleActivator {
 
   @Override
   public void start(ModuleContext context) {
+    System.out.println("Starting error");
     this.context = SpringApplication.run(TestPlugin.class);
   }
 

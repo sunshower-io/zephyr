@@ -154,6 +154,7 @@ public class SunshowerKernelTest extends KernelTestCase {
     springPlugin =
         relativeToProjectBuild("kernel-tests:test-plugins:test-plugin-spring-error", "war", "libs");
     install(springPlugin);
+    start("spring-plugin");
     start("spring-plugin-error");
     val failed = kernel.getModuleManager().getModules(Lifecycle.State.Failed);
     assertEquals(failed.size(), 1, "must have one failed plugin");

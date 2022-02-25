@@ -79,8 +79,8 @@ public class Tests {
     if (!projectBuild.exists()) {
       throw new IllegalArgumentException(
           "Error:  Project "
-          + project
-          + " either didn't exist or hasn't been build (have you added it is a dependency?)");
+              + project
+              + " either didn't exist or hasn't been build (have you added it is a dependency?)");
     }
     if (!projectBuild.isDirectory()) {
       throw new IllegalArgumentException(
@@ -149,9 +149,11 @@ public class Tests {
   }
 
   public enum OS {
-    WINDOWS, LINUX, MAC, SOLARIS
+    WINDOWS,
+    LINUX,
+    MAC,
+    SOLARIS
   }
-
 
   private static OS os = null;
 
@@ -160,8 +162,7 @@ public class Tests {
       String operSys = System.getProperty("os.name").toLowerCase();
       if (operSys.contains("win")) {
         os = OS.WINDOWS;
-      } else if (operSys.contains("nix") || operSys.contains("nux")
-                 || operSys.contains("aix")) {
+      } else if (operSys.contains("nix") || operSys.contains("nux") || operSys.contains("aix")) {
         os = OS.LINUX;
       } else if (operSys.contains("mac")) {
         os = OS.MAC;
@@ -183,9 +184,9 @@ public class Tests {
       }
     }
 
-    if(getOS() == OS.WINDOWS) {
-      AclFileAttributeView view = Files.getFileAttributeView(
-          result.toPath(), AclFileAttributeView.class);
+    if (getOS() == OS.WINDOWS) {
+      AclFileAttributeView view =
+          Files.getFileAttributeView(result.toPath(), AclFileAttributeView.class);
       final String AUTHENTICATED_USERS = "NT AUTHORITY\\Authenticated Users";
 
       val acls = view.getAcl();
@@ -197,11 +198,12 @@ public class Tests {
           val p = EnumSet.allOf(AclEntryPermission.class);
           permissions.addAll(p);
 
-          AclEntry entry = AclEntry.newBuilder()
-              .setType(AclEntryType.ALLOW)
-              .setPrincipal(principal)
-              .setPermissions(permissions)
-              .build();
+          AclEntry entry =
+              AclEntry.newBuilder()
+                  .setType(AclEntryType.ALLOW)
+                  .setPrincipal(principal)
+                  .setPermissions(permissions)
+                  .build();
 
           acls.set(i, entry);
         }
@@ -237,12 +239,12 @@ public class Tests {
       if (!(result.exists() && result.isDirectory())) {
         throw new NoSuchElementException(
             "Can't find project with path: "
-            + project
-            + " in "
-            + root.getAbsolutePath()
-            + " checked ("
-            + result.getAbsolutePath()
-            + ")");
+                + project
+                + " in "
+                + root.getAbsolutePath()
+                + " checked ("
+                + result.getAbsolutePath()
+                + ")");
       }
     }
     return result;

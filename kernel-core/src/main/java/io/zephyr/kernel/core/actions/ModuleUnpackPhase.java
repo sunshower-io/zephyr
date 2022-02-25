@@ -61,14 +61,10 @@ public class ModuleUnpackPhase extends Task implements ModuleAssemblyExtractor.E
     var anyworked = false;
     for (val extractor : extractors) {
       try {
-        if (!extractor.appliesTo(assembly, moduleFileSystem)) {
-          continue;
-        }
         log.log(Level.INFO, "module.extractor.beforeapplication", extractor);
         extractor.extract(assembly, moduleFileSystem, this);
         log.log(Level.INFO, "module.extractor.afterapplication", extractor);
         anyworked = true;
-        break;
       } catch (Exception ex) {
         log.log(Level.INFO, "module.extractor.error", new Object[] {ex.getMessage(), extractor});
         if (log.isLoggable(Level.FINE)) {

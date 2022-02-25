@@ -15,7 +15,7 @@ import io.zephyr.cli.Zephyr;
 import io.zephyr.kernel.events.EventListener;
 import javax.inject.Inject;
 import lombok.val;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.api.parallel.Isolated;
@@ -36,8 +36,9 @@ public class ServiceTrackerWithMVELTest {
   @Inject private ModuleContext context;
   @Inject private ModuleLifecycleManager lifecycleManager;
 
-  @Test
+  @RepeatedTest(100)
   void ensureTrackingServiceProducesServiceInInstalledTestPluginWithMVELFilter() {
+    zephyr.startup();
     try {
       zephyr.install(StandardModules.MVEL.getUrl());
       zephyr.restart();
