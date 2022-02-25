@@ -12,8 +12,10 @@ import java.io.File;
 import java.nio.file.FileSystem;
 import java.util.ResourceBundle;
 import java.util.ServiceLoader;
+import java.util.ServiceLoader.Provider;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import lombok.val;
 
 @SuppressWarnings("PMD.UnusedPrivateMethod")
@@ -50,15 +52,23 @@ public class ModuleUnpackPhase extends Task implements ModuleAssemblyExtractor.E
 
     FileSystem moduleFileSystem = context.get(ModuleTransferPhase.MODULE_FILE_SYSTEM);
 
-    val extractors = ServiceLoader.load(ModuleAssemblyExtractor.class, kernel.getClassLoader());
+    val extractors =
+        ServiceLoader.load(ModuleAssemblyExtractor.class, kernel.getClassLoader()).stream()
+            .map(Provider::get)
+            .sorted()
+            .collect(Collectors.toList());
 
     var anyworked = false;
     for (val extractor : extractors) {
       try {
+        if (!extractor.appliesTo(assembly, moduleFileSystem)) {
+          continue;
+        }
         log.log(Level.INFO, "module.extractor.beforeapplication", extractor);
         extractor.extract(assembly, moduleFileSystem, this);
         log.log(Level.INFO, "module.extractor.afterapplication", extractor);
         anyworked = true;
+        break;
       } catch (Exception ex) {
         log.log(Level.INFO, "module.extractor.error", new Object[] {ex.getMessage(), extractor});
         if (log.isLoggable(Level.FINE)) {

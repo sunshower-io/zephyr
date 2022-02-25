@@ -16,7 +16,6 @@ import io.zephyr.kernel.events.Events;
 import io.zephyr.kernel.misc.SuppressFBWarnings;
 import io.zephyr.kernel.status.Status;
 import io.zephyr.kernel.status.StatusType;
-import java.io.IOException;
 import java.util.Map;
 import java.util.ServiceConfigurationError;
 import java.util.concurrent.BlockingQueue;
@@ -216,8 +215,8 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable, 
     val currentState = module.getLifecycle().getState();
     if (currentState == Lifecycle.State.Resolved) {
       try {
-        module.getFileSystem().close();
-      } catch (IOException ex) {
+        module.close();
+      } catch (Exception ex) {
         module.getLifecycle().setState(Lifecycle.State.Failed);
         throw new PluginException(ex);
       }
@@ -231,7 +230,7 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable, 
             activator.stop(module.getContext());
           }
           ((AbstractModule) module).setActivator(null);
-          module.getFileSystem().close();
+          module.close();
           moduleThread.get().setContextClassLoader(null);
         } catch (Exception ex) {
           module.getLifecycle().setState(Lifecycle.State.Failed);

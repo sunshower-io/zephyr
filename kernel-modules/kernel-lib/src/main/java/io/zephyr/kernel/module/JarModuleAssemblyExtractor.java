@@ -16,6 +16,10 @@ public class JarModuleAssemblyExtractor extends AbstractCompressedModuleAssembly
     this.resourceDirectories = new LinkedHashSet<>(resourceDirectories);
   }
 
+  public int order() {
+    return 200;
+  }
+
   @Override
   protected Collection<String> getLibraryDirectories() {
     return libraryDirectories;

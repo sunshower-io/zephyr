@@ -6,7 +6,13 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.AclEntry;
+import java.nio.file.attribute.AclEntryPermission;
+import java.nio.file.attribute.AclEntryType;
+import java.nio.file.attribute.AclFileAttributeView;
+import java.nio.file.attribute.UserPrincipal;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.UUID;
@@ -73,8 +79,8 @@ public class Tests {
     if (!projectBuild.exists()) {
       throw new IllegalArgumentException(
           "Error:  Project "
-              + project
-              + " either didn't exist or hasn't been build (have you added it is a dependency?)");
+          + project
+          + " either didn't exist or hasn't been build (have you added it is a dependency?)");
     }
     if (!projectBuild.isDirectory()) {
       throw new IllegalArgumentException(
@@ -142,6 +148,31 @@ public class Tests {
     return createTemp(UUID.randomUUID().toString());
   }
 
+  public enum OS {
+    WINDOWS, LINUX, MAC, SOLARIS
+  }
+
+
+  private static OS os = null;
+
+  public static OS getOS() {
+    if (os == null) {
+      String operSys = System.getProperty("os.name").toLowerCase();
+      if (operSys.contains("win")) {
+        os = OS.WINDOWS;
+      } else if (operSys.contains("nix") || operSys.contains("nux")
+                 || operSys.contains("aix")) {
+        os = OS.LINUX;
+      } else if (operSys.contains("mac")) {
+        os = OS.MAC;
+      } else if (operSys.contains("sunos")) {
+        os = OS.SOLARIS;
+      }
+    }
+    return os;
+  }
+
+  @SneakyThrows
   public static File createTemp(String directory) {
     val tmp = new File(buildDirectory(), "temp");
     val result = new File(tmp, directory);
@@ -149,6 +180,48 @@ public class Tests {
       if (!result.exists()) {
         throw new IllegalStateException(
             "Failed to create temp directory " + result.getAbsolutePath());
+      }
+    }
+
+    if(getOS() == OS.WINDOWS) {
+      AclFileAttributeView view = Files.getFileAttributeView(
+          result.toPath(), AclFileAttributeView.class);
+      final String AUTHENTICATED_USERS = "NT AUTHORITY\\Authenticated Users";
+
+      val acls = view.getAcl();
+      for (int i = 0; i < acls.size(); i++) {
+        UserPrincipal principal = acls.get(i).principal();
+        String principalName = principal.getName();
+        if (principalName.equals(AUTHENTICATED_USERS)) {
+          val permissions = acls.get(i).permissions();
+          val p = EnumSet.allOf(AclEntryPermission.class);
+          permissions.addAll(p);
+
+          AclEntry entry = AclEntry.newBuilder()
+              .setType(AclEntryType.ALLOW)
+              .setPrincipal(principal)
+              .setPermissions(permissions)
+              .build();
+
+          acls.set(i, entry);
+        }
+      }
+      view.setAcl(acls);
+    } else {
+
+      if (!result.setExecutable(true)) {
+        throw new IllegalStateException(
+            String.format("Failed to set permission executable on '%s'", result));
+      }
+
+      if (!result.setReadable(true)) {
+        throw new IllegalStateException(
+            String.format("Failed to set permission read on '%s'", result));
+      }
+
+      if (!result.setWritable(true)) {
+        throw new IllegalStateException(
+            String.format("Failed to set permission write on '%s'", result));
       }
     }
     result.deleteOnExit();
@@ -164,12 +237,12 @@ public class Tests {
       if (!(result.exists() && result.isDirectory())) {
         throw new NoSuchElementException(
             "Can't find project with path: "
-                + project
-                + " in "
-                + root.getAbsolutePath()
-                + " checked ("
-                + result.getAbsolutePath()
-                + ")");
+            + project
+            + " in "
+            + root.getAbsolutePath()
+            + " checked ("
+            + result.getAbsolutePath()
+            + ")");
       }
     }
     return result;

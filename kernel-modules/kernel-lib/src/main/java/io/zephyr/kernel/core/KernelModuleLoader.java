@@ -8,8 +8,10 @@ import io.zephyr.kernel.dependencies.DependencyGraph;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import lombok.NonNull;
 import lombok.SneakyThrows;
+import lombok.extern.java.Log;
 import lombok.val;
 import org.jboss.modules.ModuleLoadException;
 import org.jboss.modules.ModuleLoader;
@@ -17,8 +19,9 @@ import org.jboss.modules.ModuleNotFoundException;
 
 /** this class is intentionally not thread-safe and must be protected by its owner */
 @SuppressWarnings("PMD.AvoidUsingVolatile")
+@Log
 public final class KernelModuleLoader extends ModuleLoader
-    implements io.zephyr.kernel.core.ModuleLoader, ModuleClasspathManager {
+    implements io.zephyr.kernel.core.ModuleLoader, ModuleClasspathManager, AutoCloseable {
 
   private final Kernel kernel;
   private DependencyGraph graph;
@@ -98,8 +101,22 @@ public final class KernelModuleLoader extends ModuleLoader
     }
   }
 
+  @Override
+  public void close() throws Exception {
+    for (val loader : moduleLoaders.entrySet()) {
+      try {
+        loader.getValue().close();
+      } catch (Throwable ex) {
+        log.log(
+            Level.WARNING,
+            "Failed to close loader for module {0}, reason: {1}",
+            new Object[] {loader.getKey(), ex.getMessage()});
+      }
+    }
+  }
+
   final class UnloadableKernelModuleLoader extends ModuleLoader
-      implements io.zephyr.kernel.core.ModuleLoader {
+      implements io.zephyr.kernel.core.ModuleLoader, AutoCloseable {
 
     final KernelModuleLoader loader;
 
@@ -133,6 +150,10 @@ public final class KernelModuleLoader extends ModuleLoader
       } catch (ModuleLoadException e) {
         throw new UnsatisfiedDependencyException(e);
       }
+    }
+
+    public void close() throws Exception {
+      loader.close();
     }
   }
 }

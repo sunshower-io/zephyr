@@ -23,9 +23,11 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.OS;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 
 @SuppressFBWarnings
-@DisabledOnOs(OS.WINDOWS)
+@Execution(ExecutionMode.SAME_THREAD)
 @SuppressWarnings({"PMD.AvoidDuplicateLiterals", "PMD.JUnitTestContainsTooManyAsserts"})
 class ModuleFileSystemProviderTest {
 
@@ -34,14 +36,15 @@ class ModuleFileSystemProviderTest {
   private static KernelOptions kernelOptions;
 
   @BeforeAll
-  static void setUp() {
-    val tempDir = Tests.createTemp("temp-dir");
+  static void setUp() throws InterruptedException {
+    val tempDir = Tests.createTemp("test-dir");
     kernelOptions = new KernelOptions();
     kernelOptions.setHomeDirectory(tempDir);
     SunshowerKernel.setKernelOptions(kernelOptions);
   }
 
   @Test
+  @DisabledOnOs(OS.WINDOWS)
   void ensureIsSameFileWorks() throws IOException {
     val uri = URI.create("droplet://kernel");
     val fs = FileSystems.newFileSystem(uri, Collections.emptyMap());
@@ -135,6 +138,7 @@ class ModuleFileSystemProviderTest {
   }
 
   @Test
+  @DisabledOnOs(OS.WINDOWS)
   void ensureWritingFileWorks() throws IOException {
     val uri = URI.create("droplet://kernel");
     val fs = FileSystems.newFileSystem(uri, Collections.emptyMap());
@@ -145,8 +149,11 @@ class ModuleFileSystemProviderTest {
         fos.write(10);
       }
     } finally {
-      Files.deleteIfExists(fs.getPath("test.txt"));
-      fs.close();
+      try {
+        Files.deleteIfExists(fs.getPath("test.txt"));
+      } finally {
+        fs.close();
+      }
     }
   }
 

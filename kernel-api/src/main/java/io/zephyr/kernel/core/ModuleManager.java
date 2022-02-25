@@ -10,7 +10,7 @@ import io.zephyr.kernel.module.ModuleLifecycleChangeGroup;
 import io.zephyr.kernel.module.ModuleLifecycleStatusGroup;
 import java.util.List;
 
-public interface ModuleManager extends KernelMember {
+public interface ModuleManager extends KernelMember, AutoCloseable {
 
   Module getModule(Coordinate coordinate);
 

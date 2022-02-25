@@ -21,6 +21,7 @@ import io.zephyr.kernel.memento.Mementos;
 import io.zephyr.kernel.module.ModuleLifecycle;
 import io.zephyr.kernel.module.ModuleLifecycleChangeGroup;
 import io.zephyr.kernel.module.ModuleLifecycleChangeRequest;
+import java.io.Closeable;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.*;
@@ -158,10 +159,14 @@ public class SunshowerKernel implements Kernel, EventSource {
   @Override
   @SneakyThrows
   public void stop() {
+    moduleManager.close();
     eventDispatcher.stop();
     lifecycle.stop().toCompletableFuture().get();
     serviceRegistry.close();
     storage.clear();
+    if (classLoader instanceof Closeable) {
+      ((Closeable) classLoader).close();
+    }
   }
 
   @Override

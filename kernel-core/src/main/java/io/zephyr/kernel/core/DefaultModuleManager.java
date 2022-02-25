@@ -8,7 +8,9 @@ import io.zephyr.kernel.events.EventSource;
 import io.zephyr.kernel.log.Logging;
 import io.zephyr.kernel.module.ModuleInstallationGroup;
 import io.zephyr.kernel.module.ModuleInstallationStatusGroup;
+import io.zephyr.kernel.module.ModuleLifecycle.Actions;
 import io.zephyr.kernel.module.ModuleLifecycleChangeGroup;
+import io.zephyr.kernel.module.ModuleLifecycleChangeRequest;
 import io.zephyr.kernel.module.ModuleLifecycleStatusGroup;
 import java.util.ArrayList;
 import java.util.List;
@@ -108,5 +110,15 @@ public class DefaultModuleManager implements ModuleManager, EventSource {
       throw new IllegalStateException(
           "Error: module download manager has not been properly initialized");
     }
+  }
+
+  @Override
+  public void close() throws Exception {
+    val group = new ModuleLifecycleChangeGroup();
+    for (val module : dependencyGraph.getGraph().vertexSet()) {
+      group.addRequest(new ModuleLifecycleChangeRequest(module, Actions.Stop));
+    }
+    val moduleLifecycleChange = new DefaultModuleLifecycleStatusChangeGroup(kernel, this, group);
+    kernel.getScheduler().submit(moduleLifecycleChange.getProcess()).toCompletableFuture().get();
   }
 }

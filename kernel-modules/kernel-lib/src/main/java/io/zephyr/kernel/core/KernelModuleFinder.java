@@ -21,6 +21,7 @@ import org.jboss.modules.ModuleFinder;
 import org.jboss.modules.ModuleLoadException;
 import org.jboss.modules.ModuleLoader;
 import org.jboss.modules.ModuleSpec;
+import org.jboss.modules.ResourceLoader;
 import org.jboss.modules.ResourceLoaderSpec;
 import org.jboss.modules.ResourceLoaders;
 import org.jboss.modules.filter.ClassFilter;
@@ -29,11 +30,12 @@ import org.jboss.modules.filter.PathFilter;
 import org.jboss.modules.filter.PathFilters;
 
 @SuppressWarnings("PMD.UnusedPrivateMethod")
-public final class KernelModuleFinder implements ModuleFinder {
+public final class KernelModuleFinder implements ModuleFinder, AutoCloseable {
 
   static final Logger log = Logging.get(KernelModuleFinder.class, "ModuleClassloading");
   private final Module module;
   private final ModuleLoader moduleLoader;
+  private final List<ResourceLoader> resourceLoaders;
 
   private final LocalLoader localLoader;
 
@@ -42,6 +44,7 @@ public final class KernelModuleFinder implements ModuleFinder {
     this.module = module;
     this.moduleLoader = loader;
     this.localLoader = new KernelClasspathLocalLoader(kernel);
+    this.resourceLoaders = new ArrayList<>(64);
   }
 
   @Override
@@ -111,6 +114,11 @@ public final class KernelModuleFinder implements ModuleFinder {
     return moduleSpec.create();
   }
 
+  private ResourceLoader register(ResourceLoader loader) {
+    resourceLoaders.add(loader);
+    return loader;
+  }
+
   private ClassFilter toClassFilter(List<PathSpecification> classes) {
     if (classes == null || classes.isEmpty()) {
       return ClassFilters.acceptAll();
@@ -165,14 +173,21 @@ public final class KernelModuleFinder implements ModuleFinder {
 
   private void createRootResource(ModuleSpec.Builder spec, File file, String name)
       throws IOException {
-    val loader = ResourceLoaders.createJarResourceLoader(new JarFile(file), name);
+    val loader = register(ResourceLoaders.createJarResourceLoader(new JarFile(file), name));
     val loaderSpec = ResourceLoaderSpec.createResourceLoaderSpec(loader);
     spec.addResourceRoot(loaderSpec);
   }
 
   private void createRootResource(ModuleSpec.Builder spec, File file) throws IOException {
-    val loader = ResourceLoaders.createJarResourceLoader(new JarFile(file));
+    val loader = register(ResourceLoaders.createJarResourceLoader(new JarFile(file)));
     val loaderSpec = ResourceLoaderSpec.createResourceLoaderSpec(loader);
     spec.addResourceRoot(loaderSpec);
+  }
+
+  @Override
+  public void close() throws Exception {
+    for (val resourceLoader : resourceLoaders) {
+      resourceLoader.close();
+    }
   }
 }

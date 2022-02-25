@@ -9,6 +9,7 @@ import io.zephyr.kernel.misc.SuppressFBWarnings;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystem;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.StandardCopyOption;
 import java.util.Collection;
 import java.util.logging.Level;
@@ -26,8 +27,23 @@ public abstract class AbstractCompressedModuleAssemblyExtractor implements Modul
   public void extract(Assembly assembly, FileSystem moduleFilesystem, ExtractionListener listener)
       throws Exception {
 
-    val compressedAssembly = createArchive(assembly.getFile());
-    doExtract(compressedAssembly, getLibraryDirectories(), moduleFilesystem, assembly, listener);
+    try (val compressedAssembly = createArchive(assembly.getFile())) {
+      doExtract(compressedAssembly, getLibraryDirectories(), moduleFilesystem, assembly, listener);
+    }
+  }
+
+  @Override
+  public boolean appliesTo(Assembly assembly, FileSystem moduleFilesystem) {
+    try (val file = createArchive(assembly.getFile())) {
+      for (val libraryDirectory : getLibraryDirectories()) {
+        if (file.getEntry(libraryDirectory) != null) {
+          return true;
+        }
+      }
+    } catch (IOException ex) {
+      return false;
+    }
+    return false;
   }
 
   protected ZipFile createArchive(File file) throws IOException {
@@ -105,6 +121,14 @@ public abstract class AbstractCompressedModuleAssemblyExtractor implements Modul
     val target = new File(path, getFileName(name));
     try (val inputStream = compressedAssembly.getInputStream(next)) {
       listener.beforeEntryExtracted(name, target);
+      if (!target.getParentFile().exists()) {
+        if (!target.getParentFile().mkdirs()) {
+          throw new NoSuchFileException(
+              String.format(
+                  "Error: failed to create parent directory '%s'",
+                  target.getParentFile().getAbsolutePath()));
+        }
+      }
       java.nio.file.Files.copy(inputStream, target.toPath(), StandardCopyOption.REPLACE_EXISTING);
       assembly.addLibrary(new Library(target));
       listener.afterEntryExtracted(name, target);

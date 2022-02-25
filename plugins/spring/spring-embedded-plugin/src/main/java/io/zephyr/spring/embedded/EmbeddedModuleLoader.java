@@ -16,4 +16,9 @@ public class EmbeddedModuleLoader implements ModuleLoader {
   public ModuleClasspath loadModule(Coordinate coordinate) {
     return classpath;
   }
+
+  @Override
+  public void close() throws Exception {
+    //nothing to do
+  }
 }

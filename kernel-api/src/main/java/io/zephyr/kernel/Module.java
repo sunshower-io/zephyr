@@ -11,7 +11,7 @@ import java.util.Set;
 import lombok.NonNull;
 import lombok.val;
 
-public interface Module extends Comparable<Module>, Originator {
+public interface Module extends Comparable<Module>, Originator, AutoCloseable {
 
   TaskQueue getTaskQueue();
 

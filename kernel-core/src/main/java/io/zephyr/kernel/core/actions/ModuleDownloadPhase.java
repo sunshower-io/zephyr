@@ -77,6 +77,7 @@ public class ModuleDownloadPhase extends Task implements ChannelTransferListener
 
   @AllArgsConstructor
   public static class TransferData {
+
     final double progress;
   }
 

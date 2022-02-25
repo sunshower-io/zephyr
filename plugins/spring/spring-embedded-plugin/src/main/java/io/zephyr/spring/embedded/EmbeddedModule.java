@@ -157,4 +157,9 @@ public class EmbeddedModule extends AbstractModule implements Module {
 
   @Override
   public void setTaskQueue(TaskQueue thread) {}
+
+  @Override
+  public void close() throws Exception {
+    
+  }
 }

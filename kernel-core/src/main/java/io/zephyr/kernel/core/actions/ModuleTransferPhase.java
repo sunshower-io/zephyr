@@ -1,6 +1,7 @@
 package io.zephyr.kernel.core.actions;
 
 import io.sunshower.gyre.Scope;
+import io.zephyr.common.io.Files;
 import io.zephyr.kernel.concurrency.Task;
 import io.zephyr.kernel.concurrency.TaskException;
 import io.zephyr.kernel.concurrency.TaskStatus;
@@ -65,7 +66,9 @@ public class ModuleTransferPhase extends Task {
 
     log.log(Level.INFO, "transfer.file.beginning", new Object[] {file, assembly});
     try {
-      Files.copy(file.toPath(), assembly.toPath(), StandardCopyOption.REPLACE_EXISTING);
+      Files.transferTo(file, assembly);
+      //      java.nio.file.Files.copy(file.toPath(), assembly.toPath(),
+      // StandardCopyOption.REPLACE_EXISTING);
       scope.set(MODULE_ASSEMBLY_FILE, assembly);
       log.log(Level.INFO, "transfer.file.complete", new Object[] {file, assembly});
       dispatchEvent(kernel, fs, ModulePhaseEvents.MODULE_TRANSFER_COMPLETED);

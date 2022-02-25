@@ -1,6 +1,7 @@
 package io.zephyr.kernel.core;
 
 import static io.zephyr.kernel.memento.Mementos.writeCoordinate;
+import static java.lang.String.format;
 
 import io.zephyr.api.ModuleActivator;
 import io.zephyr.api.ModuleContext;
@@ -13,6 +14,7 @@ import java.io.File;
 import java.net.URI;
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.ServiceLoader;
 import java.util.Set;
@@ -365,5 +367,24 @@ public final class DefaultModule extends AbstractModule
   @Override
   public TaskQueue getTaskQueue() {
     return taskQueue;
+  }
+
+  @Override
+  public void close() throws Exception {
+    val exceptions = new ArrayList<Exception>();
+    try {
+      fileSystem.close();
+    } catch (Exception ex) {
+      exceptions.add(ex);
+    }
+    try {
+      moduleLoader.close();
+    } catch (Exception ex) {
+      exceptions.add(ex);
+    }
+    if (!exceptions.isEmpty()) {
+      throw new ModuleException(
+          format("Failed to close module '%s', reasons", coordinate), exceptions);
+    }
   }
 }

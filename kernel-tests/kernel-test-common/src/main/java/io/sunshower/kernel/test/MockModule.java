@@ -116,4 +116,9 @@ public class MockModule implements Module {
 
   @Override
   public void restore(Memento memento) {}
+
+  @Override
+  public void close() throws Exception {
+
+  }
 }
