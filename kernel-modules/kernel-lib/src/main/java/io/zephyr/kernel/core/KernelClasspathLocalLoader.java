@@ -1,8 +1,9 @@
 package io.zephyr.kernel.core;
 
+import static io.zephyr.kernel.core.ModulePackageConstraintSet.canReexportPackage;
+
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 import lombok.extern.java.Log;
 import lombok.val;
@@ -23,7 +24,7 @@ public class KernelClasspathLocalLoader implements LocalLoader {
   public Class<?> loadClassLocal(String name, boolean resolve) {
     try {
       val type = Class.forName(name, true, classLoader);
-      if (isZephyrInternal(type.getPackageName())) {
+      if (canReexportPackage(type.getPackageName(), classLoader)) {
         return type;
       } else {
         log.log(

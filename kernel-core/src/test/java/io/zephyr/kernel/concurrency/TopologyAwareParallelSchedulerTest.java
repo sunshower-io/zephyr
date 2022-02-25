@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 
 import io.sunshower.gyre.DirectedGraph;
@@ -20,8 +20,12 @@ import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
-import org.mockito.exceptions.verification.TooFewActualInvocations;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
+import org.junit.jupiter.api.parallel.Isolated;
 
+@Execution(ExecutionMode.SAME_THREAD)
+@Isolated("concurrent registrations by other tests fuck this up")
 @SuppressWarnings({
   "PMD.DataflowAnomalyAnalysis",
   "PMD.JUnitTestContainsTooManyAsserts",
@@ -40,11 +44,11 @@ class TopologyAwareParallelSchedulerTest {
     scheduler =
         new TopologyAwareParallelScheduler<>(
             new ExecutorWorkerPool(
-                Executors.newFixedThreadPool(5), Executors.newFixedThreadPool(2)));
+                Executors.newSingleThreadExecutor(), Executors.newSingleThreadExecutor()));
   }
 
   @RepeatedTest(1000)
-  @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
+  @SuppressWarnings({"PMD.JUnitTestsShouldIncludeAssert", "rawtypes", "unchecked"})
   void ensureListenerWorks() throws ExecutionException, InterruptedException {
     graph.connect(
         new Task("a") {
@@ -73,11 +77,7 @@ class TopologyAwareParallelSchedulerTest {
     val registration = schedule.addEventListener(TaskEvents.TASK_COMPLETE, listener);
     var task = scheduler.submit(schedule, scope);
     task.toCompletableFuture().get();
-    try {
-      verify(listener, times(2)).onEvent(eq(TaskEvents.TASK_COMPLETE), any());
-    } catch (TooFewActualInvocations ex) {
-      System.out.println("Expected more than I got--but continuing");
-    }
+    verify(listener, timeout(500).times(2)).onEvent(eq(TaskEvents.TASK_COMPLETE), any());
     registration.dispose();
   }
 

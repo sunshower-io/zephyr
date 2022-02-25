@@ -16,7 +16,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-@DisabledOnOs(OS.WINDOWS)
 // @Disabled("Need to figure out why these are flaky")
 public class ModuleListenerTestCase extends ShellTestCase {
 
