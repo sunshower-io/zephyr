@@ -1,13 +1,18 @@
 package io.zephyr.kernel.module;
 
+import static java.lang.String.format;
+
 import io.zephyr.kernel.Assembly;
 import io.zephyr.kernel.Library;
 import io.zephyr.kernel.concurrency.TaskException;
 import io.zephyr.kernel.concurrency.TaskStatus;
 import io.zephyr.kernel.extensions.ModuleAssemblyExtractor;
 import io.zephyr.kernel.misc.SuppressFBWarnings;
+import io.zephyr.platform.api.Platform;
+import io.zephyr.platform.api.Platform.OperatingSystem;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.FileSystem;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.StandardCopyOption;
@@ -118,18 +123,35 @@ public abstract class AbstractCompressedModuleAssemblyExtractor implements Modul
       Assembly assembly,
       ExtractionListener listener)
       throws IOException {
-    val target = new File(path, getFileName(name));
+    var target = new File(path, getFileName(name));
     try (val inputStream = compressedAssembly.getInputStream(next)) {
       listener.beforeEntryExtracted(name, target);
       if (!target.getParentFile().exists()) {
         if (!target.getParentFile().mkdirs()) {
           throw new NoSuchFileException(
-              String.format(
+              format(
                   "Error: failed to create parent directory '%s'",
                   target.getParentFile().getAbsolutePath()));
         }
       }
-      java.nio.file.Files.copy(inputStream, target.toPath(), StandardCopyOption.REPLACE_EXISTING);
+      if (target.exists()) {
+        if (Platform.OperatingSystem.is(OperatingSystem.Windows)) {
+          if (!target.delete()) {
+            log.log(
+                Level.WARNING,
+                "File ''{0}'' could not be deleted, and may not be correct.",
+                new Object[] {target});
+          }
+        } else {
+          if (!target.delete()) {
+            throw new FileAlreadyExistsException(format("Failed to delete file '%s'", target));
+          }
+        }
+      }
+
+      if (!target.exists()) {
+        java.nio.file.Files.copy(inputStream, target.toPath(), StandardCopyOption.REPLACE_EXISTING);
+      }
       assembly.addLibrary(new Library(target));
       listener.afterEntryExtracted(name, target);
     }

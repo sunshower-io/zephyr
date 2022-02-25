@@ -43,9 +43,11 @@ public class ShellTestCase {
     this(true);
   }
 
+  static volatile int count;
+
   @BeforeEach
   protected void setUp() {
-    homeDirectory = Tests.createTemp();
+    homeDirectory = Tests.createTemp("test-" + ++count);
     if (installBase) {
       startServer();
       startKernel();

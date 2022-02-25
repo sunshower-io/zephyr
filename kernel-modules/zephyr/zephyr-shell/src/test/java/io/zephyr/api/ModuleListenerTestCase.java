@@ -11,26 +11,29 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
+import org.junit.jupiter.api.parallel.Isolated;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+@Isolated
+@Execution(ExecutionMode.SAME_THREAD)
 @ExtendWith(MockitoExtension.class)
 @ExtendWith(ThreadLockFailedExtension.class)
-//@DisabledOnOs(value = OS.WINDOWS, disabledReason = "Need to figure out why these are flaky")
+// @DisabledOnOs(value = OS.WINDOWS, disabledReason = "Need to figure out why these are flaky")
 public class ModuleListenerTestCase extends ShellTestCase {
 
   static {
     Logger logger;
     for (logger = Logger.getLogger(ModuleListenerTestCase.class.getName());
         logger.getParent() != null;
-        logger = logger.getParent()) {
-    }
+        logger = logger.getParent()) {}
 
     logger.setLevel(Level.SEVERE);
   }
 
-  @Mock
-  protected ModuleListener listener;
+  @Mock protected ModuleListener listener;
 
   public ModuleListenerTestCase() {
     super(false);
@@ -118,8 +121,7 @@ public class ModuleListenerTestCase extends ShellTestCase {
 
     installFully(StandardModules.YAML);
     perform(
-        () -> {
-        },
+        () -> {},
         () -> {
           kernel.addEventListener(
               listener, ModuleEvents.STARTING, ModuleEvents.STARTED, ModuleEvents.START_FAILED);
@@ -139,8 +141,7 @@ public class ModuleListenerTestCase extends ShellTestCase {
 
     installFully(StandardModules.YAML);
     perform(
-        () -> {
-        },
+        () -> {},
         () -> {
           kernel.addEventListener(
               listener, ModuleEvents.STARTING, ModuleEvents.STARTED, ModuleEvents.START_FAILED);
@@ -153,7 +154,7 @@ public class ModuleListenerTestCase extends ShellTestCase {
         TestPlugins.TEST_PLUGIN_2);
   }
 
-  protected void perform(Runnable before, Runnable after, Installable... modules) {
+  protected synchronized void perform(Runnable before, Runnable after, Installable... modules) {
     start();
     try {
       before.run();
