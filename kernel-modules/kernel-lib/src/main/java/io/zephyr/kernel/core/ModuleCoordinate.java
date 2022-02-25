@@ -1,7 +1,6 @@
 package io.zephyr.kernel.core;
 
 import io.zephyr.kernel.Coordinate;
-import io.zephyr.kernel.Version;
 import java.util.regex.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
