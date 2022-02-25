@@ -99,6 +99,7 @@ jobs:
             -PmavenRepositoryUsername=${{secrets.MAVEN_REPOSITORY_USERNAME}}
             -PmavenRepositoryPassword=${{secrets.MAVEN_REPOSITORY_PASSWORD}}
             -PmavenRepositoryUrl=${{secrets.MAVEN_REPOSITORY_URL}}
+            --max-workers=1
 
       - name: Deploy Bills-Of-Materials
         run: >-
@@ -120,7 +121,9 @@ jobs:
             clean assemble build sA javadoc publish -i
             -PmavenRepositoryUsername=${{secrets.MAVEN_REPOSITORY_USERNAME}}
             -PmavenRepositoryPassword=${{secrets.MAVEN_REPOSITORY_PASSWORD}}
-            -PmavenRepositoryUrl=${{secrets.MAVEN_RELEASE_URL}} --stacktrace
+            -PmavenRepositoryUrl=${{secrets.MAVEN_RELEASE_URL}}
+            --stacktrace
+            --max-workers=1
 
 
       #################   Deploy Zephyr Maven Plugin #################
@@ -236,6 +239,7 @@ jobs:
             setVersion -PmavenRepositoryUsername=${{secrets.MAVEN_REPOSITORY_USERNAME}}
             -PmavenRepositoryPassword=${{secrets.MAVEN_REPOSITORY_PASSWORD}}
             -PmavenRepositoryUrl=${{secrets.MAVEN_REPOSITORY_URL}}
+            --max-workers=1
 
       - name: Deploy Bills-Of-Materials
         run: >-
@@ -256,7 +260,9 @@ jobs:
             clean assemble build sA javadoc publish -i
             -PmavenRepositoryUsername=${{secrets.MAVEN_REPOSITORY_USERNAME}}
             -PmavenRepositoryPassword=${{secrets.MAVEN_REPOSITORY_PASSWORD}}
-            -PmavenRepositoryUrl=${{secrets.MAVEN_REPOSITORY_URL}} --stacktrace
+            -PmavenRepositoryUrl=${{secrets.MAVEN_REPOSITORY_URL}}
+            --stacktrace
+            --max-workers=1
 
 
 #      - name: Deploy Zephyr Maven Plugin
