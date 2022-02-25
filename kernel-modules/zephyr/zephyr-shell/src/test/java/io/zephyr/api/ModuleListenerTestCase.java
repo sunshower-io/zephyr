@@ -11,6 +11,7 @@ import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
 import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,7 +25,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @Execution(ExecutionMode.SAME_THREAD)
 @ExtendWith(MockitoExtension.class)
 @ExtendWith(ThreadLockFailedExtension.class)
-@DisabledOnOs(value = OS.WINDOWS, disabledReason = "Need to figure out why these are flaky")
+@DisabledIfEnvironmentVariable(
+    named = "BUILD_ENVIRONMENT",
+    matches = "github",
+    disabledReason = "RMI is flaky")
 public class ModuleListenerTestCase extends ShellTestCase {
 
   static {
