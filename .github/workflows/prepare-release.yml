@@ -93,7 +93,7 @@ jobs:
         env:
           JAVA_TOOL_OPTIONS: -Duser.language=en -Duser.country=US
         with:
-          gradle-version: 7.3.3
+          gradle-version: 7.4
           arguments: >-
             setVersion -DzephyrRelease=true
             -PmavenRepositoryUsername=${{secrets.MAVEN_REPOSITORY_USERNAME}}
@@ -115,7 +115,7 @@ jobs:
         env:
           JAVA_TOOL_OPTIONS: -Duser.language=en -Duser.country=US
         with:
-          gradle-version: 7.3.3
+          gradle-version: 7.4
           arguments: >-
             clean assemble build sA javadoc publish -i
             -PmavenRepositoryUsername=${{secrets.MAVEN_REPOSITORY_USERNAME}}
@@ -231,7 +231,7 @@ jobs:
         env:
           JAVA_TOOL_OPTIONS: -Duser.language=en -Duser.country=US
         with:
-          gradle-version: 7.3.3
+          gradle-version: 7.4
           arguments: >-
             setVersion -PmavenRepositoryUsername=${{secrets.MAVEN_REPOSITORY_USERNAME}}
             -PmavenRepositoryPassword=${{secrets.MAVEN_REPOSITORY_PASSWORD}}
@@ -251,7 +251,7 @@ jobs:
         env:
           JAVA_TOOL_OPTIONS: -Duser.language=en -Duser.country=US
         with:
-          gradle-version: 7.3.3
+          gradle-version: 7.4
           arguments: >-
             clean assemble build sA javadoc publish -i
             -PmavenRepositoryUsername=${{secrets.MAVEN_REPOSITORY_USERNAME}}
