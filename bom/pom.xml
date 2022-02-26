@@ -77,6 +77,16 @@
     </repository>
   </repositories>
 
+  <distributionManagement>
+    <repository>
+      <id>sunshower-github</id>
+      <url>https://maven.pkg.github.com/sunshower-io/zephyr</url>
+    </repository>
+    <snapshotRepository>
+      <id>sunshower-github</id>
+      <url>https://maven.pkg.github.com/sunshower-io/zephyr</url>
+    </snapshotRepository>
+  </distributionManagement>
 
 
   <modules>
