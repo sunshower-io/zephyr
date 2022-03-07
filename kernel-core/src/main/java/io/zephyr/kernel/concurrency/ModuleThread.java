@@ -241,7 +241,7 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable, 
     val currentState = module.getLifecycle().getState();
     if (currentState == Lifecycle.State.Resolved) {
       try {
-        module.close();
+        //        module.close();
       } catch (Exception ex) {
         module.getLifecycle().setState(Lifecycle.State.Failed);
         throw new PluginException(ex);
@@ -256,7 +256,7 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable, 
             activator.stop(module.getContext());
           }
           ((AbstractModule) module).setActivator(null);
-          module.close();
+          //          module.close();
           moduleThread.get().setContextClassLoader(null);
         } catch (Exception ex) {
           module.getLifecycle().setState(Lifecycle.State.Failed);

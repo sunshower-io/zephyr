@@ -219,8 +219,9 @@ public class ShellTestCase {
 
     try {
       install(modules);
+
       while ((kernel.getModuleManager().getModules().size() + failedCount.get()) < count) {
-        Thread.sleep(400);
+        Thread.sleep(1);
       }
     } finally {
       kernel.removeEventListener(listener);
