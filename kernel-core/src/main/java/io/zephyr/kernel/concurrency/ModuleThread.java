@@ -130,6 +130,10 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable, 
   @Override
   public CompletionStage<Void> schedule(Runnable task) {
     synchronized (queueLock) {
+      if (!(running.get() || hasAllowedSchedulingState())) {
+        throw new IllegalStateException(
+            "Error: attempting to schedule a task on a module that is stopped");
+      }
       val result = new TaskQueueRunnable(task);
       taskQueue.offer(task);
       queueLock.notifyAll();
@@ -252,6 +256,7 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable, 
         module.getLifecycle().setState(Lifecycle.State.Stopping);
         val activator = module.getActivator();
         try {
+          drainQueue();
           if (activator != null) {
             activator.stop(module.getContext());
           }
@@ -298,6 +303,23 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable, 
   @Override
   public void clear() {
     context.get().clear();
+  }
+
+  private void drainQueue() {
+    synchronized (queueLock) {
+      while (!taskQueue.isEmpty()) {
+        val task = taskQueue.poll();
+        task.run();
+      }
+    }
+  }
+
+  private boolean hasAllowedSchedulingState() {
+    val state = module.getLifecycle().getState();
+    return !(state == State.Failed
+        || state == State.Uninstalled
+        || state == State.Installed
+        || state == State.Resolved);
   }
 
   static final class TaskQueueRunnable extends CompletableFuture<Void> implements Runnable {

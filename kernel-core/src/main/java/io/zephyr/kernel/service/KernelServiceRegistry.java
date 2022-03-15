@@ -89,6 +89,8 @@ public class KernelServiceRegistry implements ServiceRegistry {
       if (moduleRegistry.registrations.isEmpty()) {
         registries.remove(coordinate);
       }
+      //      new ServiceEventDispatchTask(ServiceEvents.UNREGISTERED,
+      // registration.getReference()).run();
       module
           .getTaskQueue()
           .schedule(
