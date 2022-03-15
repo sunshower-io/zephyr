@@ -46,7 +46,8 @@ public class PluginRemoveTask extends Task implements ModuleLifecycleTask {
       }
       kernel.getModuleManager().getDependencyGraph().remove(module);
       kernel.getModuleClasspathManager().uninstall(module);
-    } catch (IOException ex) {
+      module.close();
+    } catch (Exception ex) {
       log.log(Level.WARNING, "plugin.remove.failed", new Object[] {moduleName, ex.getMessage()});
       log.log(Level.WARNING, "Error", ex);
       throw new TaskException(ex, TaskStatus.UNRECOVERABLE);

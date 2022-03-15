@@ -377,11 +377,6 @@ public final class DefaultModule extends AbstractModule
     } catch (Exception ex) {
       exceptions.add(ex);
     }
-    try {
-      moduleLoader.close();
-    } catch (Exception ex) {
-      exceptions.add(ex);
-    }
     if (!exceptions.isEmpty()) {
       throw new ModuleException(
           format("Failed to close module '%s', reasons", coordinate), exceptions);

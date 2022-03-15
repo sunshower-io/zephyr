@@ -1,20 +1,21 @@
 package io.zephyr.kernel.modules.shell;
 
+import static org.awaitility.Awaitility.await;
+
 import io.sunshower.test.common.Tests;
 import io.zephyr.api.ModuleEvents;
 import io.zephyr.kernel.Lifecycle;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.core.Kernel;
-import io.zephyr.kernel.core.KernelLifecycle;
-import io.zephyr.kernel.events.Event;
+import io.zephyr.kernel.core.KernelLifecycle.State;
 import io.zephyr.kernel.events.EventListener;
-import io.zephyr.kernel.events.EventType;
 import io.zephyr.kernel.extensions.EntryPoint;
 import io.zephyr.kernel.launch.KernelLauncher;
 import io.zephyr.kernel.modules.shell.server.Server;
 import java.io.File;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
@@ -29,6 +30,7 @@ import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
     disabledReason = "RMI is flaky")
 public class ShellTestCase {
 
+  static volatile int count;
   protected final boolean installBase;
   protected File homeDirectory;
   protected Kernel kernel;
@@ -44,8 +46,6 @@ public class ShellTestCase {
   protected ShellTestCase() {
     this(true);
   }
-
-  static volatile int count;
 
   @BeforeEach
   protected void setUp() {
@@ -115,16 +115,14 @@ public class ShellTestCase {
               run("-s -c 4");
             });
     serverThread.start();
-    while ((launcher = KernelLauncher.getInstance()) == null) {
-      Thread.sleep(200);
-    }
+    await().atMost(10, TimeUnit.SECONDS).until(() -> (KernelLauncher.getInstance() != null));
 
-    while ((server = launcher.resolveService(Server.class)) == null) {
-      Thread.sleep(200);
-    }
-    while (!server.isRunning()) {
-      Thread.sleep(200);
-    }
+    launcher = KernelLauncher.getInstance();
+
+    await().atMost(10, TimeUnit.SECONDS).until(() -> launcher.resolveService(Server.class) != null);
+    server = launcher.resolveService(Server.class);
+
+    await().atMost(10, TimeUnit.SECONDS).until(() -> server.isRunning());
   }
 
   @SneakyThrows
@@ -147,12 +145,12 @@ public class ShellTestCase {
       startServer();
     }
     runAsync("kernel", "start", "-h", homeDirectory.getAbsolutePath());
-    while ((kernel = launcher.resolveService(Kernel.class)) == null) {
-      Thread.sleep(200);
-    }
-    while (kernel.getLifecycle().getState() != KernelLifecycle.State.Running) {
-      Thread.sleep(200);
-    }
+    await().atMost(10, TimeUnit.SECONDS).until(() -> launcher.resolveService(Kernel.class) != null);
+
+    kernel = launcher.resolveService(Kernel.class);
+    await()
+        .atMost(10, TimeUnit.SECONDS)
+        .until(() -> kernel.getLifecycle().getState() == State.Running);
     System.out.println("Successfully started kernel");
   }
 
@@ -161,9 +159,9 @@ public class ShellTestCase {
     checkServer();
     runAsync("kernel", "stop");
     if (kernel != null) {
-      while (kernel.getLifecycle().getState() != KernelLifecycle.State.Stopped) {
-        Thread.sleep(200);
-      }
+      await()
+          .atMost(10, TimeUnit.SECONDS)
+          .until(() -> kernel.getLifecycle().getState() == State.Stopped);
     }
     System.out.println("Kernel stopped");
   }
@@ -172,9 +170,7 @@ public class ShellTestCase {
   protected void stopServer() {
     checkServer();
     runAsync("server", "stop");
-    while (server.isRunning()) {
-      Thread.sleep(200);
-    }
+    await().atMost(10, TimeUnit.SECONDS).until(() -> !server.isRunning());
     System.out.println("Stopped server");
     launcher = null;
   }
@@ -208,21 +204,14 @@ public class ShellTestCase {
     val failedCount = new AtomicInteger(0);
     EventListener<Object> listener;
     kernel.addEventListener(
-        listener =
-            new EventListener<Object>() {
-              @Override
-              public void onEvent(EventType type, Event<Object> event) {
-                failedCount.incrementAndGet();
-              }
-            },
-        ModuleEvents.INSTALL_FAILED);
+        listener = (type, event) -> failedCount.incrementAndGet(), ModuleEvents.INSTALL_FAILED);
 
     try {
       install(modules);
 
-      while ((kernel.getModuleManager().getModules().size() + failedCount.get()) < count) {
-        Thread.sleep(1);
-      }
+      await()
+          .atMost(10, TimeUnit.SECONDS)
+          .until(() -> kernel.getModuleManager().getModules().size() + failedCount.get() >= count);
     } finally {
       kernel.removeEventListener(listener);
     }
