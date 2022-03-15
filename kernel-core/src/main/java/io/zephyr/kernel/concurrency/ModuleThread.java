@@ -268,8 +268,8 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable, 
           moduleThread.get().setContextClassLoader(null);
 
           /**
-           * if the activator.stop() method results in
-           * tasks being enqueued we need to clear them out
+           * if the activator.stop() method results in tasks being enqueued we need to clear them
+           * out
            */
           drainQueue();
         } catch (Exception ex) {
