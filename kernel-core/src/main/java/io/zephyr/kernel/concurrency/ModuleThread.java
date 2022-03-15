@@ -130,7 +130,7 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable, 
   @Override
   public CompletionStage<Void> schedule(Runnable task) {
     synchronized (queueLock) {
-      if (!(running.get() || hasAllowedSchedulingState())) {
+      if (!running.get() || hasAllowedSchedulingState()) {
         throw new IllegalStateException(
             "Error: attempting to schedule a task on a module that is stopped");
       }
