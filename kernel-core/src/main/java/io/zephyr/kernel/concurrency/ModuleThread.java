@@ -130,15 +130,17 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable, 
   @Override
   public CompletionStage<Void> schedule(Runnable task) {
     synchronized (queueLock) {
-      if (!(running.get() || hasAllowedSchedulingState())) {
-        log.log(
-            Level.WARNING,
-            "Attempting to schedule a task on a {0} module",
-            module.getLifecycle().getState());
-      }
       val result = new TaskQueueRunnable(task);
       taskQueue.offer(task);
       queueLock.notifyAll();
+
+      if (!(running.get() || hasAllowedSchedulingState())) {
+        log.log(
+            Level.WARNING,
+            "Attempting to schedule a task on a {0} module.  Draining immediately",
+            module.getLifecycle().getState());
+        drainQueue();
+      }
       return result;
     }
   }
