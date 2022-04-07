@@ -1,10 +1,10 @@
 package io.zephyr.kernel.concurrency;
 
+import io.sunshower.lang.events.AbstractEventSource;
+import io.sunshower.lang.events.EventListener;
+import io.sunshower.lang.events.EventSource;
 import io.zephyr.api.Disposable;
-import io.zephyr.kernel.events.AbstractEventSource;
-import io.zephyr.kernel.events.EventListener;
-import io.zephyr.kernel.events.EventSource;
-import io.zephyr.kernel.events.Events;
+import io.zephyr.kernel.events.KernelEvents;
 import io.zephyr.kernel.status.Status;
 import java.util.concurrent.CompletableFuture;
 import lombok.experimental.Delegate;
@@ -22,7 +22,7 @@ class DefaultTaskEventDispatcher<K> extends CompletableFuture<Process<K>>
   @Override
   public void dispatch(TaskEventType type, TaskPhaseEvent taskPhaseEvent) {
     val event =
-        Events.create(taskPhaseEvent.getTask(), new Status(type.getStatusType(), "", false));
+        KernelEvents.create(taskPhaseEvent.getTask(), new Status(type.getStatusType(), "", false));
     delegate.dispatchEvent(type, event);
   }
 

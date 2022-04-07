@@ -1,5 +1,7 @@
 package io.zephyr.kernel.core;
 
+import io.sunshower.lang.events.*;
+import io.sunshower.lang.events.EventListener;
 import io.zephyr.api.ModuleContext;
 import io.zephyr.api.ServiceRegistry;
 import io.zephyr.common.io.Files;
@@ -11,8 +13,6 @@ import io.zephyr.kernel.concurrency.Process;
 import io.zephyr.kernel.core.actions.ModuleInstallationCompletionPhase;
 import io.zephyr.kernel.core.actions.WritePluginDescriptorPhase;
 import io.zephyr.kernel.core.lifecycle.DefaultKernelLifecycle;
-import io.zephyr.kernel.events.*;
-import io.zephyr.kernel.events.EventListener;
 import io.zephyr.kernel.launch.KernelOptions;
 import io.zephyr.kernel.log.Logging;
 import io.zephyr.kernel.memento.Memento;

@@ -1,6 +1,6 @@
 package io.zephyr.api;
 
-import io.zephyr.kernel.events.EventType;
+import io.sunshower.lang.events.EventType;
 import lombok.Getter;
 
 /** */

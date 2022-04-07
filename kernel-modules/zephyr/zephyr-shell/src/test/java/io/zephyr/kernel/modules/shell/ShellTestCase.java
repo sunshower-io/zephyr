@@ -2,13 +2,13 @@ package io.zephyr.kernel.modules.shell;
 
 import static org.awaitility.Awaitility.await;
 
+import io.sunshower.lang.events.EventListener;
 import io.sunshower.test.common.Tests;
 import io.zephyr.api.ModuleEvents;
 import io.zephyr.kernel.Lifecycle;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.core.KernelLifecycle.State;
-import io.zephyr.kernel.events.EventListener;
 import io.zephyr.kernel.extensions.EntryPoint;
 import io.zephyr.kernel.launch.KernelLauncher;
 import io.zephyr.kernel.modules.shell.server.Server;

@@ -1,10 +1,11 @@
 package io.zephyr.kernel.core.actions;
 
 import io.sunshower.gyre.Scope;
+import io.sunshower.lang.events.Events;
 import io.zephyr.kernel.Assembly;
 import io.zephyr.kernel.concurrency.Task;
 import io.zephyr.kernel.core.Kernel;
-import io.zephyr.kernel.events.Events;
+import io.zephyr.kernel.events.KernelEvents;
 import io.zephyr.kernel.extensions.ModuleAssemblyExtractor;
 import io.zephyr.kernel.log.Logging;
 import io.zephyr.kernel.status.StatusType;
@@ -87,7 +88,7 @@ public class ModuleUnpackPhase extends Task implements ModuleAssemblyExtractor.E
   private void fireExtractionCompleted(Assembly assembly) {
     kernel.dispatchEvent(
         ModulePhaseEvents.MODULE_ASSEMBLY_EXTRACTION_COMPLETED,
-        Events.create(
+        KernelEvents.create(
             assembly, StatusType.PROGRESSING.resolvable("Successfully created module assembly")));
   }
 
@@ -99,13 +100,14 @@ public class ModuleUnpackPhase extends Task implements ModuleAssemblyExtractor.E
   private void fireExtractorFailed(ModuleAssemblyExtractor extractor, Throwable ex) {
     kernel.dispatchEvent(
         ModulePhaseEvents.MODULE_ASSEMBLY_EXTRACTION_FAILED,
-        Events.create(extractor, StatusType.FAILED.resolvable(ex.getMessage())));
+        KernelEvents.create(extractor, StatusType.FAILED.resolvable(ex.getMessage())));
   }
 
   private void fireNoValidExtractors(Assembly assembly) {
     kernel.dispatchEvent(
         ModulePhaseEvents.MODULE_ASSEMBLY_EXTRACTION_FAILED,
-        Events.create(assembly, StatusType.FAILED.unresolvable("no valid extractors were found")));
+        KernelEvents.create(
+            assembly, StatusType.FAILED.unresolvable("no valid extractors were found")));
   }
 
   @Override

@@ -75,6 +75,13 @@
                 <artifactId>gyre-api</artifactId>
                 <version>${arcus.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>io.sunshower.arcus</groupId>
+                <artifactId>arcus-lang</artifactId>
+                <version>${arcus.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>io.sunshower.arcus.annotations</groupId>
                 <artifactId>arcus-jsr-305</artifactId>

@@ -8,7 +8,7 @@ import io.zephyr.kernel.concurrency.TaskStatus;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.core.ModuleDescriptor;
 import io.zephyr.kernel.core.ModuleScanner;
-import io.zephyr.kernel.events.Events;
+import io.zephyr.kernel.events.KernelEvents;
 import io.zephyr.kernel.log.Logging;
 import io.zephyr.kernel.module.ModuleInstallationRequest;
 import io.zephyr.kernel.status.Status;
@@ -90,7 +90,7 @@ public class ModuleScanPhase extends Task {
   private void fireScanComplete(Kernel kernel, ModuleDescriptor result) {
     kernel.dispatchEvent(
         ModulePhaseEvents.MODULE_SCAN_COMPLETED,
-        Events.create(
+        KernelEvents.create(
             result,
             StatusType.PROGRESSING.resolvable(
                 "Successfully discovered " + result.getCoordinate())));
@@ -99,13 +99,13 @@ public class ModuleScanPhase extends Task {
   private void fireScanFailed(Kernel kernel, File downloaded, String reason) {
     kernel.dispatchEvent(
         ModulePhaseEvents.MODULE_SCAN_FAILED,
-        Events.create(downloaded, new Status(StatusType.FAILED, reason, false)));
+        KernelEvents.create(downloaded, new Status(StatusType.FAILED, reason, false)));
   }
 
   private void fireScanInitiated(File downloaded, Kernel kernel) {
     kernel.dispatchEvent(
         ModulePhaseEvents.MODULE_SCAN_INITIATED,
-        Events.create(
+        KernelEvents.create(
             downloaded, StatusType.PROGRESSING.resolvable("Scanning file: " + downloaded)));
   }
 }

@@ -1,4 +1,4 @@
-package io.zephyr.kernel.events;
+package io.sunshower.lang.events;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;

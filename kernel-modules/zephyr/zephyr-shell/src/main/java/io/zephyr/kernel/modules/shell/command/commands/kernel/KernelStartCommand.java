@@ -1,14 +1,14 @@
 package io.zephyr.kernel.modules.shell.command.commands.kernel;
 
+import io.sunshower.lang.events.Event;
+import io.sunshower.lang.events.EventListener;
+import io.sunshower.lang.events.EventType;
 import io.zephyr.kernel.concurrency.ExecutorWorkerPool;
 import io.zephyr.kernel.concurrency.WorkerPool;
 import io.zephyr.kernel.core.DaggerSunshowerKernelConfiguration;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.core.KernelEventTypes;
 import io.zephyr.kernel.core.KernelLifecycle;
-import io.zephyr.kernel.events.Event;
-import io.zephyr.kernel.events.EventListener;
-import io.zephyr.kernel.events.EventType;
 import io.zephyr.kernel.extensions.EntryPoint;
 import io.zephyr.kernel.launch.KernelOptions;
 import io.zephyr.kernel.modules.shell.ShellOptions;

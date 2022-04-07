@@ -1,6 +1,6 @@
 package io.zephyr.api;
 
-import io.zephyr.kernel.events.EventSource;
+import io.sunshower.lang.events.EventSource;
 import java.io.Closeable;
 
 /**

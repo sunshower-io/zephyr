@@ -1,12 +1,12 @@
 package io.zephyr.kernel.concurrency;
 
+import io.sunshower.lang.events.*;
+import io.sunshower.lang.events.EventListener;
 import io.zephyr.api.ModuleEvents;
 import io.zephyr.api.ModuleTracker;
 import io.zephyr.kernel.Lifecycle;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.core.Kernel;
-import io.zephyr.kernel.events.*;
-import io.zephyr.kernel.events.EventListener;
 import java.util.function.Predicate;
 import lombok.val;
 

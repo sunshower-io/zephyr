@@ -1,10 +1,11 @@
 package io.zephyr.kernel.events;
 
+import io.sunshower.lang.events.Event;
 import io.zephyr.kernel.status.Status;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-public class Events {
+public class KernelEvents {
 
   public static <T> Event<T> create(T source) {
     return new DEvent<>(source, null);

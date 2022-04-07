@@ -1,6 +1,6 @@
 package io.zephyr.kernel.core.actions;
 
-import io.zephyr.kernel.events.EventType;
+import io.sunshower.lang.events.EventType;
 
 public enum ModulePhaseEvents implements EventType {
 

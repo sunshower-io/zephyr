@@ -14,7 +14,7 @@ import io.zephyr.kernel.TaskQueue;
 import io.zephyr.kernel.VolatileStorage;
 import io.zephyr.kernel.core.AbstractModule;
 import io.zephyr.kernel.core.Kernel;
-import io.zephyr.kernel.events.Events;
+import io.zephyr.kernel.events.KernelEvents;
 import io.zephyr.kernel.status.Status;
 import io.zephyr.kernel.status.StatusType;
 import java.util.Map;
@@ -214,7 +214,7 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable, 
   private void fireStopped() {
     kernel.dispatchEvent(
         ModuleEvents.STOPPED,
-        Events.create(
+        KernelEvents.create(
             module,
             Status.resolvable(
                 StatusType.PROGRESSING, "Successfully stopped module " + module.getCoordinate())));
@@ -223,7 +223,7 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable, 
   private void fireStarted() {
     kernel.dispatchEvent(
         ModuleEvents.STARTED,
-        Events.create(
+        KernelEvents.create(
             module,
             Status.resolvable(
                 StatusType.PROGRESSING, "Successfully started module " + module.getCoordinate())));
@@ -232,13 +232,14 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable, 
   private void fireStart() {
     kernel.dispatchEvent(
         ModuleEvents.STARTING,
-        Events.create(module, Status.resolvable(StatusType.PROGRESSING, "Starting module...")));
+        KernelEvents.create(
+            module, Status.resolvable(StatusType.PROGRESSING, "Starting module...")));
   }
 
   private void handleFailure(Coordinate coordinate, Throwable ex) {
     kernel.dispatchEvent(
         ModuleEvents.START_FAILED,
-        Events.create(
+        KernelEvents.create(
             module, StatusType.FAILED.unresolvable(FAILURE_TEMPLATE, coordinate, ex.getMessage())));
     module.getLifecycle().setState(Lifecycle.State.Failed);
     log.log(Level.WARNING, FAILURE_TEMPLATE, new Object[] {coordinate, ex.getMessage()});

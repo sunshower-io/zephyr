@@ -3,12 +3,12 @@ package io.zephyr.kernel.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.BDDMockito.given;
 
+import io.sunshower.lang.events.EventListener;
+import io.sunshower.lang.events.EventType;
 import io.zephyr.api.ServiceRegistry;
 import io.zephyr.kernel.KernelTestCase;
 import io.zephyr.kernel.TaskQueue;
 import io.zephyr.kernel.core.AbstractModule;
-import io.zephyr.kernel.events.EventListener;
-import io.zephyr.kernel.events.EventType;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;

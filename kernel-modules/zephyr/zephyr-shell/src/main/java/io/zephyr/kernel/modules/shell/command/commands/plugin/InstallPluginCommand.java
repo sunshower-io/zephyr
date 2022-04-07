@@ -3,13 +3,13 @@ package io.zephyr.kernel.modules.shell.command.commands.plugin;
 import static io.zephyr.api.ModuleEvents.*;
 import static io.zephyr.kernel.core.actions.ModulePhaseEvents.*;
 
+import io.sunshower.lang.events.Event;
+import io.sunshower.lang.events.EventListener;
+import io.sunshower.lang.events.EventType;
 import io.zephyr.api.ModuleEvents;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.core.actions.ModulePhaseEvents;
-import io.zephyr.kernel.events.Event;
-import io.zephyr.kernel.events.EventListener;
-import io.zephyr.kernel.events.EventType;
 import io.zephyr.kernel.module.ModuleInstallationGroup;
 import io.zephyr.kernel.module.ModuleInstallationRequest;
 import io.zephyr.kernel.modules.shell.command.AbstractCommand;

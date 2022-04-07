@@ -9,6 +9,7 @@ dependencies {
 
 
     api 'io.sunshower.arcus:gyre-api'
+    api 'io.sunshower.arcus:arcus-lang'
     testImplementation project(':kernel-tests:kernel-test')
 }
 

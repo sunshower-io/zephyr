@@ -6,8 +6,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import io.sunshower.lang.events.EventListener;
 import io.zephyr.kernel.core.ModuleManagerTestCase;
-import io.zephyr.kernel.events.EventListener;
 import io.zephyr.kernel.module.ModuleInstallationGroup;
 import io.zephyr.kernel.module.ModuleInstallationRequest;
 import io.zephyr.kernel.module.ModuleLifecycle.Actions;

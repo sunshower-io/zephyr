@@ -5,6 +5,7 @@ import static io.zephyr.kernel.core.lifecycle.DefaultKernelLifecycle.LifecyclePr
 
 import io.sunshower.checks.SuppressFBWarnings;
 import io.sunshower.gyre.Scope;
+import io.sunshower.lang.events.Events;
 import io.zephyr.kernel.concurrency.Process;
 import io.zephyr.kernel.concurrency.Scheduler;
 import io.zephyr.kernel.concurrency.TaskTracker;
@@ -13,7 +14,6 @@ import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.core.KernelEventTypes;
 import io.zephyr.kernel.core.KernelLifecycle;
 import io.zephyr.kernel.core.SunshowerKernel;
-import io.zephyr.kernel.events.Events;
 import io.zephyr.kernel.module.ModuleLifecycle;
 import io.zephyr.kernel.module.ModuleLifecycleChangeGroup;
 import io.zephyr.kernel.module.ModuleLifecycleChangeRequest;

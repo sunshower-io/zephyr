@@ -1,6 +1,6 @@
 package io.zephyr.kernel.concurrency;
 
-import io.zephyr.kernel.events.Event;
+import io.sunshower.lang.events.Event;
 import io.zephyr.kernel.status.Status;
 import lombok.EqualsAndHashCode;
 
@@ -20,7 +20,6 @@ public class TaskEvent implements Event<Task> {
     return target;
   }
 
-  @Override
   public Status getStatus() {
     return status;
   }
