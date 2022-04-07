@@ -5,10 +5,12 @@ import static org.junit.jupiter.api.Assertions.*;
 import io.sunshower.test.common.Tests;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
 
+@Disabled
 @DisabledIfEnvironmentVariable(
     named = "BUILD_ENVIRONMENT",
     matches = "github",
