@@ -3,13 +3,13 @@ package io.zephyr.kernel.core;
 import static io.zephyr.kernel.memento.Mementos.writeCoordinate;
 import static java.lang.String.format;
 
+import io.sunshower.checks.SuppressFBWarnings;
 import io.zephyr.api.ModuleActivator;
 import io.zephyr.api.ModuleContext;
 import io.zephyr.kernel.*;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.memento.Memento;
 import io.zephyr.kernel.memento.Originator;
-import io.zephyr.kernel.misc.SuppressFBWarnings;
 import java.io.File;
 import java.net.URI;
 import java.nio.file.FileSystem;

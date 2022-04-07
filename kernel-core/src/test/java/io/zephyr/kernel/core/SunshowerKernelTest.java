@@ -6,10 +6,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import io.sunshower.checks.SuppressFBWarnings;
 import io.zephyr.kernel.KernelTestCase;
 import io.zephyr.kernel.Lifecycle;
 import io.zephyr.kernel.Module;
-import io.zephyr.kernel.misc.SuppressFBWarnings;
 import io.zephyr.kernel.module.ModuleInstallationGroup;
 import io.zephyr.kernel.module.ModuleInstallationRequest;
 import io.zephyr.kernel.module.ModuleLifecycle;

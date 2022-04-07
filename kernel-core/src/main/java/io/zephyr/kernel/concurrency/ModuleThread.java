@@ -1,5 +1,6 @@
 package io.zephyr.kernel.concurrency;
 
+import io.sunshower.checks.SuppressFBWarnings;
 import io.zephyr.api.ModuleActivator;
 import io.zephyr.api.ModuleEvents;
 import io.zephyr.api.Startable;
@@ -14,7 +15,6 @@ import io.zephyr.kernel.VolatileStorage;
 import io.zephyr.kernel.core.AbstractModule;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.events.Events;
-import io.zephyr.kernel.misc.SuppressFBWarnings;
 import io.zephyr.kernel.status.Status;
 import io.zephyr.kernel.status.StatusType;
 import java.util.Map;

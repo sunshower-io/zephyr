@@ -5,9 +5,13 @@ apply plugin: 'java'
 apply plugin: 'java-library'
 
 dependencies {
-    api project(':kernel-gyre:gyre-api')
+    
+
+
+    api 'io.sunshower.arcus:gyre-api'
     testImplementation project(':kernel-tests:kernel-test')
 }
+
 jar {
     manifest {
         attributes(

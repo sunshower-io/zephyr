@@ -1,12 +1,12 @@
 package io.zephyr.kernel.launch;
 
+import io.sunshower.checks.SuppressFBWarnings;
 import io.zephyr.common.Options;
 import io.zephyr.kernel.concurrency.NamedThreadFactory;
 import io.zephyr.kernel.extensions.EntryPoint;
 import io.zephyr.kernel.extensions.EntryPointRegistry;
 import io.zephyr.kernel.extensions.PrioritizedExtension;
 import io.zephyr.kernel.log.Logging;
-import io.zephyr.kernel.misc.SuppressFBWarnings;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;

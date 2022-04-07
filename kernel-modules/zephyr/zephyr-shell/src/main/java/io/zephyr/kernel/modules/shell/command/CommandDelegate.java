@@ -1,7 +1,7 @@
 package io.zephyr.kernel.modules.shell.command;
 
+import io.sunshower.checks.SuppressFBWarnings;
 import io.zephyr.kernel.log.Logging;
-import io.zephyr.kernel.misc.SuppressFBWarnings;
 import io.zephyr.kernel.modules.shell.console.Command;
 import io.zephyr.kernel.modules.shell.console.CommandContext;
 import io.zephyr.kernel.modules.shell.console.CommandRegistry;

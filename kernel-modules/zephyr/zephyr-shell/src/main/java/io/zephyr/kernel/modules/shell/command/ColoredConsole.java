@@ -1,6 +1,6 @@
 package io.zephyr.kernel.modules.shell.command;
 
-import io.zephyr.kernel.misc.SuppressFBWarnings;
+import io.sunshower.checks.SuppressFBWarnings;
 import io.zephyr.kernel.modules.shell.console.Color;
 import io.zephyr.kernel.modules.shell.console.Console;
 import java.io.InputStream;

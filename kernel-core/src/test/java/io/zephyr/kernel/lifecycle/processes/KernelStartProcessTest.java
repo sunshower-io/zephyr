@@ -2,6 +2,7 @@ package io.zephyr.kernel.lifecycle.processes;
 
 import static org.mockito.Mockito.*;
 
+import io.sunshower.checks.SuppressFBWarnings;
 import io.sunshower.gyre.Scope;
 import io.sunshower.test.common.Tests;
 import io.zephyr.api.ServiceRegistry;
@@ -16,7 +17,6 @@ import io.zephyr.kernel.core.lifecycle.KernelClassLoaderCreationPhase;
 import io.zephyr.kernel.core.lifecycle.KernelFilesystemCreatePhase;
 import io.zephyr.kernel.core.lifecycle.KernelModuleListReadPhase;
 import io.zephyr.kernel.launch.KernelOptions;
-import io.zephyr.kernel.misc.SuppressFBWarnings;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.FileSystems;

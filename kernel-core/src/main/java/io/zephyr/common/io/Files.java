@@ -1,7 +1,7 @@
 package io.zephyr.common.io;
 
+import io.sunshower.checks.SuppressFBWarnings;
 import io.zephyr.kernel.memento.Memento;
-import io.zephyr.kernel.misc.SuppressFBWarnings;
 import java.io.*;
 import java.net.URL;
 import java.nio.file.*;

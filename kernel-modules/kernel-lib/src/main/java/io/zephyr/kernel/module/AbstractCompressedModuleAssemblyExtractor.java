@@ -2,12 +2,12 @@ package io.zephyr.kernel.module;
 
 import static java.lang.String.format;
 
+import io.sunshower.checks.SuppressFBWarnings;
 import io.zephyr.kernel.Assembly;
 import io.zephyr.kernel.Library;
 import io.zephyr.kernel.concurrency.TaskException;
 import io.zephyr.kernel.concurrency.TaskStatus;
 import io.zephyr.kernel.extensions.ModuleAssemblyExtractor;
-import io.zephyr.kernel.misc.SuppressFBWarnings;
 import io.zephyr.platform.api.Platform;
 import io.zephyr.platform.api.Platform.OperatingSystem;
 import java.io.File;

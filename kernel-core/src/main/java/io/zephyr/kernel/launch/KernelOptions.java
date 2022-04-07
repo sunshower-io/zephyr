@@ -1,5 +1,6 @@
 package io.zephyr.kernel.launch;
 
+import io.sunshower.checks.SuppressFBWarnings;
 import io.zephyr.common.io.FilePermissionChecker;
 import io.zephyr.common.io.Files;
 import io.zephyr.common.io.Strings;
@@ -7,7 +8,6 @@ import io.zephyr.kernel.Options;
 import io.zephyr.kernel.core.AbstractValidatable;
 import io.zephyr.kernel.core.SunshowerKernel;
 import io.zephyr.kernel.log.Logging;
-import io.zephyr.kernel.misc.SuppressFBWarnings;
 import java.io.File;
 import java.nio.file.AccessDeniedException;
 import java.util.logging.Level;

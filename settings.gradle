@@ -1,7 +1,6 @@
 
 pluginManagement {
     repositories {
-        jcenter()
         mavenLocal()
         mavenCentral()
         gradlePluginPortal()
@@ -24,11 +23,6 @@ include(
         'kernel-modules:zephyr:zephyr-banner',
         'kernel-modules:zephyr:zephyr-logging',
         'kernel-modules:zephyr:zephyr-directory-scanner',
-
-        'kernel-gyre:gyre-api',
-        'kernel-gyre:gyre-core',
-        'kernel-gyre:gyre-breeze',
-        'kernel-gyre:gyre-common',
 
 
 

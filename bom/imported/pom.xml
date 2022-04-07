@@ -55,6 +55,8 @@
         <h2.version>2.1.210</h2.version>
         <junit-platform-suite-api.version>1.8.1</junit-platform-suite-api.version>
         <awaitility.version>3.0.0</awaitility.version>
+        <arcus.version>1.41.5-SNAPSHOT</arcus.version>
+        <spotbugs-annotations.version>4.6.0</spotbugs-annotations.version>
     </properties>
 
     <dependencyManagement>
@@ -62,7 +64,22 @@
 
 
         <dependencies>
+            <dependency>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-annotations</artifactId>
+                <version>${spotbugs-annotations.version}</version>
+            </dependency>
 
+            <dependency>
+                <groupId>io.sunshower.arcus</groupId>
+                <artifactId>gyre-api</artifactId>
+                <version>${arcus.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.sunshower.arcus.annotations</groupId>
+                <artifactId>arcus-jsr-305</artifactId>
+                <version>${arcus.version}</version>
+            </dependency>
             <!--
             Test plugin dependencies for flyway
             -->
