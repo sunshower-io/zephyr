@@ -114,6 +114,12 @@ class ManifestModuleScannerTest {
     }
   }
 
+
+  @Test
+  void ensureSemanticVersionWorks() {
+
+  }
+
   @Test
   @SneakyThrows
   void ensureOptionalIsParsed() {

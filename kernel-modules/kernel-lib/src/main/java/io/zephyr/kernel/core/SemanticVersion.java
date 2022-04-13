@@ -1,14 +1,15 @@
 package io.zephyr.kernel.core;
 
+import com.vdurmont.semver4j.Semver;
 import io.zephyr.kernel.Version;
 import lombok.NonNull;
 
 public class SemanticVersion implements Version {
 
-  private final com.github.zafarkhaja.semver.Version version;
+  private final Semver version;
 
-  public SemanticVersion(String spec) {
-    version = com.github.zafarkhaja.semver.Version.valueOf(spec);
+  public SemanticVersion(@NonNull String spec) {
+    version = new Semver(spec);
   }
 
   @Override

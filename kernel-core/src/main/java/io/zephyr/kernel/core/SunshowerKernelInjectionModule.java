@@ -46,7 +46,7 @@ public class SunshowerKernelInjectionModule {
       Scheduler<String> scheduler) {
     SunshowerKernel.setKernelOptions(options);
     val kernel = new SunshowerKernel(moduleManager, registry, scheduler, classLoader);
-    val classpathManager = Plugins.moduleClasspathManager(graph, classLoader, kernel);
+    val classpathManager = Modules.moduleClasspathManager(graph, classLoader, kernel);
     kernel.setModuleClasspathManager(classpathManager);
     moduleManager.initialize(kernel);
     Framework.setInstance(kernel);

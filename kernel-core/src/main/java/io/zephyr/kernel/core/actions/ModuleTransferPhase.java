@@ -7,7 +7,7 @@ import io.zephyr.kernel.concurrency.TaskException;
 import io.zephyr.kernel.concurrency.TaskStatus;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.core.ModuleDescriptor;
-import io.zephyr.kernel.core.Plugins;
+import io.zephyr.kernel.core.Modules;
 import io.zephyr.kernel.events.KernelEvents;
 import io.zephyr.kernel.log.Logging;
 import io.zephyr.kernel.status.StatusType;
@@ -89,7 +89,7 @@ public class ModuleTransferPhase extends Task {
     dispatchEvent(kernel, descriptor, ModulePhaseEvents.MODULE_FILESYSTEM_CREATION_INITIATED);
     val coordinate = descriptor.getCoordinate();
     try {
-      val result = Plugins.getFileSystem(coordinate, kernel);
+      val result = Modules.getFileSystem(coordinate, kernel);
       val uri = result.fst;
       val fs = result.snd;
       log.log(Level.INFO, "transfer.uri", uri);

@@ -48,7 +48,7 @@ public class EmbeddedSpringConfiguration {
   @Bean
   public FileSystem moduleFileSystem(ModuleDescriptor descriptor, Kernel kernel)
       throws IOException {
-    return Plugins.getFileSystem(descriptor.getCoordinate(), kernel).snd;
+    return Modules.getFileSystem(descriptor.getCoordinate(), kernel).snd;
   }
 
   @Bean

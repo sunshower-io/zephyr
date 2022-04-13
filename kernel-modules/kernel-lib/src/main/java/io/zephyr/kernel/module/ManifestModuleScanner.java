@@ -1,5 +1,6 @@
 package io.zephyr.kernel.module;
 
+import io.zephyr.kernel.CoordinateSpecification;
 import io.zephyr.kernel.Dependency;
 import io.zephyr.kernel.Dependency.ServicesResolutionStrategy;
 import io.zephyr.kernel.Dependency.Type;
@@ -271,7 +272,7 @@ public final class ManifestModuleScanner implements ModuleScanner {
     return new PathSpecification(mode, pathSpec.value);
   }
 
-  ModuleCoordinate readModuleCoordinate(PushbackReader reader) throws IOException {
+  CoordinateSpecification readModuleCoordinate(PushbackReader reader) throws IOException {
     expectAndDiscard(reader, '@');
     val group = readUntil(reader, "(missing group)", ':');
     expectAndDiscard(reader, ':');
@@ -280,7 +281,7 @@ public final class ManifestModuleScanner implements ModuleScanner {
     val version = readUntil(reader, "(missing version)", true, ',', '<', '\r', '\n', '\t', ' ');
     checkForNewLine(reader);
 
-    return new ModuleCoordinate(artifact.value, group.value, new SemanticVersion(version.value));
+    return new CoordinateSpecification(group.value, artifact.value, version.value);
   }
 
   private void checkForNewLine(PushbackReader reader) throws IOException {

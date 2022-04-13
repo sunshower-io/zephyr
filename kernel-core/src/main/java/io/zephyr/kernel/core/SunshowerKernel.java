@@ -359,7 +359,7 @@ public class SunshowerKernel implements Kernel, EventSource {
 
   private FileSystem hydrateFilesystem(Coordinate coordinate) throws IOException {
     try {
-      val result = Plugins.getFileSystem(coordinate, this);
+      val result = Modules.getFileSystem(coordinate, this);
       log.log(Level.INFO, "plugin.fs.hydration.succeeded", new Object[] {coordinate, result.fst});
       return result.snd;
     } catch (IOException ex) {

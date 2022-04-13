@@ -20,27 +20,53 @@ public final class Dependency implements Comparable<Dependency> {
     ORDER_COMPARATOR = new OrderComparator();
   }
 
-  /** the type of this dependency */
+  /**
+   * the type of this dependency
+   */
   private final Type type;
-  /** specify the startup order for dependencies */
+  /**
+   * specify the startup order for dependencies
+   */
   private final int order;
-  /** the coordinate of this dependency */
-  private final Coordinate coordinate;
-  /** determine whether this dependency is optional or not */
+  /**
+   * determine whether this dependency is optional or not
+   */
   private final boolean optional;
-  /** re-export this dependency */
+  /**
+   * re-export this dependency
+   */
   private final boolean reexport;
-  /** */
+  /**
+   *
+   */
   private final ServicesResolutionStrategy servicesResolutionStrategy;
-  /** list of classes and resources that this module imports */
-  @NonNull private final List<PathSpecification> imports;
-  /** list of classes and resources that this module imports */
-  @NonNull private final List<PathSpecification> exports;
+  /**
+   * list of classes and resources that this module imports
+   */
+  @NonNull
+  private final List<PathSpecification> imports;
+  /**
+   * list of classes and resources that this module imports
+   */
+  @NonNull
+  private final List<PathSpecification> exports;
+
+  private final CoordinateSpecification coordinateSpecification;
+
+  /**
+   * the coordinate of this dependency once it has been resolved
+   */
+  private Coordinate coordinate;
+
+  /**
+   * determine whether this dependency has been resolved (i.e. getCoordinate will not return null)
+   */
+  private boolean resolved;
 
   public Dependency(
       int order,
       Type type,
-      Coordinate coordinate,
+      CoordinateSpecification spec,
       boolean optional,
       boolean export,
       ServicesResolutionStrategy servicesResolutionStrategy,
@@ -48,29 +74,29 @@ public final class Dependency implements Comparable<Dependency> {
       @NonNull List<PathSpecification> exports) {
     this.type = type;
     this.order = order;
-    this.coordinate = coordinate;
     this.optional = optional;
     this.reexport = export;
     this.imports = imports;
     this.exports = exports;
+    this.coordinateSpecification = spec;
     this.servicesResolutionStrategy = servicesResolutionStrategy;
   }
 
   public Dependency(
       Type type,
-      Coordinate coordinate,
+      CoordinateSpecification spec,
       boolean optional,
       boolean export,
       ServicesResolutionStrategy servicesResolutionStrategy,
       @NonNull List<PathSpecification> imports,
       @NonNull List<PathSpecification> exports) {
-    this(0, type, coordinate, optional, export, servicesResolutionStrategy, imports, exports);
+    this(0, type, spec, optional, export, servicesResolutionStrategy, imports, exports);
   }
 
-  public Dependency(Dependency.Type type, Coordinate coordinate) {
+  public Dependency(Dependency.Type type, CoordinateSpecification specification) {
     this(
         type,
-        coordinate,
+        specification,
         false,
         true,
         ServicesResolutionStrategy.None,
@@ -85,6 +111,19 @@ public final class Dependency implements Comparable<Dependency> {
   @Override
   public int compareTo(Dependency o) {
     return coordinate.compareTo(o.coordinate);
+  }
+
+  public void setCoordinate(final Coordinate coordinate) {
+    resolved = true;
+    this.coordinate = coordinate;
+  }
+
+  public Coordinate getCoordinate() {
+    return coordinate;
+  }
+
+  public boolean isResolved() {
+    return resolved;
   }
 
   public enum Type {

@@ -32,7 +32,7 @@ import lombok.val;
   "PMD.UnusedFormalParameter",
   "PMD.DataflowAnomalyAnalysis"
 })
-public class Plugins {
+public class Modules {
 
   static final String FILE_SYSTEM_URI_TEMPLATE = "droplet://%s.%s?version=%s";
 
@@ -258,22 +258,22 @@ public class Plugins {
   }
 
   private static void checkForUnresolvedDependencies(
-      Kernel kernel, DependencyGraph dependencyGraph, Collection<Module> installedPlugins) {
-    val results = dependencyGraph.getUnresolvedDependencies(installedPlugins);
+      Kernel kernel, DependencyGraph dependencyGraph, Collection<Module> installedModules) {
+    val results = dependencyGraph.getUnresolvedDependencies(installedModules);
     val unsatisfied = new LinkedHashSet<DependencyGraph.UnsatisfiedDependencySet>();
     for (val unresolvedDependency : results) {
 
       if (!unresolvedDependency.isSatisfied()) {
-        val plugin = unresolvedDependency.getSource();
-        for (val installedPlugin : installedPlugins) {
-          if (plugin.equals(installedPlugin.getCoordinate())) {
+        val module = unresolvedDependency.getSource();
+        for (val installedModule : installedModules) {
+          if (module.equals(installedModule.getCoordinate())) {
             try {
-              val fs = installedPlugin.getFileSystem();
+              val fs = installedModule.getFileSystem();
               if (fs != null) {
                 fs.close();
               }
             } catch (Exception ex) {
-              log.log(Level.WARNING, "failed to close plugin filesystem {0}", plugin);
+              log.log(Level.WARNING, "failed to close module filesystem {0}", module);
             }
           }
         }
