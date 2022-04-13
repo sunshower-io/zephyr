@@ -58,6 +58,7 @@ public class KernelServiceRegistry implements ServiceRegistry {
           .getTaskQueue()
           .schedule(
               new ServiceEventDispatchTask(ServiceEvents.REGISTERED, registration.getReference()));
+      registries.notifyAll();
       return registration;
     }
   }

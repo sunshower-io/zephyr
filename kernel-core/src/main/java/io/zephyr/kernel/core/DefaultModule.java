@@ -324,7 +324,7 @@ public final class DefaultModule extends AbstractModule
       val dependencyMemento = dependenciesMemento.child("dependency");
       dependencyMemento.write("type", dependency.getType());
       writeCoordinate(dependencyMemento, dependency.getCoordinate());
-      writeCoordinateSpecification(dependenciesMemento, dependency.getCoordinateSpecification());
+      writeCoordinateSpecification(dependencyMemento, dependency.getCoordinateSpecification());
     }
   }
 

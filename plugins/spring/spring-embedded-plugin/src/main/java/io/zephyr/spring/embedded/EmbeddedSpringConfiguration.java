@@ -28,7 +28,7 @@ public class EmbeddedSpringConfiguration {
 
   @Bean
   public ModuleContext moduleContext(Module module, Kernel kernel, ModuleThread thread) {
-    val ctx = new DefaultPluginContext(module, kernel, thread);
+    val ctx = new DefaultModuleContext(module, kernel, thread);
     ((EmbeddedModule) module).setContext(ctx);
     return ctx;
   }

@@ -189,9 +189,7 @@ public class YamlPluginDescriptorScanner implements ModuleScanner {
       type = Dependency.Type.Library;
     }
 
-    /**
-     * todo: we need to fix some things with this
-     */
+    /** todo: we need to fix some things with this */
     val required = Boolean.valueOf(optional(dependency, REQUIRED));
 
     val depName = require(dependency, DEPENDENCY_NAME);

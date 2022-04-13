@@ -31,6 +31,39 @@ import org.junit.jupiter.api.TestInstance;
 public class DefaultModuleManagerTest extends ModuleManagerTestCase {
 
   @Test
+  void ensureSemverWorksForSingleVersion() {
+
+    try {
+      kernel.start();
+      val fst = moduleIn(":semver:test-plugin-1");
+      val snd = moduleIn(":semver:test-plugin-2-0");
+      install(fst, snd);
+      start("test-plugin-2");
+      val result = invokeServiceOn("test-plugin-1", "plugin1.Service", "getHello");
+      assertEquals("Hello from 1.0", result);
+    } finally {
+      kernel.stop();
+    }
+  }
+
+  @Test
+  void ensureSemverWorksForMultipleVersions() {
+
+    try {
+      kernel.start();
+      val fst = moduleIn(":semver:test-plugin-1");
+      val fst1 = moduleIn(":semver:test-plugin-1-1");
+      val snd = moduleIn(":semver:test-plugin-2-0");
+      install(fst, snd, fst1);
+      start("test-plugin-2");
+      //      val result = invokeServiceOn("test-plugin-2-0", "plugin1.Service", "getHello");
+      //      assertEquals("Hello from 1.0", result);
+    } finally {
+      kernel.stop();
+    }
+  }
+
+  @Test
   @SneakyThrows
   void ensureRetrievingModuleResourceWorks() {
     try {

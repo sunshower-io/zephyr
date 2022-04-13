@@ -1,0 +1,18 @@
+apply plugin: 'war'
+
+dependencies {
+    compileOnly project(':kernel-api')
+    implementation project(':kernel-modules:sunshower-yaml-reader')
+}
+
+war {
+    manifest {
+        attributes(
+                'group': 'io.sunshower.semver',
+                'name': 'test-plugin-1',
+                'version': '1.1.0',
+                'description': 'just a test plugin!',
+                'type': 'plugin'
+        )
+    }
+}

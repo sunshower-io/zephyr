@@ -79,7 +79,7 @@ public class YamlMemento implements Memento {
     if (Coordinate.class.isAssignableFrom(value)) {
       return (U) readCoordinate(name);
     }
-    if(CoordinateSpecification.class.isAssignableFrom(value)) {
+    if (CoordinateSpecification.class.isAssignableFrom(value)) {
       return (U) readCoordinateSpecification(name);
     }
     return (U) values.get(name);
@@ -89,7 +89,7 @@ public class YamlMemento implements Memento {
     val child = childNamed(cspecName);
     val group = child.read("group", String.class);
     val name = child.read("name", String.class);
-    val specification = child.read("version-specification", String.class);
+    val specification = child.read("version", String.class);
     return new CoordinateSpecification(group, name, specification);
   }
 

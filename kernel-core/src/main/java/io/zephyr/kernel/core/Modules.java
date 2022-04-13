@@ -259,7 +259,9 @@ public class Modules {
 
   private static void checkForUnresolvedDependencies(
       Kernel kernel, DependencyGraph dependencyGraph, Collection<Module> installedModules) {
-    val results = dependencyGraph.getUnresolvedDependencies(installedModules);
+
+    //    val results = dependencyGraph.getUnresolvedDependencies(installedModules);
+    val results = dependencyGraph.resolveDependencies(installedModules);
     val unsatisfied = new LinkedHashSet<DependencyGraph.UnsatisfiedDependencySet>();
     for (val unresolvedDependency : results) {
 

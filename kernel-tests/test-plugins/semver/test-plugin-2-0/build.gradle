@@ -1,0 +1,23 @@
+apply plugin: 'war'
+
+dependencies {
+    compileOnly project(':kernel-api')
+    implementation project(':kernel-modules:sunshower-yaml-reader')
+}
+
+def deps = [
+        "service@io.sunshower.semver:test-plugin-1:1.+"
+].join(',')
+
+war {
+    manifest {
+        attributes(
+                'group': 'io.sunshower.semver',
+                'name': 'test-plugin-2',
+                'version': '1.0.2.Final',
+                'description': 'just a test plugin!',
+                'dependencies': deps,
+                'type': 'plugin'
+        )
+    }
+}

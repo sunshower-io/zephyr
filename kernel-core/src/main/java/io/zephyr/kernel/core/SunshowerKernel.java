@@ -181,7 +181,7 @@ public class SunshowerKernel implements Kernel, EventSource {
 
   @Override
   public ModuleContext createContext(Module module, VolatileStorage storage) {
-    val ctx = new DefaultPluginContext(module, this, storage);
+    val ctx = new DefaultModuleContext(module, this, storage);
     ((AbstractModule) module).setContext(ctx);
     return ctx;
   }

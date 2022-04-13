@@ -2,7 +2,11 @@ package io.zephyr.kernel.core;
 
 import io.zephyr.api.ServiceDefinition;
 import java.util.function.Supplier;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
+@ToString
+@EqualsAndHashCode
 public class FactoryServiceDefinition<T> implements ServiceDefinition<T> {
   private final Class<T> type;
   private final String name;

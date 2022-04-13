@@ -23,7 +23,7 @@ import java.util.logging.Logger;
 import lombok.val;
 
 @SuppressWarnings("PMD.UnusedPrivateMethod")
-public class DefaultPluginContext implements ModuleContext {
+public class DefaultModuleContext implements ModuleContext {
 
   final Module module;
   final Kernel kernel;
@@ -32,9 +32,9 @@ public class DefaultPluginContext implements ModuleContext {
   final Map<Object, Object> context;
 
   static final Object lock = new Object();
-  static final Logger log = Logging.get(DefaultPluginContext.class);
+  static final Logger log = Logging.get(DefaultModuleContext.class);
 
-  public DefaultPluginContext(
+  public DefaultModuleContext(
       final Module module, final Kernel kernel, final VolatileStorage delegate) {
     this.module = module;
     this.kernel = kernel;
@@ -180,6 +180,24 @@ public class DefaultPluginContext implements ModuleContext {
       }
       return result;
     }
+  }
+
+  @Override
+  public List<ServiceReference<?>> getReferences(Predicate<ServiceRegistration<?>> predicate) {
+    val moduleManager = kernel.getModuleManager();
+    val serviceRegistry = kernel.getServiceRegistry();
+    val result = new ArrayList<ServiceReference<?>>();
+    for (val module : moduleManager.getModules(Lifecycle.State.Active)) {
+      val set = serviceRegistry.getRegistrations(module);
+      if (set != null) {
+        for (val registration : set) {
+          if (predicate.test(registration)) {
+            result.add(registration.getReference());
+          }
+        }
+      }
+    }
+    return result;
   }
 
   private <T> ExpressionLanguageExtension resolveModuleExpressionLanguageExtension(Query<T> query) {

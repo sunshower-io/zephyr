@@ -42,18 +42,15 @@ import lombok.val;
  *
  * <p>
  *
- * <p>For instance: {@code service@io.sunshower:zephyr:version<export:none; services:true;
- * optional>
+ * <p>For instance: {@code service@io.sunshower:zephyr:version<export:none; services:true; optional>
  * }
  */
 @SuppressWarnings({"PMD.UnusedPrivateMethod", "PMD.DataflowAnomalyAnalysis"})
 public final class ManifestModuleScanner implements ModuleScanner {
 
-  /**
-   *
-   */
+  /** */
   static final String[] moduleDependencyModifiers = {
-      "order", "optional", "re-export", "services", "exports-paths", "imports-paths"
+    "order", "optional", "re-export", "services", "exports-paths", "imports-paths"
   };
 
   @Override
@@ -284,8 +281,8 @@ public final class ManifestModuleScanner implements ModuleScanner {
     MatchResult version;
     if (nextIsOneOf(reader, '(', '[', ']', ')')) {
       val ch = reader.read();
-      version = new MatchResult(((char) ch) + readRangeSpec(reader).value + ((char) reader.read()),
-          ch);
+      version =
+          new MatchResult(((char) ch) + readRangeSpec(reader).value + ((char) reader.read()), ch);
       readUntil(reader, "expected deliminter or whitespace", true, ',', '<', '\r', '\n', '\t', ' ');
     } else {
       version = readUntil(reader, "(missing version)", true, ',', '<', '\r', '\n', '\t', ' ');
@@ -296,8 +293,8 @@ public final class ManifestModuleScanner implements ModuleScanner {
   }
 
   private MatchResult readRangeSpec(PushbackReader reader) throws IOException {
-    return readUntil(reader, "(expected range close: {']', ')', '(', '[', '[', '('}", true, '[', '(', ']',
-        ')');
+    return readUntil(
+        reader, "(expected range close: {']', ')', '(', '[', '[', '('}", true, '[', '(', ']', ')');
   }
 
   private boolean nextIsOneOf(PushbackReader reader, char... chars) throws IOException {

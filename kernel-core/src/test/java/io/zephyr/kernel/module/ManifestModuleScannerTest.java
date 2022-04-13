@@ -141,6 +141,56 @@ class ManifestModuleScannerTest {
     assertEquals(value, dependency.getCoordinateSpecification().getVersionSpecification());
   }
 
+  @SneakyThrows
+  @ParameterizedTest
+  @ValueSource(
+      strings = {
+        "1.+",
+        "1.0.+",
+        "[1.0,2.0]",
+        "[1.0,2.0]",
+        "[1.0,2.0[",
+        "]1.0,2.0]",
+        "]1.0,2.0[",
+        "[1.0,)",
+        "]1.0,)",
+        "(,2.0]",
+        "(,2.0["
+      })
+  void ensureSemanticVersionworksNoSuffixMultipleDeps(String value) {
+    val coordinate = format("service@hello0:world:%s, \n\t service@cool:beans:%s", value, value);
+    val reader = readerFor(coordinate);
+    val deps = scanner.readDependencies(reader);
+    assertEquals(2, deps.size());
+    val dependency = deps.get(0);
+    assertEquals(value, dependency.getCoordinateSpecification().getVersionSpecification());
+  }
+
+  @SneakyThrows
+  @ParameterizedTest
+  @ValueSource(
+      strings = {
+        "1.+",
+        "1.0.+",
+        "[1.0,2.0]",
+        "[1.0,2.0]",
+        "[1.0,2.0[",
+        "]1.0,2.0]",
+        "]1.0,2.0[",
+        "[1.0,)",
+        "]1.0,)",
+        "(,2.0]",
+        "(,2.0["
+      })
+  void ensureSemanticVersionworksNoSuffix(String value) {
+    val coordinate = format("service@hello0:world:%s", value);
+    val reader = readerFor(coordinate);
+    val deps = scanner.readDependencies(reader);
+    assertEquals(1, deps.size());
+    val dependency = deps.get(0);
+    assertEquals(value, dependency.getCoordinateSpecification().getVersionSpecification());
+  }
+
   @Test
   @SneakyThrows
   void ensureOptionalIsParsed() {
@@ -329,6 +379,37 @@ class ManifestModuleScannerTest {
 
     val r = results.get(1);
     assertEquals(r.getImports().get(1).getMode(), Mode.Class);
+  }
+
+  @ParameterizedTest
+  @ValueSource(
+      strings = {
+        "service@io.sunshower.coolbeans:whatever:1.0.0-Final<"
+            + "exports-paths=["
+            + " just:hello/world, "
+            + " all:how/are/you?"
+            + "]; "
+            + "re-export; "
+            + "optional; "
+            + "services=import; "
+            + "imports-paths=["
+            + "just:whatever, "
+            + "all:these/are/cool/paths/?]>,"
+            + "service@io.sunshower.coolbeans2:whatever:1.+<"
+            + " exports-paths=["
+            + "   just:hello/world, "
+            + "   all:how/are/you?]; "
+            + "   re-export; "
+            + "   optional; "
+            + "   services=export; "
+            + "   imports-paths=["
+            + "       just:whatever, "
+            + "       all:these/are/cool/paths/*]"
+            + " >"
+      })
+  void ensureComplexPathSpecsWorkWithSemver(String pathSpec) throws IOException {
+    val results = scanner.readDependencies(readerFor(pathSpec));
+    assertEquals(2, results.size());
   }
 
   @ParameterizedTest

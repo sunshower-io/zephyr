@@ -8,9 +8,11 @@ import java.util.Locale;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.ToString;
 import lombok.val;
 
 @Getter
+@ToString
 @EqualsAndHashCode
 public final class Dependency implements Comparable<Dependency> {
 
