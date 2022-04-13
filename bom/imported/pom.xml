@@ -54,7 +54,7 @@
         <h2.version>2.1.210</h2.version>
         <junit-platform-suite-api.version>1.8.1</junit-platform-suite-api.version>
         <awaitility.version>3.0.0</awaitility.version>
-        <arcus.version>1.41.5-SNAPSHOT</arcus.version>
+        <arcus.version>1.41.10.Final</arcus.version>
         <spotbugs-annotations.version>4.6.0</spotbugs-annotations.version>
         <semver4j.version>3.1.0</semver4j.version>
     </properties>
