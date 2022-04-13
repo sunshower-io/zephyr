@@ -8,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import io.zephyr.kernel.Dependency;
 import io.zephyr.kernel.Dependency.ServicesResolutionStrategy;
 import io.zephyr.kernel.core.PathSpecification.Mode;
-import io.zephyr.kernel.core.SemanticVersion;
 import java.io.IOException;
 import java.io.PushbackReader;
 import java.io.StringReader;
@@ -89,17 +88,16 @@ class ManifestModuleScannerTest {
     scanner.readDependency(dependencies, reader);
     assertEquals(1, dependencies.size(), "must have one dependency");
     val dep = dependencies.get(0);
-    val coord = dep.getCoordinate();
+    val coord = dep.getCoordinateSpecification();
     assertEquals(coord.getGroup(), "hello");
     assertEquals(coord.getName(), "world");
-    assertEquals(coord.getVersion(), new SemanticVersion("1.0.0-SNAPSHOT"));
+    assertEquals(coord.getVersionSpecification(), "1.0.0-SNAPSHOT");
   }
 
   @SneakyThrows
   @ParameterizedTest
   @ValueSource(strings = {"\n", "\r\n", "\r"})
   void ensureCommaSeparatedDependenciesWork(String linefeed) {
-
     val coordinate =
         "service@hello0:world:1.0.0-SNAPSHOT,"
             + "service@whatever.world1:coolbeans:1.0.0-Final  , "
@@ -110,12 +108,38 @@ class ManifestModuleScannerTest {
     val deps = scanner.readDependencies(reader);
     assertEquals(4, deps.size());
     for (int i = 0; i < deps.size(); i++) {
-      assertTrue(deps.get(i).getCoordinate().getGroup().contains("" + i), "must contain " + i);
+      assertTrue(
+          deps.get(i).getCoordinateSpecification().getGroup().contains("" + i),
+          "must contain " + i);
     }
   }
 
-  @Test
-  void ensureSemanticVersionWorks() {}
+  @SneakyThrows
+  @ParameterizedTest
+  @ValueSource(
+      strings = {
+        "1.+",
+        "1.0.+",
+        "[1.0,2.0]",
+        "[1.0,2.0]",
+        "[1.0,2.0[",
+        "]1.0,2.0]",
+        "]1.0,2.0[",
+        "[1.0,)",
+        "]1.0,)",
+        "(,2.0]",
+        "(,2.0["
+      })
+  void ensureSemanticVersionWorks(String value) {
+    val coordinate = format("service@hello0:world:%s<optional>", value);
+
+    val reader = readerFor(coordinate);
+    val deps = scanner.readDependencies(reader);
+    assertEquals(1, deps.size());
+    val dependency = deps.get(0);
+    assertTrue(dependency.isOptional());
+    assertEquals(value, dependency.getCoordinateSpecification().getVersionSpecification());
+  }
 
   @Test
   @SneakyThrows

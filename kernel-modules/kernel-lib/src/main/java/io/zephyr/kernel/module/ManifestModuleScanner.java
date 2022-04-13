@@ -42,15 +42,18 @@ import lombok.val;
  *
  * <p>
  *
- * <p>For instance: {@code service@io.sunshower:zephyr:version<export:none; services:true; optional>
+ * <p>For instance: {@code service@io.sunshower:zephyr:version<export:none; services:true;
+ * optional>
  * }
  */
 @SuppressWarnings({"PMD.UnusedPrivateMethod", "PMD.DataflowAnomalyAnalysis"})
 public final class ManifestModuleScanner implements ModuleScanner {
 
-  /** */
+  /**
+   *
+   */
   static final String[] moduleDependencyModifiers = {
-    "order", "optional", "re-export", "services", "exports-paths", "imports-paths"
+      "order", "optional", "re-export", "services", "exports-paths", "imports-paths"
   };
 
   @Override
@@ -278,10 +281,33 @@ public final class ManifestModuleScanner implements ModuleScanner {
     expectAndDiscard(reader, ':');
     val artifact = readUntil(reader, "(missing artifact)", ':');
     expectAndDiscard(reader, ':');
-    val version = readUntil(reader, "(missing version)", true, ',', '<', '\r', '\n', '\t', ' ');
+    MatchResult version;
+    if (nextIsOneOf(reader, '(', '[', ']', ')')) {
+      val ch = reader.read();
+      version = new MatchResult(((char) ch) + readRangeSpec(reader).value + ((char) reader.read()),
+          ch);
+      readUntil(reader, "expected deliminter or whitespace", true, ',', '<', '\r', '\n', '\t', ' ');
+    } else {
+      version = readUntil(reader, "(missing version)", true, ',', '<', '\r', '\n', '\t', ' ');
+    }
     checkForNewLine(reader);
 
     return new CoordinateSpecification(group.value, artifact.value, version.value);
+  }
+
+  private MatchResult readRangeSpec(PushbackReader reader) throws IOException {
+    return readUntil(reader, "(expected range close: {']', ')', '(', '[', '[', '('}", true, '[', '(', ']',
+        ')');
+  }
+
+  private boolean nextIsOneOf(PushbackReader reader, char... chars) throws IOException {
+    val ch = peek(reader);
+    for (val c : chars) {
+      if (c == ch) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private void checkForNewLine(PushbackReader reader) throws IOException {
