@@ -15,12 +15,16 @@ public class Test implements ModuleActivator {
     moduleTracker.addEventListener(
         (type, event) -> System.out.format("%s: %s", type, event.getTarget()),
         ModuleEvents.INSTALLED);
-    serviceTracker = context.trackServices(t -> !Objects.equals(t.getModule(), context.getModule()));
-    serviceTracker.addEventListener((t, u) -> {
-      registration = context.register(Service.class, new Plugin2Service(((ServiceReference<?>) u.getTarget()).getDefinition().get()));
-
-
-    }, ServiceEvents.REGISTERED);
+    serviceTracker =
+        context.trackServices(t -> !Objects.equals(t.getModule(), context.getModule()));
+    serviceTracker.addEventListener(
+        (t, u) -> {
+          registration =
+              context.register(
+                  Service.class,
+                  new Plugin2Service(((ServiceReference<?>) u.getTarget()).getDefinition().get()));
+        },
+        ServiceEvents.REGISTERED);
     System.out.println("Plugin2 started...");
   }
 
