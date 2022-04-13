@@ -1,17 +1,24 @@
 package io.zephyr.kernel.dependencies;
 
 import static java.util.Arrays.asList;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.sunshower.gyre.Component;
 import io.sunshower.gyre.DirectedGraph;
 import io.sunshower.gyre.Partition;
 import io.sunshower.kernel.test.MockModule;
 import io.zephyr.kernel.Coordinate;
+import io.zephyr.kernel.CoordinateSpecification;
 import io.zephyr.kernel.Dependency;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.core.ModuleCoordinate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,8 +31,6 @@ import org.junit.jupiter.api.Test;
   "PMD.JUnitAssertionsShouldIncludeMessage"
 })
 class ModuleCycleDetectorTest {
-
-  private List<Module> graph;
 
   MockModule a = create("a", "a", "1.0.0");
   MockModule b = create("b", "b", "1.0.0");
@@ -44,12 +49,14 @@ class ModuleCycleDetectorTest {
   MockModule o = create("o", "c", "1.0.0");
   MockModule p = create("p", "c", "1.0.0");
   MockModule q = create("q", "c", "1.0.0");
+  private List<Module> graph;
 
   @BeforeEach
   void setUp() {
 
     graph = Arrays.asList(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q);
   }
+
   /**
    * Since a module already contains its own dependencies, it's connected by the trivial path. It
    * may be a <i>validation</i> issue to detect self-cycles, but it isn't really a problem from a
@@ -58,10 +65,17 @@ class ModuleCycleDetectorTest {
   @Test
   void ensureSelfCycleDoesNotAppear() {
     val module = create("test", "test", "1.0.0");
-    module.addDependency(new Dependency(Dependency.Type.Service, module.getCoordinate()));
+    module.addDependency(
+        new Dependency(Dependency.Type.Service, module.getCoordinate(), specFor(module)));
 
     val components = newDetector(Collections.singletonList(module));
     assertEquals(getCycles(components).size(), 0, "must be allowed");
+  }
+
+  public static CoordinateSpecification specFor(Module module) {
+    val coordinate = module.getCoordinate();
+    return new CoordinateSpecification(
+        coordinate.getGroup(), coordinate.getName(), coordinate.getVersion().toString());
   }
 
   @Test
@@ -81,7 +95,7 @@ class ModuleCycleDetectorTest {
   }
 
   private void connect(MockModule a, MockModule b) {
-    a.addDependency(new Dependency(Dependency.Type.Service, b.getCoordinate()));
+    a.addDependency(new Dependency(Dependency.Type.Service, b.getCoordinate(), specFor(b)));
   }
 
   @Test
@@ -89,8 +103,8 @@ class ModuleCycleDetectorTest {
     val a = create("a", "a", "1.0.3");
     val b = create("b", "b", "1.0.3");
 
-    a.addDependency(new Dependency(Dependency.Type.Service, b.getCoordinate()));
-    b.addDependency(new Dependency(Dependency.Type.Service, a.getCoordinate()));
+    a.addDependency(new Dependency(Dependency.Type.Service, b.getCoordinate(), specFor(b)));
+    b.addDependency(new Dependency(Dependency.Type.Service, a.getCoordinate(), specFor(b)));
     val result = newDetector(asList(a, b));
     assertEquals(getCycles(result).size(), 1);
     val cycle = getCycles(result).get(0);

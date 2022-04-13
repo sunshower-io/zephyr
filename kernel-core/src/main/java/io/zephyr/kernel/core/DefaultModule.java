@@ -1,6 +1,7 @@
 package io.zephyr.kernel.core;
 
 import static io.zephyr.kernel.memento.Mementos.writeCoordinate;
+import static io.zephyr.kernel.memento.Mementos.writeCoordinateSpecification;
 import static java.lang.String.format;
 
 import io.sunshower.checks.SuppressFBWarnings;
@@ -323,6 +324,7 @@ public final class DefaultModule extends AbstractModule
       val dependencyMemento = dependenciesMemento.child("dependency");
       dependencyMemento.write("type", dependency.getType());
       writeCoordinate(dependencyMemento, dependency.getCoordinate());
+      writeCoordinateSpecification(dependenciesMemento, dependency.getCoordinateSpecification());
     }
   }
 
@@ -333,7 +335,8 @@ public final class DefaultModule extends AbstractModule
     for (val dep : depList) {
       val depType = Dependency.Type.parse(dep.read("type", String.class));
       val coordinate = dep.read("coordinate", Coordinate.class);
-      dependencies.add(new Dependency(depType, coordinate));
+      val specification = dep.read("coordinate-specification", CoordinateSpecification.class);
+      dependencies.add(new Dependency(depType, coordinate, specification));
     }
   }
 

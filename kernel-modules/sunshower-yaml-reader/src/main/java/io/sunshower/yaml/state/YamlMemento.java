@@ -3,6 +3,7 @@ package io.sunshower.yaml.state;
 import com.esotericsoftware.yamlbeans.YamlReader;
 import com.esotericsoftware.yamlbeans.YamlWriter;
 import io.zephyr.kernel.Coordinate;
+import io.zephyr.kernel.CoordinateSpecification;
 import io.zephyr.kernel.core.ModuleCoordinate;
 import io.zephyr.kernel.core.SemanticVersion;
 import io.zephyr.kernel.memento.Memento;
@@ -78,7 +79,18 @@ public class YamlMemento implements Memento {
     if (Coordinate.class.isAssignableFrom(value)) {
       return (U) readCoordinate(name);
     }
+    if(CoordinateSpecification.class.isAssignableFrom(value)) {
+      return (U) readCoordinateSpecification(name);
+    }
     return (U) values.get(name);
+  }
+
+  private CoordinateSpecification readCoordinateSpecification(String cspecName) {
+    val child = childNamed(cspecName);
+    val group = child.read("group", String.class);
+    val name = child.read("name", String.class);
+    val specification = child.read("version-specification", String.class);
+    return new CoordinateSpecification(group, name, specification);
   }
 
   private Coordinate readCoordinate(String cgroupName) {

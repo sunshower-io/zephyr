@@ -1,5 +1,6 @@
 package io.zephyr.kernel.dependencies;
 
+import static io.zephyr.kernel.dependencies.ModuleCycleDetectorTest.specFor;
 import static org.junit.jupiter.api.Assertions.*;
 
 import io.sunshower.kernel.test.MockModule;
@@ -142,7 +143,10 @@ class DefaultDependencyGraphTest {
     val coord = ModuleCoordinate.create(group, name, version);
     val results =
         Arrays.stream(deps)
-            .map(t -> new Dependency(Dependency.Type.Service, module(t).getCoordinate()))
+            .map(
+                t ->
+                    new Dependency(
+                        Dependency.Type.Service, module(t).getCoordinate(), specFor(module(t))))
             .collect(Collectors.toList());
     return new MockModule(coord, results);
   }
@@ -151,7 +155,10 @@ class DefaultDependencyGraphTest {
     val coord = ModuleCoordinate.create(group, name, "1.0.0-SNAPSHOT");
     val results =
         Arrays.stream(deps)
-            .map(t -> new Dependency(Dependency.Type.Service, module(t).getCoordinate()))
+            .map(
+                t ->
+                    new Dependency(
+                        Dependency.Type.Service, module(t).getCoordinate(), specFor(module(t))))
             .collect(Collectors.toList());
     return new MockModule(coord, results);
   }

@@ -114,11 +114,8 @@ class ManifestModuleScannerTest {
     }
   }
 
-
   @Test
-  void ensureSemanticVersionWorks() {
-
-  }
+  void ensureSemanticVersionWorks() {}
 
   @Test
   @SneakyThrows
