@@ -1,13 +1,43 @@
 <project>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>io.zephyr</groupId>
+  <groupId>io.sunshower.zephyr</groupId>
   <artifactId>zephyr-bom</artifactId>
   <version>2.0.101-SNAPSHOT</version>
   <packaging>pom</packaging>
   <properties>
     <zephyr.version>2.0.101-SNAPSHOT</zephyr.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven-javadoc-plugin.version>2.9.1</maven-javadoc-plugin.version>
+    <maven-gpg-plugin.version>3.0.1</maven-gpg-plugin.version>
+    <maven-source-plugin.version>2.2.1</maven-source-plugin.version>
   </properties>
 
+  <scm>
+    <url>https://github.com/sunshower-io/sunshower-arcus</url>
+    <connection>scm:git:ssh://git@github.com/sunshower-io/sunshower-arcus.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/sunshower-io/sunshower-arcus.git
+    </developerConnection>
+  </scm>
+  <developers>
+    <developer>
+      <email>josiah@sunshower.io</email>
+      <url>https://sunshower.io</url>
+      <roles>
+        <role>
+          admin
+        </role>
+      </roles>
+    </developer>
+    <developer>
+      <email>lisa@sunshower.io</email>
+      <url>https://sunshower.io</url>
+      <roles>
+        <role>
+          admin
+        </role>
+      </roles>
+    </developer>
+  </developers>
   <repositories>
     <repository>
       <id>maven-central</id>
@@ -49,4 +79,74 @@
     <module>exported</module>
   </modules>
 
+  <profiles>
+    <profile>
+      <id>maven-central</id>
+      <distributionManagement>
+        <repository>
+          <id>maven-central-repo</id>
+          <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+        <snapshotRepository>
+          <id>maven-central-repo</id>
+          <name>Sunshower-env Github</name>
+          <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+        </snapshotRepository>
+      </distributionManagement>
+    </profile>
+  </profiles>
+
+  <build>
+    <plugins>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>${maven-source-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar-no-fork</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>${maven-javadoc-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-gpg-plugin</artifactId>
+      </plugin>
+    </plugins>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-gpg-plugin</artifactId>
+          <version>${maven-gpg-plugin.version}</version>
+          <executions>
+            <execution>
+              <id>sign-artifacts</id>
+              <phase>deploy</phase>
+              <goals>
+                <goal>sign</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
 </project>

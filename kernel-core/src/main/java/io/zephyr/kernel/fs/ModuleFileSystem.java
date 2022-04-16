@@ -57,6 +57,10 @@ public class ModuleFileSystem extends FileSystem implements Closeable {
     return result;
   }
 
+  public ModuleFileSystem recreate() {
+    return new ModuleFileSystem(key, provider, rootDirectory);
+  }
+
   @Override
   public void close() throws IOException {
     synchronized (lock) {

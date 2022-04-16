@@ -3,6 +3,7 @@ package io.zephyr.kernel.core;
 import static org.awaitility.Awaitility.await;
 
 import io.sunshower.test.common.Tests;
+import io.zephyr.kernel.Module;
 import io.zephyr.kernel.concurrency.Scheduler;
 import io.zephyr.kernel.launch.KernelOptions;
 import io.zephyr.kernel.module.ModuleInstallationGroup;
@@ -16,7 +17,15 @@ import lombok.SneakyThrows;
 import lombok.val;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
+import org.junit.jupiter.api.parallel.Isolated;
 
+@Isolated
+@Execution(ExecutionMode.SAME_THREAD)
+@TestInstance(TestInstance.Lifecycle.PER_METHOD)
 public class ModuleManagerTestCase {
 
   protected Kernel kernel;
@@ -28,15 +37,12 @@ public class ModuleManagerTestCase {
   ModuleInstallationRequest req2;
   ModuleInstallationRequest req1;
 
-  private File tempfile;
-
   @BeforeEach
-  protected void setUp() throws Exception {
+  protected void setUp(@TempDir File temdir) throws Exception {
 
     val options = new KernelOptions();
 
-    tempfile = configureFiles();
-    options.setHomeDirectory(tempfile);
+    options.setHomeDirectory(temdir);
 
     SunshowerKernel.setKernelOptions(options);
 
@@ -82,6 +88,7 @@ public class ModuleManagerTestCase {
   @AfterEach
   void tearDown() throws Exception {
     kernel.stop();
+    Thread.sleep(100);
   }
 
   private File configureFiles() {
@@ -96,15 +103,44 @@ public class ModuleManagerTestCase {
   @SneakyThrows
   private void request(String pluginName, ModuleLifecycle.Actions action) {
 
-    val plugin =
-        manager.getModules().stream()
-            .filter(t -> t.getCoordinate().getName().contains(pluginName))
-            .findFirst()
-            .get();
-
+    val plugin = find(pluginName);
     val lifecycleRequest = new ModuleLifecycleChangeRequest(plugin.getCoordinate(), action);
     val grp = new ModuleLifecycleChangeGroup(lifecycleRequest);
     manager.prepare(grp).commit().toCompletableFuture().get();
+  }
+
+  @SneakyThrows
+  @SuppressWarnings("unchecked")
+  protected <T> Class<T> findClass(String moduleName, String className) {
+    val module = find(moduleName);
+    val classloader = module.getClassLoader();
+    return (Class<T>) classloader.loadClass(className);
+  }
+
+  protected Module find(String name) {
+    await()
+        .atMost(10, TimeUnit.SECONDS)
+        .until(
+            () ->
+                manager.getModules().stream()
+                    .anyMatch(t -> t.getCoordinate().getName().contains(name)));
+    return manager.getModules().stream()
+        .filter(t -> t.getCoordinate().getName().contains(name))
+        .findFirst()
+        .get();
+  }
+
+  @SneakyThrows
+  @SuppressWarnings({"unchecked", "rawtypes"})
+  protected <T> T invokeClassOn(
+      String moduleName, String typeName, String methodName, Object... args) {
+    val module = find(moduleName);
+    val type = module.getClassLoader().loadClass(typeName);
+    val instance = type.getConstructor().newInstance();
+
+    val method = type.getMethod(methodName, argTypesFor(args));
+    method.trySetAccessible();
+    return (T) method.invoke(instance, args);
   }
 
   @SneakyThrows

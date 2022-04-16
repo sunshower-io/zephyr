@@ -10,6 +10,7 @@ import io.zephyr.common.io.Files;
 import io.zephyr.kernel.Coordinate;
 import io.zephyr.kernel.Lifecycle;
 import io.zephyr.kernel.Module;
+import io.zephyr.kernel.concurrency.ModuleThread;
 import io.zephyr.kernel.core.actions.ModuleInstallationCompletionPhase;
 import io.zephyr.kernel.core.actions.ModulePhaseEvents;
 import io.zephyr.kernel.core.actions.WritePluginDescriptorPhase;
@@ -19,9 +20,17 @@ import io.zephyr.kernel.dependencies.UnresolvedDependencyException;
 import io.zephyr.kernel.log.Logging;
 import java.io.IOException;
 import java.net.URI;
-import java.nio.file.*;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystemNotFoundException;
+import java.nio.file.FileSystems;
+import java.nio.file.ProviderNotFoundException;
 import java.nio.file.spi.FileSystemProvider;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.ServiceLoader;
+import java.util.Set;
+import java.util.WeakHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -35,6 +44,13 @@ import lombok.val;
 public class Modules {
 
   static final String FILE_SYSTEM_URI_TEMPLATE = "droplet://%s.%s?version=%s";
+  static final Object lock = new Object();
+  static final AtomicReference<Set<FileSystemProvider>> existingProviders;
+  static final Logger log = Logging.get(WritePluginDescriptorPhase.class);
+
+  static {
+    existingProviders = new AtomicReference<>();
+  }
 
   @SuppressWarnings({"PMD.CloseResource", "PMD.DataflowAnomalyAnalysis"})
   public static final Pair<String, FileSystem> locateFilesystem(
@@ -49,7 +65,6 @@ public class Modules {
     return Pair.of(uri, fs);
   }
 
-  static final Object lock = new Object();
   /**
    * this method retrieves or creates the filesystem
    *
@@ -100,12 +115,6 @@ public class Modules {
     return Pair.of(uriValue, fs);
   }
 
-  static final AtomicReference<Set<FileSystemProvider>> existingProviders;
-
-  static {
-    existingProviders = new AtomicReference<>();
-  }
-
   private static Set<FileSystemProvider> retrieveOrLoadCachedProviders(
       Kernel kernel, String scheme) {
     synchronized (lock) {
@@ -138,8 +147,6 @@ public class Modules {
             .create(graph, kernel);
     return result;
   }
-
-  static final Logger log = Logging.get(WritePluginDescriptorPhase.class);
 
   public static boolean performInstallation(
       Scope scope, Set<Module> installedPlugins, SunshowerKernel kernel) {
@@ -308,5 +315,23 @@ public class Modules {
         log.log(Level.WARNING, "failed to write descriptor", e);
       }
     }
+  }
+
+  public static void close(Module module) throws Exception {
+    module.close();
+    val taskQueue = module.getTaskQueue();
+    if (taskQueue != null) {
+      taskQueue.stop();
+    }
+    System.gc();
+  }
+
+  public static void start(Module toStart, Kernel kernel) throws IOException {
+    val module = (DefaultModule) toStart;
+    val taskQueue = new ModuleThread(module, kernel);
+    module.setTaskQueue(taskQueue);
+    taskQueue.start();
+    kernel.getModuleManager().getModuleLoader().install(module);
+    module.setFileSystem(getFileSystem(module.getCoordinate(), kernel).snd);
   }
 }

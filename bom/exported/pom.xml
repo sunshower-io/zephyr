@@ -1,10 +1,10 @@
 <project>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>io.zephyr</groupId>
+    <groupId>io.sunshower.zephyr</groupId>
     <artifactId>bom-exported</artifactId>
     <packaging>pom</packaging>
     <parent>
-        <groupId>io.zephyr</groupId>
+        <groupId>io.sunshower.zephyr</groupId>
         <artifactId>zephyr-bom</artifactId>
         <relativePath>../pom.xml</relativePath>
         <version>2.0.101-SNAPSHOT</version>

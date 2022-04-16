@@ -32,7 +32,9 @@ public class Test implements ModuleActivator {
   public void stop(ModuleContext context) {
     System.out.println("Plugin2 stopping...");
     moduleTracker.close();
-    registration.close();
+    if (registration != null) {
+      registration.close();
+    }
     serviceTracker.close();
     System.out.println("Plugin2 stopped");
   }
