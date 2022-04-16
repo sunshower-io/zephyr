@@ -116,9 +116,6 @@ subprojects {
                      * included artifacts
                      */
 
-                    artifact testJar
-                    artifact sourcesJar
-                    artifact javadocJar
 
                     versionMapping {
                         usage('java-api') {
