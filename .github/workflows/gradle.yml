@@ -101,6 +101,8 @@ jobs:
           gradle-version: 7.4
           arguments: >-
             assemble build sA -i
+            -Psigning.gnupg.keyName=${{ secrets.SIGNING_KEY_ID }}
+            -Psigning.gnupg.passphrase=${{ secrets.SIGNING_PASSWORD }}
             -PmavenRepositoryUsername=${{secrets.MAVEN_REPOSITORY_USERNAME}}
             -PmavenRepositoryPassword=${{secrets.MAVEN_REPOSITORY_PASSWORD}}
             -PmavenRepositoryUrl=${{secrets.MAVEN_REPOSITORY_URL}}
@@ -114,13 +116,13 @@ jobs:
         #################   Test  #################
 
 
-      - name: Test Maven Plugin on All Platforms
-        if: matrix.os == 'ubuntu-latest'
-        run: >-
-          mvn deploy -f tools/zephyr-maven-plugin
-          --settings bom/settings/settings.xml
-          -Dmaven-repo.github.username=${{secrets.MAVEN_REPOSITORY_USERNAME}}
-          -Dmaven-repo.github.password=${{secrets.MAVEN_REPOSITORY_PASSWORD}}
+#      - name: Test Maven Plugin on All Platforms
+#        if: matrix.os == 'ubuntu-latest'
+#        run: >-
+#          mvn deploy -f tools/zephyr-maven-plugin
+#          --settings bom/settings/settings.xml
+#          -Dmaven-repo.github.username=${{secrets.MAVEN_REPOSITORY_USERNAME}}
+#          -Dmaven-repo.github.password=${{secrets.MAVEN_REPOSITORY_PASSWORD}}
 
 
         #################   Test  #################
@@ -137,7 +139,10 @@ jobs:
           gradle-version: 7.4
           arguments: >-
             assemble build sA
-            -i -PmavenRepositoryUsername=${{secrets.MAVEN_REPOSITORY_USERNAME}}
+            -i
+            -Psigning.gnupg.keyName=${{ secrets.SIGNING_KEY_ID }}
+            -Psigning.gnupg.passphrase=${{ secrets.SIGNING_PASSWORD }}
+            -PmavenRepositoryUsername=${{secrets.MAVEN_REPOSITORY_USERNAME}}
             -PmavenRepositoryPassword=${{secrets.MAVEN_REPOSITORY_PASSWORD}}
             -PmavenRepositoryUrl=${{secrets.MAVEN_REPOSITORY_URL}}
             --stacktrace
@@ -159,8 +164,10 @@ jobs:
         with:
           gradle-version: 7.4
           arguments: >-
-            assemble build publish sA -i
+            assemble build publish sign sA -i
+            -Psigning.gnupg.keyName=${{ secrets.SIGNING_KEY_ID }}
+            -Psigning.gnupg.passphrase=${{ secrets.SIGNING_PASSWORD }}
             -PmavenRepositoryUsername=${{secrets.MAVEN_REPOSITORY_USERNAME}}
             -PmavenRepositoryPassword=${{secrets.MAVEN_REPOSITORY_PASSWORD}}
             -PmavenRepositoryUrl=${{secrets.MAVEN_REPOSITORY_URL}}
-            --stacktrace --max-workers=1
+            --stacktrace
