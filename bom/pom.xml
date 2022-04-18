@@ -78,13 +78,6 @@
   </repositories>
 
 
-  <repositories>
-    <repository>
-      <id>sunshower-github</id>
-      <name>Sunshower-env Github</name>
-      <url>https://maven.pkg.github.com/sunshower-io/*</url>
-    </repository>
-  </repositories>
 
   <modules>
     <module>imported</module>
