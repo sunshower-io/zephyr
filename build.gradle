@@ -249,6 +249,7 @@ subprojects {
         }
 
         dependencies {
+
             compileOnly 'com.github.spotbugs:spotbugs-annotations'
             testCompileOnly 'com.github.spotbugs:spotbugs-annotations'
 
