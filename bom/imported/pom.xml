@@ -7,7 +7,7 @@
         <groupId>io.sunshower.zephyr</groupId>
         <artifactId>zephyr-bom</artifactId>
         <relativePath>../pom.xml</relativePath>
-        <version>2.0.115.Final</version>
+        <version>2.0.116-SNAPSHOT</version>
     </parent>
 
     <properties>
