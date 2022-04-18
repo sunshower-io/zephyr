@@ -1,6 +1,5 @@
 package io.zephyr.kernel.core.actions;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -14,7 +13,12 @@ import io.zephyr.kernel.module.ModuleLifecycle.Actions;
 import java.util.concurrent.ExecutionException;
 import lombok.val;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
 
+@DisabledIfEnvironmentVariable(
+    named = "BUILD_ENVIRONMENT",
+    matches = "github",
+    disabledReason = "RMI is flaky")
 class ModuleDownloadPhaseTest extends ModuleManagerTestCase {
 
   @Test
