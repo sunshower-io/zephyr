@@ -58,7 +58,7 @@ jobs:
 
       - name: Generate Build Number
         id: buildnumber
-        uses: einaregilsson/build-number@v2
+        uses: einaregilsson/build-number@v3
         with:
           token: ${{ secrets.github_token }}
 
@@ -75,10 +75,11 @@ jobs:
       - name: Increment Bills-of-Materials
         run: >-
           mvn versions:set -f bom
-          -DnewVersion=${{ steps.finalVersion.outputs.result }} &&
-          mvn versions:set-property -f bom
-          -Dproperty=zephyr.version -DnewVersion=${{ steps.finalVersion.outputs.result }} &&
-          mvn clean install -f bom
+          -DnewVersion=${{ steps.finalVersion.outputs.result }}
+          && mvn versions:set-property -f bom
+          -Dproperty=zephyr.version
+          -DnewVersion=${{ steps.finalVersion.outputs.result }}
+          && mvn clean install -f bom
 
 
 #      - name: Increment Zephyr Maven Plugin Version
@@ -118,7 +119,7 @@ jobs:
         with:
           gradle-version: 7.4
           arguments: >-
-            clean assemble build sA javadoc publish -i
+            clean assemble build sA sign javadoc publish -i
             -PmavenRepositoryUsername=${{secrets.MAVEN_REPOSITORY_USERNAME}}
             -PmavenRepositoryPassword=${{secrets.MAVEN_REPOSITORY_PASSWORD}}
             -PmavenRepositoryUrl=${{secrets.MAVEN_RELEASE_URL}}
@@ -206,7 +207,7 @@ jobs:
 
       - name: Generate Next Number
         id: nextbuildnumber
-        uses: einaregilsson/build-number@v2
+        uses: einaregilsson/build-number@v3
         with:
           token: ${{ secrets.github_token }}
 
@@ -219,10 +220,11 @@ jobs:
       - name: Increment Bills-of-Materials to Snapshots
         run: >-
           mvn versions:set -f bom
-          -DnewVersion=${{ steps.snapshotVersion.outputs.result }} &&
-          mvn versions:set-property -f bom
-          -Dproperty=zephyr.version -DnewVersion=${{ steps.snapshotVersion.outputs.result }} &&
-          mvn clean install -f bom
+          -DnewVersion=${{ steps.snapshotVersion.outputs.result }}
+          && mvn versions:set-property -f bom
+          -Dproperty=zephyr.version
+          -DnewVersion=${{ steps.snapshotVersion.outputs.result }}
+          && mvn clean install -f bom
 
 #      - name: Increment Zephyr Maven Plugin Version
 #        run: >-
