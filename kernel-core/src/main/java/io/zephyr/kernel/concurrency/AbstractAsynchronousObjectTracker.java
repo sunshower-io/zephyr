@@ -1,14 +1,14 @@
 package io.zephyr.kernel.concurrency;
 
+import io.sunshower.lang.events.AbstractEventSource;
+import io.sunshower.lang.events.Event;
+import io.sunshower.lang.events.EventListener;
+import io.sunshower.lang.events.EventSource;
+import io.sunshower.lang.events.EventType;
 import io.zephyr.api.Tracker;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.TaskQueue;
 import io.zephyr.kernel.core.Kernel;
-import io.zephyr.kernel.events.AbstractEventSource;
-import io.zephyr.kernel.events.Event;
-import io.zephyr.kernel.events.EventListener;
-import io.zephyr.kernel.events.EventSource;
-import io.zephyr.kernel.events.EventType;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;

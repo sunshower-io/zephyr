@@ -1,15 +1,26 @@
 package io.zephyr.kernel.core;
 
 import static io.zephyr.kernel.memento.Mementos.writeCoordinate;
+import static io.zephyr.kernel.memento.Mementos.writeCoordinateSpecification;
 import static java.lang.String.format;
 
+import io.sunshower.checks.SuppressFBWarnings;
 import io.zephyr.api.ModuleActivator;
 import io.zephyr.api.ModuleContext;
-import io.zephyr.kernel.*;
+import io.zephyr.kernel.Assembly;
+import io.zephyr.kernel.Coordinate;
+import io.zephyr.kernel.CoordinateSpecification;
+import io.zephyr.kernel.Dependency;
+import io.zephyr.kernel.IllegalModuleStateException;
+import io.zephyr.kernel.Library;
+import io.zephyr.kernel.Lifecycle;
 import io.zephyr.kernel.Module;
+import io.zephyr.kernel.ModuleException;
+import io.zephyr.kernel.Source;
+import io.zephyr.kernel.TaskQueue;
+import io.zephyr.kernel.Transitivity;
 import io.zephyr.kernel.memento.Memento;
 import io.zephyr.kernel.memento.Originator;
-import io.zephyr.kernel.misc.SuppressFBWarnings;
 import java.io.File;
 import java.net.URI;
 import java.nio.file.FileSystem;
@@ -30,6 +41,7 @@ import lombok.val;
 })
 public final class DefaultModule extends AbstractModule
     implements Module, Comparable<Module>, Originator {
+
   private int order;
   private Type type;
 
@@ -71,11 +83,11 @@ public final class DefaultModule extends AbstractModule
     this.moduleDirectory = moduleDirectory;
   }
 
+  public DefaultModule() {}
+
   public void setKernel(Kernel kernel) {
     this.kernel = kernel;
   }
-
-  public DefaultModule() {}
 
   @Override
   public ModuleLoader getModuleLoader() {
@@ -104,11 +116,6 @@ public final class DefaultModule extends AbstractModule
 
   public void setLifecycle(Lifecycle lifecycle) {
     this.lifecycle = lifecycle;
-  }
-
-  @Override
-  public void setModuleClasspath(ModuleClasspath moduleClasspath) {
-    this.moduleClasspath = moduleClasspath;
   }
 
   @Override
@@ -203,6 +210,11 @@ public final class DefaultModule extends AbstractModule
       moduleClasspath = moduleLoader.loadModule(coordinate);
     }
     return moduleClasspath;
+  }
+
+  @Override
+  public void setModuleClasspath(ModuleClasspath moduleClasspath) {
+    this.moduleClasspath = moduleClasspath;
   }
 
   @Override
@@ -323,6 +335,7 @@ public final class DefaultModule extends AbstractModule
       val dependencyMemento = dependenciesMemento.child("dependency");
       dependencyMemento.write("type", dependency.getType());
       writeCoordinate(dependencyMemento, dependency.getCoordinate());
+      writeCoordinateSpecification(dependencyMemento, dependency.getCoordinateSpecification());
     }
   }
 
@@ -333,7 +346,8 @@ public final class DefaultModule extends AbstractModule
     for (val dep : depList) {
       val depType = Dependency.Type.parse(dep.read("type", String.class));
       val coordinate = dep.read("coordinate", Coordinate.class);
-      dependencies.add(new Dependency(depType, coordinate));
+      val specification = dep.read("coordinate-specification", CoordinateSpecification.class);
+      dependencies.add(new Dependency(depType, coordinate, specification));
     }
   }
 
@@ -360,13 +374,13 @@ public final class DefaultModule extends AbstractModule
   }
 
   @Override
-  public void setTaskQueue(TaskQueue taskQueue) {
-    this.taskQueue = taskQueue;
+  public TaskQueue getTaskQueue() {
+    return taskQueue;
   }
 
   @Override
-  public TaskQueue getTaskQueue() {
-    return taskQueue;
+  public void setTaskQueue(TaskQueue taskQueue) {
+    this.taskQueue = taskQueue;
   }
 
   @Override
@@ -377,10 +391,14 @@ public final class DefaultModule extends AbstractModule
     } catch (Exception ex) {
       exceptions.add(ex);
     }
-    try {
-      moduleLoader.close();
-    } catch (Exception ex) {
-      exceptions.add(ex);
+    if (moduleLoader != null) {
+      try {
+        moduleLoader.close();
+        moduleLoader = null;
+        moduleClasspath = null;
+      } catch (Exception ex) {
+        exceptions.add(ex);
+      }
     }
     if (!exceptions.isEmpty()) {
       throw new ModuleException(

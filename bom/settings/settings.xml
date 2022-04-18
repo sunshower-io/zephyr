@@ -33,6 +33,13 @@
       <password>${maven-repo.github.password}</password>
     </server>
 
+
+    <server>
+      <id>maven-central-repo</id>
+      <username>${maven-repo.github.username}</username>
+      <password>${maven-repo.github.password}</password>
+    </server>
+
   </servers>
 
   <profiles>

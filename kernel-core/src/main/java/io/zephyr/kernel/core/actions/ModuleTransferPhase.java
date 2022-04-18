@@ -7,8 +7,8 @@ import io.zephyr.kernel.concurrency.TaskException;
 import io.zephyr.kernel.concurrency.TaskStatus;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.core.ModuleDescriptor;
-import io.zephyr.kernel.core.Plugins;
-import io.zephyr.kernel.events.Events;
+import io.zephyr.kernel.core.Modules;
+import io.zephyr.kernel.events.KernelEvents;
 import io.zephyr.kernel.log.Logging;
 import io.zephyr.kernel.status.StatusType;
 import java.io.File;
@@ -89,7 +89,7 @@ public class ModuleTransferPhase extends Task {
     dispatchEvent(kernel, descriptor, ModulePhaseEvents.MODULE_FILESYSTEM_CREATION_INITIATED);
     val coordinate = descriptor.getCoordinate();
     try {
-      val result = Plugins.getFileSystem(coordinate, kernel);
+      val result = Modules.getFileSystem(coordinate, kernel);
       val uri = result.fst;
       val fs = result.snd;
       log.log(Level.INFO, "transfer.uri", uri);
@@ -117,7 +117,7 @@ public class ModuleTransferPhase extends Task {
   private void dispatchEvent(Kernel kernel, Object value, ModulePhaseEvents eventType) {
     kernel.dispatchEvent(
         eventType,
-        Events.create(
+        KernelEvents.create(
             value,
             StatusType.PROGRESSING.resolvable(String.format("%s : %s", value, eventType.name()))));
   }
@@ -125,13 +125,14 @@ public class ModuleTransferPhase extends Task {
   private void moduleTransferInitiated(Kernel kernel) {
     kernel.dispatchEvent(
         ModulePhaseEvents.MODULE_TRANSFER_INITIATED,
-        Events.createWithStatus(StatusType.PROGRESSING.resolvable("Scanning module assembly")));
+        KernelEvents.createWithStatus(
+            StatusType.PROGRESSING.resolvable("Scanning module assembly")));
   }
 
   private void dispatchTransferFailed(Kernel kernel, String message) {
     kernel.dispatchEvent(
         ModulePhaseEvents.MODULE_TRANSFER_FAILED,
-        Events.createWithStatus(
+        KernelEvents.createWithStatus(
             StatusType.FAILED.unresolvable("Failed to transfer module.  Reason: " + message)));
   }
 }

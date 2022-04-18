@@ -9,8 +9,8 @@ dependencies {
      * API dependencies
      */
     api 'org.jboss.modules:jboss-modules'
-    api 'com.github.zafarkhaja:java-semver'
 
+    api 'com.vdurmont:semver4j'
     /**
      * Implementation dependencies
      */

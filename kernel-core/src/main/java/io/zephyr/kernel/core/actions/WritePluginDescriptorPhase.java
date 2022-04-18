@@ -1,6 +1,6 @@
 package io.zephyr.kernel.core.actions;
 
-import static io.zephyr.kernel.core.Plugins.performInstallation;
+import static io.zephyr.kernel.core.Modules.performInstallation;
 
 import io.sunshower.gyre.Scope;
 import io.zephyr.kernel.Module;

@@ -1,6 +1,6 @@
-package io.zephyr.kernel.events;
+package io.sunshower.lang.events;
 
-import static io.zephyr.kernel.events.EventListener.Options.isSet;
+import static io.sunshower.lang.events.EventListener.Options.isSet;
 import static org.junit.jupiter.api.Assertions.*;
 
 import lombok.val;

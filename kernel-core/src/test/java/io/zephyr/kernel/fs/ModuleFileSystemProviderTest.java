@@ -2,10 +2,10 @@ package io.zephyr.kernel.fs;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import io.sunshower.checks.SuppressFBWarnings;
 import io.sunshower.test.common.Tests;
 import io.zephyr.kernel.core.SunshowerKernel;
 import io.zephyr.kernel.launch.KernelOptions;
-import io.zephyr.kernel.misc.SuppressFBWarnings;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.CharBuffer;

@@ -1,6 +1,6 @@
 package io.zephyr.kernel.fs;
 
-import io.zephyr.kernel.misc.SuppressFBWarnings;
+import io.sunshower.checks.SuppressFBWarnings;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
@@ -55,6 +55,10 @@ public class ModuleFileSystem extends FileSystem implements Closeable {
       }
     }
     return result;
+  }
+
+  public ModuleFileSystem recreate() {
+    return new ModuleFileSystem(key, provider, rootDirectory);
   }
 
   @Override

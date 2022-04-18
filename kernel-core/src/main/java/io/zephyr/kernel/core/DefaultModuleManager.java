@@ -1,10 +1,10 @@
 package io.zephyr.kernel.core;
 
+import io.sunshower.lang.events.EventSource;
 import io.zephyr.kernel.Coordinate;
 import io.zephyr.kernel.Lifecycle;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.dependencies.DependencyGraph;
-import io.zephyr.kernel.events.EventSource;
 import io.zephyr.kernel.log.Logging;
 import io.zephyr.kernel.module.ModuleInstallationGroup;
 import io.zephyr.kernel.module.ModuleInstallationStatusGroup;

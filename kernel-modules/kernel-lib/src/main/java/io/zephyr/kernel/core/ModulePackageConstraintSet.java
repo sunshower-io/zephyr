@@ -29,7 +29,7 @@ final class ModulePackageConstraintSet {
             "io.zephyr.kernel.core",
             "io.zephyr.kernel",
             "io.zephyr.api",
-            "io.zephyr.kernel.events");
+            "io.sunshower.lang.events");
 
     this.classLoader = classLoader;
     suffixInclusions = new HashSet<>();

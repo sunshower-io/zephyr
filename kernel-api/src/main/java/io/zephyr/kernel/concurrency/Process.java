@@ -4,8 +4,8 @@ import io.sunshower.gyre.DirectedGraph;
 import io.sunshower.gyre.Graph;
 import io.sunshower.gyre.Schedule;
 import io.sunshower.gyre.Scope;
+import io.sunshower.lang.events.EventListener;
 import io.zephyr.api.Disposable;
-import io.zephyr.kernel.events.EventListener;
 import lombok.NonNull;
 
 public interface Process<E> extends Schedule<DirectedGraph.Edge<E>, Task> {

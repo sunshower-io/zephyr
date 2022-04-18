@@ -9,8 +9,8 @@ import static org.mockito.Mockito.verify;
 
 import io.sunshower.gyre.DirectedGraph;
 import io.sunshower.gyre.Scope;
+import io.sunshower.lang.events.EventListener;
 import io.zephyr.kernel.concurrency.Process.Mode;
-import io.zephyr.kernel.events.EventListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;

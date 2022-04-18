@@ -32,130 +32,146 @@ jobs:
     runs-on: ${{ matrix.platform }}
 
     steps:
-      #################   Checkout #################
-      #
-      #   This step checks out the project
-      #
-      #################   Checkout #################
+      - name: Import GPG Key
+        uses: hashicorp/ghaction-import-gpg@v2.1.0
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.SIGNING_KEY }}
+          PASSPHRASE: ${{ secrets.SIGNING_PASSWORD }}
+        #################   Checkout #################
+        #
+        #   This step checks out the project
+        #
+        #################   Checkout #################
 
-    - name: Checkout
-      uses: actions/checkout@v1
+      - name: Checkout
+        uses: actions/checkout@v1
 
-      #################   JDK  #################
-      #
-      #     Use JDK 11 to build
-      #
-      #################   JDK  #################
+        #################   JDK  #################
+        #
+        #     Use JDK 11 to build
+        #
+        #################   JDK  #################
 
-    - name: Set up JDK 17
-      uses: actions/setup-java@v2
-      with:
-        distribution: zulu
-        java-version: 17
-
-
-      #################   Install and Deploy  #################
-      #
-      #   We're going to deploy the BOM from Ubuntu only
-      #   The BOM will be consumed by subsequent test-runs on Ubuntu, Windows, and MacOS
-      #
-      #################   Install and Deploy  #################
-
-    - name: Install and Deploy Maven POMs
-      if: matrix.platform == 'ubuntu-latest'
-      run: >-
-        mvn install deploy -f bom
-        --settings bom/settings/settings.xml
-        -Dmaven-repo.github.username=${{secrets.MAVEN_REPOSITORY_USERNAME}}
-        -Dmaven-repo.github.password=${{secrets.MAVEN_REPOSITORY_PASSWORD}}
-
-      #################   Install BOMs  #################
-      #
-      #   We're going to install the BOM POMs to the local maven repository
-      #   The BOM will be consumed by subsequent test-runs on Ubuntu, Windows, and MacOS
-      #
-      #################   Install BOMs  #################
-    - name: Install Maven POMs
-      run: mvn install -f bom --settings bom/settings/settings.xml "-Dmaven-repo.github.username=${{secrets.MAVEN_REPOSITORY_USERNAME}}" "-Dmaven-repo.github.password=${{secrets.MAVEN_REPOSITORY_PASSWORD}}"
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          distribution: zulu
+          java-version: 17
 
 
-      #################   Test  #################
-      #
-      #   Now that the BOM is deployed, lets
-      #   run all the tests on all the platforms
-      #   for completeness
-      #
-      #################   Test  #################
+        #################   Install and Deploy  #################
+        #
+        #   We're going to deploy the BOM from Ubuntu only
+        #   The BOM will be consumed by subsequent test-runs on Ubuntu, Windows, and MacOS
+        #
+        #################   Install and Deploy  #################
+
+      - name: Install and Deploy Maven POMs
+        if: matrix.platform == 'ubuntu-latest'
+        run: >-
+          mvn install deploy -f bom
+          --settings bom/settings/settings.xml
+          -Dmaven-repo.github.username=${{secrets.MAVEN_REPOSITORY_USERNAME}}
+          -Dmaven-repo.github.password=${{secrets.MAVEN_REPOSITORY_PASSWORD}}
+
+        #################   Install BOMs  #################
+        #
+        #   We're going to install the BOM POMs to the local maven repository
+        #   The BOM will be consumed by subsequent test-runs on Ubuntu, Windows, and MacOS
+        #
+        #################   Install BOMs  #################
+      - name: Install Maven POMs
+        run: >-
+          mvn install -f bom
+          --settings bom/settings/settings.xml
+          "-Dmaven-repo.github.username=${{secrets.MAVEN_REPOSITORY_USERNAME}}"
+          "-Dmaven-repo.github.password=${{secrets.MAVEN_REPOSITORY_PASSWORD}}"
 
 
-    - name: Test on All Platforms
-      uses: eskatos/gradle-command-action@v1
-      env:
-        JAVA_TOOL_OPTIONS: -Duser.language=en -Duser.country=US
-      with:
-        gradle-version: 7.4
-        arguments: >-
-          assemble build sA -i
-          -PmavenRepositoryUsername=${{secrets.MAVEN_REPOSITORY_USERNAME}}
-          -PmavenRepositoryPassword=${{secrets.MAVEN_REPOSITORY_PASSWORD}}
-          -PmavenRepositoryUrl=${{secrets.MAVEN_REPOSITORY_URL}}
-          --stacktrace --max-workers=1
-
-      #################   Test  #################
-      #
-      #   Run tests on all Maven Platforms
-      #   TODO: only Linux is supported
-      #
-      #################   Test  #################
+        #################   Test  #################
+        #
+        #   Now that the BOM is deployed, lets
+        #   run all the tests on all the platforms
+        #   for completeness
+        #
+        #################   Test  #################
 
 
-    - name: Test Maven Plugin on All Platforms
-      if: matrix.os == 'ubuntu-latest'
-      run: >-
-        mvn deploy -f tools/zephyr-maven-plugin
-        --settings bom/settings/settings.xml
-        -Dmaven-repo.github.username=${{secrets.MAVEN_REPOSITORY_USERNAME}}
-        -Dmaven-repo.github.password=${{secrets.MAVEN_REPOSITORY_PASSWORD}}
+      - name: Test on All Platforms
+        uses: eskatos/gradle-command-action@v1
+        env:
+          JAVA_TOOL_OPTIONS: -Duser.language=en -Duser.country=US
+        with:
+          gradle-version: 7.4
+          arguments: >-
+            assemble build sA -i
+            -Psigning.gnupg.keyName=${{ secrets.SIGNING_KEY_ID }}
+            -Psigning.gnupg.passphrase=${{ secrets.SIGNING_PASSWORD }}
+            -PmavenRepositoryUsername=${{secrets.MAVEN_REPOSITORY_USERNAME}}
+            -PmavenRepositoryPassword=${{secrets.MAVEN_REPOSITORY_PASSWORD}}
+            -PmavenRepositoryUrl=${{secrets.MAVEN_REPOSITORY_URL}}
+            --stacktrace --max-workers=1
+
+        #################   Test  #################
+        #
+        #   Run tests on all Maven Platforms
+        #   TODO: only Linux is supported
+        #
+        #################   Test  #################
 
 
-      #################   Test  #################
-      #
-      #   Run tests on all Maven Platforms
-      #
-      #################   Test  #################
-
-    - name: Build with Gradle
-      uses: eskatos/gradle-command-action@v1
-      env:
-        JAVA_TOOL_OPTIONS: -Duser.language=en -Duser.country=US
-      with:
-        gradle-version: 7.4
-        arguments: >-
-          assemble build sA
-          -i -PmavenRepositoryUsername=${{secrets.MAVEN_REPOSITORY_USERNAME}}
-          -PmavenRepositoryPassword=${{secrets.MAVEN_REPOSITORY_PASSWORD}}
-          -PmavenRepositoryUrl=${{secrets.MAVEN_REPOSITORY_URL}}
-          --stacktrace
-          --max-workers=1
+#      - name: Test Maven Plugin on All Platforms
+#        if: matrix.os == 'ubuntu-latest'
+#        run: >-
+#          mvn deploy -f tools/zephyr-maven-plugin
+#          --settings bom/settings/settings.xml
+#          -Dmaven-repo.github.username=${{secrets.MAVEN_REPOSITORY_USERNAME}}
+#          -Dmaven-repo.github.password=${{secrets.MAVEN_REPOSITORY_PASSWORD}}
 
 
-      #################   Deploy  #################
-      #
-      # Assuming the tests have passed, deploy from
-      # Ubuntu only
-      #
-      #################   Deploy   #################
+        #################   Test  #################
+        #
+        #   Run tests on all Maven Platforms
+        #
+        #################   Test  #################
 
-    - name: Deploy Artifacts
-      uses: eskatos/gradle-command-action@v1
-      if: matrix.platform == 'ubuntu-latest'
-      env:
-        JAVA_TOOL_OPTIONS: -Duser.language=en -Duser.country=US
-      with:
-        gradle-version: 7.4
-        arguments: >-
-          assemble build publish sA -i
-          -PmavenRepositoryUsername=${{secrets.MAVEN_REPOSITORY_USERNAME}}
-          -PmavenRepositoryPassword=${{secrets.MAVEN_REPOSITORY_PASSWORD}}
-          -PmavenRepositoryUrl=${{secrets.MAVEN_REPOSITORY_URL}}
-          --stacktrace --max-workers=1
+      - name: Build with Gradle
+        uses: eskatos/gradle-command-action@v1
+        env:
+          JAVA_TOOL_OPTIONS: -Duser.language=en -Duser.country=US
+        with:
+          gradle-version: 7.4
+          arguments: >-
+            assemble build sA
+            -i
+            -Psigning.gnupg.keyName=${{ secrets.SIGNING_KEY_ID }}
+            -Psigning.gnupg.passphrase=${{ secrets.SIGNING_PASSWORD }}
+            -PmavenRepositoryUsername=${{secrets.MAVEN_REPOSITORY_USERNAME}}
+            -PmavenRepositoryPassword=${{secrets.MAVEN_REPOSITORY_PASSWORD}}
+            -PmavenRepositoryUrl=${{secrets.MAVEN_REPOSITORY_URL}}
+            --stacktrace
+            --max-workers=1
+
+
+        #################   Deploy  #################
+        #
+        # Assuming the tests have passed, deploy from
+        # Ubuntu only
+        #
+        #################   Deploy   #################
+
+      - name: Deploy Artifacts
+        uses: eskatos/gradle-command-action@v1
+        if: matrix.platform == 'ubuntu-latest'
+        env:
+          JAVA_TOOL_OPTIONS: -Duser.language=en -Duser.country=US
+        with:
+          gradle-version: 7.4
+          arguments: >-
+            assemble build publish sign sA -i
+            -Psigning.gnupg.keyName=${{ secrets.SIGNING_KEY_ID }}
+            -Psigning.gnupg.passphrase=${{ secrets.SIGNING_PASSWORD }}
+            -PmavenRepositoryUsername=${{secrets.MAVEN_REPOSITORY_USERNAME}}
+            -PmavenRepositoryPassword=${{secrets.MAVEN_REPOSITORY_PASSWORD}}
+            -PmavenRepositoryUrl=${{secrets.MAVEN_REPOSITORY_URL}}
+            --stacktrace

@@ -1,10 +1,10 @@
 package io.zephyr.kernel.concurrency;
 
+import io.sunshower.checks.SuppressFBWarnings;
 import io.sunshower.gyre.DirectedGraph;
 import io.sunshower.gyre.Scope;
 import io.zephyr.kernel.concurrency.Process.Mode;
 import io.zephyr.kernel.log.Logging;
-import io.zephyr.kernel.misc.SuppressFBWarnings;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;

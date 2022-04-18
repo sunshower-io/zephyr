@@ -1,5 +1,6 @@
 package io.zephyr.kernel.concurrency;
 
+import io.sunshower.checks.SuppressFBWarnings;
 import io.zephyr.api.ModuleActivator;
 import io.zephyr.api.ModuleEvents;
 import io.zephyr.api.Startable;
@@ -13,8 +14,7 @@ import io.zephyr.kernel.TaskQueue;
 import io.zephyr.kernel.VolatileStorage;
 import io.zephyr.kernel.core.AbstractModule;
 import io.zephyr.kernel.core.Kernel;
-import io.zephyr.kernel.events.Events;
-import io.zephyr.kernel.misc.SuppressFBWarnings;
+import io.zephyr.kernel.events.KernelEvents;
 import io.zephyr.kernel.status.Status;
 import io.zephyr.kernel.status.StatusType;
 import java.util.Map;
@@ -133,6 +133,14 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable, 
       val result = new TaskQueueRunnable(task);
       taskQueue.offer(task);
       queueLock.notifyAll();
+
+      if (!(running.get() || hasAllowedSchedulingState())) {
+        log.log(
+            Level.WARNING,
+            "Attempting to schedule a task on a {0} module.  Draining immediately",
+            module.getLifecycle().getState());
+        drainQueue();
+      }
       return result;
     }
   }
@@ -206,7 +214,7 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable, 
   private void fireStopped() {
     kernel.dispatchEvent(
         ModuleEvents.STOPPED,
-        Events.create(
+        KernelEvents.create(
             module,
             Status.resolvable(
                 StatusType.PROGRESSING, "Successfully stopped module " + module.getCoordinate())));
@@ -215,7 +223,7 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable, 
   private void fireStarted() {
     kernel.dispatchEvent(
         ModuleEvents.STARTED,
-        Events.create(
+        KernelEvents.create(
             module,
             Status.resolvable(
                 StatusType.PROGRESSING, "Successfully started module " + module.getCoordinate())));
@@ -224,13 +232,14 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable, 
   private void fireStart() {
     kernel.dispatchEvent(
         ModuleEvents.STARTING,
-        Events.create(module, Status.resolvable(StatusType.PROGRESSING, "Starting module...")));
+        KernelEvents.create(
+            module, Status.resolvable(StatusType.PROGRESSING, "Starting module...")));
   }
 
   private void handleFailure(Coordinate coordinate, Throwable ex) {
     kernel.dispatchEvent(
         ModuleEvents.START_FAILED,
-        Events.create(
+        KernelEvents.create(
             module, StatusType.FAILED.unresolvable(FAILURE_TEMPLATE, coordinate, ex.getMessage())));
     module.getLifecycle().setState(Lifecycle.State.Failed);
     log.log(Level.WARNING, FAILURE_TEMPLATE, new Object[] {coordinate, ex.getMessage()});
@@ -241,7 +250,7 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable, 
     val currentState = module.getLifecycle().getState();
     if (currentState == Lifecycle.State.Resolved) {
       try {
-        module.close();
+        //        module.close();
       } catch (Exception ex) {
         module.getLifecycle().setState(Lifecycle.State.Failed);
         throw new PluginException(ex);
@@ -256,8 +265,14 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable, 
             activator.stop(module.getContext());
           }
           ((AbstractModule) module).setActivator(null);
-          module.close();
+          //          module.close();
           moduleThread.get().setContextClassLoader(null);
+
+          /**
+           * if the activator.stop() method results in tasks being enqueued we need to clear them
+           * out
+           */
+          drainQueue();
         } catch (Exception ex) {
           module.getLifecycle().setState(Lifecycle.State.Failed);
           throw new PluginException(ex);
@@ -298,6 +313,27 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable, 
   @Override
   public void clear() {
     context.get().clear();
+  }
+
+  private void drainQueue() {
+    synchronized (queueLock) {
+      while (!taskQueue.isEmpty()) {
+        val task = taskQueue.poll();
+        task.run();
+      }
+    }
+  }
+
+  private boolean hasAllowedSchedulingState() {
+    val state = module.getLifecycle().getState();
+    switch (state) {
+      case Active:
+      case Starting:
+      case Stopping:
+        return true;
+      default:
+        return false;
+    }
   }
 
   static final class TaskQueueRunnable extends CompletableFuture<Void> implements Runnable {

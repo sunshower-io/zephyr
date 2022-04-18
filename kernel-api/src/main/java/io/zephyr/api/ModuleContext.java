@@ -49,4 +49,19 @@ public interface ModuleContext extends VolatileStorage {
   <T> List<ServiceReference<T>> getReferences(Class<T> type);
 
   List<ServiceReference<?>> getReferences(Query<ServiceDefinition<?>> query);
+
+  @SuppressWarnings({"unchecked", "rawtypes"})
+  default <T> List<ServiceReference<T>> getReferences(String typeName) {
+    return (List<ServiceReference<T>>)
+        (List)
+            getReferences(
+                ref ->
+                    ref.getReference()
+                        .getDefinition()
+                        .getType()
+                        .getCanonicalName()
+                        .equals(typeName));
+  }
+
+  List<ServiceReference<?>> getReferences(Predicate<ServiceRegistration<?>> predicate);
 }

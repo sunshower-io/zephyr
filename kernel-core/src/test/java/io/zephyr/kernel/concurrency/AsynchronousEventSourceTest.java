@@ -2,9 +2,9 @@ package io.zephyr.kernel.concurrency;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import io.sunshower.lang.events.EventListener;
+import io.sunshower.lang.events.Events;
 import io.zephyr.kernel.core.KernelEventTypes;
-import io.zephyr.kernel.events.EventListener;
-import io.zephyr.kernel.events.Events;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.junit.jupiter.api.BeforeEach;

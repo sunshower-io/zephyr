@@ -1,5 +1,7 @@
 package io.zephyr.kernel.concurrency;
 
+import io.sunshower.lang.events.EventListener;
+import io.sunshower.lang.events.Events;
 import io.zephyr.api.ServiceEvents;
 import io.zephyr.api.ServiceReference;
 import io.zephyr.api.ServiceTracker;
@@ -7,8 +9,6 @@ import io.zephyr.kernel.Lifecycle;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.TaskQueue;
 import io.zephyr.kernel.core.Kernel;
-import io.zephyr.kernel.events.EventListener;
-import io.zephyr.kernel.events.Events;
 import java.util.function.Predicate;
 import lombok.val;
 

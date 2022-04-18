@@ -1,9 +1,9 @@
 package io.zephyr.kernel.module;
 
+import io.sunshower.checks.SuppressFBWarnings;
 import io.zephyr.kernel.KernelModuleEntry;
 import io.zephyr.kernel.core.KernelException;
 import io.zephyr.kernel.log.Logging;
-import io.zephyr.kernel.misc.SuppressFBWarnings;
 import java.io.File;
 import java.io.IOException;
 import java.io.PushbackInputStream;

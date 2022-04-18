@@ -7,7 +7,7 @@ dependencies {
 }
 
 def deps = [
-        "library@io.sunshower:test-plugin-1:1.0.0-SNAPSHOT"
+        "service@io.sunshower:test-plugin-1:1.0.0-SNAPSHOT"
 ].join(',')
 war {
     manifest {

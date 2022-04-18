@@ -4,7 +4,7 @@ import static io.zephyr.kernel.status.StatusType.FAILED;
 import static io.zephyr.kernel.status.StatusType.PROGRESSING;
 import static io.zephyr.kernel.status.StatusType.SUCCEEDED;
 
-import io.zephyr.kernel.events.EventType;
+import io.sunshower.lang.events.EventType;
 import io.zephyr.kernel.status.StatusType;
 
 public enum TaskEvents implements TaskEventType, EventType {

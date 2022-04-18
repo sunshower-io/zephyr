@@ -1,6 +1,6 @@
 package io.zephyr.api;
 
-import io.zephyr.kernel.events.EventSource;
+import io.sunshower.lang.events.EventSource;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Predicate;

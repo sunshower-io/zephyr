@@ -9,6 +9,7 @@ import io.zephyr.kernel.Module;
 import java.util.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NonNull;
 
 /**
  * this class is generally not required to be thread-safe. Consumers should protect access in
@@ -58,10 +59,16 @@ public interface DependencyGraph extends Iterable<Module> {
    * @param module
    * @return an unsatisified dependency set
    */
+  @NonNull
   UnsatisfiedDependencySet getUnresolvedDependencies(Module module);
 
+  @NonNull
+  Set<UnsatisfiedDependencySet> resolveDependencies(Collection<Module> modules);
+
+  @NonNull
   Set<UnsatisfiedDependencySet> getUnresolvedDependencies(Collection<Module> modules);
 
+  @NonNull
   Set<UnsatisfiedDependencySet> addAll(Collection<Module> modules);
   /**
    * @param module the module to remove from this dependency graph. This should only be called if

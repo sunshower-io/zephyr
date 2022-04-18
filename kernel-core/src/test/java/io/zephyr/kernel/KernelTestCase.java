@@ -15,8 +15,13 @@ import lombok.extern.java.Log;
 import lombok.val;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
+import org.junit.jupiter.api.parallel.Isolated;
 
 @Log
+@Isolated
+@Execution(ExecutionMode.SAME_THREAD)
 public class KernelTestCase {
 
   protected Kernel kernel;

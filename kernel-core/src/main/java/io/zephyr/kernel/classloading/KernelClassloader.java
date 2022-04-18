@@ -1,7 +1,7 @@
 package io.zephyr.kernel.classloading;
 
+import io.sunshower.checks.SuppressFBWarnings;
 import io.zephyr.kernel.KernelModuleEntry;
-import io.zephyr.kernel.misc.SuppressFBWarnings;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;

@@ -4,11 +4,11 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
 import io.sunshower.kernel.test.ZephyrTest;
+import io.sunshower.lang.events.EventListener;
 import io.zephyr.api.ModuleEvents;
 import io.zephyr.cli.Zephyr;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.core.KernelLifecycle;
-import io.zephyr.kernel.events.EventListener;
 import javax.inject.Inject;
 import lombok.val;
 import org.junit.jupiter.api.Test;

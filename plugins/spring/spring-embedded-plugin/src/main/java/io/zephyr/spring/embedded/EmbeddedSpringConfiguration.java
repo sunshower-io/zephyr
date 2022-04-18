@@ -28,7 +28,7 @@ public class EmbeddedSpringConfiguration {
 
   @Bean
   public ModuleContext moduleContext(Module module, Kernel kernel, ModuleThread thread) {
-    val ctx = new DefaultPluginContext(module, kernel, thread);
+    val ctx = new DefaultModuleContext(module, kernel, thread);
     ((EmbeddedModule) module).setContext(ctx);
     return ctx;
   }
@@ -48,7 +48,7 @@ public class EmbeddedSpringConfiguration {
   @Bean
   public FileSystem moduleFileSystem(ModuleDescriptor descriptor, Kernel kernel)
       throws IOException {
-    return Plugins.getFileSystem(descriptor.getCoordinate(), kernel).snd;
+    return Modules.getFileSystem(descriptor.getCoordinate(), kernel).snd;
   }
 
   @Bean

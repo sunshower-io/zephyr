@@ -10,7 +10,7 @@ import io.sunshower.gyre.Schedule;
 import io.sunshower.gyre.Scope;
 import io.sunshower.gyre.StronglyConnectedComponents;
 import io.sunshower.gyre.TaskSet;
-import io.zephyr.kernel.events.EventListener;
+import io.sunshower.lang.events.EventListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;

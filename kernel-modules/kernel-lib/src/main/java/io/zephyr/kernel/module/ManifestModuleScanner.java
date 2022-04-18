@@ -1,5 +1,6 @@
 package io.zephyr.kernel.module;
 
+import io.zephyr.kernel.CoordinateSpecification;
 import io.zephyr.kernel.Dependency;
 import io.zephyr.kernel.Dependency.ServicesResolutionStrategy;
 import io.zephyr.kernel.Dependency.Type;
@@ -271,16 +272,39 @@ public final class ManifestModuleScanner implements ModuleScanner {
     return new PathSpecification(mode, pathSpec.value);
   }
 
-  ModuleCoordinate readModuleCoordinate(PushbackReader reader) throws IOException {
+  CoordinateSpecification readModuleCoordinate(PushbackReader reader) throws IOException {
     expectAndDiscard(reader, '@');
     val group = readUntil(reader, "(missing group)", ':');
     expectAndDiscard(reader, ':');
     val artifact = readUntil(reader, "(missing artifact)", ':');
     expectAndDiscard(reader, ':');
-    val version = readUntil(reader, "(missing version)", true, ',', '<', '\r', '\n', '\t', ' ');
+    MatchResult version;
+    if (nextIsOneOf(reader, '(', '[', ']', ')')) {
+      val ch = reader.read();
+      version =
+          new MatchResult(((char) ch) + readRangeSpec(reader).value + ((char) reader.read()), ch);
+      readUntil(reader, "expected deliminter or whitespace", true, ',', '<', '\r', '\n', '\t', ' ');
+    } else {
+      version = readUntil(reader, "(missing version)", true, ',', '<', '\r', '\n', '\t', ' ');
+    }
     checkForNewLine(reader);
 
-    return new ModuleCoordinate(artifact.value, group.value, new SemanticVersion(version.value));
+    return new CoordinateSpecification(group.value, artifact.value, version.value);
+  }
+
+  private MatchResult readRangeSpec(PushbackReader reader) throws IOException {
+    return readUntil(
+        reader, "(expected range close: {']', ')', '(', '[', '[', '('}", true, '[', '(', ']', ')');
+  }
+
+  private boolean nextIsOneOf(PushbackReader reader, char... chars) throws IOException {
+    val ch = peek(reader);
+    for (val c : chars) {
+      if (c == ch) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private void checkForNewLine(PushbackReader reader) throws IOException {

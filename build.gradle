@@ -1,3 +1,4 @@
+
 plugins {
     id 'pmd'
     id 'maven-publish'
@@ -13,11 +14,12 @@ apply from: "$rootDir/tasks/revisions.gradle"
 
 allprojects {
     apply plugin: 'idea'
+    apply plugin: "signing"
     apply plugin: "com.diffplug.spotless"
     apply plugin: "io.spring.dependency-management"
     dependencyManagement {
         imports {
-            mavenBom "io.zephyr:bom-imported:$project.version"
+            mavenBom "io.sunshower.zephyr:bom-imported:$project.version"
         }
     }
 
@@ -27,6 +29,13 @@ allprojects {
         mavenCentral()
         maven {
             url "https://repository.mulesoft.org/nexus/content/repositories/public/"
+        }
+        maven {
+            url "https://maven.pkg.github.com/sunshower-io/*"
+            credentials {
+                username "$mavenRepositoryUsername"
+                password "$mavenRepositoryPassword"
+            }
         }
     }
 
@@ -55,6 +64,22 @@ subprojects {
     tasks.withType(Test) {
         maxParallelForks = 1
     }
+
+    task sourcesJar(type: Jar, dependsOn: classes) {
+        archiveClassifier = 'sources'
+        from sourceSets.main.allSource
+    }
+
+    task testJar(type: Jar) {
+        archiveClassifier = 'tests'
+        from sourceSets.test.output
+    }
+
+    task javadocJar(type: Jar) {
+        from javadoc
+        archiveClassifier = 'javadoc'
+    }
+
     plugins.withType(WarPlugin) {
         configurations {
             plugin {
@@ -85,6 +110,50 @@ subprojects {
             publications {
                 pluginMaven(MavenPublication) {
                     from components.web
+
+                    /**
+                     * maven coordinates
+                     */
+                    groupId = project.group
+                    version = project.version
+                    artifactId = project.name
+
+                    /**
+                     * included artifacts
+                     */
+
+
+                    versionMapping {
+                        usage('java-api') {
+                            fromResolutionOf('runtimeClasspath')
+                        }
+                        usage('java-runtime') {
+                            fromResolutionResult()
+                        }
+                    }
+                    pom {
+                        name = 'Sunshower Arcus'
+                        description = 'Sunshower Core Libraries'
+                        url = 'https://github.com/sunshower-io/sunshower-arcus'
+                        licenses {
+                            license {
+                                name = 'The Apache License, Version 2.0'
+                                url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                            }
+                        }
+                        developers {
+                            developer {
+                                id = 'josiah'
+                                name = 'Josiah Haswell'
+                                email = 'josiah@sunshower.io'
+                            }
+                        }
+                        scm {
+                            connection = 'scm:git:git://github.com/sunshower-io/sunshower-arcus.git'
+                            developerConnection = 'scm:git:ssh://github.com/sunshower-io/sunshower-arcus.git'
+                            url = 'https://www.sunshower.io/'
+                        }
+                    }
                 }
             }
         }
@@ -92,60 +161,66 @@ subprojects {
 
 
     plugins.withType(JavaPlugin) {
-
-
-        task packageJavadocs(type: Jar, dependsOn: 'javadoc') {
-            classifier 'javadoc'
-            version project.version
-            from javadoc.destinationDir
-        }
-
-        task sourceJar(type: Jar) {
-            from sourceSets.main.allJava
-        }
-
-
-        javadoc {
-            source = sourceSets.main.allJava
-            classpath += configurations.runtimeClasspath
-            options.addBooleanOption('html5', true)
-        }
-
-
         publishing {
             publications {
 
-                pluginMaven(MavenPublication) {
-                    artifact tasks.jar
-                    versionMapping {
-                        usage('java-api') {
-                            fromResolutionOf('runtimeClasspath')
-                        }
-                        usage('java-runtime') {
-                            fromResolutionResult()
-                        }
-                    }
-                }
 
                 pluginMaven(MavenPublication) {
-                    artifact(tasks.packageJavadocs) {
-                        classifier = 'javadocs'
-                    }
-                    artifact sourceJar {
-                        classifier "sources"
-                    }
+                    /**
+                     * maven coordinates
+                     */
+                    groupId = project.group
+                    version = project.version
+                    artifactId = project.name
+
+                    /**
+                     * included artifacts
+                     */
+
+                    artifact testJar
+                    artifact sourcesJar
+                    artifact javadocJar
+
                     versionMapping {
                         usage('java-api') {
                             fromResolutionOf('runtimeClasspath')
                         }
                         usage('java-runtime') {
                             fromResolutionResult()
+                        }
+                    }
+                    pom {
+                        name = 'Sunshower Zephyr'
+                        description = 'Sunshower Zephyr Plugin Framework'
+                        url = 'https://github.com/sunshower-io/zephyr'
+                        licenses {
+                            license {
+                                name = 'The Apache License, Version 2.0'
+                                url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                            }
+                        }
+                        developers {
+                            developer {
+                                id = 'josiah'
+                                name = 'Josiah Haswell'
+                                email = 'josiah@sunshower.io'
+                            }
+                        }
+                        scm {
+                            connection = 'scm:git:git://github.com/sunshower-io/sunshower-arcus.git'
+                            developerConnection = 'scm:git:ssh://github.com/sunshower-io/sunshower-arcus.git'
+                            url = 'https://www.sunshower.io/'
                         }
                     }
                 }
             }
+
         }
 
+        signing {
+            useGpgCmd()
+            sign publishing.publications.pluginMaven
+        }
 
         tasks.withType(com.github.spotbugs.snom.SpotBugsTask) {
             reports {
@@ -174,6 +249,13 @@ subprojects {
         }
 
         dependencies {
+
+            compileOnly 'com.github.spotbugs:spotbugs-annotations'
+            testCompileOnly 'com.github.spotbugs:spotbugs-annotations'
+
+            implementation 'io.sunshower.arcus.annotations:arcus-jsr-305'
+            testImplementation 'io.sunshower.arcus.annotations:arcus-jsr-305'
+
             compileOnly 'org.projectlombok:lombok'
             testCompileOnly 'org.projectlombok:lombok'
             annotationProcessor 'org.projectlombok:lombok'

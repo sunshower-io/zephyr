@@ -13,9 +13,20 @@ import java.lang.reflect.Parameter;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.nio.file.FileSystems;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
+import lombok.extern.java.Log;
 import lombok.val;
-import org.junit.jupiter.api.extension.*;
+import org.junit.jupiter.api.extension.AfterAllCallback;
+import org.junit.jupiter.api.extension.AfterEachCallback;
+import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
+import org.junit.jupiter.api.extension.BeforeAllCallback;
+import org.junit.jupiter.api.extension.BeforeEachCallback;
+import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.ParameterContext;
+import org.junit.jupiter.api.extension.ParameterResolver;
+import org.junit.jupiter.api.extension.TestInstancePostProcessor;
 import org.springframework.beans.factory.annotation.ParameterResolutionDelegate;
 import org.springframework.context.ApplicationContext;
 import org.springframework.lang.Nullable;
@@ -23,6 +34,7 @@ import org.springframework.test.context.TestContextManager;
 import org.springframework.test.context.support.TestConstructorUtils;
 import org.springframework.util.Assert;
 
+@Log
 public class KernelExtension
     implements BeforeAllCallback,
         AfterAllCallback,
@@ -32,6 +44,24 @@ public class KernelExtension
         BeforeTestExecutionCallback,
         AfterTestExecutionCallback,
         ParameterResolver {
+
+  public static ApplicationContext getApplicationContext(ExtensionContext context) {
+    return getTestContextManager(context).getTestContext().getApplicationContext();
+  }
+
+  private static TestContextManager getTestContextManager(ExtensionContext context) {
+    Assert.notNull(context, "ExtensionContext must not be null");
+    Class<?> testClass = context.getRequiredTestClass();
+    ExtensionContext.Store store = getStore(context);
+    return store.getOrComputeIfAbsent(testClass, TestContextManager::new, TestContextManager.class);
+  }
+
+  private static ExtensionContext.Store getStore(ExtensionContext context) {
+    return context
+        .getRoot()
+        .getStore(
+            ExtensionContext.Namespace.create(context.getRequiredTestClass().getCanonicalName()));
+  }
 
   @Override
   public void beforeAll(ExtensionContext context) throws Exception {
@@ -162,24 +192,6 @@ public class KernelExtension
         parameter, index, testClass, applicationContext.getAutowireCapableBeanFactory());
   }
 
-  public static ApplicationContext getApplicationContext(ExtensionContext context) {
-    return getTestContextManager(context).getTestContext().getApplicationContext();
-  }
-
-  private static TestContextManager getTestContextManager(ExtensionContext context) {
-    Assert.notNull(context, "ExtensionContext must not be null");
-    Class<?> testClass = context.getRequiredTestClass();
-    ExtensionContext.Store store = getStore(context);
-    return store.getOrComputeIfAbsent(testClass, TestContextManager::new, TestContextManager.class);
-  }
-
-  private static ExtensionContext.Store getStore(ExtensionContext context) {
-    return context
-        .getRoot()
-        .getStore(
-            ExtensionContext.Namespace.create(context.getRequiredTestClass().getCanonicalName()));
-  }
-
   private void extractModules(ExtensionContext context, ExtensionContext.Store store)
       throws MalformedURLException {
     val testClass = context.getRequiredTestClass();
@@ -223,7 +235,7 @@ public class KernelExtension
     doInstall(kernel, modules, true);
   }
 
-  private void doClean(
+  private synchronized void doClean(
       Kernel kernel, ExtensionContext context, ApplicationContext ctx, Clean.Mode value)
       throws Exception {
     val zephyr = ctx.getBean(Zephyr.class);
@@ -238,7 +250,12 @@ public class KernelExtension
     kernel.persistState().toCompletableFuture().get();
 
     if (!kernel.getModuleManager().getModules().isEmpty()) {
-      throw new IllegalStateException("Failed to remove modules");
+      log.log(
+          Level.WARNING,
+          "Failed to remove modules: {0}",
+          kernel.getModuleManager().getModules().stream()
+              .map(t -> t.getCoordinate().toCanonicalForm())
+              .collect(Collectors.toList()));
     }
 
     if (value == Clean.Mode.Before) {

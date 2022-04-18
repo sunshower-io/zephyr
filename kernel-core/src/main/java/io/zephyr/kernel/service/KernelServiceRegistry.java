@@ -1,11 +1,11 @@
 package io.zephyr.kernel.service;
 
+import io.sunshower.lang.events.EventType;
+import io.sunshower.lang.events.Events;
 import io.zephyr.api.*;
 import io.zephyr.kernel.Coordinate;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.core.Kernel;
-import io.zephyr.kernel.events.EventType;
-import io.zephyr.kernel.events.Events;
 import io.zephyr.kernel.log.Logging;
 import java.util.HashMap;
 import java.util.Map;
@@ -89,6 +89,8 @@ public class KernelServiceRegistry implements ServiceRegistry {
       if (moduleRegistry.registrations.isEmpty()) {
         registries.remove(coordinate);
       }
+      //      new ServiceEventDispatchTask(ServiceEvents.UNREGISTERED,
+      // registration.getReference()).run();
       module
           .getTaskQueue()
           .schedule(

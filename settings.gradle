@@ -1,7 +1,6 @@
 
 pluginManagement {
     repositories {
-        jcenter()
         mavenLocal()
         mavenCentral()
         gradlePluginPortal()
@@ -25,11 +24,6 @@ include(
         'kernel-modules:zephyr:zephyr-logging',
         'kernel-modules:zephyr:zephyr-directory-scanner',
 
-        'kernel-gyre:gyre-api',
-        'kernel-gyre:gyre-core',
-        'kernel-gyre:gyre-breeze',
-        'kernel-gyre:gyre-common',
-
 
 
         'kernel-api',
@@ -52,6 +46,13 @@ include(
          * test plugins
          */
         'kernel-tests:test-plugins:test-plugin-1',
+        'kernel-tests:test-plugins:test-plugin-2',
+
+        'kernel-tests:test-plugins:semver:test-plugin-1',
+        'kernel-tests:test-plugins:semver:test-plugin-1-1',
+        'kernel-tests:test-plugins:semver:test-plugin-2-0',
+
+
         'kernel-tests:test-plugins:test-plugin-2',
         'kernel-tests:test-plugins:map-reduce-file',
         'kernel-tests:test-plugins:test-plugin-3',

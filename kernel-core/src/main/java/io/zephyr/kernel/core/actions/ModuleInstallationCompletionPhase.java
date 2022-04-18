@@ -12,7 +12,7 @@ import io.zephyr.kernel.core.DefaultModule;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.core.ModuleDescriptor;
 import io.zephyr.kernel.core.ModuleSource;
-import io.zephyr.kernel.events.Events;
+import io.zephyr.kernel.events.KernelEvents;
 import io.zephyr.kernel.module.ModuleLifecycle;
 import io.zephyr.kernel.status.StatusType;
 import java.io.File;
@@ -72,7 +72,7 @@ public class ModuleInstallationCompletionPhase extends Task {
       }
       kernel.dispatchEvent(
           ModuleEvents.INSTALLING,
-          Events.create(
+          KernelEvents.create(
               module,
               StatusType.SUCCEEDED.resolvable("Successfully installed plugin: " + descriptor)));
       return null;

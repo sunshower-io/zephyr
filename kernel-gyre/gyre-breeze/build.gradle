@@ -1,9 +1,0 @@
-
-apply plugin: 'java-library'
-dependencies {
-    api project(':kernel-api')
-    api project(':kernel-gyre:gyre-api')
-
-    testImplementation project(':kernel-core')
-    testImplementation project(':kernel-tests:kernel-test')
-}

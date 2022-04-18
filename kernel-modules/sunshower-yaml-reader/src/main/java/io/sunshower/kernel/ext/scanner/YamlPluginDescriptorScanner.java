@@ -2,6 +2,7 @@ package io.sunshower.kernel.ext.scanner;
 
 import com.esotericsoftware.yamlbeans.YamlException;
 import com.esotericsoftware.yamlbeans.YamlReader;
+import io.zephyr.kernel.CoordinateSpecification;
 import io.zephyr.kernel.Dependency;
 import io.zephyr.kernel.InvalidPluginDescriptorException;
 import io.zephyr.kernel.Module;
@@ -188,13 +189,14 @@ public class YamlPluginDescriptorScanner implements ModuleScanner {
       type = Dependency.Type.Library;
     }
 
+    /** todo: we need to fix some things with this */
     val required = Boolean.valueOf(optional(dependency, REQUIRED));
 
     val depName = require(dependency, DEPENDENCY_NAME);
     val depGroup = require(dependency, DEPENDENCY_GROUP);
     val depVersion = require(dependency, DEPENDENCY_VERSION);
     val dependencyDescriptor =
-        new Dependency(type, ModuleCoordinate.create(depGroup, depName, depVersion));
+        new Dependency(type, new CoordinateSpecification(depGroup, depName, depVersion));
     dependencies.add(dependencyDescriptor);
   }
 

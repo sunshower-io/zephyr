@@ -1,10 +1,10 @@
 <project>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>io.zephyr</groupId>
+    <groupId>io.sunshower.zephyr</groupId>
     <artifactId>bom-exported</artifactId>
     <packaging>pom</packaging>
     <parent>
-        <groupId>io.zephyr</groupId>
+        <groupId>io.sunshower.zephyr</groupId>
         <artifactId>zephyr-bom</artifactId>
         <relativePath>../pom.xml</relativePath>
         <version>2.0.101-SNAPSHOT</version>
@@ -20,13 +20,13 @@
 
 
             <dependency>
-                <groupId>io.zephyr</groupId>
+                <groupId>io.sunshower.zephyr</groupId>
                 <artifactId>kernel-api</artifactId>
                 <version>${zephyr.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>io.zephyr</groupId>
+                <groupId>io.sunshower.zephyr</groupId>
                 <artifactId>kernel-core</artifactId>
                 <version>${zephyr.version}</version>
             </dependency>
@@ -38,72 +38,72 @@
             </dependency>
 
             <dependency>
-                <groupId>io.zephyr</groupId>
+                <groupId>io.sunshower.zephyr</groupId>
                 <artifactId>kernel-lib</artifactId>
                 <version>${zephyr.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>io.zephyr</groupId>
+                <groupId>io.sunshower.zephyr</groupId>
                 <artifactId>kernel-gyre</artifactId>
                 <version>${zephyr.version}</version>
             </dependency>
 
 
             <dependency>
-                <groupId>io.zephyr</groupId>
+                <groupId>io.sunshower.zephyr</groupId>
                 <artifactId>gyre-api</artifactId>
                 <version>${zephyr.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>io.zephyr</groupId>
+                <groupId>io.sunshower.zephyr</groupId>
                 <artifactId>zephyr-directory-scanner</artifactId>
                 <version>${zephyr.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>io.zephyr</groupId>
+                <groupId>io.sunshower.zephyr</groupId>
                 <artifactId>sunshower-yaml-reader</artifactId>
                 <version>${zephyr.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>io.zephyr</groupId>
+                <groupId>io.sunshower.zephyr</groupId>
                 <artifactId>sunshower-spring</artifactId>
                 <version>${zephyr.version}</version>
             </dependency>
 
 
             <dependency>
-                <groupId>io.zephyr</groupId>
+                <groupId>io.sunshower.zephyr</groupId>
                 <artifactId>synchronous-api</artifactId>
                 <version>${zephyr.version}</version>
             </dependency>
 
 
             <dependency>
-                <groupId>io.zephyr</groupId>
+                <groupId>io.sunshower.zephyr</groupId>
                 <artifactId>kernel-test</artifactId>
                 <version>${zephyr.version}</version>
                 <scope>test</scope>
             </dependency>
 
             <dependency>
-                <groupId>io.zephyr</groupId>
+                <groupId>io.sunshower.zephyr</groupId>
                 <artifactId>kernel-test-common</artifactId>
                 <version>${zephyr.version}</version>
                 <scope>test</scope>
             </dependency>
 
             <dependency>
-                <groupId>io.zephyr</groupId>
+                <groupId>io.sunshower.zephyr</groupId>
                 <artifactId>zephyr-main</artifactId>
                 <version>${zephyr.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>io.zephyr</groupId>
+                <groupId>io.sunshower.zephyr</groupId>
                 <artifactId>spring-embedded-plugin</artifactId>
                 <version>${zephyr.version}</version>
             </dependency>

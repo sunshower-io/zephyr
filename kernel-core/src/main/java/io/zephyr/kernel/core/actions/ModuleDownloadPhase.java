@@ -7,7 +7,7 @@ import io.zephyr.kernel.concurrency.Task;
 import io.zephyr.kernel.concurrency.TaskException;
 import io.zephyr.kernel.concurrency.TaskStatus;
 import io.zephyr.kernel.core.Kernel;
-import io.zephyr.kernel.events.Events;
+import io.zephyr.kernel.events.KernelEvents;
 import io.zephyr.kernel.io.ChannelTransferListener;
 import io.zephyr.kernel.log.Logging;
 import io.zephyr.kernel.status.StatusType;
@@ -112,19 +112,20 @@ public class ModuleDownloadPhase extends Task implements ChannelTransferListener
   private void fireDownloadFailed(URL downloadUrl, Kernel kernel, Exception ex) {
     kernel.dispatchEvent(
         ModulePhaseEvents.MODULE_DOWNLOAD_FAILED,
-        Events.create(downloadUrl, StatusType.FAILED.unresolvable(ex)));
+        KernelEvents.create(downloadUrl, StatusType.FAILED.unresolvable(ex)));
   }
 
   private void fireDownloadCompleted(URL downloadUrl, Kernel kernel) {
     kernel.dispatchEvent(
         ModulePhaseEvents.MODULE_DOWNLOAD_COMPLETED,
-        Events.create(
+        KernelEvents.create(
             downloadUrl, StatusType.PROGRESSING.resolvable(downloadUrl.toExternalForm())));
   }
 
   private void fireDownloadInitiated(URL downloadUrl, Kernel kernel) {
     kernel.dispatchEvent(
         ModulePhaseEvents.MODULE_DOWNLOAD_INITIATED,
-        Events.create(downloadUrl, StatusType.PROGRESSING.resolvable("beginning module download")));
+        KernelEvents.create(
+            downloadUrl, StatusType.PROGRESSING.resolvable("beginning module download")));
   }
 }

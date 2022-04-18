@@ -5,8 +5,12 @@ import io.zephyr.api.ServiceReference;
 import io.zephyr.kernel.Module;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import lombok.val;
 
+@ToString
+@EqualsAndHashCode
 public class DefaultServiceReference<T> implements ServiceReference<T> {
 
   final Module owner;

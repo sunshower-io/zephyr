@@ -1,9 +1,9 @@
 package io.zephyr.kernel.concurrency;
 
 import io.sunshower.gyre.Pair;
+import io.sunshower.lang.events.EventListener;
+import io.sunshower.lang.events.EventSource;
 import io.zephyr.api.Disposable;
-import io.zephyr.kernel.events.EventListener;
-import io.zephyr.kernel.events.EventSource;
 import java.util.List;
 
 class DefaultProcessListenerDisposable implements Disposable {

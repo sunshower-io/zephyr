@@ -1,9 +1,33 @@
 package io.zephyr.kernel.dependencies;
 
-import io.sunshower.gyre.*;
+import io.sunshower.gyre.AbstractDirectedGraph;
+import io.sunshower.gyre.CompactTrieMap;
+import io.sunshower.gyre.DirectedGraph;
+import io.sunshower.gyre.EdgeFilters;
+import io.sunshower.gyre.Graph;
+import io.sunshower.gyre.GraphWriter;
+import io.sunshower.gyre.Partition;
+import io.sunshower.gyre.StronglyConnectedComponents;
+import io.sunshower.gyre.TrieMap;
 import io.zephyr.kernel.Coordinate;
+import io.zephyr.kernel.Dependency;
 import io.zephyr.kernel.Module;
-import java.util.*;
+import io.zephyr.kernel.core.ModuleCoordinate;
+import io.zephyr.kernel.log.Logging;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import lombok.NonNull;
 import lombok.val;
 
@@ -14,6 +38,7 @@ import lombok.val;
 })
 public final class DefaultDependencyGraph implements DependencyGraph, Cloneable {
 
+  static final Logger log = Logging.get(DependencyGraph.class);
   final TrieMap<Coordinate, Module> modules;
   final Graph<DirectedGraph.Edge<Coordinate>, Coordinate> dependencyGraph;
 
@@ -89,11 +114,18 @@ public final class DefaultDependencyGraph implements DependencyGraph, Cloneable 
   }
 
   @Override
-  public Set<UnsatisfiedDependencySet> getUnresolvedDependencies(Collection<Module> modules) {
-    val prospective = new HashMap<>(this.modules);
+  public @NonNull Set<UnsatisfiedDependencySet> resolveDependencies(Collection<Module> modules) {
+    val results = new HashSet<UnsatisfiedDependencySet>();
+    val installationGroupModules = resolveInstallationGroupModules(modules);
     for (val module : modules) {
-      prospective.put(module.getCoordinate(), module);
+      resolveDependenciesFor(module, results, installationGroupModules);
     }
+    return results;
+  }
+
+  @Override
+  public Set<UnsatisfiedDependencySet> getUnresolvedDependencies(Collection<Module> modules) {
+    val prospective = resolveInstallationGroupModules(modules);
     val results = new LinkedHashSet<UnsatisfiedDependencySet>();
     for (val module : modules) {
       val unsatisfied = new LinkedHashSet<Coordinate>();
@@ -115,10 +147,7 @@ public final class DefaultDependencyGraph implements DependencyGraph, Cloneable 
 
   @Override
   public Set<UnsatisfiedDependencySet> addAll(Collection<Module> modules) {
-    val prospective = new HashMap<>(this.modules);
-    for (val module : modules) {
-      prospective.put(module.getCoordinate(), module);
-    }
+    val prospective = resolveInstallationGroupModules(modules);
     val results = new LinkedHashSet<UnsatisfiedDependencySet>();
     for (val module : modules) {
       val unsatisfied = new LinkedHashSet<Coordinate>();
@@ -205,5 +234,84 @@ public final class DefaultDependencyGraph implements DependencyGraph, Cloneable 
   @Override
   public String toString() {
     return new GraphWriter<DirectedGraph.Edge<Coordinate>, Coordinate>().write(dependencyGraph);
+  }
+
+  private Map<Coordinate, Module> resolveInstallationGroupModules(Collection<Module> modules) {
+    val prospective = new HashMap<>(this.modules);
+    for (val module : modules) {
+      prospective.put(module.getCoordinate(), module);
+    }
+    return prospective;
+  }
+
+  private void resolveDependenciesFor(
+      Module module,
+      Set<UnsatisfiedDependencySet> results,
+      Map<Coordinate, Module> installationGroupModules) {
+    val unsatisfied = new HashSet<Coordinate>();
+    val unsatisifiedDependencySet =
+        new UnsatisfiedDependencySet(module.getCoordinate(), unsatisfied);
+    for (val dependency : module.getDependencies()) {
+      resolveDependency(module, dependency, unsatisfied, installationGroupModules);
+      if (!unsatisfied.isEmpty()) {
+        results.add(unsatisifiedDependencySet);
+      }
+    }
+  }
+
+  private void resolveDependency(
+      Module module,
+      Dependency dependency,
+      Set<Coordinate> results,
+      Map<Coordinate, Module> installationGroupModules) {
+    val matching = collectMatchingFrom(dependency, installationGroupModules);
+    if (matching.isEmpty()) {
+      results.add(new UnvalidatedCoordinate(dependency.getCoordinateSpecification()));
+    } else {
+      Collections.sort(matching);
+      val fst = matching.get(matching.size() - 1);
+      if (log.isLoggable(Level.INFO)) {
+        log.log(
+            Level.INFO,
+            "dependency.graph.selected.module.prelude",
+            new Object[] {dependency, module.getCoordinate().toCanonicalForm()});
+        for (val dep : matching) {
+          log.log(Level.INFO, "dependency.graph.selected.module.node", dep.getCoordinate());
+        }
+      }
+      dependency.setCoordinate(fst.getCoordinate());
+    }
+  }
+
+  /**
+   * process:
+   *
+   * <p>1. Search through existing modules. Add to list 2. Search through installation group
+   * modules, add to list 3. If not empty, sort coordinate ascending 4. Pick first as resolution 5.
+   * If empty, add unresolved dependency to dependency set
+   *
+   * @param dependency the dependency to resolve
+   * @param installationGroupModules the current installation group
+   * @return a list of matching dependencies ordered version ascending
+   */
+  private List<Module> collectMatchingFrom(
+      Dependency dependency, Map<Coordinate, Module> installationGroupModules) {
+
+    val spec = dependency.getCoordinateSpecification();
+    val query = ModuleCoordinate.group(spec.getGroup()).name(spec.getName());
+    val existing =
+        getModules(query).stream()
+            .filter(f -> f.getCoordinate().satisfies(spec.getVersionSpecification()))
+            .collect(Collectors.toList());
+
+    for (val module : installationGroupModules.values()) {
+      val coordinate = module.getCoordinate();
+      if (Objects.equals(coordinate.getGroup(), spec.getGroup())
+          && Objects.equals(coordinate.getName(), spec.getName())
+          && coordinate.satisfies(spec.getVersionSpecification())) {
+        existing.add(module);
+      }
+    }
+    return existing;
   }
 }
