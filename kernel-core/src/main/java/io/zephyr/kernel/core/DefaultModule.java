@@ -33,11 +33,11 @@ import lombok.SneakyThrows;
 import lombok.val;
 
 @SuppressWarnings({
-    "PMD.AvoidUsingVolatile",
-    "PMD.AvoidDuplicateLiterals",
-    "PMD.UnusedPrivateMethod",
-    "PMD.DataflowAnomalyAnalysis",
-    "PMD.AvoidInstantiatingObjectsInLoops"
+  "PMD.AvoidUsingVolatile",
+  "PMD.AvoidDuplicateLiterals",
+  "PMD.UnusedPrivateMethod",
+  "PMD.DataflowAnomalyAnalysis",
+  "PMD.AvoidInstantiatingObjectsInLoops"
 })
 public final class DefaultModule extends AbstractModule
     implements Module, Comparable<Module>, Originator {
@@ -83,8 +83,7 @@ public final class DefaultModule extends AbstractModule
     this.moduleDirectory = moduleDirectory;
   }
 
-  public DefaultModule() {
-  }
+  public DefaultModule() {}
 
   public void setKernel(Kernel kernel) {
     this.kernel = kernel;
