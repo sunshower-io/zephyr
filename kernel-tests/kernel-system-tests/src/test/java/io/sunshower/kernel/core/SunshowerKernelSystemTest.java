@@ -12,11 +12,16 @@ import io.zephyr.kernel.core.KernelLifecycle;
 import javax.inject.Inject;
 import lombok.val;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
 import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.OS;
 
 @ZephyrTest
 @DisabledOnOs(OS.WINDOWS)
+@DisabledIfEnvironmentVariable(
+    named = "BUILD_ENVIRONMENT",
+    matches = "github",
+    disabledReason = "RMI is flaky")
 class SunshowerKernelSystemTest {
   @Inject private Kernel kernel;
   @Inject private Zephyr zephyr;
