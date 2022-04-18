@@ -110,6 +110,36 @@ jobs:
           -Dmaven-repo.github.password=${{secrets.MAVEN_REPOSITORY_PASSWORD}} -e
 
 
+      - name: Deploy Bills-Of-Materials To Maven Central
+        run: >-
+          mvn clean install verify deploy
+          -f bom
+          -P maven-central
+          --settings bom/settings/settings.xml
+          -Dmaven-repo.github.username=${{secrets.MAVEN_CENTRAL_REPOSITORY_USERNAME}}
+          -Dmaven-repo.github.password='${{secrets.MAVEN_CENTRAL_REPOSITORY_PASSWORD}}' -e
+          -Dgpg.keyname=${{ secrets.SIGNING_KEY_ID }}
+          -Dgpg.passphrase='${{ secrets.SIGNING_PASSWORD }}'
+
+
+      - name: Build and Deploy Zephyr Projects To Maven Central
+        uses: eskatos/gradle-command-action@v1
+        env:
+          JAVA_TOOL_OPTIONS: -Duser.language=en -Duser.country=US
+        with:
+          gradle-version: 7.4
+          arguments: >-
+            assemble
+            build
+            sA
+            sign
+            publish
+            -i
+            -Psigning.gnupg.keyName=${{ secrets.SIGNING_KEY_ID }}
+            -Psigning.gnupg.passphrase=${{ secrets.SIGNING_PASSWORD }}
+            -PmavenRepositoryUsername=${{secrets.MAVEN_CENTRAL_REPOSITORY_USERNAME}}
+            -PmavenRepositoryPassword=${{secrets.MAVEN_CENTRAL_REPOSITORY_PASSWORD}}
+            -PmavenRepositoryUrl=${{secrets.MAVEN_CENTRAL_REPOSITORY_URL}} --stacktrace
 
 
       - name: Build And Deploy Zephyr Projects
@@ -119,7 +149,7 @@ jobs:
         with:
           gradle-version: 7.4
           arguments: >-
-            clean assemble build sA sign javadoc publish -i
+            clean assemble build sA javadoc -i
             -PmavenRepositoryUsername=${{secrets.MAVEN_REPOSITORY_USERNAME}}
             -PmavenRepositoryPassword=${{secrets.MAVEN_REPOSITORY_PASSWORD}}
             -PmavenRepositoryUrl=${{secrets.MAVEN_RELEASE_URL}}
