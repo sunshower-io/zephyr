@@ -86,7 +86,6 @@ jobs:
           -DnewVersion=${{ steps.finalVersion.outputs.result }}
           -Dmaven-repo.github.username=${{secrets.MAVEN_REPOSITORY_USERNAME}}
           -Dmaven-repo.github.password='${{secrets.MAVEN_REPOSITORY_PASSWORD}}'
-
           && mvn versions:set-property
           -f bom
           -Dproperty=zephyr.version
@@ -94,8 +93,7 @@ jobs:
           -DnewVersion=${{ steps.finalVersion.outputs.result }}
           -Dmaven-repo.github.username=${{secrets.MAVEN_REPOSITORY_USERNAME}}
           -Dmaven-repo.github.password='${{secrets.MAVEN_REPOSITORY_PASSWORD}}'
-          &&
-          mvn clean install -f bom
+          && mvn clean install -f bom
 
 
 #      - name: Increment Zephyr Maven Plugin Version
