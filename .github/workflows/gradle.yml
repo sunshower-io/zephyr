@@ -104,7 +104,7 @@ jobs:
         with:
           gradle-version: 7.4
           arguments: >-
-            assemble build sA -i
+            assemble build sA pTML -i
             -Psigning.gnupg.keyName=${{ secrets.SIGNING_KEY_ID }}
             -Psigning.gnupg.passphrase=${{ secrets.SIGNING_PASSWORD }}
             -PmavenRepositoryUsername=${{secrets.MAVEN_REPOSITORY_USERNAME}}
@@ -142,7 +142,7 @@ jobs:
         with:
           gradle-version: 7.4
           arguments: >-
-            assemble build sA
+            assemble build sA pTML
             -i
             -Psigning.gnupg.keyName=${{ secrets.SIGNING_KEY_ID }}
             -Psigning.gnupg.passphrase=${{ secrets.SIGNING_PASSWORD }}
@@ -168,7 +168,7 @@ jobs:
         with:
           gradle-version: 7.4
           arguments: >-
-            assemble build publish sign sA -i
+            assemble build pTML sign sA -i
             -Psigning.gnupg.keyName=${{ secrets.SIGNING_KEY_ID }}
             -Psigning.gnupg.passphrase=${{ secrets.SIGNING_PASSWORD }}
             -PmavenRepositoryUsername=${{secrets.MAVEN_REPOSITORY_USERNAME}}

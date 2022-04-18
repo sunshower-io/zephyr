@@ -118,7 +118,7 @@ jobs:
 
       - name: Deploy Bills-Of-Materials
         run: >-
-          mvn clean install deploy -f bom
+          mvn clean install -f bom
           --settings bom/settings/settings.xml
           -Dmaven-repo.github.username=${{secrets.MAVEN_REPOSITORY_USERNAME}}
           -Dmaven-repo.github.password=${{secrets.MAVEN_REPOSITORY_PASSWORD}} -e
@@ -163,7 +163,7 @@ jobs:
         with:
           gradle-version: 7.4
           arguments: >-
-            clean assemble build sA javadoc -i
+            clean assemble build sA javadoc pTML -i
             -PmavenRepositoryUsername=${{secrets.MAVEN_REPOSITORY_USERNAME}}
             -PmavenRepositoryPassword=${{secrets.MAVEN_REPOSITORY_PASSWORD}}
             -PmavenRepositoryUrl=${{secrets.MAVEN_RELEASE_URL}}
@@ -291,7 +291,7 @@ jobs:
 
       - name: Deploy Bills-Of-Materials
         run: >-
-          mvn install deploy -f bom
+          mvn install -f bom
           --settings bom/settings/settings.xml
           -Dmaven-repo.github.username=${{secrets.MAVEN_REPOSITORY_USERNAME}}
           -Dmaven-repo.github.password=${{secrets.MAVEN_REPOSITORY_PASSWORD}} -e
@@ -305,7 +305,7 @@ jobs:
         with:
           gradle-version: 7.4
           arguments: >-
-            clean assemble build sA javadoc publish -i
+            clean assemble build sA javadoc pTML -i
             -PmavenRepositoryUsername=${{secrets.MAVEN_REPOSITORY_USERNAME}}
             -PmavenRepositoryPassword=${{secrets.MAVEN_REPOSITORY_PASSWORD}}
             -PmavenRepositoryUrl=${{secrets.MAVEN_REPOSITORY_URL}}
