@@ -7,8 +7,18 @@ import static java.lang.String.format;
 import io.sunshower.checks.SuppressFBWarnings;
 import io.zephyr.api.ModuleActivator;
 import io.zephyr.api.ModuleContext;
-import io.zephyr.kernel.*;
+import io.zephyr.kernel.Assembly;
+import io.zephyr.kernel.Coordinate;
+import io.zephyr.kernel.CoordinateSpecification;
+import io.zephyr.kernel.Dependency;
+import io.zephyr.kernel.IllegalModuleStateException;
+import io.zephyr.kernel.Library;
+import io.zephyr.kernel.Lifecycle;
 import io.zephyr.kernel.Module;
+import io.zephyr.kernel.ModuleException;
+import io.zephyr.kernel.Source;
+import io.zephyr.kernel.TaskQueue;
+import io.zephyr.kernel.Transitivity;
 import io.zephyr.kernel.memento.Memento;
 import io.zephyr.kernel.memento.Originator;
 import java.io.File;
@@ -23,14 +33,15 @@ import lombok.SneakyThrows;
 import lombok.val;
 
 @SuppressWarnings({
-  "PMD.AvoidUsingVolatile",
-  "PMD.AvoidDuplicateLiterals",
-  "PMD.UnusedPrivateMethod",
-  "PMD.DataflowAnomalyAnalysis",
-  "PMD.AvoidInstantiatingObjectsInLoops"
+    "PMD.AvoidUsingVolatile",
+    "PMD.AvoidDuplicateLiterals",
+    "PMD.UnusedPrivateMethod",
+    "PMD.DataflowAnomalyAnalysis",
+    "PMD.AvoidInstantiatingObjectsInLoops"
 })
 public final class DefaultModule extends AbstractModule
     implements Module, Comparable<Module>, Originator {
+
   private int order;
   private Type type;
 
@@ -72,11 +83,12 @@ public final class DefaultModule extends AbstractModule
     this.moduleDirectory = moduleDirectory;
   }
 
+  public DefaultModule() {
+  }
+
   public void setKernel(Kernel kernel) {
     this.kernel = kernel;
   }
-
-  public DefaultModule() {}
 
   @Override
   public ModuleLoader getModuleLoader() {
@@ -105,11 +117,6 @@ public final class DefaultModule extends AbstractModule
 
   public void setLifecycle(Lifecycle lifecycle) {
     this.lifecycle = lifecycle;
-  }
-
-  @Override
-  public void setModuleClasspath(ModuleClasspath moduleClasspath) {
-    this.moduleClasspath = moduleClasspath;
   }
 
   @Override
@@ -204,6 +211,11 @@ public final class DefaultModule extends AbstractModule
       moduleClasspath = moduleLoader.loadModule(coordinate);
     }
     return moduleClasspath;
+  }
+
+  @Override
+  public void setModuleClasspath(ModuleClasspath moduleClasspath) {
+    this.moduleClasspath = moduleClasspath;
   }
 
   @Override
@@ -363,13 +375,13 @@ public final class DefaultModule extends AbstractModule
   }
 
   @Override
-  public void setTaskQueue(TaskQueue taskQueue) {
-    this.taskQueue = taskQueue;
+  public TaskQueue getTaskQueue() {
+    return taskQueue;
   }
 
   @Override
-  public TaskQueue getTaskQueue() {
-    return taskQueue;
+  public void setTaskQueue(TaskQueue taskQueue) {
+    this.taskQueue = taskQueue;
   }
 
   @Override
@@ -380,10 +392,15 @@ public final class DefaultModule extends AbstractModule
     } catch (Exception ex) {
       exceptions.add(ex);
     }
-    moduleLoader.close();
-    ;
-    moduleLoader = null;
-    moduleClasspath = null;
+    if (moduleLoader != null) {
+      try {
+        moduleLoader.close();
+        moduleLoader = null;
+        moduleClasspath = null;
+      } catch (Exception ex) {
+        exceptions.add(ex);
+      }
+    }
     if (!exceptions.isEmpty()) {
       throw new ModuleException(
           format("Failed to close module '%s', reasons", coordinate), exceptions);
