@@ -12,6 +12,8 @@
     <maven-source-plugin.version>2.2.1</maven-source-plugin.version>
   </properties>
 
+  <name>Zephyr</name>
+
   <url>https://www.sunshower.io</url>
   <licenses>
     <license>
