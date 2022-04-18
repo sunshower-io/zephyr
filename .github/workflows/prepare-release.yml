@@ -58,10 +58,16 @@ jobs:
 
       - name: Generate Build Number
         id: buildnumber
-        uses: einaregilsson/build-number@v2
+        uses: einaregilsson/build-number@v3
         with:
           token: ${{ secrets.github_token }}
 
+
+      - name: Import GPG Key
+        uses: hashicorp/ghaction-import-gpg@v2.1.0
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.SIGNING_KEY }}
+          PASSPHRASE: ${{ secrets.SIGNING_PASSWORD }}
 
       # Accessible via ${{ steps.finalVersion.outputs.result }}
       - name: Set Final Version Number
@@ -75,9 +81,20 @@ jobs:
       - name: Increment Bills-of-Materials
         run: >-
           mvn versions:set -f bom
-          -DnewVersion=${{ steps.finalVersion.outputs.result }} &&
-          mvn versions:set-property -f bom
-          -Dproperty=zephyr.version -DnewVersion=${{ steps.finalVersion.outputs.result }} &&
+          -DnewVersion=${{ steps.finalVersion.outputs.result }}
+          --settings bom/settings/settings.xml
+          -DnewVersion=${{ steps.finalVersion.outputs.result }}
+          -Dmaven-repo.github.username=${{secrets.MAVEN_REPOSITORY_USERNAME}}
+          -Dmaven-repo.github.password='${{secrets.MAVEN_REPOSITORY_PASSWORD}}'
+
+          && mvn versions:set-property
+          -f bom
+          -Dproperty=zephyr.version
+          --settings bom/settings/settings.xml
+          -DnewVersion=${{ steps.finalVersion.outputs.result }}
+          -Dmaven-repo.github.username=${{secrets.MAVEN_REPOSITORY_USERNAME}}
+          -Dmaven-repo.github.password='${{secrets.MAVEN_REPOSITORY_PASSWORD}}'
+          &&
           mvn clean install -f bom
 
 
@@ -109,6 +126,17 @@ jobs:
           -Dmaven-repo.github.password=${{secrets.MAVEN_REPOSITORY_PASSWORD}} -e
 
 
+      - name: Deploy Bills-Of-Materials To Maven Central
+        run: >-
+          mvn clean install verify deploy
+          -f bom
+          -P maven-central
+          --settings bom/settings/settings.xml
+          -Dmaven-repo.github.username=${{secrets.MAVEN_CENTRAL_REPOSITORY_USERNAME}}
+          -Dmaven-repo.github.password='${{secrets.MAVEN_CENTRAL_REPOSITORY_PASSWORD}}' -e
+          -Dgpg.keyname=${{ secrets.SIGNING_KEY_ID }}
+          -Dgpg.passphrase=${{ secrets.SIGNING_PASSWORD }}
+
 
 
       - name: Build And Deploy Zephyr Projects
@@ -124,6 +152,26 @@ jobs:
             -PmavenRepositoryUrl=${{secrets.MAVEN_RELEASE_URL}}
             --stacktrace
             --max-workers=1
+
+      - name: Deploy To Maven Central
+        uses: eskatos/gradle-command-action@v1
+        env:
+          JAVA_TOOL_OPTIONS: -Duser.language=en -Duser.country=US
+        with:
+          gradle-version: 7.4
+          arguments: >-
+            assemble
+            build
+            sA
+            sign
+            publish
+            -i
+            -Psigning.gnupg.keyName=${{ secrets.SIGNING_KEY_ID }}
+            -Psigning.gnupg.passphrase=${{ secrets.SIGNING_PASSWORD }}
+            -PmavenRepositoryUsername=${{secrets.MAVEN_CENTRAL_REPOSITORY_USERNAME}}
+            -PmavenRepositoryPassword=${{secrets.MAVEN_CENTRAL_REPOSITORY_PASSWORD}}
+            -PmavenRepositoryUrl=${{secrets.MAVEN_CENTRAL_REPOSITORY_URL}} --stacktrace
+
 
 
       #################   Deploy Zephyr Maven Plugin #################

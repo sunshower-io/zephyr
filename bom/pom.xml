@@ -12,12 +12,26 @@
     <maven-source-plugin.version>2.2.1</maven-source-plugin.version>
   </properties>
 
+  <url>https://www.sunshower.io</url>
+  <licenses>
+    <license>
+      <name>MIT License</name>
+      <url>http://www.opensource.org/licenses/mit-license.php</url>
+    </license>
+  </licenses>
+
+  <description>
+    Arcus Bill-Of-Materials parent POM
+  </description>
+
   <scm>
-    <url>https://github.com/sunshower-io/sunshower-arcus</url>
-    <connection>scm:git:ssh://git@github.com/sunshower-io/sunshower-arcus.git</connection>
-    <developerConnection>scm:git:ssh://git@github.com/sunshower-io/sunshower-arcus.git
+    <url>https://github.com/sunshower-io/zephyr</url>
+    <connection>scm:git:ssh://git@github.com/sunshower-io/zephyr.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/sunshower-io/zephyr.git
     </developerConnection>
   </scm>
+
+
   <developers>
     <developer>
       <email>josiah@sunshower.io</email>
@@ -64,16 +78,14 @@
   </repositories>
 
 
-  <distributionManagement>
+  <repositories>
     <repository>
       <id>sunshower-github</id>
-      <url>https://maven.pkg.github.com/sunshower-io/zephyr</url>
+      <name>Sunshower-env Github</name>
+      <url>https://maven.pkg.github.com/sunshower-io/*</url>
     </repository>
-    <snapshotRepository>
-      <id>sunshower-github</id>
-      <url>https://maven.pkg.github.com/sunshower-io/zephyr</url>
-    </snapshotRepository>
-  </distributionManagement>
+  </repositories>
+
   <modules>
     <module>imported</module>
     <module>exported</module>
@@ -96,42 +108,53 @@
     </profile>
   </profiles>
 
+
   <build>
     <plugins>
-
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
-        <version>${maven-source-plugin.version}</version>
-        <executions>
-          <execution>
-            <id>attach-sources</id>
-            <goals>
-              <goal>jar-no-fork</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>${maven-javadoc-plugin.version}</version>
-        <executions>
-          <execution>
-            <id>attach-javadocs</id>
-            <goals>
-              <goal>jar</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-gpg-plugin</artifactId>
       </plugin>
     </plugins>
+
+
     <pluginManagement>
       <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-source-plugin</artifactId>
+          <version>${maven-source-plugin.version}</version>
+          <executions>
+            <execution>
+              <id>attach-sources</id>
+              <goals>
+                <goal>jar-no-fork</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>${maven-javadoc-plugin.version}</version>
+          <executions>
+            <execution>
+              <id>attach-javadocs</id>
+              <goals>
+                <goal>jar</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-gpg-plugin</artifactId>
@@ -139,7 +162,7 @@
           <executions>
             <execution>
               <id>sign-artifacts</id>
-              <phase>deploy</phase>
+              <phase>verify</phase>
               <goals>
                 <goal>sign</goal>
               </goals>
@@ -149,4 +172,6 @@
       </plugins>
     </pluginManagement>
   </build>
+
+
 </project>
