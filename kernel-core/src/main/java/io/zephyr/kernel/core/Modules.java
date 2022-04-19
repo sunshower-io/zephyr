@@ -317,12 +317,13 @@ public class Modules {
     }
   }
 
-  public static void close(Module module) throws Exception {
+  public static void close(Module module, Kernel kernel) throws Exception {
     module.close();
     val taskQueue = module.getTaskQueue();
     if (taskQueue != null) {
       taskQueue.stop();
     }
+    kernel.getModuleManager().getModuleLoader().uninstall(module);
     System.gc();
   }
 

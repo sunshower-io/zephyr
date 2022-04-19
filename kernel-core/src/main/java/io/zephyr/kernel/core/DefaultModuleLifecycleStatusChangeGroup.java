@@ -84,7 +84,7 @@ final class DefaultModuleLifecycleStatusChangeGroup implements ModuleLifecycleSt
         new ReverseSubgraphTransformation<DirectedGraph.Edge<Coordinate>, Coordinate>(
                 task.getCoordinate())
             .apply(moduleManager.getDependencyGraph().getGraph());
-    addAction(reachability, task, tasks, existing, (t, u, v) -> this.pluginStopTask(t, u));
+    addAction(reachability, task, tasks, existing, (t, u, v) -> this.pluginStopTask(t, u, kernel));
   }
 
   private void addStartAction(
@@ -136,8 +136,8 @@ final class DefaultModuleLifecycleStatusChangeGroup implements ModuleLifecycleSt
     }
   }
 
-  private Task pluginStopTask(Coordinate coordinate, ModuleManager manager) {
-    return new PluginStopTask(coordinate, manager);
+  private Task pluginStopTask(Coordinate coordinate, ModuleManager manager, Kernel kernel) {
+    return new PluginStopTask(coordinate, manager, kernel);
   }
 
   private Task pluginStartTask(Coordinate coordinate, ModuleManager manager, Kernel kernel) {
