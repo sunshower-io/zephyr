@@ -24,8 +24,8 @@ public final class KernelModuleLoader extends ModuleLoader
     implements io.zephyr.kernel.core.ModuleLoader, ModuleClasspathManager, AutoCloseable {
 
   private final Kernel kernel;
-  private DependencyGraph graph;
   private final Map<String, UnloadableKernelModuleLoader> moduleLoaders;
+  private DependencyGraph graph;
 
   public KernelModuleLoader(final DependencyGraph graph, Kernel kernel) {
     moduleLoaders = new HashMap<>();
@@ -36,24 +36,31 @@ public final class KernelModuleLoader extends ModuleLoader
   @Override
   @SuppressWarnings("PMD.DataflowAnomalyAnalysis")
   public void install(Module module) {
-    val coordinate = module.getCoordinate();
-    val id = coordinate.toCanonicalForm();
-    if (module instanceof AbstractModule) {
-      val loader = new UnloadableKernelModuleLoader(new KernelModuleFinder(module, this, kernel));
-      ((AbstractModule) module).setModuleLoader(loader);
-      moduleLoaders.put(id, loader);
+    synchronized (moduleLoaders) {
+      val coordinate = module.getCoordinate();
+      val id = coordinate.toCanonicalForm();
+      if (module instanceof AbstractModule) {
+        var loader = moduleLoaders.get(id);
+        if (loader == null) {
+          loader = new UnloadableKernelModuleLoader(new KernelModuleFinder(module, this, kernel));
+        }
+        ((AbstractModule) module).setModuleLoader(loader);
+        moduleLoaders.put(id, loader);
+      }
     }
   }
 
   @Override
   @SneakyThrows
   public void uninstall(Coordinate coordinate) {
-    val id = coordinate.toCanonicalForm();
-    val loader = moduleLoaders.get(id);
-    if (loader != null) {
-      loader.unload(coordinate);
-      loader.close();
-      moduleLoaders.remove(id);
+    synchronized (moduleLoaders) {
+      val id = coordinate.toCanonicalForm();
+      val loader = moduleLoaders.get(id);
+      if (loader != null) {
+        loader.unload(coordinate);
+        loader.close();
+        moduleLoaders.remove(id);
+      }
     }
   }
 
@@ -64,33 +71,37 @@ public final class KernelModuleLoader extends ModuleLoader
 
   @Override
   public void check(Module module) {
-    val coord = module.getCoordinate();
-    val canonicalForm = coord.toCanonicalForm();
-    if (!moduleLoaders.containsKey(canonicalForm)) {
-      install(module);
-    } else {
-      val loader = moduleLoaders.get(canonicalForm);
-      ((AbstractModule) module).setModuleLoader(loader);
+    synchronized (moduleLoaders) {
+      val coord = module.getCoordinate();
+      val canonicalForm = coord.toCanonicalForm();
+      if (!moduleLoaders.containsKey(canonicalForm)) {
+        install(module);
+      } else {
+        val loader = moduleLoaders.get(canonicalForm);
+        ((AbstractModule) module).setModuleLoader(loader);
+      }
     }
   }
 
   @Override
   protected org.jboss.modules.Module preloadModule(final String name) throws ModuleLoadException {
 
-    org.jboss.modules.Module result = loadModuleLocal(name);
-    if (result == null) {
-      val loader = moduleLoaders.get(name);
-      if (loader == null) {
-        throw new ModuleNotFoundException("Module identified by " + name + " was not found");
+    synchronized (moduleLoaders) {
+      org.jboss.modules.Module result = loadModuleLocal(name);
+      if (result == null) {
+        val loader = moduleLoaders.get(name);
+        if (loader == null) {
+          throw new ModuleNotFoundException("Module identified by " + name + " was not found");
+        }
+        result = ModuleLoader.preloadModule(name, loader);
       }
-      result = ModuleLoader.preloadModule(name, loader);
+      val target = (AbstractModule) graph.get(ModuleCoordinate.parse(name));
+      val loader = new UnloadableKernelModuleLoader(new KernelModuleFinder(target, this, kernel));
+      val classpath = new DefaultModuleClasspath(result, loader);
+      target.setModuleLoader(loader);
+      target.setModuleClasspath(classpath);
+      return result;
     }
-    val target = (AbstractModule) graph.get(ModuleCoordinate.parse(name));
-    val loader = new UnloadableKernelModuleLoader(new KernelModuleFinder(target, this, kernel));
-    val classpath = new DefaultModuleClasspath(result, loader);
-    target.setModuleLoader(loader);
-    target.setModuleClasspath(classpath);
-    return result;
   }
 
   @Override
@@ -104,14 +115,16 @@ public final class KernelModuleLoader extends ModuleLoader
 
   @Override
   public void close() throws Exception {
-    for (val loader : moduleLoaders.entrySet()) {
-      try {
-        loader.getValue().close();
-      } catch (Throwable ex) {
-        log.log(
-            Level.WARNING,
-            "Failed to close loader for module {0}, reason: {1}",
-            new Object[] {loader.getKey(), ex.getMessage()});
+    synchronized (moduleLoaders) {
+      for (val loader : moduleLoaders.entrySet()) {
+        try {
+          loader.getValue().close();
+        } catch (Throwable ex) {
+          log.log(
+              Level.WARNING,
+              "Failed to close loader for module {0}, reason: {1}",
+              new Object[] {loader.getKey(), ex.getMessage()});
+        }
       }
     }
   }

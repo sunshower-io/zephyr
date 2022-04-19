@@ -24,7 +24,7 @@ import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
   "PMD.JUnitAssertionsShouldIncludeMessage",
   "PMD.JUnitTestContainsTooManyAsserts"
 })
-public class DefaultModuleManagerExtTest extends DefaultModuleManagerTest {
+public class DefaultModuleManagerExtTest extends ModuleManagerTestCase {
 
   @Test
   void ensureStartingAndStoppingInitiatorModuleWorks() throws Exception {

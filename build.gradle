@@ -177,6 +177,7 @@ subprojects {
                      * included artifacts
                      */
 
+                    artifact jar
                     artifact testJar
                     artifact sourcesJar
                     artifact javadocJar
