@@ -113,6 +113,7 @@ public class KernelLauncher implements EntryPoint, EntryPointRegistry {
   private static List<EntryPoint> resolveEntryPoints() {
     return ServiceLoader.load(EntryPoint.class, ClassLoader.getSystemClassLoader()).stream()
         .map(ServiceLoader.Provider::get)
+        .filter(t -> !t.requiresKernel())
         .sorted(PrioritizedExtension::compareTo)
         .collect(Collectors.toList());
   }
@@ -121,8 +122,7 @@ public class KernelLauncher implements EntryPoint, EntryPointRegistry {
   private static void runAll(
       ExecutorService kernelExecutor, List<EntryPoint> tasks, Map<ContextEntries, Object> context) {
     val completionQueue = new ArrayBlockingQueue<Future<EntryPoint>>(tasks.size());
-    val completionService =
-        new ExecutorCompletionService<EntryPoint>(kernelExecutor, completionQueue);
+    val completionService = new ExecutorCompletionService<>(kernelExecutor, completionQueue);
     scheduleTasks(tasks, context, completionService);
 
     while (true) {
@@ -198,7 +198,9 @@ public class KernelLauncher implements EntryPoint, EntryPointRegistry {
     while (iterator.hasNext()) {
       val entrypoint = iterator.next();
       log.log(Level.INFO, "kernel.entrypoint.starting", entrypoint);
-      entrypoint.start();
+      if (!entrypoint.requiresKernel()) {
+        entrypoint.start();
+      }
       log.log(Level.INFO, "kernel.entrypoint.started", entrypoint);
     }
   }
@@ -213,7 +215,9 @@ public class KernelLauncher implements EntryPoint, EntryPointRegistry {
 
   private static void initialize(EntryPoint loader, Map<ContextEntries, Object> context) {
     log.log(Level.INFO, "kernel.entrypoint.initializing", loader);
-    loader.initialize(context);
+    if (!loader.requiresKernel()) {
+      loader.initialize(context);
+    }
     log.log(Level.INFO, "kernel.entrypoint.initialized", loader);
   }
 

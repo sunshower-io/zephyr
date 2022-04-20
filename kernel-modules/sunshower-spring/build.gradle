@@ -2,15 +2,6 @@ apply plugin: 'war'
 apply plugin: 'java'
 apply plugin: 'java-library'
 dependencies {
-
-    [
-            'spring-beans',
-            'spring-core',
-            'spring-context'
-    ].each {
-        implementation "org.springframework:$it"
-    }
-
     compileOnly project(':kernel-api')
     compileOnly project(':kernel-modules:kernel-lib')
 }

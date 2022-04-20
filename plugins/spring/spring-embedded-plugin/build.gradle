@@ -2,10 +2,10 @@ apply plugin: 'java'
 apply plugin: 'java-library'
 
 dependencies {
-    api project(':kernel-api')
-    api project(':kernel-core')
-    api project(':kernel-modules:kernel-lib')
-    api project(':kernel-modules:synchronous-api')
+    compileOnly project(':kernel-api')
+    compileOnly project(':kernel-core')
+    compileOnly project(':kernel-modules:kernel-lib')
+    compileOnly project(':kernel-modules:synchronous-api')
     compileOnly("org.springframework.boot:spring-boot-starter-web")
     compileOnly("org.springframework.boot:spring-boot-starter-undertow")
     testImplementation project(":kernel-tests:kernel-test")

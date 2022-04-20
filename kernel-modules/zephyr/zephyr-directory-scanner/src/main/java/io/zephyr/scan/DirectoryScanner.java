@@ -6,6 +6,7 @@ import io.zephyr.api.ModuleActivator;
 import io.zephyr.api.ModuleContext;
 import io.zephyr.cli.DefaultZephyr;
 import io.zephyr.cli.Zephyr;
+import io.zephyr.kernel.Lifecycle.State;
 import io.zephyr.kernel.core.Framework;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.extensions.EntryPoint;
@@ -16,13 +17,17 @@ import java.net.MalformedURLException;
 import java.nio.file.*;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import lombok.ToString;
 import lombok.val;
 
+@ToString
 public class DirectoryScanner implements EntryPoint, ModuleActivator {
   static final Logger log = Logging.get(DirectoryScanner.class);
 
@@ -35,12 +40,19 @@ public class DirectoryScanner implements EntryPoint, ModuleActivator {
 
   private WatchService watchService;
   private DirectoryScannerOptions options;
+  private final Set<Path> installed;
 
   /** concurrent state */
   volatile boolean running;
 
   public DirectoryScanner() {
     keys = new HashMap<>(0);
+    installed = new HashSet<>();
+  }
+
+  @Override
+  public boolean requiresKernel() {
+    return true;
   }
 
   @Override
@@ -139,19 +151,33 @@ public class DirectoryScanner implements EntryPoint, ModuleActivator {
 
   private void doHandle(Zephyr zephyr, WatchKey key, WatchService watchService) {
     for (val event : key.pollEvents()) {
-      handleEvent(zephyr, key, event, watchService);
+      if (handleEvent(zephyr, key, event, watchService)) {
+        break;
+      }
     }
   }
 
   private void registerKeys(Zephyr zephyr, WatchService watchService) throws IOException {
     val paths = options.getDirectories();
     if (paths == null || paths.length == 0) {
-      register(zephyr, fileSystem.getPath("deployments"), watchService);
+      register(zephyr, createIfNotExists(fileSystem.getPath("deployments")), watchService);
       return;
     } else {
       for (val path : paths) {
         register(zephyr, Path.of(path), watchService);
       }
+    }
+  }
+
+  private Path createIfNotExists(Path deployments) {
+    if (Files.exists(deployments)) {
+      return deployments;
+    }
+    try {
+      Files.createDirectories(deployments);
+      return deployments;
+    } catch (Exception ex) {
+      throw new RuntimeException(ex);
     }
   }
 
@@ -214,18 +240,22 @@ public class DirectoryScanner implements EntryPoint, ModuleActivator {
     return 100;
   }
 
-  private void handleEvent(
+  private boolean handleEvent(
       Zephyr zephyr, WatchKey key, WatchEvent<?> event, WatchService watchService) {
     if (event.kind() == ENTRY_CREATE) {
       handleCreate(zephyr, key, event, watchService);
+      return true;
     }
     if (event.kind() == ENTRY_DELETE) {
       handleDelete(zephyr, key, event, watchService);
+      return true;
     }
     if (event.kind() == ENTRY_MODIFY) {
       handleDelete(zephyr, key, event, watchService);
       handleCreate(zephyr, key, event, watchService);
+      return true;
     }
+    return false;
   }
 
   private void handleModify(WatchEvent<?> event, WatchService watchService) {}
@@ -238,13 +268,21 @@ public class DirectoryScanner implements EntryPoint, ModuleActivator {
     log.log(Level.INFO, "scanner.deployment.removal.detected", deployedFile);
     try {
 
-      val file = deployedFile.toAbsolutePath().toFile();
-      val modules = zephyr.getPlugins();
-      for (val module : modules) {
-        if (module.getSource() != null && module.getSource().is(file)) {
-          zephyr.remove(module.getCoordinate().toCanonicalForm());
-          break;
+      val absolutePath = deployedFile.toAbsolutePath();
+      val file = absolutePath.toFile();
+
+      if (installed.contains(absolutePath)) {
+        val modules = zephyr.getPlugins();
+        for (val module : modules) {
+          if (module.getSource() != null && module.getSource().is(file)) {
+            if (module.getLifecycle().getState() == State.Active) {
+              zephyr.stop(Set.of(module.getCoordinate().toCanonicalForm()));
+            }
+            zephyr.remove(module.getCoordinate().toCanonicalForm());
+            break;
+          }
         }
+        installed.remove(absolutePath);
       }
     } catch (Exception ex) {
       log.log(Level.WARNING, "scanner.deployment.removal.failed", path);
@@ -258,12 +296,16 @@ public class DirectoryScanner implements EntryPoint, ModuleActivator {
     log.log(Level.INFO, "scanner.deployment.detected", deployedFile);
     try {
       val file = deployedFile.toAbsolutePath();
-      zephyr.install(file.toFile().toURI().toURL());
+      if (!installed.contains(file)) {
+        zephyr.install(file.toFile().toURI().toURL());
 
-      for (val module : zephyr.getPlugins()) {
-        if (module.getSource() != null && module.getSource().is(file.toFile().getAbsoluteFile())) {
-          zephyr.start(module.getCoordinate().toCanonicalForm());
+        for (val module : zephyr.getPlugins()) {
+          if (module.getSource() != null
+              && module.getSource().is(file.toFile().getAbsoluteFile())) {
+            zephyr.start(module.getCoordinate().toCanonicalForm());
+          }
         }
+        installed.add(file);
       }
     } catch (Exception ex) {
       log.log(Level.WARNING, "scanner.deployment.failed", path);

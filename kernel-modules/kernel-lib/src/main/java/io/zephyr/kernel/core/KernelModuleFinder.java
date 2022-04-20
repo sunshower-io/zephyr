@@ -189,5 +189,6 @@ public final class KernelModuleFinder implements ModuleFinder, AutoCloseable {
     for (val resourceLoader : resourceLoaders) {
       resourceLoader.close();
     }
+    ((KernelClasspathLocalLoader) localLoader).close();
   }
 }

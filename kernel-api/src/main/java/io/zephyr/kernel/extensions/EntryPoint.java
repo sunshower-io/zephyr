@@ -19,9 +19,14 @@ public interface EntryPoint extends PrioritizedExtension, Startable, Stoppable {
     ARGS,
     KERNEL, // may not always exist
     ENTRY_POINTS,
+    RUNNING_ENTRY_POINTS,
     ENTRY_POINTS_TEMP,
     KERNEL_EXECUTOR_SERVICE,
     ENTRY_POINT_REGISTRY;
+  }
+
+  default boolean requiresKernel() {
+    return false;
   }
 
   Logger getLogger();

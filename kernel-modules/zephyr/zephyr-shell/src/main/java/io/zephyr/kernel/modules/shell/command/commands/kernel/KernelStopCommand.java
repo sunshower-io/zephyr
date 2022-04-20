@@ -6,10 +6,13 @@ import io.sunshower.lang.events.EventType;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.core.KernelEventTypes;
 import io.zephyr.kernel.core.KernelLifecycle;
+import io.zephyr.kernel.extensions.EntryPoint;
+import io.zephyr.kernel.extensions.EntryPoint.ContextEntries;
 import io.zephyr.kernel.modules.shell.command.DefaultCommand;
 import io.zephyr.kernel.modules.shell.console.CommandContext;
 import io.zephyr.kernel.modules.shell.console.Console;
 import io.zephyr.kernel.modules.shell.console.Result;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.val;
 import picocli.CommandLine;
@@ -48,6 +51,7 @@ public class KernelStopCommand extends DefaultCommand {
       console.successln("Attempting to save kernel state...");
       kernel.persistState().toCompletableFuture().get();
       console.successln("Successfully wrote kernel state");
+      stopRunningEntryPoints(kernel, context);
       kernel.stop();
     } catch (Exception e) {
       console.errorln("Failed to save state: ", e.getMessage());
@@ -57,8 +61,25 @@ public class KernelStopCommand extends DefaultCommand {
     return Result.success();
   }
 
+  @SuppressWarnings("unchecked")
+  private void stopRunningEntryPoints(Kernel kernel, CommandContext context) {
+    val running =
+        (List<EntryPoint>) context.getLaunchContext().get(ContextEntries.RUNNING_ENTRY_POINTS);
+    if (running == null || running.isEmpty()) {
+      return;
+    }
+
+    for (val entryPoint : running) {
+      entryPoint.finalize(context.getLaunchContext());
+    }
+    for (val entryPoint : running) {
+      entryPoint.stop();
+    }
+  }
+
   @AllArgsConstructor
   private static final class KernelStopEventHandler implements EventListener<Kernel> {
+
     final CommandContext context;
 
     @Override

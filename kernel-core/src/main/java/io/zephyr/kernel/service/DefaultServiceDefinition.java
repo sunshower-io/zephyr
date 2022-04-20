@@ -1,11 +1,9 @@
 package io.zephyr.kernel.service;
 
 import io.zephyr.api.ServiceDefinition;
-import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 @ToString
-@EqualsAndHashCode
 public class DefaultServiceDefinition<T> implements ServiceDefinition<T> {
   final T value;
   final String name;

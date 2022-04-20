@@ -11,6 +11,7 @@ import io.zephyr.kernel.module.ModuleLifecycleChangeGroup;
 import io.zephyr.kernel.module.ModuleLifecycleChangeRequest;
 import java.util.concurrent.TimeUnit;
 import lombok.val;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
 
@@ -27,6 +28,7 @@ import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
 public class DefaultModuleManagerExtTest extends ModuleManagerTestCase {
 
   @Test
+  @Disabled
   void ensureStartingAndStoppingInitiatorModuleWorks() throws Exception {
     kernel.start();
     try {

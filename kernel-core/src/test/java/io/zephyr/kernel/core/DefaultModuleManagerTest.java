@@ -34,6 +34,22 @@ import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
 public class DefaultModuleManagerTest extends ModuleManagerTestCase {
 
   @Test
+  void ensureReadingClassWorks() {
+
+    try {
+      kernel.start();
+      val fst = moduleIn(":semver:test-plugin-1");
+      val snd = moduleIn(":semver:test-plugin-2-0");
+      install(fst, snd);
+      start("test-plugin-1");
+      val result = find("test-plugin-1").getClassLoader().getResource("plugin1/Service.class");
+      assertNotNull(result);
+    } finally {
+      kernel.stop();
+    }
+  }
+
+  @Test
   void ensureSemverWorksForSingleVersion() {
 
     try {

@@ -14,7 +14,9 @@ dependencies {
 
     [
             project(':kernel-api'),
-            project(':kernel-core')
+            project(':kernel-core'),
+            project(':kernel-modules:synchronous-api'),
+            project(':kernel-modules:sunshower-spring')
 
     ].each {
         implementation it
@@ -43,11 +45,11 @@ dependencies {
         plugin project(":kernel-modules:zephyr:zephyr-$it")
     }
 
-    [
-            ':kernel-modules:sunshower-yaml-reader'
-    ].each {
-        implementation project(it)
-    }
+//    [
+//            ':kernel-modules:sunshower-yaml-reader'
+//    ].each {
+//        implementation project(it)
+//    }
 
     testImplementation project(path: ':kernel-core', configuration: 'tests')
 }

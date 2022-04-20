@@ -14,8 +14,10 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import lombok.SneakyThrows;
+import lombok.ToString;
 import lombok.val;
 
+@ToString
 public class ZephyrCliEntryPoint implements EntryPoint {
 
   static Logger log = Logger.getLogger(ZephyrCliEntryPoint.class.getName());

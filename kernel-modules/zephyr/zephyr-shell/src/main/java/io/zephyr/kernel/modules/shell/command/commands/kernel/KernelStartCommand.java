@@ -10,6 +10,8 @@ import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.core.KernelEventTypes;
 import io.zephyr.kernel.core.KernelLifecycle;
 import io.zephyr.kernel.extensions.EntryPoint;
+import io.zephyr.kernel.extensions.EntryPoint.ContextEntries;
+import io.zephyr.kernel.extensions.PrioritizedExtension;
 import io.zephyr.kernel.launch.KernelOptions;
 import io.zephyr.kernel.modules.shell.ShellOptions;
 import io.zephyr.kernel.modules.shell.command.DefaultCommand;
@@ -17,7 +19,14 @@ import io.zephyr.kernel.modules.shell.command.DefaultCommandContext;
 import io.zephyr.kernel.modules.shell.console.CommandContext;
 import io.zephyr.kernel.modules.shell.console.Console;
 import io.zephyr.kernel.modules.shell.console.Result;
-import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ServiceLoader;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedTransferQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.val;
 import picocli.CommandLine;
@@ -31,6 +40,14 @@ public class KernelStartCommand extends DefaultCommand {
 
   public KernelStartCommand() {
     super("start");
+  }
+
+  private static List<EntryPoint> resolveEntryPoints() {
+    return ServiceLoader.load(EntryPoint.class, ClassLoader.getSystemClassLoader()).stream()
+        .map(ServiceLoader.Provider::get)
+        .sorted(PrioritizedExtension::compareTo)
+        .filter(EntryPoint::requiresKernel)
+        .collect(Collectors.toList());
   }
 
   @Override
@@ -70,7 +87,7 @@ public class KernelStartCommand extends DefaultCommand {
       }
       kernel.start();
       ((DefaultCommandContext) context).register(Kernel.class, kernel);
-
+      runEntryPoints(resolveEntryPoints(), (DefaultCommandContext) context, kernel);
       kernel.restoreState().toCompletableFuture().get();
     } catch (Exception ex) {
       if (console != null) {
@@ -80,6 +97,23 @@ public class KernelStartCommand extends DefaultCommand {
       kernel.removeEventListener(listener);
     }
     return Result.success();
+  }
+
+  private void runEntryPoints(
+      List<EntryPoint> entryPoints, DefaultCommandContext context, Kernel kernel) {
+
+    for (val entryPoint : entryPoints) {
+      entryPoint.initialize(context.getLaunchContext());
+    }
+    val ctx = context.getLaunchContext();
+    ctx.put(ContextEntries.KERNEL, kernel);
+    val list = new ArrayList<>();
+    ctx.put(ContextEntries.RUNNING_ENTRY_POINTS, list);
+
+    for (val entryPoint : entryPoints) {
+      list.add(entryPoint);
+      kernel.getScheduler().getKernelExecutor().submit(() -> entryPoint.run(ctx));
+    }
   }
 
   private WorkerPool createWorkerPool(KernelOptions kernelOptions, CommandContext context) {
@@ -109,6 +143,7 @@ public class KernelStartCommand extends DefaultCommand {
 
   @AllArgsConstructor
   private static final class KernelStartEventHandler implements EventListener<Kernel> {
+
     final CommandContext context;
 
     @Override
