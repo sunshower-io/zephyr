@@ -6,6 +6,7 @@ import io.sunshower.gyre.Scope;
 import io.zephyr.kernel.concurrency.Process.Mode;
 import io.zephyr.kernel.log.Logging;
 import java.util.ArrayList;
+import java.util.ServiceConfigurationError;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -39,7 +40,11 @@ public class TopologyAwareParallelScheduler<K> {
   public TaskTracker<K> submit(Process<K> process, Scope context) {
     log.log(Level.INFO, "parallel.scheduler.schedulingtask", process);
     val result = new StagedScheduleEnqueuer(process, context);
-    ForkJoinPool.commonPool().submit(result);
+    workerPool.submit(() -> {
+      result.run();
+      return null;
+    });
+//    ForkJoinPool.commonPool().submit(result);
     log.log(Level.INFO, "parallel.scheduler.scheduledtask", process);
     return result;
   }
@@ -79,7 +84,7 @@ public class TopologyAwareParallelScheduler<K> {
         }
         latch.onTaskError(taskDef, ex);
         return null;
-      } catch (Exception ex) {
+      } catch (Throwable ex) {
         if (log.isLoggable(Level.INFO)) {
           log.log(Level.INFO, "Error processing task " + task.getValue().getName(), ex);
         }
@@ -143,24 +148,29 @@ public class TopologyAwareParallelScheduler<K> {
     public void run() {
       outer:
       for (val taskSet : process.getTasks()) {
-
         val latch = new NotifyingLatch<K>(this, taskSet.size());
         val results = new ArrayList<Task>();
-        for (val task : taskSet.getTasks()) {
-          val ntask = new NotifyingTask<>(task, latch, context);
-          executor.submit(ntask);
-          results.add(task.getValue());
-        }
         try {
-          latch.await();
-          for (val task : results) {
-            if (task.getState() == Task.State.Failed) {
-              log.log(Level.WARNING, "Task {0} failed--not continuing ", task.getName());
-              break outer;
-            }
+          for (val task : taskSet.getTasks()) {
+            val ntask = new NotifyingTask<>(task, latch, context);
+            executor.submit(ntask);
+//            ntask.call();
+            results.add(task.getValue());
           }
+          try {
+            latch.await();
+            for (val task : results) {
+              if (task.getState() == Task.State.Failed) {
+                log.log(Level.WARNING, "Task {0} failed--not continuing ", task.getName());
+                break outer;
+              }
+            }
 
-        } catch (InterruptedException e) {
+          } catch (InterruptedException e) {
+          }
+        } catch(Throwable ex) {
+          log.log(Level.SEVERE, "Encountered exception {0}", ex.getMessage());
+          log.log(Level.SEVERE, "Detail:", ex);
         }
       }
       complete(process);

@@ -63,7 +63,7 @@ public class KernelOptions extends AbstractValidatable<KernelOptions>
       names = {"-k", "--kernel-concurrency"},
       defaultValue = "2",
       type = Integer.class)
-  private Integer kernelConcurrency = 2;
+  private Integer kernelConcurrency = 10;
 
   /** Specify logging level. Defaults to Level.WARNING */
   @Getter

@@ -4,6 +4,7 @@ import io.sunshower.lang.events.Event;
 import io.sunshower.lang.events.EventListener;
 import io.sunshower.lang.events.EventType;
 import io.zephyr.kernel.concurrency.ExecutorWorkerPool;
+import io.zephyr.kernel.concurrency.NamedThreadFactory;
 import io.zephyr.kernel.concurrency.WorkerPool;
 import io.zephyr.kernel.core.DaggerSunshowerKernelConfiguration;
 import io.zephyr.kernel.core.Kernel;
@@ -23,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedTransferQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -122,8 +124,7 @@ public class KernelStartCommand extends DefaultCommand {
             context.getLaunchContext().get(EntryPoint.ContextEntries.KERNEL_EXECUTOR_SERVICE);
 
     val gyreService =
-        new ThreadPoolExecutor(
-            0, kernelOptions.getConcurrency(), 30L, TimeUnit.SECONDS, new LinkedTransferQueue<>());
+        Executors.newCachedThreadPool(new NamedThreadFactory("gyre"));
     return new ExecutorWorkerPool(gyreService, kernelService);
   }
 

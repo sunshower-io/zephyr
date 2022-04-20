@@ -48,18 +48,18 @@ public class KernelClasspathLocalLoader implements LocalLoader, AutoCloseable {
 
   private synchronized boolean canReexportPackage(String packageName) {
     val result = ModulePackageConstraintSet.canReexportPackage(packageName, classLoader);
-    if(result) {
+    if (result) {
       return result;
     }
     var cached = moduleOverriddenPackageConstraintSet.get();
-    if(cached == null) {
+    if (cached == null) {
       val threadClassLoader = Thread.currentThread().getContextClassLoader();
-      if(threadClassLoader != null) {
+      if (threadClassLoader != null) {
         cached = new ModulePackageConstraintSet(threadClassLoader);
         moduleOverriddenPackageConstraintSet.set(cached);
       }
     }
-    if(cached != null) {
+    if (cached != null) {
       return cached.canReexport(packageName);
     }
     return false;

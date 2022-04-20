@@ -1,10 +1,14 @@
 package io.zephyr.kernel.concurrency;
 
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
+import lombok.extern.java.Log;
 
 @SuppressWarnings({"PMD.DoNotUseThreads", "PMD.AvoidThreadGroup"})
-public class NamedThreadFactory implements ThreadFactory {
+@Log
+public class NamedThreadFactory implements ThreadFactory, UncaughtExceptionHandler {
 
   private static final AtomicInteger poolNumber = new AtomicInteger(1);
   private final ThreadGroup group;
@@ -19,6 +23,7 @@ public class NamedThreadFactory implements ThreadFactory {
   @Override
   public Thread newThread(Runnable r) {
     Thread t = new Thread(group, r, namePrefix + threadNumber.getAndIncrement(), 0);
+    t.setUncaughtExceptionHandler(this);
     if (t.isDaemon()) {
       t.setDaemon(false);
     }
@@ -26,5 +31,11 @@ public class NamedThreadFactory implements ThreadFactory {
       t.setPriority(Thread.NORM_PRIORITY);
     }
     return t;
+  }
+
+  @Override
+  public void uncaughtException(Thread thread, Throwable throwable) {
+    log.log(Level.WARNING, "Exception in thread {0}: {1}",
+        new Object[]{thread.getName(), throwable.getMessage()});
   }
 }
