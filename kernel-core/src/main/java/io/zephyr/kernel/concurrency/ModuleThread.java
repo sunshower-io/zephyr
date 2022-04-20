@@ -31,12 +31,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import lombok.val;
 
-/** not really sure if this is a good idea or not */
+/**
+ * not really sure if this is a good idea or not
+ */
 @SuppressWarnings({
-  "PMD.DoNotUseThreads",
-  "PMD.AvoidFieldNameMatchingTypeName",
-  "PMD.UnusedPrivateMethod",
-  "PMD.DataflowAnomalyAnalysis"
+    "PMD.DoNotUseThreads",
+    "PMD.AvoidFieldNameMatchingTypeName",
+    "PMD.UnusedPrivateMethod",
+    "PMD.DataflowAnomalyAnalysis"
 })
 @SuppressFBWarnings
 public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable, VolatileStorage {
@@ -242,7 +244,7 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable, 
         KernelEvents.create(
             module, StatusType.FAILED.unresolvable(FAILURE_TEMPLATE, coordinate, ex.getMessage())));
     module.getLifecycle().setState(Lifecycle.State.Failed);
-    log.log(Level.WARNING, FAILURE_TEMPLATE, new Object[] {coordinate, ex.getMessage()});
+    log.log(Level.WARNING, FAILURE_TEMPLATE, new Object[]{coordinate, ex.getMessage()});
     log.log(Level.FINE, "Reason: ", ex);
   }
 
@@ -261,18 +263,20 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable, 
         module.getLifecycle().setState(Lifecycle.State.Stopping);
         val activator = module.getActivator();
         try {
-          if (activator != null) {
-            activator.stop(module.getContext());
+          try {
+            if (activator != null) {
+              activator.stop(module.getContext());
+            }
+          } finally {
+            ((AbstractModule) module).setActivator(null);
+            //          module.close();
+            moduleThread.get().setContextClassLoader(null);
+            /**
+             * if the activator.stop() method results in tasks being enqueued we need to clear them
+             * out
+             */
+            drainQueue();
           }
-          ((AbstractModule) module).setActivator(null);
-          //          module.close();
-          moduleThread.get().setContextClassLoader(null);
-
-          /**
-           * if the activator.stop() method results in tasks being enqueued we need to clear them
-           * out
-           */
-          drainQueue();
         } catch (Exception ex) {
           module.getLifecycle().setState(Lifecycle.State.Failed);
           throw new PluginException(ex);
