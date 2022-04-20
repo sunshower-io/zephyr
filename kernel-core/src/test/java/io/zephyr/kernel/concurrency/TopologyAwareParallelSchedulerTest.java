@@ -44,7 +44,7 @@ class TopologyAwareParallelSchedulerTest {
     scheduler =
         new TopologyAwareParallelScheduler<>(
             new ExecutorWorkerPool(
-                Executors.newSingleThreadExecutor(), Executors.newSingleThreadExecutor()));
+                Executors.newCachedThreadPool(), Executors.newCachedThreadPool()));
   }
 
   @RepeatedTest(1000)
