@@ -6,11 +6,9 @@ import io.sunshower.gyre.Scope;
 import io.zephyr.kernel.concurrency.Process.Mode;
 import io.zephyr.kernel.log.Logging;
 import java.util.ArrayList;
-import java.util.ServiceConfigurationError;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ForkJoinPool;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import lombok.val;
@@ -40,11 +38,12 @@ public class TopologyAwareParallelScheduler<K> {
   public TaskTracker<K> submit(Process<K> process, Scope context) {
     log.log(Level.INFO, "parallel.scheduler.schedulingtask", process);
     val result = new StagedScheduleEnqueuer(process, context);
-    workerPool.submit(() -> {
-      result.run();
-      return null;
-    });
-//    ForkJoinPool.commonPool().submit(result);
+    workerPool.submit(
+        () -> {
+          result.run();
+          return null;
+        });
+    //    ForkJoinPool.commonPool().submit(result);
     log.log(Level.INFO, "parallel.scheduler.scheduledtask", process);
     return result;
   }
@@ -154,7 +153,7 @@ public class TopologyAwareParallelScheduler<K> {
           for (val task : taskSet.getTasks()) {
             val ntask = new NotifyingTask<>(task, latch, context);
             executor.submit(ntask);
-//            ntask.call();
+            //            ntask.call();
             results.add(task.getValue());
           }
           try {
@@ -168,7 +167,7 @@ public class TopologyAwareParallelScheduler<K> {
 
           } catch (InterruptedException e) {
           }
-        } catch(Throwable ex) {
+        } catch (Throwable ex) {
           log.log(Level.SEVERE, "Encountered exception {0}", ex.getMessage());
           log.log(Level.SEVERE, "Detail:", ex);
         }

@@ -25,9 +25,6 @@ import java.util.List;
 import java.util.ServiceLoader;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedTransferQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.val;
@@ -123,8 +120,7 @@ public class KernelStartCommand extends DefaultCommand {
         (ExecutorService)
             context.getLaunchContext().get(EntryPoint.ContextEntries.KERNEL_EXECUTOR_SERVICE);
 
-    val gyreService =
-        Executors.newCachedThreadPool(new NamedThreadFactory("gyre"));
+    val gyreService = Executors.newCachedThreadPool(new NamedThreadFactory("gyre"));
     return new ExecutorWorkerPool(gyreService, kernelService);
   }
 
