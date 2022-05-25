@@ -35,7 +35,9 @@ public class NamedThreadFactory implements ThreadFactory, UncaughtExceptionHandl
 
   @Override
   public void uncaughtException(Thread thread, Throwable throwable) {
-    log.log(Level.WARNING, "Exception in thread {0}: {1}",
-        new Object[]{thread.getName(), throwable.getMessage()});
+    log.log(
+        Level.WARNING,
+        "Exception in thread {0}: {1}",
+        new Object[] {thread.getName(), throwable.getMessage()});
   }
 }

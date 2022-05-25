@@ -1,15 +1,22 @@
 package io.zephyr.kernel.core;
 
-import io.sunshower.lang.events.*;
+import io.sunshower.lang.events.AbstractEventSource;
+import io.sunshower.lang.events.Event;
 import io.sunshower.lang.events.EventListener;
+import io.sunshower.lang.events.EventSource;
+import io.sunshower.lang.events.EventType;
 import io.zephyr.api.ModuleContext;
 import io.zephyr.api.ServiceRegistry;
 import io.zephyr.common.io.Files;
-import io.zephyr.kernel.*;
+import io.zephyr.kernel.Coordinate;
+import io.zephyr.kernel.KernelModuleEntry;
+import io.zephyr.kernel.Lifecycle;
 import io.zephyr.kernel.Module;
+import io.zephyr.kernel.VolatileStorage;
 import io.zephyr.kernel.classloading.KernelClassloader;
-import io.zephyr.kernel.concurrency.*;
 import io.zephyr.kernel.concurrency.Process;
+import io.zephyr.kernel.concurrency.Scheduler;
+import io.zephyr.kernel.concurrency.Tasks;
 import io.zephyr.kernel.core.actions.ModuleInstallationCompletionPhase;
 import io.zephyr.kernel.core.actions.WritePluginDescriptorPhase;
 import io.zephyr.kernel.core.lifecycle.DefaultKernelLifecycle;
@@ -23,14 +30,24 @@ import io.zephyr.kernel.module.ModuleLifecycleChangeGroup;
 import io.zephyr.kernel.module.ModuleLifecycleChangeRequest;
 import java.io.Closeable;
 import java.io.IOException;
-import java.nio.file.*;
-import java.util.*;
+import java.nio.file.FileSystem;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.ServiceLoader;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.inject.Inject;
-import lombok.*;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
+import lombok.SneakyThrows;
+import lombok.val;
 
 @SuppressWarnings({
   "PMD.AvoidUsingVolatile",
@@ -45,30 +62,17 @@ public class SunshowerKernel implements Kernel, EventSource {
   /** class fields */
   private static KernelOptions kernelOptions;
 
-  /** @return the kernel options used to start this instance. */
-  @NonNull
-  public static KernelOptions getKernelOptions() {
-    if (kernelOptions == null) {
-      throw new IllegalStateException("Error: KernelOptions are null--this is definitely a bug");
-    }
-    return kernelOptions;
-  }
-
   final VolatileStorage storage;
-
-  /** Instance fields */
-  private volatile ClassLoader classLoader;
-
   private final KernelLifecycle lifecycle;
   private final Scheduler<String> scheduler;
   private final ServiceRegistry serviceRegistry;
-  private final AsynchronousEventSource eventDispatcher;
-
+  private final EventSource eventDispatcher;
   /** accessable fields */
   @Getter private final ModuleManager moduleManager;
+  /** Instance fields */
+  private volatile ClassLoader classLoader;
 
   @Setter private ModuleClasspathManager moduleClasspathManager;
-
   /** mutable fields */
   @Getter @Setter private volatile FileSystem fileSystem;
 
@@ -83,12 +87,21 @@ public class SunshowerKernel implements Kernel, EventSource {
     this.moduleManager = moduleManager;
     this.storage = new ConcurrentVolatileStorage();
     this.lifecycle = new DefaultKernelLifecycle(this, scheduler, parentClassloader);
-    this.eventDispatcher = new AsynchronousEventSource(scheduler.getKernelExecutor());
+    this.eventDispatcher = new AbstractEventSource() {};
   }
 
   public SunshowerKernel(
       ModuleManager moduleManager, ServiceRegistry registry, Scheduler<String> scheduler) {
     this(moduleManager, registry, scheduler, Thread.currentThread().getContextClassLoader());
+  }
+
+  /** @return the kernel options used to start this instance. */
+  @NonNull
+  public static KernelOptions getKernelOptions() {
+    if (kernelOptions == null) {
+      throw new IllegalStateException("Error: KernelOptions are null--this is definitely a bug");
+    }
+    return kernelOptions;
   }
 
   public static void setKernelOptions(KernelOptions options) {
@@ -146,7 +159,6 @@ public class SunshowerKernel implements Kernel, EventSource {
   @SneakyThrows
   public void start() {
     serviceRegistry.initialize(this);
-    eventDispatcher.start();
     lifecycle.start().toCompletableFuture().get();
   }
 
@@ -160,7 +172,7 @@ public class SunshowerKernel implements Kernel, EventSource {
   @SneakyThrows
   public void stop() {
     moduleManager.close();
-    eventDispatcher.stop();
+    //    eventDispatcher.stop();
     lifecycle.stop().toCompletableFuture().get();
     serviceRegistry.close();
     storage.clear();

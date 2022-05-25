@@ -155,6 +155,12 @@ public class Modules {
       return true;
     }
 
+    for (val installedPlugin : installedPlugins) {
+      if (installedPlugin == null) {
+        throw new IllegalStateException("Error: null module somehow");
+      }
+    }
+
     log.log(Level.INFO, "plugin.phase.writingplugins", installedPlugins.size());
 
     val moduleManager = kernel.getModuleManager();

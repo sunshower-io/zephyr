@@ -31,14 +31,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import lombok.val;
 
-/**
- * not really sure if this is a good idea or not
- */
+/** not really sure if this is a good idea or not */
 @SuppressWarnings({
-    "PMD.DoNotUseThreads",
-    "PMD.AvoidFieldNameMatchingTypeName",
-    "PMD.UnusedPrivateMethod",
-    "PMD.DataflowAnomalyAnalysis"
+  "PMD.DoNotUseThreads",
+  "PMD.AvoidFieldNameMatchingTypeName",
+  "PMD.UnusedPrivateMethod",
+  "PMD.DataflowAnomalyAnalysis"
 })
 @SuppressFBWarnings
 public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable, VolatileStorage {
@@ -244,7 +242,7 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable, 
         KernelEvents.create(
             module, StatusType.FAILED.unresolvable(FAILURE_TEMPLATE, coordinate, ex.getMessage())));
     module.getLifecycle().setState(Lifecycle.State.Failed);
-    log.log(Level.WARNING, FAILURE_TEMPLATE, new Object[]{coordinate, ex.getMessage()});
+    log.log(Level.WARNING, FAILURE_TEMPLATE, new Object[] {coordinate, ex.getMessage()});
     log.log(Level.FINE, "Reason: ", ex);
   }
 
