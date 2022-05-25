@@ -28,7 +28,10 @@ class ModuleDownloadPhaseTest extends ModuleManagerTestCase {
 
     val eventListener = mock(EventListener.class);
 
-    kernel.addEventListener(eventListener, ModulePhaseEvents.MODULE_DOWNLOAD_FAILED);
+    kernel.addEventListener(
+        eventListener,
+        ModulePhaseEvents.MODULE_DOWNLOAD_FAILED,
+        ModulePhaseEvents.MODULE_ASSEMBLY_EXTRACTION_FAILED);
 
     kernel.getModuleManager().prepare(group).commit().toCompletableFuture().get();
     verify(eventListener, times(1)).onEvent(any(), any());

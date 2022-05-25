@@ -25,6 +25,9 @@ import lombok.val;
 @SuppressWarnings("PMD.UnusedFormalParameter")
 public class ModuleDownloadPhase extends Task implements ChannelTransferListener {
 
+  public static final String DOWNLOAD_URL = "MODULE_DOWNLOAD_URL";
+  public static final String DOWNLOADED_FILE = "DOWNLOADED_MODULE_FILE";
+  public static final String TARGET_DIRECTORY = "MODULE_TARGET_DIRECTORY";
   static final Logger log = Logging.get(ModuleDownloadPhase.class);
   static final ResourceBundle bundle;
 
@@ -33,9 +36,6 @@ public class ModuleDownloadPhase extends Task implements ChannelTransferListener
   }
 
   private final ThreadLocal<File> targetFile;
-  public static final String DOWNLOAD_URL = "MODULE_DOWNLOAD_URL";
-  public static final String DOWNLOADED_FILE = "DOWNLOADED_MODULE_FILE";
-  public static final String TARGET_DIRECTORY = "MODULE_TARGET_DIRECTORY";
 
   /** */
   public ModuleDownloadPhase(String name) {
@@ -75,12 +75,6 @@ public class ModuleDownloadPhase extends Task implements ChannelTransferListener
   @Override
   public void onCancel(ReadableByteChannel channel) {}
 
-  @AllArgsConstructor
-  public static class TransferData {
-
-    final double progress;
-  }
-
   private void downloadModule(URL downloadUrl, Path moduleDirectory, Scope context)
       throws Exception {
     val targetDirectory = getTargetDirectory(moduleDirectory, context);
@@ -95,7 +89,11 @@ public class ModuleDownloadPhase extends Task implements ChannelTransferListener
     if (!targetDirectory.exists()) {
       log.log(Level.INFO, "module.download.targetdir.creating", targetDirectory);
       if (!(targetDirectory.exists() || targetDirectory.mkdirs())) {
-        throw new TaskException(TaskStatus.UNRECOVERABLE);
+        throw new TaskException(
+            String.format(
+                "Error creating directory '%s'.  Directory does not exist and cannot be created",
+                targetDirectory),
+            TaskStatus.UNRECOVERABLE);
       }
     }
     return targetDirectory;
@@ -110,6 +108,10 @@ public class ModuleDownloadPhase extends Task implements ChannelTransferListener
   }
 
   private void fireDownloadFailed(URL downloadUrl, Kernel kernel, Exception ex) {
+    log.log(
+        Level.SEVERE,
+        "Error downloading module from '%s'.  Reason: %s".formatted(downloadUrl, ex),
+        ex);
     kernel.dispatchEvent(
         ModulePhaseEvents.MODULE_DOWNLOAD_FAILED,
         KernelEvents.create(downloadUrl, StatusType.FAILED.unresolvable(ex)));
@@ -127,5 +129,11 @@ public class ModuleDownloadPhase extends Task implements ChannelTransferListener
         ModulePhaseEvents.MODULE_DOWNLOAD_INITIATED,
         KernelEvents.create(
             downloadUrl, StatusType.PROGRESSING.resolvable("beginning module download")));
+  }
+
+  @AllArgsConstructor
+  public static class TransferData {
+
+    final double progress;
   }
 }
