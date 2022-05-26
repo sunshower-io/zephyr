@@ -28,6 +28,19 @@ public abstract class AbstractCompressedModuleAssemblyExtractor implements Modul
   static final Logger log =
       Logger.getLogger(AbstractCompressedModuleAssemblyExtractor.class.getName());
 
+  protected static String dirname(String libdir) {
+    val normalized = libdir.substring(0, libdir.length() - 1);
+    return normalized.substring(normalized.lastIndexOf('/') + 1);
+  }
+
+  public static String getFileName(String name) {
+    val sepidx = name.lastIndexOf(File.separator);
+    if (sepidx > 0) {
+      return name.substring(sepidx + 1);
+    }
+    return name;
+  }
+
   @Override
   public void extract(Assembly assembly, FileSystem moduleFilesystem, ExtractionListener listener)
       throws Exception {
@@ -40,11 +53,22 @@ public abstract class AbstractCompressedModuleAssemblyExtractor implements Modul
   @Override
   public boolean appliesTo(Assembly assembly, FileSystem moduleFilesystem) {
     try (val file = createArchive(assembly.getFile())) {
+      /**
+       * library directories are more specific (e.g. BOOT-INF is not likely to appear in a standard
+       * JAR file)
+       */
       for (val libraryDirectory : getLibraryDirectories()) {
         if (file.getEntry(libraryDirectory) != null) {
           return true;
         }
       }
+
+      for (val resourceDirectory : getResourceDirectories()) {
+        if (file.getEntry(resourceDirectory) != null) {
+          return true;
+        }
+      }
+
     } catch (IOException ex) {
       return false;
     }
@@ -58,6 +82,8 @@ public abstract class AbstractCompressedModuleAssemblyExtractor implements Modul
 
   /** @return the library directories to search through (e.g. WEB-INF/lib/, BOOT-INF/lib) */
   protected abstract Collection<String> getLibraryDirectories();
+
+  protected abstract Collection<String> getResourceDirectories();
 
   /**
    * @param name
@@ -155,18 +181,5 @@ public abstract class AbstractCompressedModuleAssemblyExtractor implements Modul
       assembly.addLibrary(new Library(target));
       listener.afterEntryExtracted(name, target);
     }
-  }
-
-  protected static String dirname(String libdir) {
-    val normalized = libdir.substring(0, libdir.length() - 1);
-    return normalized.substring(normalized.lastIndexOf('/') + 1);
-  }
-
-  public static String getFileName(String name) {
-    val sepidx = name.lastIndexOf(File.separator);
-    if (sepidx > 0) {
-      return name.substring(sepidx + 1);
-    }
-    return name;
   }
 }

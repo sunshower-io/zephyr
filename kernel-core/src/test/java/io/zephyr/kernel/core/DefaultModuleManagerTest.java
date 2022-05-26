@@ -18,17 +18,18 @@ import lombok.SneakyThrows;
 import lombok.val;
 import org.jboss.modules.ref.WeakReference;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
 
-// @DisabledIfEnvironmentVariable(
-//    named = "BUILD_ENVIRONMENT",
-//    matches = "github",
-//    disabledReason = "RMI is flaky")
-// @SuppressWarnings({
-//  "PMD.JUnitTestsShouldIncludeAssert",
-//  "PMD.DataflowAnomalyAnalysis",
-//  "PMD.JUnitAssertionsShouldIncludeMessage",
-//  "PMD.JUnitTestContainsTooManyAsserts"
-// })
+@DisabledIfEnvironmentVariable(
+    named = "BUILD_ENVIRONMENT",
+    matches = "github",
+    disabledReason = "RMI is flaky")
+@SuppressWarnings({
+  "PMD.JUnitTestsShouldIncludeAssert",
+  "PMD.DataflowAnomalyAnalysis",
+  "PMD.JUnitAssertionsShouldIncludeMessage",
+  "PMD.JUnitTestContainsTooManyAsserts"
+})
 public class DefaultModuleManagerTest extends ModuleManagerTestCase {
 
   @Test

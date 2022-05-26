@@ -55,6 +55,7 @@ public class ModuleDownloadPhase extends Task implements ChannelTransferListener
       downloadModule(downloadUrl, moduleDirectory, scope);
       fireDownloadCompleted(downloadUrl, kernel);
     } catch (Exception ex) {
+      ex.printStackTrace();
       fireDownloadFailed(downloadUrl, kernel, ex);
       throw new TaskException(ex, TaskStatus.UNRECOVERABLE);
     }

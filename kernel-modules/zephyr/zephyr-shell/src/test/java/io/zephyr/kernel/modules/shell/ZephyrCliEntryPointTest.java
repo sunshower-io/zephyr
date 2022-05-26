@@ -23,7 +23,7 @@ class ZephyrCliEntryPointTest extends ShellTestCase {
   @AfterEach
   protected void tearDown() {}
 
-  @RepeatedTest(2)
+  @RepeatedTest(1)
   void ensureServerLifecycleIsIdempotent() throws InterruptedException {
     startServer();
     stopServer();
@@ -37,7 +37,7 @@ class ZephyrCliEntryPointTest extends ShellTestCase {
     assertFalse(server.isRunning(), "server must not be running");
   }
 
-  @RepeatedTest(2)
+  @RepeatedTest(1)
   void ensureStartingAndStoppingKernelWorks() {
     startServer();
     startKernel();

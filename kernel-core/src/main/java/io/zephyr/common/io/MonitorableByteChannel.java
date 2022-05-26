@@ -77,7 +77,7 @@ public class MonitorableByteChannel implements ReadableByteChannel {
         log.log(Level.INFO, "Successfully closed connection");
         return;
       } catch (NoSuchMethodException | InaccessibleObjectException ex) {
-        log.log(Level.INFO, "No close method or inaccessible close method on {0}", c);
+        log.log(Level.FINEST, "No close method or inaccessible close method on {0}", c);
       } catch (InvocationTargetException e) {
         throw new RuntimeException(e);
       } catch (IllegalAccessException e) {
