@@ -20,4 +20,9 @@ public class TaskException extends KernelException {
   public TaskException(TaskStatus unrecoverable) {
     this.status = unrecoverable;
   }
+
+  public TaskException(String format, TaskStatus status) {
+    super(format);
+    this.status = status;
+  }
 }

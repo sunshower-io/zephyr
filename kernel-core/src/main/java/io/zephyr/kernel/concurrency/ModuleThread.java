@@ -261,18 +261,20 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable, 
         module.getLifecycle().setState(Lifecycle.State.Stopping);
         val activator = module.getActivator();
         try {
-          if (activator != null) {
-            activator.stop(module.getContext());
+          try {
+            if (activator != null) {
+              activator.stop(module.getContext());
+            }
+          } finally {
+            ((AbstractModule) module).setActivator(null);
+            //          module.close();
+            moduleThread.get().setContextClassLoader(null);
+            /**
+             * if the activator.stop() method results in tasks being enqueued we need to clear them
+             * out
+             */
+            drainQueue();
           }
-          ((AbstractModule) module).setActivator(null);
-          //          module.close();
-          moduleThread.get().setContextClassLoader(null);
-
-          /**
-           * if the activator.stop() method results in tasks being enqueued we need to clear them
-           * out
-           */
-          drainQueue();
         } catch (Exception ex) {
           module.getLifecycle().setState(Lifecycle.State.Failed);
           throw new PluginException(ex);

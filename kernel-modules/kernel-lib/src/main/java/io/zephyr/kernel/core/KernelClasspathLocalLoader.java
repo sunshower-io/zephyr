@@ -1,7 +1,5 @@
 package io.zephyr.kernel.core;
 
-import static io.zephyr.kernel.core.ModulePackageConstraintSet.canReexportPackage;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,9 +29,8 @@ public class KernelClasspathLocalLoader implements LocalLoader, AutoCloseable {
   @Override
   public Class<?> loadClassLocal(String name, boolean resolve) {
     try {
-      val type = Class.forName(name, true, classLoader);
-      if (canReexportPackage(type.getPackageName())) {
-        return type;
+      if (canReexportPackage(name) || canReexportPackage(getPackageName(name))) {
+        return Class.forName(name, true, classLoader);
       } else {
         log.log(
             Level.INFO,
@@ -44,6 +41,10 @@ public class KernelClasspathLocalLoader implements LocalLoader, AutoCloseable {
     } catch (ClassNotFoundException e) {
       return null;
     }
+  }
+
+  static String getPackageName(String className) {
+    return className.substring(0, className.lastIndexOf("."));
   }
 
   private synchronized boolean canReexportPackage(String packageName) {

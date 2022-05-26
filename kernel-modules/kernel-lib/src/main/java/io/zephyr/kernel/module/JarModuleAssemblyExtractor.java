@@ -21,6 +21,11 @@ public class JarModuleAssemblyExtractor extends AbstractCompressedModuleAssembly
   }
 
   @Override
+  protected Collection<String> getResourceDirectories() {
+    return resourceDirectories;
+  }
+
+  @Override
   protected Collection<String> getLibraryDirectories() {
     return libraryDirectories;
   }

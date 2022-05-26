@@ -1,13 +1,12 @@
 package io.zephyr.kernel.core;
 
 import io.zephyr.kernel.core.KernelPackageReexportConstraintSetProvider.Mode;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ServiceLoader;
-import java.util.ServiceLoader.Provider;
 import java.util.Set;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 import lombok.NonNull;
 import lombok.extern.java.Log;
 import lombok.val;
@@ -39,15 +38,6 @@ final class ModulePackageConstraintSet {
     computePackages();
   }
 
-  private static List<KernelPackageReexportConstraintSetProvider> loadProviders(
-      ClassLoader classLoader) {
-    return ServiceLoader.load(KernelPackageReexportConstraintSetProvider.class, classLoader)
-        .stream()
-        .map(Provider::get)
-        .sorted()
-        .collect(Collectors.toUnmodifiableList());
-  }
-
   static String deglob(String pkg) {
     return pkg.substring(0, pkg.lastIndexOf(".*"));
   }
@@ -69,6 +59,22 @@ final class ModulePackageConstraintSet {
     return getInstance(classLoader).canReexport(name);
   }
 
+  private List<KernelPackageReexportConstraintSetProvider> loadProviders(ClassLoader classLoader) {
+    val results = new ArrayList<KernelPackageReexportConstraintSetProvider>();
+    ServiceLoader.load(KernelPackageReexportConstraintSetProvider.class, classLoader).stream()
+        .forEach(
+            t -> {
+              exactAllowedPackages.add(t.type().getCanonicalName());
+              results.add(t.get());
+            });
+    return results;
+    //    return ServiceLoader.load(KernelPackageReexportConstraintSetProvider.class, classLoader)
+    //        .stream()
+    //        .map(Provider::get)
+    //        .sorted()
+    //        .collect(Collectors.toUnmodifiableList());
+  }
+
   private void computePackages() {
     log.log(Level.INFO, "Loading reexported package definitions...");
     val providers = loadProviders(classLoader);
@@ -79,6 +85,7 @@ final class ModulePackageConstraintSet {
 
   private void partitionIncludes(KernelPackageReexportConstraintSetProvider provider, Mode mode) {
     for (val pkg : provider.getPackages()) {
+      exactAllowedPackages.add(provider.getClass().getName());
       val glob = isGlob(pkg);
       if (glob) {
         if (mode == Mode.Include) {

@@ -42,6 +42,8 @@ public final class DefaultDependencyGraph implements DependencyGraph, Cloneable 
   final TrieMap<Coordinate, Module> modules;
   final Graph<DirectedGraph.Edge<Coordinate>, Coordinate> dependencyGraph;
 
+  final Object lock = new Object();
+
   public DefaultDependencyGraph() {
     dependencyGraph = new AbstractDirectedGraph<>();
     modules = new CompactTrieMap<>(new CoordinateAnalyzer());
@@ -95,89 +97,99 @@ public final class DefaultDependencyGraph implements DependencyGraph, Cloneable 
 
   @Override
   public UnsatisfiedDependencySet getUnresolvedDependencies(@NonNull Module module) {
-    val coordinate = module.getCoordinate();
+    synchronized (lock) {
+      val coordinate = module.getCoordinate();
 
-    val dependencies = module.getDependencies();
+      val dependencies = module.getDependencies();
 
-    val result = new LinkedHashSet<Coordinate>();
-    for (val dependency : dependencies) {
-      val depcoord = dependency.getCoordinate();
-      if (!modules.containsKey(depcoord)) {
-        result.add(depcoord);
+      val result = new LinkedHashSet<Coordinate>();
+      for (val dependency : dependencies) {
+        val depcoord = dependency.getCoordinate();
+        if (!modules.containsKey(depcoord)) {
+          result.add(depcoord);
+        }
       }
-    }
-    if (result.isEmpty()) {
-      return new UnsatisfiedDependencySet(coordinate, Collections.emptySet());
-    } else {
-      return new UnsatisfiedDependencySet(coordinate, result);
+      if (result.isEmpty()) {
+        return new UnsatisfiedDependencySet(coordinate, Collections.emptySet());
+      } else {
+        return new UnsatisfiedDependencySet(coordinate, result);
+      }
     }
   }
 
   @Override
   public @NonNull Set<UnsatisfiedDependencySet> resolveDependencies(Collection<Module> modules) {
-    val results = new HashSet<UnsatisfiedDependencySet>();
-    val installationGroupModules = resolveInstallationGroupModules(modules);
-    for (val module : modules) {
-      resolveDependenciesFor(module, results, installationGroupModules);
+    synchronized (lock) {
+      val results = new HashSet<UnsatisfiedDependencySet>();
+      val installationGroupModules = resolveInstallationGroupModules(modules);
+      for (val module : modules) {
+        resolveDependenciesFor(module, results, installationGroupModules);
+      }
+      return results;
     }
-    return results;
   }
 
   @Override
   public Set<UnsatisfiedDependencySet> getUnresolvedDependencies(Collection<Module> modules) {
-    val prospective = resolveInstallationGroupModules(modules);
-    val results = new LinkedHashSet<UnsatisfiedDependencySet>();
-    for (val module : modules) {
-      val unsatisfied = new LinkedHashSet<Coordinate>();
-      for (val dependency : module.getDependencies()) {
-        val depcoord = dependency.getCoordinate();
-        if (!prospective.containsKey(depcoord)) {
-          unsatisfied.add(depcoord);
+    synchronized (lock) {
+      val prospective = resolveInstallationGroupModules(modules);
+      val results = new LinkedHashSet<UnsatisfiedDependencySet>();
+      for (val module : modules) {
+        val unsatisfied = new LinkedHashSet<Coordinate>();
+        for (val dependency : module.getDependencies()) {
+          val depcoord = dependency.getCoordinate();
+          if (!prospective.containsKey(depcoord)) {
+            unsatisfied.add(depcoord);
+          }
+        }
+
+        if (unsatisfied.isEmpty()) {
+          results.add(new UnsatisfiedDependencySet(module.getCoordinate(), Collections.emptySet()));
+        } else {
+          results.add(new UnsatisfiedDependencySet(module.getCoordinate(), unsatisfied));
         }
       }
-
-      if (unsatisfied.isEmpty()) {
-        results.add(new UnsatisfiedDependencySet(module.getCoordinate(), Collections.emptySet()));
-      } else {
-        results.add(new UnsatisfiedDependencySet(module.getCoordinate(), unsatisfied));
-      }
+      return results;
     }
-    return results;
   }
 
   @Override
   public Set<UnsatisfiedDependencySet> addAll(Collection<Module> modules) {
-    val prospective = resolveInstallationGroupModules(modules);
-    val results = new LinkedHashSet<UnsatisfiedDependencySet>();
-    for (val module : modules) {
-      val unsatisfied = new LinkedHashSet<Coordinate>();
-      for (val dependency : module.getDependencies()) {
-        val depcoord = dependency.getCoordinate();
-        if (!prospective.containsKey(depcoord)) {
-          unsatisfied.add(depcoord);
+    synchronized (lock) {
+      val prospective = resolveInstallationGroupModules(modules);
+      val results = new LinkedHashSet<UnsatisfiedDependencySet>();
+      for (val module : modules) {
+        val unsatisfied = new LinkedHashSet<Coordinate>();
+        for (val dependency : module.getDependencies()) {
+          val depcoord = dependency.getCoordinate();
+          if (!prospective.containsKey(depcoord)) {
+            unsatisfied.add(depcoord);
+          }
+        }
+        if (unsatisfied.isEmpty()) {
+          results.add(new UnsatisfiedDependencySet(module.getCoordinate(), Collections.emptySet()));
+          val coordinate = module.getCoordinate();
+          this.modules.put(coordinate, module);
+          dependencyGraph.add(coordinate);
+          for (val dep : module.getDependencies()) {
+            dependencyGraph.connect(
+                coordinate, dep.getCoordinate(), DirectedGraph.outgoing(dep.getCoordinate()));
+          }
+        } else {
+          results.add(new UnsatisfiedDependencySet(module.getCoordinate(), unsatisfied));
         }
       }
-      if (unsatisfied.isEmpty()) {
-        results.add(new UnsatisfiedDependencySet(module.getCoordinate(), Collections.emptySet()));
-        val coordinate = module.getCoordinate();
-        this.modules.put(coordinate, module);
-        dependencyGraph.add(coordinate);
-        for (val dep : module.getDependencies()) {
-          dependencyGraph.connect(
-              coordinate, dep.getCoordinate(), DirectedGraph.outgoing(dep.getCoordinate()));
-        }
-      } else {
-        results.add(new UnsatisfiedDependencySet(module.getCoordinate(), unsatisfied));
-      }
+      return results;
     }
-    return results;
   }
 
   @Override
   public void remove(Module module) {
-    val coord = module.getCoordinate();
-    dependencyGraph.remove(coord);
-    modules.remove(coord);
+    synchronized (lock) {
+      val coord = module.getCoordinate();
+      dependencyGraph.remove(coord);
+      modules.remove(coord);
+    }
   }
 
   @Override
@@ -187,48 +199,60 @@ public final class DefaultDependencyGraph implements DependencyGraph, Cloneable 
 
   @Override
   public Collection<Module> getDependents(Coordinate coordinate) {
-    val module = modules.get(coordinate);
-    if (module == null) {
-      return Collections.emptySet();
+    synchronized (lock) {
+      val module = modules.get(coordinate);
+      if (module == null) {
+        return Collections.emptySet();
+      }
+      val dependents = dependencyGraph.getDependents(coordinate, EdgeFilters.acceptAll());
+      val results = new LinkedHashSet<Module>();
+      for (val dependent : dependents) {
+        results.add(modules.get(dependencyGraph.getSource(dependent)));
+      }
+      return results;
     }
-    val dependents = dependencyGraph.getDependents(coordinate, EdgeFilters.acceptAll());
-    val results = new LinkedHashSet<Module>();
-    for (val dependent : dependents) {
-      results.add(modules.get(dependencyGraph.getSource(dependent)));
-    }
-    return results;
   }
 
   @Override
   public Set<Module> getDependencies(Coordinate coordinate) {
-    val neighbors = dependencyGraph.neighbors(coordinate);
-    val result = new LinkedHashSet<Module>(neighbors.size());
-    for (val neighbor : neighbors) {
-      result.add(modules.get(neighbor));
+    synchronized (lock) {
+      val neighbors = dependencyGraph.neighbors(coordinate);
+      val result = new LinkedHashSet<Module>(neighbors.size());
+      for (val neighbor : neighbors) {
+        result.add(modules.get(neighbor));
+      }
+      return result;
     }
-    return result;
   }
 
   @Override
   public boolean contains(Coordinate coordinate) {
-    return modules.containsKey(coordinate);
+    synchronized (lock) {
+      return modules.containsKey(coordinate);
+    }
   }
 
   @Override
   public Partition<DirectedGraph.Edge<Coordinate>, Coordinate> computeCycles() {
-    return new StronglyConnectedComponents<DirectedGraph.Edge<Coordinate>, Coordinate>()
-        .apply(dependencyGraph);
+    synchronized (lock) {
+      return new StronglyConnectedComponents<DirectedGraph.Edge<Coordinate>, Coordinate>()
+          .apply(dependencyGraph);
+    }
   }
 
   @Override
   @SuppressWarnings({"PMD.ProperCloneImplementation", "CloneMethodReturnTypeMustMatchClassName"})
   public DefaultDependencyGraph clone() {
-    return new DefaultDependencyGraph(this);
+    synchronized (lock) {
+      return new DefaultDependencyGraph(this);
+    }
   }
 
   @Override
   public Iterator<Module> iterator() {
-    return modules.values().iterator();
+    synchronized (lock) {
+      return modules.values().iterator();
+    }
   }
 
   @Override
@@ -237,24 +261,28 @@ public final class DefaultDependencyGraph implements DependencyGraph, Cloneable 
   }
 
   private Map<Coordinate, Module> resolveInstallationGroupModules(Collection<Module> modules) {
-    val prospective = new HashMap<>(this.modules);
-    for (val module : modules) {
-      prospective.put(module.getCoordinate(), module);
+    synchronized (lock) {
+      val prospective = new HashMap<>(this.modules);
+      for (val module : modules) {
+        prospective.put(module.getCoordinate(), module);
+      }
+      return prospective;
     }
-    return prospective;
   }
 
   private void resolveDependenciesFor(
       Module module,
       Set<UnsatisfiedDependencySet> results,
       Map<Coordinate, Module> installationGroupModules) {
-    val unsatisfied = new HashSet<Coordinate>();
-    val unsatisifiedDependencySet =
-        new UnsatisfiedDependencySet(module.getCoordinate(), unsatisfied);
-    for (val dependency : module.getDependencies()) {
-      resolveDependency(module, dependency, unsatisfied, installationGroupModules);
-      if (!unsatisfied.isEmpty()) {
-        results.add(unsatisifiedDependencySet);
+    synchronized (lock) {
+      val unsatisfied = new HashSet<Coordinate>();
+      val unsatisifiedDependencySet =
+          new UnsatisfiedDependencySet(module.getCoordinate(), unsatisfied);
+      for (val dependency : module.getDependencies()) {
+        resolveDependency(module, dependency, unsatisfied, installationGroupModules);
+        if (!unsatisfied.isEmpty()) {
+          results.add(unsatisifiedDependencySet);
+        }
       }
     }
   }
@@ -264,22 +292,24 @@ public final class DefaultDependencyGraph implements DependencyGraph, Cloneable 
       Dependency dependency,
       Set<Coordinate> results,
       Map<Coordinate, Module> installationGroupModules) {
-    val matching = collectMatchingFrom(dependency, installationGroupModules);
-    if (matching.isEmpty()) {
-      results.add(new UnvalidatedCoordinate(dependency.getCoordinateSpecification()));
-    } else {
-      Collections.sort(matching);
-      val fst = matching.get(matching.size() - 1);
-      if (log.isLoggable(Level.INFO)) {
-        log.log(
-            Level.INFO,
-            "dependency.graph.selected.module.prelude",
-            new Object[] {dependency, module.getCoordinate().toCanonicalForm()});
-        for (val dep : matching) {
-          log.log(Level.INFO, "dependency.graph.selected.module.node", dep.getCoordinate());
+    synchronized (lock) {
+      val matching = collectMatchingFrom(dependency, installationGroupModules);
+      if (matching.isEmpty()) {
+        results.add(new UnvalidatedCoordinate(dependency.getCoordinateSpecification()));
+      } else {
+        Collections.sort(matching);
+        val fst = matching.get(matching.size() - 1);
+        if (log.isLoggable(Level.INFO)) {
+          log.log(
+              Level.INFO,
+              "dependency.graph.selected.module.prelude",
+              new Object[] {dependency, module.getCoordinate().toCanonicalForm()});
+          for (val dep : matching) {
+            log.log(Level.INFO, "dependency.graph.selected.module.node", dep.getCoordinate());
+          }
         }
+        dependency.setCoordinate(fst.getCoordinate());
       }
-      dependency.setCoordinate(fst.getCoordinate());
     }
   }
 
@@ -296,22 +326,23 @@ public final class DefaultDependencyGraph implements DependencyGraph, Cloneable 
    */
   private List<Module> collectMatchingFrom(
       Dependency dependency, Map<Coordinate, Module> installationGroupModules) {
+    synchronized (lock) {
+      val spec = dependency.getCoordinateSpecification();
+      val query = ModuleCoordinate.group(spec.getGroup()).name(spec.getName());
+      val existing =
+          getModules(query).stream()
+              .filter(f -> f.getCoordinate().satisfies(spec.getVersionSpecification()))
+              .collect(Collectors.toList());
 
-    val spec = dependency.getCoordinateSpecification();
-    val query = ModuleCoordinate.group(spec.getGroup()).name(spec.getName());
-    val existing =
-        getModules(query).stream()
-            .filter(f -> f.getCoordinate().satisfies(spec.getVersionSpecification()))
-            .collect(Collectors.toList());
-
-    for (val module : installationGroupModules.values()) {
-      val coordinate = module.getCoordinate();
-      if (Objects.equals(coordinate.getGroup(), spec.getGroup())
-          && Objects.equals(coordinate.getName(), spec.getName())
-          && coordinate.satisfies(spec.getVersionSpecification())) {
-        existing.add(module);
+      for (val module : installationGroupModules.values()) {
+        val coordinate = module.getCoordinate();
+        if (Objects.equals(coordinate.getGroup(), spec.getGroup())
+            && Objects.equals(coordinate.getName(), spec.getName())
+            && coordinate.satisfies(spec.getVersionSpecification())) {
+          existing.add(module);
+        }
       }
+      return existing;
     }
-    return existing;
   }
 }

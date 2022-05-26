@@ -4,10 +4,13 @@ import io.sunshower.gyre.Scope;
 import io.sunshower.lang.events.Events;
 import io.zephyr.kernel.Assembly;
 import io.zephyr.kernel.concurrency.Task;
+import io.zephyr.kernel.concurrency.TaskException;
+import io.zephyr.kernel.concurrency.TaskStatus;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.events.KernelEvents;
 import io.zephyr.kernel.extensions.ModuleAssemblyExtractor;
 import io.zephyr.kernel.log.Logging;
+import io.zephyr.kernel.status.Status;
 import io.zephyr.kernel.status.StatusType;
 import java.io.File;
 import java.nio.file.FileSystem;
@@ -23,9 +26,9 @@ import lombok.val;
 @SuppressWarnings("PMD.UnusedPrivateMethod")
 public class ModuleUnpackPhase extends Task implements ModuleAssemblyExtractor.ExtractionListener {
 
+  public static final String MODULE_ASSEMBLY = "MODULE_RELEVANT_SEARCH_PATHS";
   static final Logger log;
   static final ResourceBundle bundle;
-  public static final String MODULE_ASSEMBLY = "MODULE_RELEVANT_SEARCH_PATHS";
 
   static {
     log = Logging.get(ModuleUnpackPhase.class);
@@ -48,6 +51,15 @@ public class ModuleUnpackPhase extends Task implements ModuleAssemblyExtractor.E
   public TaskValue run(Scope context) {
 
     File assemblyFile = context.get(ModuleTransferPhase.MODULE_ASSEMBLY_FILE);
+    if (assemblyFile == null) {
+      log.info("Downloaded file was null--not attempting to extract");
+      kernel.dispatchEvent(
+          ModulePhaseEvents.MODULE_ASSEMBLY_EXTRACTION_FAILED,
+          KernelEvents.create(
+              assemblyFile,
+              Status.unresolvable(StatusType.FAILED, "Module Assembly File was null")));
+      throw new TaskException("Module assembly file was null", TaskStatus.UNRECOVERABLE);
+    }
     val assembly = new Assembly(assemblyFile);
 
     fireExtractionInitiated(assembly);
@@ -60,13 +72,16 @@ public class ModuleUnpackPhase extends Task implements ModuleAssemblyExtractor.E
             .sorted()
             .collect(Collectors.toList());
 
-    var anyworked = false;
+    boolean success = false;
     for (val extractor : extractors) {
       try {
-        log.log(Level.INFO, "module.extractor.beforeapplication", extractor);
-        extractor.extract(assembly, moduleFileSystem, this);
-        log.log(Level.INFO, "module.extractor.afterapplication", extractor);
-        anyworked = true;
+        if (extractor.appliesTo(assembly, moduleFileSystem)) {
+          log.log(Level.INFO, "module.extractor.beforeapplication", extractor);
+          extractor.extract(assembly, moduleFileSystem, this);
+          log.log(Level.INFO, "module.extractor.afterapplication", extractor);
+          success = true;
+          break;
+        }
       } catch (Exception | ServiceConfigurationError ex) {
         log.log(Level.INFO, "module.extractor.error", new Object[] {ex.getMessage(), extractor});
         if (log.isLoggable(Level.FINE)) {
@@ -76,7 +91,7 @@ public class ModuleUnpackPhase extends Task implements ModuleAssemblyExtractor.E
       }
     }
 
-    if (anyworked) {
+    if (success) {
       fireExtractionCompleted(assembly);
     } else {
       fireNoValidExtractors(assembly);
