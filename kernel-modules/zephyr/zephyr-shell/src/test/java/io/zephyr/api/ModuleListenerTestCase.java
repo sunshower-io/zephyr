@@ -13,14 +13,11 @@ import java.util.logging.Logger;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.parallel.Execution;
-import org.junit.jupiter.api.parallel.ExecutionMode;
-import org.junit.jupiter.api.parallel.Isolated;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-@Isolated
-@Execution(ExecutionMode.SAME_THREAD)
+// @Isolated
+// @Execution(ExecutionMode.SAME_THREAD)
 @ExtendWith(MockitoExtension.class)
 @ExtendWith(ThreadLockFailedExtension.class)
 @DisabledIfEnvironmentVariable(
@@ -42,6 +39,29 @@ public class ModuleListenerTestCase extends ShellTestCase {
 
   public ModuleListenerTestCase() {
     super(false);
+  }
+
+  //  @BeforeEach
+  //  void doSetUp() {
+  //    start();
+  //  }
+  //
+  //  @AfterEach
+  //  void doTearDown() {
+  //    stop();
+  //  }
+
+  @Test
+  void ensureInstallingYamlProducesCorrectNumberOfKernelModules() {
+    start();
+    install(StandardModules.YAML);
+    restart();
+
+    //    stop();
+    //    run("plugin list");
+    //    assertEquals(1, kernel.getKernelModules().size());
+
+    //    installFully(StandardModules.YAML);
   }
 
   @Test
@@ -168,6 +188,7 @@ public class ModuleListenerTestCase extends ShellTestCase {
       after.run();
     } finally {
       kernel.removeEventListener(listener);
+      removeAll();
       stop();
     }
   }

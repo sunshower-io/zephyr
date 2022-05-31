@@ -197,7 +197,7 @@ public class ModuleThread implements Startable, Stoppable, TaskQueue, Runnable, 
             activator.start(ctx);
             ((AbstractModule) module).setActivator(activator);
             break;
-          } catch (Exception | ServiceConfigurationError | LinkageError ex) {
+          } catch (Throwable ex) {
             handleFailure(coordinate, ex);
             return;
           }

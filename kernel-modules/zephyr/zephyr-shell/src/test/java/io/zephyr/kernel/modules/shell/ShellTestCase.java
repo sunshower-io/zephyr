@@ -1,6 +1,8 @@
 package io.zephyr.kernel.modules.shell;
 
 import static org.awaitility.Awaitility.await;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.sunshower.lang.events.EventListener;
 import io.sunshower.test.common.Tests;
@@ -15,8 +17,10 @@ import io.zephyr.kernel.modules.shell.server.Server;
 import java.io.File;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.val;
@@ -51,16 +55,26 @@ public class ShellTestCase {
 
   @BeforeEach
   protected void setUp() {
-    homeDirectory = Tests.createTemp("test-" + ++count);
+    homeDirectory = Tests.createTemp(UUID.randomUUID().toString());
     if (installBase) {
       startServer();
       startKernel();
       installKernelModules(StandardModules.YAML);
+      restart();
+      assertNotNull(kernel, "Kernel should not be null, but it was");
+      assertTrue(
+          kernel.getModuleManager().getModules().isEmpty(),
+          String.format(
+              "Tests must have no plugins installed, but the following plugins were detected: %s",
+              kernel.getModuleManager().getModules().stream()
+                  .map(t -> t.getCoordinate().toCanonicalForm())
+                  .collect(Collectors.toList())));
     }
   }
 
   @AfterEach
   protected void tearDown() {
+
     if (installBase) {
       stopKernel();
       stopServer();
@@ -78,8 +92,20 @@ public class ShellTestCase {
   }
 
   protected void stop() {
-    stopKernel();
-    stopServer();
+    try {
+      removeAll();
+    } finally {
+      stopKernel();
+      stopServer();
+    }
+  }
+
+  protected void removeAll() {
+    remove(
+        kernel.getModuleManager().getModules().stream()
+            .map(t -> t.getCoordinate())
+            .map(t -> t.toCanonicalForm())
+            .collect(Collectors.joining(" ")));
   }
 
   protected Module moduleNamed(String name) {
@@ -201,6 +227,17 @@ public class ShellTestCase {
   }
 
   @SneakyThrows
+  protected void remove(String... coordinates) {
+    checkServer();
+    val result = new StringBuilder("plugin remove ");
+    for (val module : coordinates) {
+      System.out.println("Removing " + module);
+      result.append(module).append(" ");
+    }
+    run(result.toString().trim().split("\\s+"));
+  }
+
+  @SneakyThrows
   protected void installAndWaitForModuleCount(int count, Installable... modules) {
 
     val failedCount = new AtomicInteger(0);
@@ -213,7 +250,12 @@ public class ShellTestCase {
 
       await()
           .atMost(10, TimeUnit.SECONDS)
-          .until(() -> kernel.getModuleManager().getModules().size() + failedCount.get() >= count);
+          .until(
+              () ->
+                  kernel.getModuleManager().getModules().size()
+                          + kernel.getKernelModules().size()
+                          + failedCount.get()
+                      >= count);
     } finally {
       kernel.removeEventListener(listener);
     }
