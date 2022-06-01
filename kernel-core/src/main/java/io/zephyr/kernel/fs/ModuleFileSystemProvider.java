@@ -14,13 +14,31 @@ import java.net.URI;
 import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.FileChannel;
 import java.nio.channels.SeekableByteChannel;
-import java.nio.file.*;
+import java.nio.file.AccessDeniedException;
+import java.nio.file.AccessMode;
+import java.nio.file.CopyOption;
+import java.nio.file.DirectoryStream;
+import java.nio.file.FileStore;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystemAlreadyExistsException;
+import java.nio.file.FileSystemException;
+import java.nio.file.FileSystemNotFoundException;
+import java.nio.file.FileSystems;
+import java.nio.file.LinkOption;
+import java.nio.file.OpenOption;
+import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.FileAttributeView;
 import java.nio.file.spi.FileSystemProvider;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import lombok.NonNull;
@@ -29,25 +47,41 @@ import lombok.val;
 @SuppressWarnings({"PMD.AvoidUsingVolatile"})
 public class ModuleFileSystemProvider extends FileSystemProvider implements Closeable {
 
+  public static final String VERSION = "version";
+  public static final int QUERY_STRING_LENGTH = 2;
   static final Pattern queryPattern = Pattern.compile("=");
   static final Pattern keyPattern = Pattern.compile("\\.");
   static final Logger log = Logging.get(ModuleFileSystemProvider.class, "FileSystem");
-  /** external state */
+  /**
+   * external state
+   */
   static final String SCHEME = "droplet";
-
-  public static final String VERSION = "version";
-  public static final int QUERY_STRING_LENGTH = 2;
-
   private static final FileSystemRegistry registry;
 
   static {
     registry = new FileSystemRegistry();
   }
 
-  private final File fileSystemRoot;
+  private final AtomicReference<File> fileSystemRoot;
 
   public ModuleFileSystemProvider() throws AccessDeniedException {
-    this.fileSystemRoot = KernelOptions.getKernelRootDirectory();
+    fileSystemRoot = new AtomicReference<>();
+    checkFileSystem();
+  }
+
+  private File checkFileSystem() throws AccessDeniedException {
+    var fileSystem = fileSystemRoot.get();
+    val koptDir = KernelOptions.getKernelRootDirectory();
+    if (fileSystem == null || !(fileSystem.equals(koptDir))) {
+      synchronized (registry) {
+        fileSystem = fileSystemRoot.get();
+        if (fileSystem == null || !(fileSystem.equals(koptDir))) {
+          fileSystem = KernelOptions.getKernelRootDirectory();
+        }
+      }
+    }
+    fileSystemRoot.set(fileSystem);
+    return fileSystem;
   }
 
   @Override
@@ -240,15 +274,25 @@ public class ModuleFileSystemProvider extends FileSystemProvider implements Clos
   }
 
   protected Path resolve(Path other) {
-    return fileSystemRoot.toPath().resolve(other);
+    try {
+      val fsRoot = checkFileSystem();
+      return fsRoot.toPath().resolve(other);
+    } catch (AccessDeniedException ex) {
+      throw new IllegalStateException("Bad filesystem root", ex);
+    }
   }
 
   private File doCreateDirectory(Path toPath) throws FileSystemException {
-    val result = fileSystemRoot.toPath().resolve(toPath).toAbsolutePath().toFile();
-    if (!(result.exists() || result.mkdirs())) {
-      throw new FileSystemException("Failed to create module directory: " + result);
+    try {
+      val fsRoot = checkFileSystem();
+      val result = fsRoot.toPath().resolve(toPath).toAbsolutePath().toFile();
+      if (!(result.exists() || result.mkdirs())) {
+        throw new FileSystemException("Failed to create module directory: " + result);
+      }
+      return result;
+    } catch (AccessDeniedException ex) {
+      throw new IllegalArgumentException("Bad filesystem root", ex);
     }
-    return result;
   }
 
   private Collection<? extends String> parseVersion(URI uri) throws FileSystemNotFoundException {

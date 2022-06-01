@@ -136,7 +136,6 @@ public class ZephyrCliEntryPoint implements EntryPoint {
     }
   }
 
-  static boolean created = false;
 
   @SneakyThrows
   @SuppressWarnings("PMD.SystemPrintln")

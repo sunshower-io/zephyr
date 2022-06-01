@@ -14,10 +14,14 @@ class InstallPluginCommandTest extends ShellTestCase {
   @Test
   @SneakyThrows
   void ensureInstallingSinglePluginWithNoDependenciesWorks() {
-    installAndWaitForModuleCount(1, TestPlugins.TEST_PLUGIN_1);
-    val module = moduleNamed("test-plugin-1");
-    val clazz = Class.forName("plugin1.Test", true, module.getClassLoader());
-    assertEquals(module.getClassLoader(), clazz.getClassLoader(), "must have same classloader");
+    try {
+      installAndWaitForModuleCount(1, TestPlugins.TEST_PLUGIN_1);
+      val module = moduleNamed("test-plugin-1");
+      val clazz = Class.forName("plugin1.Test", true, module.getClassLoader());
+      assertEquals(module.getClassLoader(), clazz.getClassLoader(), "must have same classloader");
+    } finally {
+      removeAll();
+    }
   }
 
   @Test

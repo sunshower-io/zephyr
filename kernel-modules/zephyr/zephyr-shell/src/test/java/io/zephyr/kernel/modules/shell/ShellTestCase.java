@@ -1,7 +1,9 @@
 package io.zephyr.kernel.modules.shell;
 
 import static org.awaitility.Awaitility.await;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.sunshower.lang.events.EventListener;
@@ -12,11 +14,9 @@ import io.zephyr.kernel.Module;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.core.KernelLifecycle.State;
 import io.zephyr.kernel.core.ModuleManager;
-import io.zephyr.kernel.extensions.EntryPoint;
 import io.zephyr.kernel.launch.KernelLauncher;
 import io.zephyr.kernel.modules.shell.server.Server;
 import java.io.File;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -32,21 +32,13 @@ import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
 import org.junit.jupiter.api.parallel.Isolated;
 
 @Log
-@DisabledIfEnvironmentVariable(
-    named = "BUILD_ENVIRONMENT",
-    matches = "github",
-    disabledReason = "RMI is flaky")
-@Isolated
 public class ShellTestCase {
 
-  static volatile int count;
   protected final boolean installBase;
   protected File homeDirectory;
   protected Kernel kernel;
   protected Server server;
-  protected Thread serverThread;
   protected KernelLauncher launcher;
-  protected Map<EntryPoint.ContextEntries, Object> launcherContext;
 
   protected ShellTestCase(final boolean installBase) {
     this.installBase = installBase;
@@ -77,11 +69,11 @@ public class ShellTestCase {
 
   @AfterEach
   protected void tearDown() {
-
     if (installBase) {
       stopKernel();
       stopServer();
     }
+    assertSame(kernel.getLifecycle().getState(), State.Stopped);
   }
 
   protected void restart() {
@@ -147,7 +139,7 @@ public class ShellTestCase {
       log.log(
           Level.SEVERE,
           "\t ''{0}''.  State: {1}",
-          new Object[] {module.getCoordinate().getName(), module.getLifecycle().getState()});
+          new Object[]{module.getCoordinate().getName(), module.getLifecycle().getState()});
     }
   }
 
@@ -167,30 +159,23 @@ public class ShellTestCase {
       await()
           .atMost(10, TimeUnit.SECONDS)
           .until(
-              () -> {
-                return kernel.getModuleManager().getModules(Lifecycle.State.Active).size()
-                    == expectedCount;
-              });
+              () -> kernel.getModuleManager().getModules(Lifecycle.State.Active).size()
+                  == expectedCount);
     } catch (Exception ex) {
       logModules(kernel.getModuleManager());
       throw ex;
     }
-    //    while (kernel.getModuleManager().getModules().stream()
-    //            .filter(t -> t.getLifecycle().getState() == Lifecycle.State.Active)
-    //            .count()
-    //        != expectedCount) {
-    //      Thread.sleep(200);
-    //    }
   }
 
   @SneakyThrows
   protected void startServer() {
-    serverThread =
+    val serverThread =
         new Thread(
             () -> {
-              run("-s -c 4");
+              run("-s -c 4 -h " + homeDirectory.getAbsolutePath());
             });
     serverThread.start();
+//    runAsync("-s", "-c", "4", "-h", homeDirectory.getAbsolutePath());
     await().atMost(10, TimeUnit.SECONDS).until(() -> (KernelLauncher.getInstance() != null));
 
     launcher = KernelLauncher.getInstance();
@@ -209,9 +194,9 @@ public class ShellTestCase {
 
   protected void runAsync(String... args) {
     new Thread(
-            () -> {
-              run(args);
-            })
+        () -> {
+          run(args);
+        })
         .start();
   }
 
@@ -221,13 +206,17 @@ public class ShellTestCase {
       startServer();
     }
     runAsync("kernel", "start", "-h", homeDirectory.getAbsolutePath());
-    await().atMost(10, TimeUnit.SECONDS).until(() -> launcher.resolveService(Kernel.class) != null);
+    await().atMost(100, TimeUnit.SECONDS)
+        .until(() -> launcher.resolveService(Kernel.class) != null);
 
     kernel = launcher.resolveService(Kernel.class);
     await()
         .atMost(10, TimeUnit.SECONDS)
         .until(() -> kernel.getLifecycle().getState() == State.Running);
     System.out.println("Successfully started kernel");
+    assertEquals(
+        kernel.getFileSystem().getRootDirectories().iterator().next().toFile().getAbsoluteFile(),
+        new File(homeDirectory, "kernel"));
   }
 
   @SneakyThrows
@@ -297,13 +286,13 @@ public class ShellTestCase {
       install(modules);
 
       await()
-          .atMost(10, TimeUnit.SECONDS)
+          .atMost(100, TimeUnit.SECONDS)
           .until(
               () ->
                   kernel.getModuleManager().getModules().size()
-                          + kernel.getKernelModules().size()
-                          + failedCount.get()
-                      >= count);
+                  + kernel.getKernelModules().size()
+                  + failedCount.get()
+                  >= count);
     } finally {
       kernel.removeEventListener(listener);
     }
@@ -312,6 +301,15 @@ public class ShellTestCase {
   protected void installKernelModules(Installable... modules) {
     install(modules);
     restartKernel();
+  }
+
+  protected int moduleCount() {
+    return kernel.getModuleManager().getModules().size();
+  }
+
+
+  protected int kernelModuleCount() {
+    return kernel.getKernelModules().size();
   }
 
   private void checkServer() {
