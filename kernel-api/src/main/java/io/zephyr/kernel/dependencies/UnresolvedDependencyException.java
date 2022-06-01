@@ -35,16 +35,22 @@ public class UnresolvedDependencyException extends PluginException {
     unresolvedDependencies = deps;
   }
 
-  public void add(DependencyGraph.UnsatisfiedDependencySet unresolvedDependency) {
-    unresolvedDependencies.add(unresolvedDependency);
-  }
-
   static String createMessage(
       String base, Set<DependencyGraph.UnsatisfiedDependencySet> dependencies) {
     val builder = new StringBuilder(base);
+    builder.append(" \n\tunresolved dependencies:\n\t");
+    var count = 0;
     for (val dep : dependencies) {
-      builder.append(" \n\tunresolved dependencies: \n\t").append(dep).append("\n");
+      for (int i = 0; i < count; i++) {
+        builder.append(" ");
+      }
+      builder.append(dep).append("\n");
+      count++;
     }
     return builder.toString();
+  }
+
+  public void add(DependencyGraph.UnsatisfiedDependencySet unresolvedDependency) {
+    unresolvedDependencies.add(unresolvedDependency);
   }
 }

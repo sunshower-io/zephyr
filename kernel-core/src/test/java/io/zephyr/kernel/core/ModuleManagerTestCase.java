@@ -1,6 +1,7 @@
 package io.zephyr.kernel.core;
 
 import static org.awaitility.Awaitility.await;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.sunshower.test.common.Tests;
 import io.zephyr.kernel.Module;
@@ -13,7 +14,9 @@ import io.zephyr.kernel.module.ModuleLifecycleChangeGroup;
 import io.zephyr.kernel.module.ModuleLifecycleChangeRequest;
 import java.io.File;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 import lombok.SneakyThrows;
+import lombok.extern.java.Log;
 import lombok.val;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,6 +28,7 @@ import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.api.parallel.Isolated;
 
+@Log
 @DisabledIfEnvironmentVariable(
     named = "BUILD_ENVIRONMENT",
     matches = "github",
@@ -62,6 +66,7 @@ public class ModuleManagerTestCase {
     manager.initialize(kernel);
     scheduler = kernel.getScheduler();
     kernel.start();
+    assertTrue(manager.getModules().isEmpty());
 
     plugin1 =
         Tests.relativeToProjectBuild("kernel-tests:test-plugins:test-plugin-1", "war", "libs");
@@ -125,12 +130,27 @@ public class ModuleManagerTestCase {
   }
 
   protected Module find(String name) {
-    await()
-        .atMost(10, TimeUnit.SECONDS)
-        .until(
-            () ->
-                manager.getModules().stream()
-                    .anyMatch(t -> t.getCoordinate().getName().contains(name)));
+    log.log(Level.INFO, "Attempting to locate any module named: {0}", name);
+    log.log(Level.INFO, "Available modules: ");
+    val modules = manager.getModules();
+    for (val module : modules) {
+      log.log(Level.INFO, "\t ''{0}''", module.getCoordinate().getName());
+    }
+
+    try {
+      await()
+          .atMost(10, TimeUnit.SECONDS)
+          .until(
+              () ->
+                  manager.getModules().stream()
+                      .anyMatch(t -> t.getCoordinate().getName().contains(name)));
+    } catch (Exception ex) {
+      log.log(Level.SEVERE, "No module named ''{0}'' found.  Available modules:");
+      for (val module : manager.getModules()) {
+        log.log(Level.SEVERE, "\t ''{0}''", module.getCoordinate().getName());
+      }
+      throw ex;
+    }
     return manager.getModules().stream()
         .filter(t -> t.getCoordinate().getName().contains(name))
         .findFirst()

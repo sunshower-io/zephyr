@@ -13,6 +13,7 @@ import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.core.ModuleDescriptor;
 import io.zephyr.kernel.core.ModuleSource;
 import io.zephyr.kernel.events.KernelEvents;
+import io.zephyr.kernel.log.Logging;
 import io.zephyr.kernel.module.ModuleLifecycle;
 import io.zephyr.kernel.status.StatusType;
 import java.io.File;
@@ -24,6 +25,8 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import lombok.val;
 
 @SuppressWarnings("PMD.UnusedPrivateMethod")
@@ -31,6 +34,7 @@ public class ModuleInstallationCompletionPhase extends Task {
 
   public static final String INSTALLED_PLUGINS = "INSTALLED_PLUGINS";
   public static final String INSTALLED_KERNEL_MODULES = "INSTALLED_KERNEL_MODULES";
+  static final Logger log = Logging.get(ModuleInstallationCompletionPhase.class);
 
   public ModuleInstallationCompletionPhase(String name) {
     super(name);
@@ -70,12 +74,33 @@ public class ModuleInstallationCompletionPhase extends Task {
       } else {
         context.<Set<Module>>get(INSTALLED_KERNEL_MODULES).add(module);
       }
+      logInstalledModules(kernel, context.<Set<Module>>get(INSTALLED_PLUGINS));
       kernel.dispatchEvent(
           ModuleEvents.INSTALLING,
           KernelEvents.create(
               module,
               StatusType.SUCCEEDED.resolvable("Successfully installed plugin: " + descriptor)));
       return null;
+    }
+  }
+
+  private void logInstalledModules(Kernel kernel, Set<Module> modules) {
+    if (log.isLoggable(Level.INFO)) {
+      log.log(Level.INFO, "modules.installation.prelude");
+      for (val module : modules) {
+        log.log(Level.INFO, "modules.installation.module.prelude", module.getCoordinate());
+        for (val dep : module.getDependencies()) {
+          log.log(Level.INFO, "module.dependency", dep.getCoordinate());
+        }
+      }
+
+      log.log(Level.INFO, "modules.installed");
+      for (val module : modules) {
+        log.log(Level.INFO, "modules.installation.module.prelude", module.getCoordinate());
+        for (val dep : module.getDependencies()) {
+          log.log(Level.INFO, "module.dependency", dep.getCoordinate());
+        }
+      }
     }
   }
 

@@ -11,24 +11,27 @@ import io.zephyr.kernel.Lifecycle;
 import io.zephyr.kernel.Module;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.core.KernelLifecycle.State;
+import io.zephyr.kernel.core.ModuleManager;
 import io.zephyr.kernel.extensions.EntryPoint;
 import io.zephyr.kernel.launch.KernelLauncher;
 import io.zephyr.kernel.modules.shell.server.Server;
 import java.io.File;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.java.Log;
 import lombok.val;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
 import org.junit.jupiter.api.parallel.Isolated;
 
+@Log
 @DisabledIfEnvironmentVariable(
     named = "BUILD_ENVIRONMENT",
     matches = "github",
@@ -109,10 +112,43 @@ public class ShellTestCase {
   }
 
   protected Module moduleNamed(String name) {
-    return kernel.getModuleManager().getModules().stream()
-        .filter(t -> t.getCoordinate().getName().equals(name))
-        .findAny()
-        .orElseThrow(() -> new NoSuchElementException("No plugin named " + name));
+    log.log(Level.INFO, "Attempting to locate any module named: {0}", name);
+    log.log(Level.INFO, "Available modules: ");
+
+    if (kernel == null) {
+      throw new IllegalStateException("Error: kernel is null");
+    }
+    val manager = kernel.getModuleManager();
+    val modules = manager.getModules();
+    for (val module : modules) {
+      log.log(Level.SEVERE, "\t ''{0}''", module.getCoordinate().getName());
+    }
+
+    try {
+      await()
+          .atMost(10, TimeUnit.SECONDS)
+          .until(
+              () ->
+                  manager.getModules().stream()
+                      .anyMatch(t -> t.getCoordinate().getName().contains(name)));
+    } catch (Exception ex) {
+      log.log(Level.SEVERE, "No module named ''{0}'' found.  Available modules:");
+      logModules(manager);
+      throw ex;
+    }
+    return manager.getModules().stream()
+        .filter(t -> t.getCoordinate().getName().contains(name))
+        .findFirst()
+        .get();
+  }
+
+  private void logModules(ModuleManager manager) {
+    for (val module : manager.getModules()) {
+      log.log(
+          Level.SEVERE,
+          "\t ''{0}''.  State: {1}",
+          new Object[] {module.getCoordinate().getName(), module.getLifecycle().getState()});
+    }
   }
 
   protected void startPlugins(String... plugins) {
@@ -127,12 +163,24 @@ public class ShellTestCase {
   @SneakyThrows
   protected void startAndWait(int expectedCount, String... plugins) {
     startPlugins(plugins);
-    while (kernel.getModuleManager().getModules().stream()
-            .filter(t -> t.getLifecycle().getState() == Lifecycle.State.Active)
-            .count()
-        != expectedCount) {
-      Thread.sleep(200);
+    try {
+      await()
+          .atMost(10, TimeUnit.SECONDS)
+          .until(
+              () -> {
+                return kernel.getModuleManager().getModules(Lifecycle.State.Active).size()
+                    == expectedCount;
+              });
+    } catch (Exception ex) {
+      logModules(kernel.getModuleManager());
+      throw ex;
     }
+    //    while (kernel.getModuleManager().getModules().stream()
+    //            .filter(t -> t.getLifecycle().getState() == Lifecycle.State.Active)
+    //            .count()
+    //        != expectedCount) {
+    //      Thread.sleep(200);
+    //    }
   }
 
   @SneakyThrows
