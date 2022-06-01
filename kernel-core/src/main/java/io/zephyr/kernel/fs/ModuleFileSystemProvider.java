@@ -52,10 +52,9 @@ public class ModuleFileSystemProvider extends FileSystemProvider implements Clos
   static final Pattern queryPattern = Pattern.compile("=");
   static final Pattern keyPattern = Pattern.compile("\\.");
   static final Logger log = Logging.get(ModuleFileSystemProvider.class, "FileSystem");
-  /**
-   * external state
-   */
+  /** external state */
   static final String SCHEME = "droplet";
+
   private static final FileSystemRegistry registry;
 
   static {
