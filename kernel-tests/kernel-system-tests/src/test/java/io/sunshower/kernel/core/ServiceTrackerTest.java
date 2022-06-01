@@ -40,34 +40,29 @@ public class ServiceTrackerTest {
 
   @RepeatedTest(100)
   void ensureTrackingServiceProducesServiceInInstalledTestPlugin() {
-    zephyr.startup();
-    try {
-      val tracker = context.trackServices(t -> true);
-      tracker.addEventListener(listener, ServiceEvents.REGISTERED);
-      tracker.addEventListener(
-          (type, event) -> {
-            try {
-              val target = ((ServiceReference<?>) event.getTarget()).getDefinition().get();
-              if (target.getClass().getName().contains("Service")) {
-                val method = target.getClass().getDeclaredMethod("sayHello");
-                method.invoke(target);
-              }
-            } catch (Exception ex) {
-              ex.printStackTrace();
+    val tracker = context.trackServices(t -> true);
+    tracker.addEventListener(listener, ServiceEvents.REGISTERED);
+    tracker.addEventListener(
+        (type, event) -> {
+          try {
+            val target = ((ServiceReference<?>) event.getTarget()).getDefinition().get();
+            if (target.getClass().getName().contains("Service")) {
+              val method = target.getClass().getDeclaredMethod("sayHello");
+              method.invoke(target);
             }
-            //          System.out.println(event.getTarget());
-          },
-          ServiceEvents.REGISTERED);
-      zephyr.install(ProjectPlugins.TEST_PLUGIN_1.getUrl());
-      zephyr.install(ProjectPlugins.TEST_PLUGIN_2.getUrl());
-      lifecycleManager.start(t -> t.getCoordinate().getName().contains("2"));
-      tracker.waitUntil(t -> t.size() > 0);
-      verify(listener, timeout(1000).times(3)).onEvent(eq(ServiceEvents.REGISTERED), any());
-      tracker.close();
-      lifecycleManager.remove(t -> true);
-    } finally {
-      zephyr.shutdown();
-    }
+          } catch (Exception ex) {
+            ex.printStackTrace();
+          }
+          //          System.out.println(event.getTarget());
+        },
+        ServiceEvents.REGISTERED);
+    zephyr.install(ProjectPlugins.TEST_PLUGIN_1.getUrl());
+    zephyr.install(ProjectPlugins.TEST_PLUGIN_2.getUrl());
+    lifecycleManager.start(t -> t.getCoordinate().getName().contains("2"));
+    tracker.waitUntil(t -> t.size() > 0);
+    verify(listener, timeout(1000).times(3)).onEvent(eq(ServiceEvents.REGISTERED), any());
+    tracker.close();
+    lifecycleManager.remove(t -> true);
   }
 
   @Test

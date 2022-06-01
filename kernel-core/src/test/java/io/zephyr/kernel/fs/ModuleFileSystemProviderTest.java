@@ -63,6 +63,20 @@ class ModuleFileSystemProviderTest {
   }
 
   @Test
+  @SneakyThrows
+  void ensureClosingFileSystemResultsInFileSystemNotBeingFound() {
+    val uri = URI.create("droplet://kernel");
+    val fs = FileSystems.newFileSystem(uri, Collections.emptyMap());
+    assertEquals(fs, FileSystems.getFileSystem(uri));
+    fs.close();
+    assertThrows(
+        FileSystemNotFoundException.class,
+        () -> {
+          FileSystems.getFileSystem(uri);
+        });
+  }
+
+  @Test
   void ensureDifferentFilesAreNotTheSame() throws IOException {
     val uri = URI.create("droplet://kernel");
     val fs = FileSystems.newFileSystem(uri, Collections.emptyMap());

@@ -79,6 +79,30 @@ public class SunshowerKernelTest extends KernelTestCase {
   }
 
   @Test
+  void ensureInstallingYamlKernelModuleWorks() {
+    try {
+      installYamlModule();
+      assertEquals(1, kernel.getKernelModules().size());
+    } finally {
+      kernel.stop();
+    }
+  }
+
+  @Test
+  void ensureInstalledKernelModuleIsReadUponStartup() {
+    try {
+      installYamlModule();
+      assertEquals(1, kernel.getKernelModules().size());
+      kernel.stop();
+      kernel.start();
+      assertEquals(1, kernel.getKernelModules().size());
+
+    } finally {
+      kernel.stop();
+    }
+  }
+
+  @Test
   void ensureStartingSpringBootPluginFileWorks() throws InterruptedException {
 
     try {

@@ -44,7 +44,12 @@ public class KernelClasspathLocalLoader implements LocalLoader, AutoCloseable {
   }
 
   static String getPackageName(String className) {
-    return className.substring(0, className.lastIndexOf("."));
+    val lastIdx = className.lastIndexOf(".");
+    if (lastIdx == -1) {
+      val lastIdxInternal = className.lastIndexOf('$');
+      return className.substring(0, lastIdxInternal);
+    }
+    return className.substring(0, lastIdx);
   }
 
   private synchronized boolean canReexportPackage(String packageName) {

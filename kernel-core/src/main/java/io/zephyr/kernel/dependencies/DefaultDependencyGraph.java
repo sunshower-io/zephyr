@@ -82,7 +82,9 @@ public final class DefaultDependencyGraph implements DependencyGraph, Cloneable 
 
   @Override
   public List<Module> getModules(Coordinate coordinate) {
-    return modules.level(coordinate);
+    synchronized (lock) {
+      return modules.level(coordinate);
+    }
   }
 
   @Override
@@ -92,7 +94,9 @@ public final class DefaultDependencyGraph implements DependencyGraph, Cloneable 
 
   @Override
   public int size() {
-    return dependencyGraph.size();
+    synchronized (lock) {
+      return dependencyGraph.size();
+    }
   }
 
   @Override
@@ -194,7 +198,9 @@ public final class DefaultDependencyGraph implements DependencyGraph, Cloneable 
 
   @Override
   public Module get(Coordinate coordinate) {
-    return modules.get(coordinate);
+    synchronized (lock) {
+      return modules.get(coordinate);
+    }
   }
 
   @Override

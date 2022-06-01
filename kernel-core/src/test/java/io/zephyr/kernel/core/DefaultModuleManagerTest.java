@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import io.sunshower.test.common.Tests;
 import io.zephyr.kernel.Lifecycle;
+import io.zephyr.kernel.core.KernelLifecycle.State;
 import io.zephyr.kernel.module.ModuleInstallationGroup;
 import io.zephyr.kernel.module.ModuleInstallationRequest;
 import io.zephyr.kernel.module.ModuleLifecycle;
@@ -17,6 +18,7 @@ import java.util.concurrent.ExecutionException;
 import lombok.SneakyThrows;
 import lombok.val;
 import org.jboss.modules.ref.WeakReference;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
 
@@ -31,6 +33,11 @@ import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
   "PMD.JUnitTestContainsTooManyAsserts"
 })
 public class DefaultModuleManagerTest extends ModuleManagerTestCase {
+
+  @BeforeEach
+  void checkKernel() {
+    assertEquals(State.Running, kernel.getLifecycle().getState());
+  }
 
   @Test
   void ensureReadingClassWorks() {

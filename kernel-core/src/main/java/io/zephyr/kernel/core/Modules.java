@@ -299,6 +299,17 @@ public class Modules {
     if (!unsatisfied.isEmpty()) {
       fireUnresolvedDependencies(kernel, unsatisfied);
       log.warning("plugin.phase.unresolveddependencies");
+
+      log.log(Level.WARNING, "existing modules: ");
+      val modules = kernel.getModuleManager().getModules();
+      for (val module : modules) {
+        log.log(Level.WARNING, "Module: {0}", module.getCoordinate());
+        log.log(Level.WARNING, "\t State: {0}", module.getLifecycle().getState());
+        val directories = module.getFileSystem().getRootDirectories();
+        for (val directory : directories) {
+          log.log(Level.WARNING, "\t\t root directory: {0}", directory);
+        }
+      }
       throw new UnresolvedDependencyException("unresolved dependencies detected", unsatisfied);
     }
   }

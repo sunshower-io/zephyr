@@ -1,5 +1,8 @@
 package io.zephyr.kernel.core.actions;
 
+import static java.nio.file.Files.createDirectories;
+import static java.nio.file.Files.exists;
+
 import io.sunshower.gyre.Scope;
 import io.zephyr.common.io.Files;
 import io.zephyr.common.io.MonitorableChannels;
@@ -12,6 +15,7 @@ import io.zephyr.kernel.io.ChannelTransferListener;
 import io.zephyr.kernel.log.Logging;
 import io.zephyr.kernel.status.StatusType;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Path;
@@ -85,11 +89,14 @@ public class ModuleDownloadPhase extends Task implements ChannelTransferListener
     doTransfer(downloadUrl, targetFile, context);
   }
 
-  private File getTargetDirectory(Path moduleDirectory, Scope context) {
+  private File getTargetDirectory(Path moduleDirectory, Scope context) throws IOException {
     val targetDirectory = moduleDirectory.toFile();
-    if (!targetDirectory.exists()) {
+    if (!exists(moduleDirectory)) {
       log.log(Level.INFO, "module.download.targetdir.creating", targetDirectory);
-      if (!(targetDirectory.exists() || targetDirectory.mkdirs())) {
+      try {
+        createDirectories(moduleDirectory);
+      } catch (IOException ex) {
+        log.log(Level.SEVERE, "Failed to create directory", ex);
         throw new TaskException(
             String.format(
                 "Error creating directory '%s'.  Directory does not exist and cannot be created",
