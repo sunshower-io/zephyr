@@ -20,10 +20,6 @@ import lombok.extern.java.Log;
 import lombok.val;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.parallel.Execution;
-import org.junit.jupiter.api.parallel.ExecutionMode;
-import org.junit.jupiter.api.parallel.Isolated;
 
 @Log
 public class ModuleManagerTestCase {
