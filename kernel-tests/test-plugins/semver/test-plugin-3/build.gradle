@@ -1,0 +1,19 @@
+apply plugin: 'war'
+
+dependencies {
+    compileOnly project(':kernel-api')
+    implementation 'com.vaadin:flow-push'
+    implementation project(':kernel-tests:test-plugins:semver:test-plugin-1')
+}
+
+war {
+    manifest {
+        attributes(
+                'group': 'io.sunshower.semver',
+                'name': 'test-plugin-3',
+                'version': '1.0.0',
+                'description': 'just a test plugin!',
+                'type': 'plugin'
+        )
+    }
+}

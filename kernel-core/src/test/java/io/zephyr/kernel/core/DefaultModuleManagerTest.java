@@ -13,6 +13,8 @@ import io.zephyr.kernel.module.ModuleInstallationRequest;
 import io.zephyr.kernel.module.ModuleLifecycle;
 import io.zephyr.kernel.module.ModuleLifecycleChangeGroup;
 import io.zephyr.kernel.module.ModuleLifecycleChangeRequest;
+import java.io.File;
+import java.io.InputStreamReader;
 import java.lang.ref.ReferenceQueue;
 import java.util.concurrent.ExecutionException;
 import lombok.SneakyThrows;
@@ -20,12 +22,7 @@ import lombok.val;
 import org.jboss.modules.ref.WeakReference;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
 
-@DisabledIfEnvironmentVariable(
-    named = "BUILD_ENVIRONMENT",
-    matches = "github",
-    disabledReason = "RMI is flaky")
 @SuppressWarnings({
   "PMD.JUnitTestsShouldIncludeAssert",
   "PMD.DataflowAnomalyAnalysis",
@@ -37,6 +34,56 @@ public class DefaultModuleManagerTest extends ModuleManagerTestCase {
   @BeforeEach
   void checkKernel() {
     assertEquals(State.Running, kernel.getLifecycle().getState());
+  }
+
+  @Test
+  void ensureReadingResourceWorksFromDependentWorks() {
+    val fst = moduleIn(":semver:test-plugin-3");
+    install(fst);
+    val result = find("test-plugin-3").getClassLoader().getResource("test.txt");
+    assertNotNull(result);
+  }
+
+  @Test
+  void ensureReadingVaadinResourceFromLibraryWorks() {
+
+    val fst = moduleIn(":semver:test-plugin-3");
+    install(fst);
+    val result =
+        find("test-plugin-3")
+            .getClassLoader()
+            .getResource("META-INF/resources/VAADIN/static/push/vaadinPush-min.js");
+    assertNotNull(result);
+  }
+
+  @Test
+  @SneakyThrows
+  //  @Disabled("attempting to reproduce from local values")
+  void ensureLoadingFromAireComponentsWorks() {
+    install(
+        new File(
+            "/home/josiah/dev/src/github.com/aire-components/aire-ui/build/libs/aire-ui-1.0.16-SNAPSHOT-dist.war"));
+    start("aire-ui");
+    val result =
+        find("aire-ui")
+            .getClassLoader()
+            .getResource("META-INF/resources/VAADIN/static/push/vaadinPush-min.js");
+    assertNotNull(result);
+    val stream = new InputStreamReader(result.openStream());
+    int ch = 0;
+    while ((ch = stream.read()) != -1) {
+      System.out.print((char) ch);
+    }
+  }
+
+  @Test
+  void ensureReadingResourceWorks() {
+    val fst = moduleIn(":semver:test-plugin-1");
+    val snd = moduleIn(":semver:test-plugin-2-0");
+    install(fst, snd);
+    start("test-plugin-1");
+    val result = find("test-plugin-1").getClassLoader().getResource("test.txt");
+    assertNotNull(result);
   }
 
   @Test

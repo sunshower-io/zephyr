@@ -29,7 +29,7 @@ public class KernelClasspathLocalLoader implements LocalLoader, AutoCloseable {
   @Override
   public Class<?> loadClassLocal(String name, boolean resolve) {
     try {
-      if (canReexportPackage(name) || canReexportPackage(getPackageName(name))) {
+      if (canReexportPackage(getPackageName(name)) || canReexportPackage(name)) {
         return Class.forName(name, true, classLoader);
       } else {
         log.log(

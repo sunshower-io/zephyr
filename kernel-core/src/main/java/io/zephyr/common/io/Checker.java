@@ -1,6 +1,7 @@
 package io.zephyr.common.io;
 
-@FunctionalInterface
 public interface Checker<T> {
+  String name();
+
   boolean check(T value);
 }

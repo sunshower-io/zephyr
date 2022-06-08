@@ -2,9 +2,17 @@ package io.zephyr.common.io;
 
 import io.sunshower.checks.SuppressFBWarnings;
 import io.zephyr.kernel.memento.Memento;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
-import java.nio.file.*;
+import java.nio.file.AccessDeniedException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import lombok.NonNull;
 import lombok.val;
@@ -60,8 +68,7 @@ public class Files {
     return file.substring(file.lastIndexOf("/"));
   }
 
-  public static File check(File file, FilePermissionChecker.Type... checks)
-      throws AccessDeniedException {
+  public static File check(File file, Checker<File>... checks) throws AccessDeniedException {
     for (val check : checks) {
       if (!check.check(file)) {
         throw new AccessDeniedException(file.getAbsolutePath(), null, check.name());
