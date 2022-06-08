@@ -136,7 +136,6 @@ public class ZephyrCliEntryPoint implements EntryPoint {
     }
   }
 
-
   @SneakyThrows
   @SuppressWarnings("PMD.SystemPrintln")
   private void startServer() {

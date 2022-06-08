@@ -75,11 +75,6 @@ public class DefaultModuleManagerTest extends ModuleManagerTestCase {
         new WeakReference<>(findClass("test-plugin-1", "plugin1.Plugin1Service"), this, queue);
     assertNotNull(type.get());
     Modules.close(find("test-plugin-1"), kernel);
-    while (type.get() != null) {
-      val ref = queue.poll();
-      System.out.println(ref);
-      Thread.sleep(1000);
-    }
     Modules.start(find("test-plugin-1"), kernel);
 
     type = new WeakReference<>(findClass("test-plugin-1", "plugin1.Plugin1Service"), this, queue);

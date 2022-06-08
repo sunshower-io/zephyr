@@ -12,7 +12,9 @@ import io.zephyr.kernel.module.ModuleLifecycleChangeRequest;
 import java.util.concurrent.TimeUnit;
 import lombok.val;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Isolated;
 
+@Isolated
 @SuppressWarnings({
   "PMD.JUnitTestsShouldIncludeAssert",
   "PMD.DataflowAnomalyAnalysis",

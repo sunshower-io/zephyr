@@ -28,8 +28,6 @@ import lombok.extern.java.Log;
 import lombok.val;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
-import org.junit.jupiter.api.parallel.Isolated;
 
 @Log
 public class ShellTestCase {
@@ -139,7 +137,7 @@ public class ShellTestCase {
       log.log(
           Level.SEVERE,
           "\t ''{0}''.  State: {1}",
-          new Object[]{module.getCoordinate().getName(), module.getLifecycle().getState()});
+          new Object[] {module.getCoordinate().getName(), module.getLifecycle().getState()});
     }
   }
 
@@ -159,8 +157,9 @@ public class ShellTestCase {
       await()
           .atMost(10, TimeUnit.SECONDS)
           .until(
-              () -> kernel.getModuleManager().getModules(Lifecycle.State.Active).size()
-                  == expectedCount);
+              () ->
+                  kernel.getModuleManager().getModules(Lifecycle.State.Active).size()
+                      == expectedCount);
     } catch (Exception ex) {
       logModules(kernel.getModuleManager());
       throw ex;
@@ -175,7 +174,7 @@ public class ShellTestCase {
               run("-s -c 4 -h " + homeDirectory.getAbsolutePath());
             });
     serverThread.start();
-//    runAsync("-s", "-c", "4", "-h", homeDirectory.getAbsolutePath());
+    //    runAsync("-s", "-c", "4", "-h", homeDirectory.getAbsolutePath());
     await().atMost(10, TimeUnit.SECONDS).until(() -> (KernelLauncher.getInstance() != null));
 
     launcher = KernelLauncher.getInstance();
@@ -194,9 +193,9 @@ public class ShellTestCase {
 
   protected void runAsync(String... args) {
     new Thread(
-        () -> {
-          run(args);
-        })
+            () -> {
+              run(args);
+            })
         .start();
   }
 
@@ -206,7 +205,8 @@ public class ShellTestCase {
       startServer();
     }
     runAsync("kernel", "start", "-h", homeDirectory.getAbsolutePath());
-    await().atMost(100, TimeUnit.SECONDS)
+    await()
+        .atMost(100, TimeUnit.SECONDS)
         .until(() -> launcher.resolveService(Kernel.class) != null);
 
     kernel = launcher.resolveService(Kernel.class);
@@ -290,9 +290,9 @@ public class ShellTestCase {
           .until(
               () ->
                   kernel.getModuleManager().getModules().size()
-                  + kernel.getKernelModules().size()
-                  + failedCount.get()
-                  >= count);
+                          + kernel.getKernelModules().size()
+                          + failedCount.get()
+                      >= count);
     } finally {
       kernel.removeEventListener(listener);
     }
@@ -306,7 +306,6 @@ public class ShellTestCase {
   protected int moduleCount() {
     return kernel.getModuleManager().getModules().size();
   }
-
 
   protected int kernelModuleCount() {
     return kernel.getKernelModules().size();

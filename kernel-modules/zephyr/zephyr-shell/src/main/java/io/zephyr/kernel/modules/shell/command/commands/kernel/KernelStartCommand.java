@@ -132,10 +132,10 @@ public class KernelStartCommand extends DefaultCommand {
       cli.parseArgs(arguments);
     }
 
-//    if (kernelOptions.getHomeDirectory() == null) {
-//      kernelOptions.setHomeDirectory(options.getHomeDirectory());
-//    }
-    if(options.getHomeDirectory() != null) {
+    //    if (kernelOptions.getHomeDirectory() == null) {
+    //      kernelOptions.setHomeDirectory(options.getHomeDirectory());
+    //    }
+    if (options.getHomeDirectory() != null) {
       kernelOptions.setHomeDirectory(options.getHomeDirectory());
     }
     return kernelOptions;
