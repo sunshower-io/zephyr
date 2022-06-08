@@ -20,8 +20,12 @@ import lombok.extern.java.Log;
 import lombok.val;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.parallel.Isolated;
+import org.junit.jupiter.api.parallel.ResourceLock;
 
 @Log
+@Isolated
+@ResourceLock("module-manager")
 public class ModuleManagerTestCase {
 
   protected Kernel kernel;

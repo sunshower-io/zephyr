@@ -21,6 +21,7 @@ import lombok.SneakyThrows;
 import lombok.val;
 import org.jboss.modules.ref.WeakReference;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 @SuppressWarnings({
@@ -58,7 +59,7 @@ public class DefaultModuleManagerTest extends ModuleManagerTestCase {
 
   @Test
   @SneakyThrows
-  //  @Disabled("attempting to reproduce from local values")
+  @Disabled("attempting to reproduce from local values")
   void ensureLoadingFromAireComponentsWorks() {
     install(
         new File(

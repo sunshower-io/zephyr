@@ -20,7 +20,7 @@ import org.junit.jupiter.api.parallel.Isolated;
 class ModuleDownloadPhaseTest extends ModuleManagerTestCase {
 
   @Test
-  @Disabled("Come back to this")
+  @Disabled
   void ensureDownloadingNullDispatchesEvent() throws ExecutionException, InterruptedException {
 
     val request = new ModuleInstallationRequest();

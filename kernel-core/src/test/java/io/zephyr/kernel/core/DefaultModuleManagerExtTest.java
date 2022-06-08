@@ -10,11 +10,15 @@ import io.zephyr.kernel.module.ModuleLifecycle;
 import io.zephyr.kernel.module.ModuleLifecycleChangeGroup;
 import io.zephyr.kernel.module.ModuleLifecycleChangeRequest;
 import java.util.concurrent.TimeUnit;
+import lombok.extern.java.Log;
 import lombok.val;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Isolated;
+import org.junit.jupiter.api.parallel.ResourceLock;
 
+@Log
 @Isolated
+@ResourceLock("module-manager")
 @SuppressWarnings({
   "PMD.JUnitTestsShouldIncludeAssert",
   "PMD.DataflowAnomalyAnalysis",
