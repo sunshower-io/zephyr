@@ -33,6 +33,7 @@ import io.zephyr.kernel.module.ModuleInstallationRequest;
 import io.zephyr.kernel.module.ModuleInstallationStatusGroup;
 import io.zephyr.kernel.module.ModuleRequest;
 import java.net.URL;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.concurrent.CompletionStage;
@@ -60,9 +61,12 @@ final class DefaultModuleInstallationStatusGroup implements ModuleInstallationSt
     context.set("SunshowerKernel", kernel);
     context.set(ModuleDownloadPhase.TARGET_DIRECTORY, kernel.getFileSystem().getPath("downloads"));
 
-    context.set(ModuleInstallationCompletionPhase.INSTALLED_PLUGINS, new LinkedHashSet<Module>());
     context.set(
-        ModuleInstallationCompletionPhase.INSTALLED_KERNEL_MODULES, new LinkedHashSet<Module>());
+        ModuleInstallationCompletionPhase.INSTALLED_PLUGINS,
+        Collections.synchronizedSet(new LinkedHashSet<Module>()));
+    context.set(
+        ModuleInstallationCompletionPhase.INSTALLED_KERNEL_MODULES,
+        Collections.synchronizedSet(new LinkedHashSet<Module>()));
 
     val procBuilder = Tasks.newProcess("module:install").withContext(context);
     val taskBuilder =

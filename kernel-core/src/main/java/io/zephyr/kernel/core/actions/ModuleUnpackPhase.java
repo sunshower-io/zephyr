@@ -96,6 +96,7 @@ public class ModuleUnpackPhase extends Task implements ModuleAssemblyExtractor.E
     } else {
       fireNoValidExtractors(assembly);
     }
+
     context.set(MODULE_ASSEMBLY, assembly);
     return null;
   }

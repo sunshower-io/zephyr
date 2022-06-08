@@ -36,6 +36,8 @@ public class ModuleInstallationCompletionPhase extends Task {
   public static final String INSTALLED_KERNEL_MODULES = "INSTALLED_KERNEL_MODULES";
   static final Logger log = Logging.get(ModuleInstallationCompletionPhase.class);
 
+  private final Object lock = new Object();
+
   public ModuleInstallationCompletionPhase(String name) {
     super(name);
   }
@@ -43,7 +45,7 @@ public class ModuleInstallationCompletionPhase extends Task {
   @Override
   @SuppressWarnings({"PMD.CloseResource", "PMD.DataflowAnomalyAnalysis"})
   public TaskValue run(Scope context) {
-    synchronized (this) {
+    synchronized (lock) {
       final Kernel kernel = context.get("SunshowerKernel");
       final URL url = context.get(ModuleDownloadPhase.DOWNLOAD_URL);
       final Source source = new ModuleSource(getSource(url));
@@ -51,6 +53,9 @@ public class ModuleInstallationCompletionPhase extends Task {
       final FileSystem fileSystem = context.get(ModuleTransferPhase.MODULE_FILE_SYSTEM);
       final File moduleDirectory = context.get(ModuleTransferPhase.MODULE_DIRECTORY);
       final Assembly assembly = context.get(ModuleUnpackPhase.MODULE_ASSEMBLY);
+      if (assembly == null) {
+        throw new IllegalStateException("Error: assembly must not be null");
+      }
       //      final Set<Library> libraries = context.get(ModuleUnpackPhase.INSTALLED_LIBRARIES);
 
       val module =

@@ -53,6 +53,17 @@ public class FilePermissionChecker {
         return value.canExecute();
       }
     },
+    DIRECTORY() {
+      boolean doCheck(File value) {
+        return value.isDirectory();
+      }
+    },
+    FILE() {
+      boolean doCheck(File value) {
+        return value.isFile();
+      }
+    },
+
     DELETE() {
       @Override
       boolean doCheck(File value) {

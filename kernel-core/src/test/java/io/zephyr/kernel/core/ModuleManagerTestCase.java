@@ -20,13 +20,8 @@ import lombok.extern.java.Log;
 import lombok.val;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.parallel.Isolated;
-import org.junit.jupiter.api.parallel.ResourceAccessMode;
-import org.junit.jupiter.api.parallel.ResourceLock;
 
 @Log
-@Isolated
-@ResourceLock(value = "module-manager", mode = ResourceAccessMode.READ_WRITE)
 public class ModuleManagerTestCase {
 
   protected Kernel kernel;
@@ -70,7 +65,6 @@ public class ModuleManagerTestCase {
     req2 = new ModuleInstallationRequest();
     req2.setLifecycleActions(ModuleLifecycle.Actions.Activate);
     req2.setLocation(plugin2.toURI().toURL());
-    Thread.sleep(10);
   }
 
   protected File moduleIn(String location) {

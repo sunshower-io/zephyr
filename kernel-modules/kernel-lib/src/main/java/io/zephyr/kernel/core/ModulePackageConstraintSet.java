@@ -109,7 +109,7 @@ final class ModulePackageConstraintSet {
   }
 
   private void logPackages() {
-    if (log.isLoggable(Level.INFO)) {
+    if (log.isLoggable(Level.FINE)) {
       logSet("Computed allowed exact package reexports: ", exactAllowedPackages);
       logSet("Computed allowed suffix glob package reexports: ", suffixInclusions);
       logSet("Computed denied suffix glob package reexports: ", suffixExclusions);
@@ -117,9 +117,9 @@ final class ModulePackageConstraintSet {
   }
 
   private void logSet(String msg, Set<String> packages) {
-    log.log(Level.INFO, msg);
+    log.log(Level.FINE, msg);
     for (val pkg : packages) {
-      log.log(Level.INFO, "\t{0}", pkg);
+      log.log(Level.FINE, "\t{0}", pkg);
     }
   }
 

@@ -273,44 +273,46 @@ public class Modules {
   private static void checkForUnresolvedDependencies(
       Kernel kernel, DependencyGraph dependencyGraph, Collection<Module> installedModules) {
 
-    //    val results = dependencyGraph.getUnresolvedDependencies(installedModules);
-    val results = dependencyGraph.resolveDependencies(installedModules);
-    val unsatisfied = new LinkedHashSet<DependencyGraph.UnsatisfiedDependencySet>();
-    for (val unresolvedDependency : results) {
+    synchronized (lock) {
+      //    val results = dependencyGraph.getUnresolvedDependencies(installedModules);
+      val results = dependencyGraph.resolveDependencies(installedModules);
+      val unsatisfied = new LinkedHashSet<DependencyGraph.UnsatisfiedDependencySet>();
+      for (val unresolvedDependency : results) {
 
-      if (!unresolvedDependency.isSatisfied()) {
-        val module = unresolvedDependency.getSource();
-        for (val installedModule : installedModules) {
-          if (module.equals(installedModule.getCoordinate())) {
-            try {
-              val fs = installedModule.getFileSystem();
-              if (fs != null) {
-                fs.close();
+        if (!unresolvedDependency.isSatisfied()) {
+          val module = unresolvedDependency.getSource();
+          for (val installedModule : installedModules) {
+            if (module.equals(installedModule.getCoordinate())) {
+              try {
+                val fs = installedModule.getFileSystem();
+                if (fs != null) {
+                  fs.close();
+                }
+              } catch (Exception ex) {
+                log.log(Level.WARNING, "failed to close module filesystem {0}", module);
               }
-            } catch (Exception ex) {
-              log.log(Level.WARNING, "failed to close module filesystem {0}", module);
             }
           }
-        }
-        unsatisfied.add(unresolvedDependency);
-      }
-    }
-
-    if (!unsatisfied.isEmpty()) {
-      fireUnresolvedDependencies(kernel, unsatisfied);
-      log.warning("plugin.phase.unresolveddependencies");
-
-      log.log(Level.WARNING, "existing modules: ");
-      val modules = kernel.getModuleManager().getModules();
-      for (val module : modules) {
-        log.log(Level.WARNING, "Module: {0}", module.getCoordinate());
-        log.log(Level.WARNING, "\t State: {0}", module.getLifecycle().getState());
-        val directories = module.getFileSystem().getRootDirectories();
-        for (val directory : directories) {
-          log.log(Level.WARNING, "\t\t root directory: {0}", directory);
+          unsatisfied.add(unresolvedDependency);
         }
       }
-      throw new UnresolvedDependencyException("unresolved dependencies detected", unsatisfied);
+
+      if (!unsatisfied.isEmpty()) {
+        fireUnresolvedDependencies(kernel, unsatisfied);
+        log.warning("plugin.phase.unresolveddependencies");
+
+        log.log(Level.WARNING, "existing modules: ");
+        val modules = kernel.getModuleManager().getModules();
+        for (val module : modules) {
+          log.log(Level.WARNING, "Module: {0}", module.getCoordinate());
+          log.log(Level.WARNING, "\t State: {0}", module.getLifecycle().getState());
+          val directories = module.getFileSystem().getRootDirectories();
+          for (val directory : directories) {
+            log.log(Level.WARNING, "\t\t root directory: {0}", directory);
+          }
+        }
+        throw new UnresolvedDependencyException("unresolved dependencies detected", unsatisfied);
+      }
     }
   }
 

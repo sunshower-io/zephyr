@@ -26,15 +26,6 @@ public class KernelOptions extends AbstractValidatable<KernelOptions>
   static final String ZEPHYR_HOME_ENVIRONMENT_VARIABLE_KEY = "ZEPHYR_HOME";
   private static final Logger log = Logging.get(KernelOptions.class);
   private static final long serialVersionUID = -4797996962045876401L;
-
-  public static class SystemProperties {
-    public static final String SUNSHOWER_HOME = "sunshower.home";
-  }
-
-  public static class EnvironmentVariables {
-    public static final String SUNSHOWER_HOME = "SUNSHOWER_HOME";
-  }
-
   /**
    * Specify the home directory for Sunshower.io. Sunshower data is stored here. For clustered
    * Sunshower.io kernels, this should be a distributed directory unless a data-distribution module
@@ -46,7 +37,6 @@ public class KernelOptions extends AbstractValidatable<KernelOptions>
       names = {"-h", "--home-directory"},
       defaultValue = "zephyr")
   private File homeDirectory;
-
   /** Specify the maximum number of threads the Sunshower Kernel may start for gyre */
   @Getter
   @Setter
@@ -55,7 +45,6 @@ public class KernelOptions extends AbstractValidatable<KernelOptions>
       defaultValue = "8",
       type = Integer.class)
   private Integer concurrency = 8;
-
   /** Specify the maximum number of threads the Sunshower Kernel may start for kernel use */
   @Getter
   @Setter
@@ -64,7 +53,6 @@ public class KernelOptions extends AbstractValidatable<KernelOptions>
       defaultValue = "2",
       type = Integer.class)
   private Integer kernelConcurrency = 10;
-
   /** Specify logging level. Defaults to Level.WARNING */
   @Getter
   @Setter
@@ -86,7 +74,10 @@ public class KernelOptions extends AbstractValidatable<KernelOptions>
     val systemProperty = System.getProperty(ZEPHYR_HOME_SYSTEM_PROPERTY_KEY);
 
     if (Strings.isNullOrEmpty(systemProperty)) {
-      log.log(Level.INFO, "filesystem.resolve.root.system_properties.doesnt_exist");
+      log.log(
+          Level.INFO,
+          "filesystem.resolve.root.system_properties.doesnt_exist",
+          ZEPHYR_HOME_SYSTEM_PROPERTY_KEY);
     } else {
       val file = new File(systemProperty);
       if (checkPermissions(file, "system properties")) {
@@ -100,7 +91,10 @@ public class KernelOptions extends AbstractValidatable<KernelOptions>
 
     val envVariable = System.getenv(ZEPHYR_HOME_ENVIRONMENT_VARIABLE_KEY);
     if (Strings.isNullOrEmpty(envVariable)) {
-      log.log(Level.INFO, "filesystem.resolve.root.env_var.doesnt_exist");
+      log.log(
+          Level.INFO,
+          "filesystem.resolve.root.env_var.doesnt_exist",
+          ZEPHYR_HOME_ENVIRONMENT_VARIABLE_KEY);
     } else {
       val file = new File(envVariable);
       if (checkPermissions(file, "ENVIRONMENT")) {
@@ -164,5 +158,15 @@ public class KernelOptions extends AbstractValidatable<KernelOptions>
     }
 
     return true;
+  }
+
+  public static class SystemProperties {
+
+    public static final String SUNSHOWER_HOME = "sunshower.home";
+  }
+
+  public static class EnvironmentVariables {
+
+    public static final String SUNSHOWER_HOME = "SUNSHOWER_HOME";
   }
 }
