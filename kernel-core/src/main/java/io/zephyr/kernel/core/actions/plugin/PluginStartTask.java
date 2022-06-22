@@ -32,6 +32,9 @@ public class PluginStartTask extends Task implements ModuleLifecycleTask {
     "PMD.AvoidInstantiatingObjectsInLoops"
   })
   public TaskValue run(Scope scope) {
+    if (!coordinate.isResolved()) {
+      return null;
+    }
     val module = manager.getModule(coordinate);
     try {
       Modules.start(module, kernel);

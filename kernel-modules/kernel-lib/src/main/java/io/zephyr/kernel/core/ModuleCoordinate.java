@@ -1,6 +1,8 @@
 package io.zephyr.kernel.core;
 
 import io.zephyr.kernel.Coordinate;
+import io.zephyr.kernel.CoordinateSpecification;
+import io.zephyr.kernel.Version;
 import java.util.regex.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,14 +13,35 @@ import lombok.val;
 @AllArgsConstructor
 @SuppressWarnings("PMD.AvoidFieldNameMatchingMethodName")
 public final class ModuleCoordinate implements Coordinate {
-  @NonNull private final String name;
-  @NonNull private final String group;
-  @NonNull private final SemanticVersion version;
 
   static final Pattern pattern = Pattern.compile(":");
+  private final boolean resolved;
+  @NonNull private final String name;
+  @NonNull private final String group;
+  @NonNull private final Version version;
+
+  public ModuleCoordinate(final String name, final String group, final Version version) {
+    this(name, group, version, true);
+  }
+
+  public ModuleCoordinate(
+      final String name, final String group, final Version version, final boolean resolved) {
+    this.name = name;
+    this.group = group;
+    this.version = version;
+    this.resolved = resolved;
+  }
 
   public static Coordinate create(String group, String name, String version) {
     return new ModuleCoordinate(name, group, new SemanticVersion(version));
+  }
+
+  public static Coordinate createUnresolvedCoordinate(CoordinateSpecification specification) {
+    return new ModuleCoordinate(
+        specification.getName(),
+        specification.getGroup(),
+        new SemanticVersion(specification.getVersionSpecification()),
+        false);
   }
 
   public static Coordinate parse(@NonNull String name) {
@@ -32,13 +55,21 @@ public final class ModuleCoordinate implements Coordinate {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (!(o instanceof ModuleCoordinate)) return false;
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof ModuleCoordinate)) {
+      return false;
+    }
 
     ModuleCoordinate that = (ModuleCoordinate) o;
 
-    if (!getName().equals(that.getName())) return false;
-    if (!getGroup().equals(that.getGroup())) return false;
+    if (!getName().equals(that.getName())) {
+      return false;
+    }
+    if (!getGroup().equals(that.getGroup())) {
+      return false;
+    }
     return getVersion().equals(that.getVersion());
   }
 
@@ -68,7 +99,7 @@ public final class ModuleCoordinate implements Coordinate {
 
   @Override
   public String toString() {
-    return String.format("%s:%s:%s", group, name, version);
+    return String.format("%s:%s:%s:%b", group, name, version, resolved);
   }
 
   @Override

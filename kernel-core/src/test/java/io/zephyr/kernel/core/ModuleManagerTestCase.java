@@ -57,10 +57,8 @@ public class ModuleManagerTestCase {
     kernel.start();
     assertTrue(manager.getModules().isEmpty());
 
-    plugin1 =
-        Tests.relativeToProjectBuild("kernel-tests:test-plugins:test-plugin-1", "war", "libs");
-    plugin2 =
-        Tests.relativeToProjectBuild("kernel-tests:test-plugins:test-plugin-2", "war", "libs");
+    plugin1 = Tests.relativeToProjectBuild(getPlugin1(), "war", "libs");
+    plugin2 = Tests.relativeToProjectBuild(getPlugin2(), "war", "libs");
 
     req1 = new ModuleInstallationRequest();
     req1.setLifecycleActions(ModuleLifecycle.Actions.Install);
@@ -69,6 +67,14 @@ public class ModuleManagerTestCase {
     req2 = new ModuleInstallationRequest();
     req2.setLifecycleActions(ModuleLifecycle.Actions.Activate);
     req2.setLocation(plugin2.toURI().toURL());
+  }
+
+  protected String getPlugin2() {
+    return "kernel-tests:test-plugins:test-plugin-2";
+  }
+
+  protected String getPlugin1() {
+    return "kernel-tests:test-plugins:test-plugin-1";
   }
 
   protected File moduleIn(String location) {

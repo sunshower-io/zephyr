@@ -2,6 +2,8 @@ package io.zephyr.kernel;
 
 public interface Coordinate extends Comparable<Coordinate> {
 
+  boolean isResolved();
+
   String getName();
 
   String getGroup();

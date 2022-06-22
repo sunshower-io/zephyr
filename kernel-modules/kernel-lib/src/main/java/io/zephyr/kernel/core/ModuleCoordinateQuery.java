@@ -16,6 +16,11 @@ public final class ModuleCoordinateQuery implements Coordinate {
   }
 
   @Override
+  public boolean isResolved() {
+    return true;
+  }
+
+  @Override
   public String getName() {
     return name;
   }

@@ -74,6 +74,8 @@ include(
         'kernel-tests:test-plugins:test-spring-web-plugin',
         'kernel-tests:test-plugins:test-plugin-spring-dep',
         'kernel-tests:test-plugins:test-plugin-spring-error',
+        'kernel-tests:test-plugins:optional:test-plugin-1',
+        'kernel-tests:test-plugins:optional:test-plugin-2',
 
 
         /**

@@ -1,15 +1,30 @@
 package io.zephyr.kernel.core;
 
-import io.sunshower.gyre.*;
+import io.sunshower.gyre.DirectedGraph;
+import io.sunshower.gyre.EdgeFilters;
+import io.sunshower.gyre.Graph;
+import io.sunshower.gyre.ParallelScheduler;
+import io.sunshower.gyre.ReverseSubgraphTransformation;
+import io.sunshower.gyre.Scope;
+import io.sunshower.gyre.SubgraphTransformation;
+import io.sunshower.gyre.TernaryFunction;
 import io.zephyr.kernel.Coordinate;
-import io.zephyr.kernel.concurrency.*;
+import io.zephyr.kernel.concurrency.DefaultProcess;
 import io.zephyr.kernel.concurrency.Process;
 import io.zephyr.kernel.concurrency.Task;
+import io.zephyr.kernel.concurrency.TaskGraph;
 import io.zephyr.kernel.core.actions.plugin.PluginRemoveTask;
 import io.zephyr.kernel.core.actions.plugin.PluginStartTask;
 import io.zephyr.kernel.core.actions.plugin.PluginStopTask;
-import io.zephyr.kernel.module.*;
-import java.util.*;
+import io.zephyr.kernel.module.ModuleLifecycle;
+import io.zephyr.kernel.module.ModuleLifecycleChangeGroup;
+import io.zephyr.kernel.module.ModuleLifecycleChangeRequest;
+import io.zephyr.kernel.module.ModuleLifecycleStatusGroup;
+import io.zephyr.kernel.module.ModuleRequest;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletionStage;
 import lombok.val;
 
@@ -83,7 +98,10 @@ final class DefaultModuleLifecycleStatusChangeGroup implements ModuleLifecycleSt
     val reachability =
         new ReverseSubgraphTransformation<DirectedGraph.Edge<Coordinate>, Coordinate>(
                 task.getCoordinate())
-            .apply(moduleManager.getDependencyGraph().getGraph());
+            .apply(
+                moduleManager.getDependencyGraph().getGraph(),
+                EdgeFilters.acceptAll(),
+                Coordinate::isResolved);
     addAction(reachability, task, tasks, existing, (t, u, v) -> this.pluginStopTask(t, u, kernel));
   }
 
@@ -92,7 +110,10 @@ final class DefaultModuleLifecycleStatusChangeGroup implements ModuleLifecycleSt
 
     val reachability =
         new SubgraphTransformation<DirectedGraph.Edge<Coordinate>, Coordinate>(task.getCoordinate())
-            .apply(moduleManager.getDependencyGraph().getGraph());
+            .apply(
+                moduleManager.getDependencyGraph().getGraph(),
+                EdgeFilters.acceptAll(),
+                Coordinate::isResolved);
     addAction(reachability, task, tasks, existing, this::pluginStartTask);
   }
 
@@ -105,7 +126,7 @@ final class DefaultModuleLifecycleStatusChangeGroup implements ModuleLifecycleSt
 
     val schedule =
         new ParallelScheduler<DirectedGraph.Edge<Coordinate>, Coordinate>()
-            .apply(reachability)
+            .apply(reachability, EdgeFilters.acceptAll(), Coordinate::isResolved)
             .getTasks();
 
     Task source;

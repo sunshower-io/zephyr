@@ -142,7 +142,7 @@ public final class DefaultDependencyGraph implements DependencyGraph, Cloneable 
         val unsatisfied = new LinkedHashSet<Coordinate>();
         for (val dependency : module.getDependencies()) {
           val depcoord = dependency.getCoordinate();
-          if (!prospective.containsKey(depcoord)) {
+          if (!(prospective.containsKey(depcoord))) {
             unsatisfied.add(depcoord);
           }
         }
@@ -166,7 +166,7 @@ public final class DefaultDependencyGraph implements DependencyGraph, Cloneable 
         val unsatisfied = new LinkedHashSet<Coordinate>();
         for (val dependency : module.getDependencies()) {
           val depcoord = dependency.getCoordinate();
-          if (!prospective.containsKey(depcoord)) {
+          if (!(prospective.containsKey(depcoord) || dependency.isOptional())) {
             unsatisfied.add(depcoord);
           }
         }
@@ -300,9 +300,12 @@ public final class DefaultDependencyGraph implements DependencyGraph, Cloneable 
       Map<Coordinate, Module> installationGroupModules) {
     synchronized (lock) {
       val matching = collectMatchingFrom(dependency, installationGroupModules);
-      if (matching.isEmpty()) {
+      if (matching.isEmpty() && !dependency.isOptional()) {
         results.add(new UnvalidatedCoordinate(dependency.getCoordinateSpecification()));
-      } else {
+      } else if (dependency.isOptional() && matching.isEmpty()) {
+        dependency.setCoordinate(
+            ModuleCoordinate.createUnresolvedCoordinate(dependency.getCoordinateSpecification()));
+      } else if (!matching.isEmpty()) {
         Collections.sort(matching);
         val fst = matching.get(matching.size() - 1);
         if (log.isLoggable(Level.INFO)) {
