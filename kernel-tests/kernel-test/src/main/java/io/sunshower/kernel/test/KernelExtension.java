@@ -165,11 +165,11 @@ public class KernelExtension
       throws MalformedURLException {
     val testClass = context.getRequiredTestClass();
 
-    val modules = testClass.getAnnotation(Modules.class);
-    if (modules != null) {
+    val modules = testClass.getAnnotationsByType(Module.class);
+    if (modules.length > 0) {
       val kernelModules = new ModuleInstallationGroup();
       val plugins = new ModuleInstallationGroup();
-      for (val moduleDef : modules.value()) {
+      for (val moduleDef : modules) {
         extractRequest(moduleDef, kernelModules, plugins);
       }
       store.put(Module.Type.Plugin, plugins);
@@ -185,7 +185,8 @@ public class KernelExtension
 
     if (!Module.NONE.equals(moduleDef.project())) {
       val projectLocation = moduleDef.project();
-      val project = Tests.relativeToProjectBuild(projectLocation, "war", "libs");
+      val ext = moduleDef.extension();
+      val project = Tests.relativeToProjectBuild(projectLocation, ext, "libs");
       val req = new ModuleInstallationRequest();
       req.setLocation(project.toURI().toURL());
 
