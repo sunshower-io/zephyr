@@ -25,6 +25,11 @@ final class UnvalidatedCoordinate implements Coordinate {
   }
 
   @Override
+  public boolean isResolved() {
+    return true;
+  }
+
+  @Override
   public Version getVersion() {
     return version;
   }

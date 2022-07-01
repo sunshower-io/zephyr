@@ -1,8 +1,10 @@
 package io.sunshower.kernel.test;
 
+import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+@Repeatable(Modules.class)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Module {
   String NONE = "__NONE__";
@@ -12,6 +14,8 @@ public @interface Module {
   String project() default NONE;
 
   Type type() default Type.Plugin;
+
+  String extension() default "war";
 
   enum Type {
     Plugin,

@@ -7,9 +7,7 @@ import io.zephyr.kernel.concurrency.ModuleThread;
 import io.zephyr.kernel.core.Kernel;
 import io.zephyr.kernel.module.ModuleInstallationGroup;
 import io.zephyr.kernel.module.ModuleInstallationRequest;
-import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.nio.file.FileSystems;
@@ -24,14 +22,9 @@ import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.jupiter.api.extension.ParameterContext;
-import org.junit.jupiter.api.extension.ParameterResolver;
 import org.junit.jupiter.api.extension.TestInstancePostProcessor;
-import org.springframework.beans.factory.annotation.ParameterResolutionDelegate;
 import org.springframework.context.ApplicationContext;
-import org.springframework.lang.Nullable;
 import org.springframework.test.context.TestContextManager;
-import org.springframework.test.context.support.TestConstructorUtils;
 import org.springframework.util.Assert;
 
 @Log
@@ -42,8 +35,7 @@ public class KernelExtension
         BeforeEachCallback,
         AfterEachCallback,
         BeforeTestExecutionCallback,
-        AfterTestExecutionCallback,
-        ParameterResolver {
+        AfterTestExecutionCallback {
 
   public static ApplicationContext getApplicationContext(ExtensionContext context) {
     return getTestContextManager(context).getTestContext().getApplicationContext();
@@ -169,38 +161,15 @@ public class KernelExtension
     }
   }
 
-  @Override
-  public boolean supportsParameter(
-      ParameterContext parameterContext, ExtensionContext extensionContext) {
-    Parameter parameter = parameterContext.getParameter();
-    Executable executable = parameter.getDeclaringExecutable();
-    Class<?> testClass = extensionContext.getRequiredTestClass();
-    return (TestConstructorUtils.isAutowirableConstructor(executable, testClass)
-        || ApplicationContext.class.isAssignableFrom(parameter.getType())
-        || ParameterResolutionDelegate.isAutowirable(parameter, parameterContext.getIndex()));
-  }
-
-  @Override
-  @Nullable
-  public Object resolveParameter(
-      ParameterContext parameterContext, ExtensionContext extensionContext) {
-    Parameter parameter = parameterContext.getParameter();
-    int index = parameterContext.getIndex();
-    Class<?> testClass = extensionContext.getRequiredTestClass();
-    ApplicationContext applicationContext = getApplicationContext(extensionContext);
-    return ParameterResolutionDelegate.resolveDependency(
-        parameter, index, testClass, applicationContext.getAutowireCapableBeanFactory());
-  }
-
   private void extractModules(ExtensionContext context, ExtensionContext.Store store)
       throws MalformedURLException {
     val testClass = context.getRequiredTestClass();
 
-    val modules = testClass.getAnnotation(Modules.class);
-    if (modules != null) {
+    val modules = testClass.getAnnotationsByType(Module.class);
+    if (modules.length > 0) {
       val kernelModules = new ModuleInstallationGroup();
       val plugins = new ModuleInstallationGroup();
-      for (val moduleDef : modules.value()) {
+      for (val moduleDef : modules) {
         extractRequest(moduleDef, kernelModules, plugins);
       }
       store.put(Module.Type.Plugin, plugins);
@@ -216,7 +185,8 @@ public class KernelExtension
 
     if (!Module.NONE.equals(moduleDef.project())) {
       val projectLocation = moduleDef.project();
-      val project = Tests.relativeToProjectBuild(projectLocation, "war", "libs");
+      val ext = moduleDef.extension();
+      val project = Tests.relativeToProjectBuild(projectLocation, ext, "libs");
       val req = new ModuleInstallationRequest();
       req.setLocation(project.toURI().toURL());
 

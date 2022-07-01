@@ -43,6 +43,15 @@ class ManifestModuleScannerTest {
 
   @Test
   @SneakyThrows
+  void ensureOptionalWorksWithSemver() {
+    val value = "service@com.aire.ux.ui:aire-ui:1.0.+<optional>";
+    val reader = new PushbackReader(new StringReader(value));
+    val r = scanner.readDependencies(reader).get(0);
+    assertTrue(r.isOptional());
+  }
+
+  @Test
+  @SneakyThrows
   void ensureReadingOrderWorks() {
     val a = "service@io.zephyr:zephyr:1.0.0-Final<order=40>";
     val deps = scanner.readDependencies(readerFor(a));

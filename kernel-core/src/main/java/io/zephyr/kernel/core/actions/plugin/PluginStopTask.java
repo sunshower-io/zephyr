@@ -24,6 +24,9 @@ public class PluginStopTask extends Task implements ModuleLifecycleTask {
 
   @Override
   public TaskValue run(Scope scope) {
+    if (!coordinate.isResolved()) {
+      return null;
+    }
     val module = manager.getModule(coordinate);
     scope.set(PluginRemoveTask.MODULE_COORDINATE, coordinate);
     try {

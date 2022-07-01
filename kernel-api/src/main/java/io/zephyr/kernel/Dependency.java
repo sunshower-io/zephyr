@@ -40,6 +40,11 @@ public final class Dependency implements Comparable<Dependency> {
     NULL_COORDINATE =
         new Coordinate() {
           @Override
+          public boolean isResolved() {
+            return true;
+          }
+
+          @Override
           public String getName() {
             return "null";
           }
