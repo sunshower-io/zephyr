@@ -86,14 +86,12 @@
                 <groupId>io.sunshower.zephyr</groupId>
                 <artifactId>kernel-test</artifactId>
                 <version>${zephyr.version}</version>
-                <scope>test</scope>
             </dependency>
 
             <dependency>
                 <groupId>io.sunshower.zephyr</groupId>
                 <artifactId>kernel-test-common</artifactId>
                 <version>${zephyr.version}</version>
-                <scope>test</scope>
             </dependency>
 
             <dependency>
