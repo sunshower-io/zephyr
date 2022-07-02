@@ -82,6 +82,7 @@ include(
          * official plugins
          */
         'plugins:spring:spring-web-plugin',
+        'plugins:watch-plugin'
 
 //        'tools:gradle-plugin',
        //// 'tools:zephyr-bundle',
