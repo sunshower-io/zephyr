@@ -1,0 +1,19 @@
+apply plugin: 'java'
+
+
+dependencies {
+    compileOnly 'javax.inject:javax.inject'
+    compileOnly project(':kernel-api')
+}
+
+jar {
+    manifest {
+        attributes(
+                "group": project.group,
+                "name": project.name,
+                "version": project.version,
+                "description": "Aire Module Watch Plugin",
+                "type": "plugin"
+        )
+    }
+}

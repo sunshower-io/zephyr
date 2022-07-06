@@ -347,11 +347,13 @@ public class Modules {
   }
 
   public static void start(Module toStart, Kernel kernel) throws IOException {
-    val module = (DefaultModule) toStart;
-    val taskQueue = new ModuleThread(module, kernel);
-    module.setTaskQueue(taskQueue);
-    taskQueue.start();
-    kernel.getModuleManager().getModuleLoader().install(module);
-    module.setFileSystem(getFileSystem(module.getCoordinate(), kernel).snd);
+    if (toStart instanceof DefaultModule) {
+      val module = (DefaultModule) toStart;
+      val taskQueue = new ModuleThread(module, kernel);
+      module.setTaskQueue(taskQueue);
+      taskQueue.start();
+      kernel.getModuleManager().getModuleLoader().install(module);
+      module.setFileSystem(getFileSystem(module.getCoordinate(), kernel).snd);
+    }
   }
 }
