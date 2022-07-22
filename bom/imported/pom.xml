@@ -48,7 +48,7 @@
         <image4j.version>0.7</image4j.version>
         <imageio-batik.version>3.5</imageio-batik.version>
         <batik-transcoder.version>1.6-1</batik-transcoder.version>
-        <zip4j.version>2.9.1</zip4j.version>
+        <zip4j.version>2.10.0</zip4j.version>
         <jsign-core.version>3.1</jsign-core.version>
         <flyway-core.version>8.4.1</flyway-core.version>
         <h2.version>2.1.210</h2.version>
