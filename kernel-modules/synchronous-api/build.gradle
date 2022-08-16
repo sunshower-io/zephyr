@@ -5,25 +5,29 @@ apply plugin: 'java-library'
 
 
 dependencies {
-    testImplementation project(':kernel-tests:kernel-test')
+//    testImplementation project(':kernel-tests:kernel-test')
+//
+//    [
+//            project(":kernel-api"),
+//            project(':kernel-core'),
+//            project(':kernel-modules:kernel-lib')
+//    ].each {
+//        api(runtimeElements(it))
+//        testImplementation(testFixtures(it))
+//    }
+//
+//
+////    testImplementation project(':kernel-core')
+//
+//    testImplementation project(':kernel-modules:kernel-lib')
+//    [
+//            "org.junit.jupiter:junit-jupiter-api",
+//            "org.junit.jupiter:junit-jupiter-engine",
+//    ].each {
+//        testImplementation it
+//    }
 
-    [
-            project(":kernel-api"),
-            project(':kernel-core'),
-            project(':kernel-modules:kernel-lib')
-    ].each {
-        api it
-    }
-
-
-    testImplementation project(':kernel-core')
-    testImplementation project(':kernel-modules:kernel-lib')
-    [
-            "org.junit.jupiter:junit-jupiter-api",
-            "org.junit.jupiter:junit-jupiter-engine",
-    ].each {
-        testImplementation it
-    }
+    implementation project(':kernel-api')
 }
 
 war {

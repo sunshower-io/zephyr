@@ -2,12 +2,13 @@
 plugins {
     id 'pmd'
     id 'maven-publish'
-    id 'com.adarshr.test-logger' version '3.2.0'
-    id "com.diffplug.spotless" version "6.1.0"
-    id "com.github.spotbugs" version "4.7.0"
-    id "org.gradle.test-retry" version "1.4.0"
-    id "org.springframework.boot" version "2.6.2" apply false
-    id "io.spring.dependency-management" version "1.0.11.RELEASE"
+    id 'com.adarshr.test-logger'
+    id "com.diffplug.spotless"
+    id "com.github.spotbugs"
+    id "org.gradle.test-retry"
+    id 'io.freefair.lombok'
+    id "org.springframework.boot"  apply false
+    id "io.spring.dependency-management"
 }
 
 apply plugin: 'java'
@@ -48,6 +49,7 @@ allprojects {
 subprojects {
 
     apply plugin: 'maven-publish'
+    apply plugin: 'io.freefair.lombok'
     apply plugin: 'org.gradle.test-retry'
     publishing {
         repositories {

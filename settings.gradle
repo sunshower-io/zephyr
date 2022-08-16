@@ -5,6 +5,19 @@ pluginManagement {
         mavenCentral()
         gradlePluginPortal()
     }
+
+    plugins {
+
+        id 'pmd'
+        id 'maven-publish'
+        id 'io.freefair.lombok' version '6.5.0.3'
+        id 'com.adarshr.test-logger' version '3.2.0'
+        id "com.diffplug.spotless" version "6.1.0"
+        id "com.github.spotbugs" version "4.7.0"
+        id "org.gradle.test-retry" version "1.4.0"
+        id "org.springframework.boot" version "2.6.2" apply false
+        id "io.spring.dependency-management" version "1.0.11.RELEASE"
+    }
 }
 include(
 

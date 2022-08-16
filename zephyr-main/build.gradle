@@ -12,46 +12,49 @@ configurations {
 
 dependencies {
 
-    [
-            project(':kernel-api'),
-            project(':kernel-core'),
-            project(':kernel-modules:synchronous-api'),
-            project(':kernel-modules:sunshower-spring')
-
-    ].each {
-        implementation it
-    }
-
-    [
-            project(':kernel-tests:kernel-test-common')
-    ].each {
-        testImplementation it
-    }
-
-
-    [
-            'banner',
-            'logging',
-            'shell',
-            'directory-scanner'
-    ].each {
-        implementation project(":kernel-modules:zephyr:zephyr-$it")
-    }
-
-
-    [
-            'directory-scanner'
-    ].each {
-        plugin project(":kernel-modules:zephyr:zephyr-$it")
-    }
+    implementation project(':kernel-core')
+    implementation 'info.picocli:picocli'
 
 //    [
-//            ':kernel-modules:sunshower-yaml-reader'
+//            project(':kernel-api'),
+//            project(':kernel-core'),
+//            project(':kernel-modules:synchronous-api'),
+//            project(':kernel-modules:sunshower-spring')
+//
 //    ].each {
-//        implementation project(it)
+//        implementation it
 //    }
-
-    testImplementation project(path: ':kernel-core', configuration: 'tests')
+//
+//    [
+//            project(':kernel-tests:kernel-test-common')
+//    ].each {
+//        testImplementation it
+//    }
+//
+//
+//    [
+//            'banner',
+//            'logging',
+//            'shell',
+//            'directory-scanner'
+//    ].each {
+//        implementation project(":kernel-modules:zephyr:zephyr-$it")
+//    }
+//
+//
+//    [
+//            'directory-scanner'
+//    ].each {
+//        plugin project(":kernel-modules:zephyr:zephyr-$it")
+//    }
+//
+////    [
+////            ':kernel-modules:sunshower-yaml-reader'
+////    ].each {
+////        implementation project(it)
+////    }
+//
+//    testImplementation project(path: ':kernel-core', configuration: 'tests')
 }
 
 

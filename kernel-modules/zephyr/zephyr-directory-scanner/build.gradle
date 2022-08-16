@@ -1,22 +1,22 @@
 apply plugin: 'java'
 
 dependencies {
-    [
-            'info.picocli:picocli',
-            project(':kernel-core'),
-            project(':kernel-api'),
-            project(':kernel-modules:synchronous-api')
-    ].each {
-        implementation it
-    }
-
-    [
-            project(':kernel-tests:kernel-test'),
-            project(':kernel-tests:kernel-test-common'),
-            project(path: ':kernel-tests:kernel-system-tests', configuration: 'tests')
-    ].each {
-        testImplementation it
-    }
+//    [
+//            'info.picocli:picocli',
+//            project(':kernel-core'),
+//            project(':kernel-api'),
+//            project(':kernel-modules:synchronous-api')
+//    ].each {
+//        implementation it
+//    }
+//
+//    [
+//            project(':kernel-tests:kernel-test'),
+//            project(':kernel-tests:kernel-test-common'),
+//            project(path: ':kernel-tests:kernel-system-tests', configuration: 'tests')
+//    ].each {
+//        testImplementation it
+//    }
 
 }
 
