@@ -49,6 +49,8 @@ dependencies {
         testFixturesImplementation it
     }
 
+    api project(':kernel-api')
+    api 'io.sunshower.arcus:gyre-api'
     api project(':kernel-modules:kernel-lib')
 
 

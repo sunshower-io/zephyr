@@ -1,8 +1,8 @@
 apply plugin: 'java'
 
 dependencies {
+    implementation 'info.picocli:picocli'
 //    [
-//            'info.picocli:picocli',
 //            project(':kernel-core'),
 //            project(':kernel-api'),
 //            project(':kernel-modules:synchronous-api')

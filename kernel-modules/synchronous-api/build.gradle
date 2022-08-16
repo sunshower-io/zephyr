@@ -28,6 +28,7 @@ dependencies {
 //    }
 
     implementation project(':kernel-api')
+    implementation project(':kernel-core')
 }
 
 war {

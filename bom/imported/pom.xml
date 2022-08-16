@@ -33,7 +33,7 @@
         <dagger.version>2.42</dagger.version>
         <mvel.version>2.4.5.Final</mvel.version>
         <picocli.version>4.0.4</picocli.version>
-        <lombok.version>1.18.22</lombok.version>
+        <lombok.version>1.18.24</lombok.version>
         <yamlbeans.version>1.13</yamlbeans.version>
         <xstream.version>1.4.19</xstream.version>
         <javax.inject-version>1</javax.inject-version>
