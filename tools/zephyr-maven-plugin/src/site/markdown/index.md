@@ -49,8 +49,8 @@ from PNG, SVG, and other formats.
 
 
 ####  Generating ICO/ICNS files
-    - Traditionally, having ICO or ICNS icon files on hand has been a prerequisite, requiring 3rd-party
-    commercial tools, online icon generators, etc.  The Zephyr build ecosystem allows you to generate ICO/ICNS files
+    - Traditionally, having ICO or ICNS imageData files on hand has been a prerequisite, requiring 3rd-party
+    commercial tools, online imageData generators, etc.  The Zephyr build ecosystem allows you to generate ICO/ICNS files
     from standard raster formats with a variety of sizes
 
 ####  Attaching ICO/ICNS files to your executable

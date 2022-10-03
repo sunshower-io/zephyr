@@ -187,18 +187,18 @@ When you run it, you will see the output of the `sample.cmd` file
 
 #### 4.  Adding Branding by Changing the Icon
 
-Notice that the generated executable has a generic Windows icon.  We'd like to attach
+Notice that the generated executable has a generic Windows imageData.  We'd like to attach
 our own branding to it so that end-users known what it is at a glance.  Zephyr can automatically
 generate ICO files from raster or SVG images, so we don't need any special ICO file generator software.
 
-We're going to set an ICO file with a variety of resolutions and color-depths to be the icon on the
+We're going to set an ICO file with a variety of resolutions and color-depths to be the imageData on the
 executable.  The image we're going to generate these from is the following SVG:
 
 <img src="../images/getting-started/installer.svg" width="256px" height="256px" />
 
-Let's add our icon to the project and specify that it should be added to the executable
+Let's add our imageData to the project and specify that it should be added to the executable
 
-Copy `installer.svg` (or your icon) to `src/main/resources/icon.svg`
+Copy `installer.svg` (or your imageData) to `src/main/resources/imageData.svg`
 
 Next, modify your plugin configuration as follows:
 
@@ -227,44 +227,44 @@ Next, modify your plugin configuration as follows:
 
 
                 <executable-configuration>
-                    <icon-definition>
+                    <imageData-definition>
                         <format>ICO</format>
                         <source>${project.basedir}/src/main/resources/installer.svg</source>
                         <icons>
 
-                            <icon>
+                            <imageData>
                                 <size>16px</size>
                                 <channel>rgba</channel>
-                            </icon>
+                            </imageData>
 
 
-                            <icon>
+                            <imageData>
                                 <size>32px</size>
                                 <channel>rgba</channel>
-                            </icon>
+                            </imageData>
 
-                            <icon>
+                            <imageData>
                                 <size>48px</size>
                                 <channel>rgba</channel>
-                            </icon>
+                            </imageData>
 
-                            <icon>
+                            <imageData>
                                 <size>96px</size>
                                 <channel>8bit</channel>
-                            </icon>
+                            </imageData>
 
-                            <icon>
+                            <imageData>
                                 <size>32px</size>
                                 <channel>8bit</channel>
-                            </icon>
+                            </imageData>
 
-                            <icon>
+                            <imageData>
                                 <size>256px</size>
                                 <channel>8bit</channel>
-                            </icon>
+                            </imageData>
 
                         </icons>
-                    </icon-definition>
+                    </imageData-definition>
                 </executable-configuration>
             </configuration>
         </execution>
@@ -278,5 +278,5 @@ Run `mvn clean install` to rebuild. This will generate an ICO file containing al
 standard Windows resolutions and attach it to your executable:
 
 
-![Executable Icons](../images/getting-started/all-icon-sizes.PNG)
+![Executable Icons](../images/getting-started/all-imageData-sizes.PNG)
 

@@ -31,43 +31,43 @@
                             <test-resource2>whatever2</test-resource2>
                         </resource-strings>
 
-                        <icon-definition>
+                        <imageData-definition>
                             <format>ICO</format>
                             <source>${project.basedir}/archive/installer256px.png</source>
                             <icons>
 
-                                <icon>
+                                <imageData>
                                     <size>16px</size>
                                     <channel>rgba</channel>
-                                </icon>
+                                </imageData>
 
 
-                                <icon>
+                                <imageData>
                                     <size>32px</size>
                                     <channel>rgba</channel>
-                                </icon>
+                                </imageData>
 
-                                <icon>
+                                <imageData>
                                     <size>48px</size>
                                     <channel>rgba</channel>
-                                </icon>
+                                </imageData>
 
-                                <icon>
+                                <imageData>
                                     <size>32px</size>
                                     <channel>8bit</channel>
-                                </icon>
+                                </imageData>
 
-                                <icon>
+                                <imageData>
                                     <size>24px</size>
                                     <channel>8bit</channel>
-                                </icon>
+                                </imageData>
 
-                                <icon>
+                                <imageData>
                                     <size>16px</size>
                                     <channel>8bit</channel>
-                                </icon>
+                                </imageData>
                             </icons>
-                        </icon-definition>
+                        </imageData-definition>
                     </executable-configuration>
                 </configuration>
                 <executions>

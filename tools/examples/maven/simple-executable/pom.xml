@@ -90,44 +90,44 @@
 
 
                             <executable-configuration>
-                                <icon-definition>
+                                <imageData-definition>
                                     <format>ICO</format>
                                     <source>${project.basedir}/src/main/resources/installer.svg</source>
                                     <icons>
 
-                                        <icon>
+                                        <imageData>
                                             <size>16px</size>
                                             <channel>rgba</channel>
-                                        </icon>
+                                        </imageData>
 
 
-                                        <icon>
+                                        <imageData>
                                             <size>32px</size>
                                             <channel>rgba</channel>
-                                        </icon>
+                                        </imageData>
 
-                                        <icon>
+                                        <imageData>
                                             <size>48px</size>
                                             <channel>rgba</channel>
-                                        </icon>
+                                        </imageData>
 
-                                        <icon>
+                                        <imageData>
                                             <size>96px</size>
                                             <channel>8bit</channel>
-                                        </icon>
+                                        </imageData>
 
-                                        <icon>
+                                        <imageData>
                                             <size>32px</size>
                                             <channel>8bit</channel>
-                                        </icon>
+                                        </imageData>
 
-                                        <icon>
+                                        <imageData>
                                             <size>256px</size>
                                             <channel>8bit</channel>
-                                        </icon>
+                                        </imageData>
 
                                     </icons>
-                                </icon-definition>
+                                </imageData-definition>
                             </executable-configuration>
                         </configuration>
                     </execution>
