@@ -51,7 +51,7 @@
         <zip4j.version>2.10.0</zip4j.version>
         <jsign-core.version>3.1</jsign-core.version>
         <flyway-core.version>8.4.1</flyway-core.version>
-        <h2.version>2.1.210</h2.version>
+        <h2.version>2.2.220</h2.version>
         <junit-platform-suite-api.version>1.8.1</junit-platform-suite-api.version>
         <awaitility.version>3.0.0</awaitility.version>
         <arcus.version>1.41.47.Final</arcus.version>
